@@ -30,12 +30,23 @@ export class Field extends Component {
     }
 
     /*init field*/
-    spawnRandomTile(row: number, col: number): Node {
-        const tileType = Math.floor(Math.random() * 5);
+    spawnCommonTile(row: number, col: number): Node {
+        const tileType = Math.floor(Math.random() * 4).toString();
+        let tileNode = this.spawnTile(row, col, tileType);
+        return tileNode;
+    }
+
+    spawnBomb(row: number, col: number) {
+        const tileNode = this.spawnTile(row, col, "bomb");
+        this.tileArray[row][col] = tileNode;
+        this.node.addChild(tileNode);
+    }
+
+    spawnTile(row: number, col: number, tileType: string): Node {
         const tileNode = instantiate(this.tilePrefab);
         const tileComponent = tileNode.getComponent("Tile");
 
-        tileComponent.init(tileType, row, col);
+        tileComponent.init(row, col, tileType);
         const posX = col * (tileNode.width + this.tileSpacing) + this.xOffset;
         const posY = row * (tileNode.height + this.tileSpacing) + this.yOffset;
         tileNode.setPosition(posX, posY + tileNode.height);
@@ -56,17 +67,17 @@ export class Field extends Component {
         for (let row = 0; row < this.numRows; row++) {
             this.tileArray[row] = [];
             for (let col = 0; col < this.numCols; col++) {
-                let tile = this.spawnRandomTile(row, col);
+                let tile = this.spawnCommonTile(row, col);
     
                 while (this.checkVerticalMatches(tile)) {
                     tile.destroy();
-                    const newTile = this.spawnRandomTile(row, col);
+                    const newTile = this.spawnCommonTile(row, col);
                     tile = newTile;
                 }
     
                 while (this.checkHorizontalMatches(tile)) {
                     tile.destroy();
-                    const newTile = this.spawnRandomTile(row, col);
+                    const newTile = this.spawnCommonTile(row, col);
                     tile = newTile;
                 }
     
@@ -114,12 +125,16 @@ export class Field extends Component {
         let isMatchesFound = false;
         let tilesToNull = [];
 
+        let choosenTile = tile.getComponent("Tile");
+        const choosenRow = choosenTile.getRow();
+        const choosenCol = choosenTile.getCol();
+
         this.currentMatches = [];
         this.currentMatches.push(tile);
 
         const matches = this.findMatches(tile);
         
-        if (matches.length >= 2) {
+        if(matches.length >= 2) {
             matches.forEach(matchedTile => {
                 let tileComponent = matchedTile.getComponent("Tile");
                 tilesToNull.push(new Vec2(tileComponent.getRow(), tileComponent.getCol()));
@@ -132,6 +147,11 @@ export class Field extends Component {
             this.tileArray[tilesToNull[i].x][tilesToNull[i].y] = null;
         }
 
+        if(matches.length >= 5) {
+            console.log("bombooooo");
+            this.spawnBomb(choosenRow, choosenCol);
+        }
+
         this.spawnNewTiles();
 
         return isMatchesFound;
@@ -142,9 +162,9 @@ export class Field extends Component {
         let tileComponent = tile.getComponent("Tile");
 
         matches = this.checkMatchesInDirection(tileComponent, 1, 0)
-        .concat(this.checkMatchesInDirection(tileComponent, -1, 0))
-        .concat(this.checkMatchesInDirection(tileComponent, 0, 1))
-        .concat(this.checkMatchesInDirection(tileComponent, 0, -1));
+            .concat(this.checkMatchesInDirection(tileComponent, -1, 0))
+            .concat(this.checkMatchesInDirection(tileComponent, 0, 1))
+            .concat(this.checkMatchesInDirection(tileComponent, 0, -1));
 
         let newMatchesCount = matches.length;
         let startIndex = 0;
@@ -231,7 +251,7 @@ export class Field extends Component {
                 for (let row = 0; row < this.numRows; row++) {
                     const tile = this.tileArray[row][col];
                     if (tile === null) {
-                        const newTile = this.spawnRandomTile(row, col);
+                        const newTile = this.spawnCommonTile(row, col);
                         this.tileArray[row][col] = newTile;
                         this.node.addChild(newTile);
                     }
@@ -250,8 +270,113 @@ export class Field extends Component {
             return;
         }
 
-        let isMatchesFound = this.findAndDestroyMatches(tile);
-        this.isClickAvailable = !isMatchesFound;
+        const tileComponent = tile.getComponent("Tile");
+        const isBonus = tileComponent.isBonusTile();
+        let isMatchesFound = false;
+
+        if(isBonus) {
+            this.onBonusTileClick(tileComponent);
+        }
+        else {
+            isMatchesFound = this.findAndDestroyMatches(tile);
+        }
+        
+        this.isClickAvailable = !isMatchesFound && !isBonus;
+    }
+
+
+    /*bonus tiles logic*/
+    onBonusTileClick(tile: Tile) {
+        const tileType = tile.getTileType();
+        const row = tile.getRow();
+        const col = tile.getCol();
+
+        switch(tileType) {
+            case "bomb":
+                this.onBombClick(row, col);
+                break;
+        }
+    }
+
+    onBombClick(row: number, col: number) {
+        let tilesToDestroy = this.getBombMatches(row, col);
+        let bonusTiles = this.findBonusTiles(row, col, tilesToDestroy);
+
+        while(bonusTiles.length > 0) {
+            let newTilesToDestroy = [];
+            bonusTiles.forEach(bonusTile => {
+                const newMatches = this.getBombMatches(bonusTile.getRow(), bonusTile.getCol());
+                newMatches.forEach(newMatch => {
+                    if(!tilesToDestroy.includes(newMatch)) {
+                        newTilesToDestroy.push(newMatch);
+                    }
+                })
+            })
+            bonusTiles = this.findBonusTiles(row, col, newTilesToDestroy);
+            tilesToDestroy = tilesToDestroy.concat(newTilesToDestroy);
+        }
+
+        let tilesToNull = [];
+        tilesToNull.push(new Vec2(row, col));
+        tilesToDestroy.forEach(matchedTile => {
+            if(matchedTile != null) {
+                let tileComponent = matchedTile.getComponent("Tile");
+                tilesToNull.push(new Vec2(tileComponent.getRow(), tileComponent.getCol()));
+                matchedTile.destroy();
+            }
+        })
+
+        for(let i = 0; i < tilesToNull.length; i++) {
+            this.tileArray[tilesToNull[i].x][tilesToNull[i].y] = null;
+        }
+
+        this.spawnNewTiles();
+    }
+
+
+    getBombMatches(row: number, col: number): Node[] {
+        let matches = [];
+        matches.push(this.tileArray[row][col]);
+        if(row < this.numRows - 1) {
+            matches.push(this.tileArray[row + 1][col]);
+        }
+        if(row > 0) {
+            matches.push(this.tileArray[row - 1][col]);
+        }
+        if(col < this.numCols - 1) {
+            matches.push(this.tileArray[row][col + 1]);
+        }
+        if(col > 0) {
+            matches.push(this.tileArray[row][col - 1]);
+        }
+        if(row < this.numRows - 1 && col < this.numCols - 1) {
+            matches.push(this.tileArray[row + 1][col + 1]);
+        }
+        if(row > 0 && col > 0) {
+            matches.push(this.tileArray[row - 1][col - 1]);
+        }
+        if(row < this.numRows - 1 && col > 0) {
+            matches.push(this.tileArray[row + 1][col - 1]);
+        }
+        if(row > 0 && col < this.numCols - 1) {
+            matches.push(this.tileArray[row - 1][col + 1]);
+        }
+
+        return matches;
+    }
+
+
+    findBonusTiles(row: number, col: number, matches: Node[]): Tile[] {
+        let bonusTiles = [];
+        matches.forEach(matchedTile => {
+            let tileComponent = matchedTile.getComponent("Tile");
+            const isBonus = tileComponent.isBonusTile();
+            if(isBonus && !tileComponent.isCurrentTile(row, col)) {
+                bonusTiles.push(tileComponent);
+            }
+        })
+
+        return bonusTiles;
     }
 }
 

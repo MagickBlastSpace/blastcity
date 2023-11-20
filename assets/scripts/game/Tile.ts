@@ -15,12 +15,15 @@ export class Tile extends Component {
     green: SpriteFrame | null = null;
     @property(SpriteFrame)
     yellow: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    purple: SpriteFrame | null = null;
 
-    private tileType: number;
+    @property(SpriteFrame)
+    bomb: SpriteFrame | null = null;
+
+    private tileType: string;
     private row: number;
     private col: number;
+
+    private isBonus: boolean;
 
 
     onLoad() {
@@ -32,31 +35,34 @@ export class Tile extends Component {
     }
     
     
-    init(tileType: number, row: number, col: number) {
-        this.tileType = tileType;
+    init(row: number, col: number, tileType: string) {
         this.row = row;
         this.col = col;
+        this.tileType = tileType;
+
+        this.isBonus = false;
         
         switch(this.tileType) {
-            case 0:
+            case '0':
                 this.icon.spriteFrame = this.blue;
                 break;
-            case 1:
+            case '1':
                 this.icon.spriteFrame = this.red;
                 break;
-            case 2:
+            case '2':
                 this.icon.spriteFrame = this.green;
                 break;
-            case 3:
+            case '3':
                 this.icon.spriteFrame = this.yellow;
                 break;
-            case 4:
-                this.icon.spriteFrame = this.purple;
+            case 'bomb':
+                this.isBonus = true;
+                this.icon.spriteFrame = this.bomb;
                 break;
         }
     }
 
-    getTileType(): number {
+    getTileType(): string {
         return this.tileType;
     }
 
@@ -74,6 +80,14 @@ export class Tile extends Component {
 
     setCol(_col: number) {
         this.col = _col;
+    }
+
+    isBonusTile(): boolean {
+        return this.isBonus;
+    }
+
+    isCurrentTile(row: number, col: number) {
+        return row === this.row && col === this.col;
     }
 
 
