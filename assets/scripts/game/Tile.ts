@@ -1,8 +1,9 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, Vec2, Vec3, UITransform } from 'cc';
+import { TileBase } from './TileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Tile')
-export class Tile extends Component {
+export class Tile extends TileBase {
 
     @property(Sprite)
     icon: Sprite = null;
@@ -15,15 +16,6 @@ export class Tile extends Component {
     green: SpriteFrame | null = null;
     @property(SpriteFrame)
     yellow: SpriteFrame | null = null;
-
-    @property(SpriteFrame)
-    bomb: SpriteFrame | null = null;
-
-    private tileType: string;
-    private row: number;
-    private col: number;
-
-    private isBonus: boolean;
 
 
     onLoad() {
@@ -55,44 +47,67 @@ export class Tile extends Component {
             case '3':
                 this.icon.spriteFrame = this.yellow;
                 break;
-            case 'bomb':
-                this.isBonus = true;
-                this.icon.spriteFrame = this.bomb;
-                break;
         }
     }
 
-    getTileType(): string {
-        return this.tileType;
+
+    getMatches(field: Node[][]): Node[] {
+        let matches = [];
+
+        matches = this.checkMatchesInDirection(field, 1, 0)
+            .concat(this.checkMatchesInDirection(field, -1, 0))
+            .concat(this.checkMatchesInDirection(field, 0, 1))
+            .concat(this.checkMatchesInDirection(field, 0, -1));
+
+        let newMatchesCount = matches.length;
+        let startIndex = 0;
+        while(newMatchesCount > 0) {
+            newMatchesCount = 0;
+            for(let i = startIndex; i < matches.length; i++) {
+                let tileComponent = matches[i].getComponent("TileBase");
+                const newMatches = tileComponent.checkMatchesInDirection(field, 1, 0)
+                    .concat(tileComponent.checkMatchesInDirection(field, -1, 0))
+                    .concat(tileComponent.checkMatchesInDirection(field, 0, 1))
+                    .concat(tileComponent.checkMatchesInDirection(field, 0, -1));
+
+                for(let j = 0; j < newMatches.length; j++) {
+                    if (!matches.includes(newMatches[j])) {
+                        newMatchesCount++;
+                        matches.push(newMatches[j]);
+                    }
+                }
+            }
+
+            startIndex = matches.length - newMatchesCount - 1;
+        }
+
+        return matches;
     }
 
-    getRow(): number {
-        return this.row;
-    }
+    checkMatchesInDirection(field: Node[][], dirX: number, dirY: number): Node[] {
+        let matches: Node[] = [];
 
-    getCol(): number {
-        return this.col;
-    }
+        let currentRow = this.row + dirY;
+        let currentCol = this.col + dirX;
 
-    setRow(_row: number) {
-        this.row = _row;
-    }
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
 
-    setCol(_col: number) {
-        this.col = _col;
-    }
+        while (currentRow >= 0 && currentRow < numRows &&
+            currentCol >= 0 && currentCol < numCols) {
+            const currentTile = field[currentRow][currentCol];
+            const currentTileComponent = currentTile.getComponent("TileBase");
 
-    isBonusTile(): boolean {
-        return this.isBonus;
-    }
+            if (currentTileComponent.getTileType() === this.tileType) {
+                matches.push(currentTile);
+                currentRow += dirY;
+                currentCol += dirX;
+            } else {
+                break;
+            }
+        }
 
-    isCurrentTile(row: number, col: number) {
-        return row === this.row && col === this.col;
-    }
-
-
-    onTouchStart(event: cc.Event.EventTouch) {
-        this.node.emit("click", this.node);
+        return matches;
     }
 }
 
