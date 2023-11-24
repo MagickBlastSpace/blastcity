@@ -182,11 +182,11 @@ export class Field extends Component {
                 }
             }
             this.checkForPotentialBonuses();
-        }, 0.25);
+        }, 0.2);
 
         this.scheduleOnce(() => {
             this.isClickAvailable = true;
-        }, 0.3);
+        }, 0.2);
     }
 
 
