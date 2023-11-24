@@ -44,6 +44,7 @@ export class Field extends Component {
             }
         }
 
+        this.checkForPotentialBonuses();
         this.isClickAvailable = true;
     }
 
@@ -63,18 +64,11 @@ export class Field extends Component {
         return spawnedTile;
     }
 
-    spawnRocket(row: number, col: number): Node {
+    spawnRocket(row: number, col: number, tileType: string): Node {
         const tileNode = instantiate(this.rocketPrefab);
         const tileComponent = tileNode.getComponent("Rocket");
-        const tileType = Math.floor(Math.random() * 2);
-        if(tileType === 0) {
-            let spawnedTile = this.initTile(tileComponent, row, col, "rocket_vertical");
-            return spawnedTile;
-        }
-        else {
-            let spawnedTile = this.initTile(tileComponent, row, col, "rocket_horizontal");
-            return spawnedTile;
-        }
+        let spawnedTile = this.initTile(tileComponent, row, col, tileType);
+        return spawnedTile;
     }
 
     spawnDiscoball(row: number, col: number, tileType: string): Node {
@@ -116,6 +110,7 @@ export class Field extends Component {
         const choosenCol = choosenTile.getCol();
         const choosenType = choosenTile.getTileType();
         const isBonus = choosenTile.isBonusTile();
+        const potentialBonus = choosenTile.getPotentialBonus();
 
         const matches = choosenTile.getMatches(this.tileArray);
         
@@ -139,7 +134,7 @@ export class Field extends Component {
             this.spawnBomb(choosenRow, choosenCol);
         }
         else if(matches.length > 3 && !isBonus) {
-            this.spawnRocket(choosenRow, choosenCol);
+            this.spawnRocket(choosenRow, choosenCol, potentialBonus);
         }
 
         this.spawnNewTiles();
@@ -186,6 +181,7 @@ export class Field extends Component {
                     }
                 }
             }
+            this.checkForPotentialBonuses();
         }, 0.25);
 
         this.scheduleOnce(() => {
@@ -203,6 +199,75 @@ export class Field extends Component {
         
         this.isClickAvailable = !isMatchesFound;
     }
+
+
+
+    checkForPotentialBonuses() {
+        let checkedTiles = [];
+
+        this.clearAllPotentialBonuses();
+
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+
+                if(!checkedTiles.includes(tile)) {
+                    const tileComponent = tile.getComponent("TileBase");
+                    const isBonus = tileComponent.isBonusTile();
+                    let matches = [];
+
+                    if(!isBonus) {
+                        matches = tileComponent.getMatches(this.tileArray);
+
+                        if(matches.length > 7 && !isBonus) {
+                            this.setPotentialBonus(matches, "discoball");
+                        }
+                        else if(matches.length > 5 && !isBonus) {
+                            this.setPotentialBonus(matches, "bomb");
+                        }
+                        else if(matches.length > 3 && !isBonus) {
+                            const tileType = Math.floor(Math.random() * 2);
+                            if(tileType === 0) {
+                                this.setPotentialBonus(matches, "rocket_vertical");
+                            }
+                            else {
+                                this.setPotentialBonus(matches, "rocket_horizontal");
+                            }
+                        }
+
+                        checkedTiles.concat(matches);
+                    }
+                    else {
+                        checkedTiles.push(tile);
+                    }
+                }
+            }
+        }
+    }
+
+    setPotentialBonus(tiles: Node[], bonus: string) {
+        tiles.forEach(matchedTile => {
+            let tileComponent = matchedTile.getComponent("TileBase");
+            tileComponent.setPotentialBonus(bonus);
+        })
+    }
+
+    clearAllPotentialBonuses() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                let tileComponent = tile.getComponent("TileBase");
+                tileComponent.clearPotentialBonus();
+            }
+        }
+    }
+
+    /*clearPotentialBonuses(tiles: Node[]) {
+        tiles.forEach(matchedTile => {
+            let tileComponent = matchedTile.getComponent("TileBase");
+            tileComponent.clearPotentialBonus();
+        })
+    }*/
 }
 
 

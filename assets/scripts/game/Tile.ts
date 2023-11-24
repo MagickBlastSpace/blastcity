@@ -17,6 +17,15 @@ export class Tile extends TileBase {
     @property(SpriteFrame)
     yellow: SpriteFrame | null = null;
 
+    @property(SpriteFrame)
+    rocketHorizontal: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    rocketVertical: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    bomb: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    discoball: SpriteFrame | null = null;
+
 
     onLoad() {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
@@ -112,6 +121,25 @@ export class Tile extends TileBase {
         }
 
         return matches;
+    }
+
+
+    setPotentialBonus(bonus: string) {
+        this.potentialBonus = bonus;
+        switch(bonus) {
+            case 'discoball':
+                this.potentialBonusIcon.spriteFrame = this.discoball;
+                break;
+            case 'bomb':
+                this.potentialBonusIcon.spriteFrame = this.bomb;
+                break;
+            case 'rocket_vertical':
+                this.potentialBonusIcon.spriteFrame = this.rocketVertical;
+                break;
+            case 'rocket_horizontal':
+                this.potentialBonusIcon.spriteFrame = this.rocketHorizontal;
+                break;
+        }
     }
 }
 

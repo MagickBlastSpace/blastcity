@@ -1,14 +1,19 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Sprite } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('TileBase')
 export class TileBase extends Component {
+
+    @property(Sprite)
+    potentialBonusIcon: Sprite = null;
 
     private tileType: string;
     private row: number;
     private col: number;
 
     private isBonus: boolean;
+
+    private potentialBonus: string = "";
 
 
     onLoad() {
@@ -66,6 +71,19 @@ export class TileBase extends Component {
     getMatchesByType(field: Node[][]): Node[] {
         let matches = [];
         return matches;
+    }
+
+    getPotentialBonus(): string {
+        return this.potentialBonus;
+    }
+
+    setPotentialBonus(bonus: string) {
+
+    }
+
+    clearPotentialBonus() {
+        this.potentialBonus = "";
+        this.potentialBonusIcon.spriteFrame = null;
     }
 
 
