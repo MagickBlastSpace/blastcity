@@ -65,15 +65,18 @@ export class Tile extends TileBase {
             newMatchesCount = 0;
             for(let i = startIndex; i < matches.length; i++) {
                 let tileComponent = matches[i].getComponent("TileBase");
-                const newMatches = tileComponent.checkMatchesInDirection(field, 1, 0)
-                    .concat(tileComponent.checkMatchesInDirection(field, -1, 0))
-                    .concat(tileComponent.checkMatchesInDirection(field, 0, 1))
-                    .concat(tileComponent.checkMatchesInDirection(field, 0, -1));
+                const isBonus = tileComponent.isBonusTile();
+                if(!isBonus) {
+                    const newMatches = tileComponent.checkMatchesInDirection(field, 1, 0)
+                        .concat(tileComponent.checkMatchesInDirection(field, -1, 0))
+                        .concat(tileComponent.checkMatchesInDirection(field, 0, 1))
+                        .concat(tileComponent.checkMatchesInDirection(field, 0, -1));
 
-                for(let j = 0; j < newMatches.length; j++) {
-                    if (!matches.includes(newMatches[j])) {
-                        newMatchesCount++;
-                        matches.push(newMatches[j]);
+                    for(let j = 0; j < newMatches.length; j++) {
+                        if (!matches.includes(newMatches[j])) {
+                            newMatchesCount++;
+                            matches.push(newMatches[j]);
+                        }
                     }
                 }
             }
@@ -97,8 +100,9 @@ export class Tile extends TileBase {
             currentCol >= 0 && currentCol < numCols) {
             const currentTile = field[currentRow][currentCol];
             const currentTileComponent = currentTile.getComponent("TileBase");
+            const isBonus = currentTileComponent.isBonusTile();
 
-            if (currentTileComponent.getTileType() === this.tileType) {
+            if (currentTileComponent.getTileType() === this.tileType && !isBonus) {
                 matches.push(currentTile);
                 currentRow += dirY;
                 currentCol += dirX;
