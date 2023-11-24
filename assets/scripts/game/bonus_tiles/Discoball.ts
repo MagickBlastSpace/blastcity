@@ -1,0 +1,71 @@
+import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
+import { TileBase } from '../TileBase';
+const { ccclass, property } = _decorator;
+
+@ccclass('Discoball')
+export class Discoball extends TileBase {
+
+    @property(Sprite)
+    icon: Sprite = null;
+
+    @property(SpriteFrame)
+    blue: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    red: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    green: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    yellow: SpriteFrame | null = null;
+
+    
+    init(row: number, col: number, tileType: string) {
+        this.row = row;
+        this.col = col;
+        this.tileType = tileType;
+
+        this.isBonus = true;
+
+        switch(this.tileType) {
+            case '0':
+                this.icon.spriteFrame = this.blue;
+                break;
+            case '1':
+                this.icon.spriteFrame = this.red;
+                break;
+            case '2':
+                this.icon.spriteFrame = this.green;
+                break;
+            case '3':
+                this.icon.spriteFrame = this.yellow;
+                break;
+        }
+    }
+
+
+    getMatches(field: Node[][]): Node[] {
+        let tilesToDestroy = this.getMatchesByType(field);
+
+        return tilesToDestroy;
+    }
+
+
+    getMatchesByType(field: Node[][]): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                let tileComp = field[i][j].getComponent("TileBase");
+                if(tileComp.getTileType() === this.getTileType()) {
+                    matches.push(field[i][j]);
+                }
+            }
+        }
+
+        return matches;
+    }
+}
+
+

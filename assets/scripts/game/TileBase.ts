@@ -63,6 +63,11 @@ export class TileBase extends Component {
         return matches;
     }
 
+    getMatchesByType(field: Node[][]): Node[] {
+        let matches = [];
+        return matches;
+    }
+
 
     onTouchStart(event: cc.Event.EventTouch) {
         this.node.emit("click", this.node);

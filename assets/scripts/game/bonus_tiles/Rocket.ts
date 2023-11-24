@@ -1,9 +1,18 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
 import { TileBase } from '../TileBase';
 const { ccclass, property } = _decorator;
 
-@ccclass('Bomb')
-export class Bomb extends TileBase {
+@ccclass('Rocket')
+export class Rocket extends TileBase {
+
+    @property(Sprite)
+    icon: Sprite = null;
+
+    @property(SpriteFrame)
+    rocketVertical: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    rocketHorizontal: SpriteFrame | null = null;
+
     
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -11,6 +20,15 @@ export class Bomb extends TileBase {
         this.tileType = tileType;
 
         this.isBonus = true;
+
+        switch(this.tileType) {
+            case 'rocket_vertical':
+                this.icon.spriteFrame = this.rocketVertical;
+                break;
+            case 'rocket_horizontal':
+                this.icon.spriteFrame = this.rocketHorizontal;
+                break;
+        }
     }
 
 
@@ -21,7 +39,8 @@ export class Bomb extends TileBase {
         while(bonusTiles.length > 0) {
             let newTilesToDestroy = [];
             bonusTiles.forEach(bonusTile => {
-                const newMatches = bonusTile.getMatchesByType(field);
+                let newMatches = bonusTile.getMatchesByType(field);
+                
                 newMatches.forEach(newMatch => {
                     if(!tilesToDestroy.includes(newMatch)) {
                         newTilesToDestroy.push(newMatch);
@@ -38,34 +57,40 @@ export class Bomb extends TileBase {
 
     getMatchesByType(field: Node[][]): Node[] {
         let matches = [];
-        matches.push(field[this.row][this.col]);
+
+        switch(this.tileType) {
+            case 'rocket_vertical':
+                matches = this.getVerticalMatches(field);
+                break;
+            case 'rocket_horizontal':
+                matches = this.getHorizontalMatches(field);
+                break;
+        }
+
+        return matches;
+    }
+
+
+    getVerticalMatches(field: Node[][]): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+
+        for(let i = 0; i < numRows; i++) {
+            matches.push(field[i][this.col]);
+        }
+
+        return matches;
+    }
+
+    getHorizontalMatches(field: Node[][]): Node[] {
+        let matches = [];
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        if(this.row < numRows - 1) {
-            matches.push(field[this.row + 1][this.col]);
-        }
-        if(this.row > 0) {
-            matches.push(field[this.row - 1][this.col]);
-        }
-        if(this.col < numCols - 1) {
-            matches.push(field[this.row][this.col + 1]);
-        }
-        if(this.col > 0) {
-            matches.push(field[this.row][this.col - 1]);
-        }
-        if(this.row < numRows - 1 && this.col < numCols - 1) {
-            matches.push(field[this.row + 1][this.col + 1]);
-        }
-        if(this.row > 0 && this.col > 0) {
-            matches.push(field[this.row - 1][this.col - 1]);
-        }
-        if(this.row < numRows - 1 && this.col > 0) {
-            matches.push(field[this.row + 1][this.col - 1]);
-        }
-        if(this.row > 0 && this.col < numCols - 1) {
-            matches.push(field[this.row - 1][this.col + 1]);
+        for(let i = 0; i < numCols; i++) {
+            matches.push(field[this.row][i]);
         }
 
         return matches;

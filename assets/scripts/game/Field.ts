@@ -8,6 +8,10 @@ export class Field extends Component {
     tilePrefab: Prefab = null;
     @property(Prefab)
     bombPrefab: Prefab = null;
+    @property(Prefab)
+    rocketPrefab: Prefab = null;
+    @property(Prefab)
+    discoballPrefab: Prefab = null;
 
     @property
     numRows: number = 8;
@@ -31,7 +35,7 @@ export class Field extends Component {
         this.spawnInitialBoard();
     }
 
-    /*init field*/
+
     spawnInitialBoard() {
         for (let row = 0; row < this.numRows; row++) {
             this.tileArray[row] = [];
@@ -42,7 +46,8 @@ export class Field extends Component {
 
         this.isClickAvailable = true;
     }
-    
+
+
     spawnCommonTile(row: number, col: number): Node {
         const tileNode = instantiate(this.tilePrefab);
         const tileComponent = tileNode.getComponent("Tile");
@@ -57,6 +62,28 @@ export class Field extends Component {
         let spawnedTile = this.initTile(tileComponent, row, col, "bomb");
         return spawnedTile;
     }
+
+    spawnRocket(row: number, col: number): Node {
+        const tileNode = instantiate(this.rocketPrefab);
+        const tileComponent = tileNode.getComponent("Rocket");
+        const tileType = Math.floor(Math.random() * 2);
+        if(tileType === 0) {
+            let spawnedTile = this.initTile(tileComponent, row, col, "rocket_vertical");
+            return spawnedTile;
+        }
+        else {
+            let spawnedTile = this.initTile(tileComponent, row, col, "rocket_horizontal");
+            return spawnedTile;
+        }
+    }
+
+    spawnDiscoball(row: number, col: number, tileType: string): Node {
+        const tileNode = instantiate(this.discoballPrefab);
+        const tileComponent = tileNode.getComponent("Discoball");
+        let spawnedTile = this.initTile(tileComponent, row, col, tileType);
+        return spawnedTile;
+    }
+
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
@@ -80,7 +107,6 @@ export class Field extends Component {
     }
 
 
-    /*matches logic*/
     findAndDestroyMatches(tile: Node): boolean {
         let isMatchesFound = false;
         let tilesToNull = [];
@@ -88,6 +114,7 @@ export class Field extends Component {
         let choosenTile = tile.getComponent("TileBase");
         const choosenRow = choosenTile.getRow();
         const choosenCol = choosenTile.getCol();
+        const choosenType = choosenTile.getTileType();
         const isBonus = choosenTile.isBonusTile();
 
         const matches = choosenTile.getMatches(this.tileArray);
@@ -105,8 +132,14 @@ export class Field extends Component {
             this.tileArray[tilesToNull[i].x][tilesToNull[i].y] = null;
         }
 
-        if(matches.length > 5 && !isBonus) {
+        if(matches.length > 7 && !isBonus) {
+            this.spawnDiscoball(choosenRow, choosenCol, choosenType);
+        }
+        else if(matches.length > 5 && !isBonus) {
             this.spawnBomb(choosenRow, choosenCol);
+        }
+        else if(matches.length > 3 && !isBonus) {
+            this.spawnRocket(choosenRow, choosenCol);
         }
 
         this.spawnNewTiles();
