@@ -24,6 +24,7 @@ export class Discoball extends TileBase {
         this.tileType = tileType;
 
         this.isBonus = true;
+        this.isEmpty = false;
 
         switch(this.tileType) {
             case '0':

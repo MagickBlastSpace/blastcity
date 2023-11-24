@@ -20,6 +20,7 @@ export class Rocket extends TileBase {
         this.tileType = tileType;
 
         this.isBonus = true;
+        this.isEmpty = false;
 
         switch(this.tileType) {
             case 'rocket_vertical':
@@ -77,7 +78,11 @@ export class Rocket extends TileBase {
         const numRows: number = field.length;
 
         for(let i = 0; i < numRows; i++) {
-            matches.push(field[i][this.col]);
+            const tile = field[i][this.col];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
 
         return matches;
@@ -86,11 +91,14 @@ export class Rocket extends TileBase {
     getHorizontalMatches(field: Node[][]): Node[] {
         let matches = [];
 
-        const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         for(let i = 0; i < numCols; i++) {
-            matches.push(field[this.row][i]);
+            const tile = field[this.row][i];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
 
         return matches;

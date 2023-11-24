@@ -1,11 +1,15 @@
 import { _decorator, Component, Node, instantiate, Prefab, Vec2, Vec3 } from 'cc';
-import { Tile } from './Tile';
+import { GameData, LevelData } from '../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
 export class Field extends Component {
     @property(Prefab)
     tilePrefab: Prefab = null;
+
+    @property(Prefab)
+    emptyPrefab: Prefab = null;
+
     @property(Prefab)
     bombPrefab: Prefab = null;
     @property(Prefab)
@@ -32,16 +36,23 @@ export class Field extends Component {
 
 
     start() {
-        this.spawnInitialBoard();
+        this.spawnInitialBoard(GameData.instance.levels[0]);
     }
 
 
-    spawnInitialBoard() {
+    spawnInitialBoard(level: LevelData) {
         for (let row = 0; row < this.numRows; row++) {
             this.tileArray[row] = [];
             for (let col = 0; col < this.numCols; col++) {
                 this.spawnCommonTile(row, col);
             }
+        }
+
+        for(let i = 0; i < level.emptyTiles.length; i++) {
+            const tile = this.tileArray[level.emptyTiles[i].y][level.emptyTiles[i].x];
+            let tileComponent = tile.getComponent("TileBase");
+            tileComponent.destroyTile();
+            this.spawnEmptyTile(level.emptyTiles[i].y, level.emptyTiles[i].x);
         }
 
         this.checkForPotentialBonuses();
@@ -78,6 +89,13 @@ export class Field extends Component {
         return spawnedTile;
     }
 
+    spawnEmptyTile(row: number, col: number): Node {
+        const tileNode = instantiate(this.emptyPrefab);
+        const tileComponent = tileNode.getComponent("EmptyTile");
+        let spawnedTile = this.initTile(tileComponent, row, col, "empty");
+        return spawnedTile;
+    }
+
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
@@ -102,7 +120,6 @@ export class Field extends Component {
 
 
     findAndDestroyMatches(tile: Node): boolean {
-        let isMatchesFound = false;
         let tilesToNull = [];
 
         let choosenTile = tile.getComponent("TileBase");
@@ -120,7 +137,9 @@ export class Field extends Component {
                 tilesToNull.push(new Vec2(tileComponent.getRow(), tileComponent.getCol()));
                 tileComponent.destroyTile();
             })
-            isMatchesFound = true;
+        }
+        else {
+            return false;
         }
 
         for(let i = 0; i < tilesToNull.length; i++) {
@@ -139,38 +158,12 @@ export class Field extends Component {
 
         this.spawnNewTiles();
 
-        return isMatchesFound;
+        return true;
     }
 
 
     spawnNewTiles() {
-        for (let col = 0; col < this.numCols; col++) {
-
-            let emptySpaces = 0;
-
-            for (let row = 0; row < this.numRows; row++) {
-                const tile = this.tileArray[row][col];
-
-                if (tile === null) {
-                    emptySpaces++;
-                }
-
-                else {
-                    if(emptySpaces > 0) {
-                        let tileComponent = tile.getComponent("TileBase");
-                        tileComponent.setRow(row - emptySpaces);
-                        this.tileArray[row - emptySpaces][col] = tile;
-                        this.tileArray[row][col] = null;
-
-                        const posX = col * (tile.width + this.tileSpacing) + this.xOffset;
-                        const posY = (row - emptySpaces) * (tile.height + this.tileSpacing) + this.yOffset;
-                        cc.tween(tile)
-                            .to(0.2, { position: new Vec3(posX, posY, 0) })
-                            .start();
-                    }
-                }
-            }
-        }
+        this.fallTiles();
 
         this.scheduleOnce(() => {
             for (let col = 0; col < this.numCols; col++) {
@@ -188,6 +181,50 @@ export class Field extends Component {
             this.isClickAvailable = true;
         }, 0.2);
     }
+
+
+    fallTiles() {
+        for (let col = 0; col < this.numCols; col++) {
+            let emptySpaces = 0;
+            let holes = 0;
+    
+            for (let row = 0; row < this.numRows; row++) {
+                const tile = this.tileArray[row][col];
+    
+                if (tile === null) {
+                    emptySpaces++;
+                } else {
+                    let tileComponent = tile.getComponent("TileBase");
+    
+                    if (tileComponent.isEmptyTile()) {
+                        if (!tileComponent.isBorder(this.tileArray)) {
+                            holes++;
+                        }
+                    } else if (emptySpaces > 0) {
+                        let newRow = row - emptySpaces;
+    
+                        while (holes > 0 && this.checkPlaceForEmptyTile(newRow, col)) {
+                            newRow = row - emptySpaces - holes;
+                            holes--;
+                        }
+    
+                        if (!this.checkPlaceForEmptyTile(newRow, col)) {
+                            tileComponent.setRow(newRow);
+                            this.tileArray[newRow][col] = tile;
+                            this.tileArray[row][col] = null;
+    
+                            const posX = col * (tile.width + this.tileSpacing) + this.xOffset;
+                            const posY = newRow * (tile.height + this.tileSpacing) + this.yOffset;
+                            cc.tween(tile)
+                                .to(0.2, { position: new cc.Vec3(posX, posY, 0) })
+                                .start();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 
 
     onTileClick(tile: Node) {
@@ -262,12 +299,15 @@ export class Field extends Component {
         }
     }
 
-    /*clearPotentialBonuses(tiles: Node[]) {
-        tiles.forEach(matchedTile => {
-            let tileComponent = matchedTile.getComponent("TileBase");
-            tileComponent.clearPotentialBonus();
-        })
-    }*/
+
+    checkPlaceForEmptyTile(row: number, col: number): boolean {
+        const tile = this.tileArray[row][col];
+        if(tile === null) {
+            return false;
+        }
+        const tileComponent = tile.getComponent("TileBase");
+        return tileComponent.isEmptyTile();
+    }
 }
 
 

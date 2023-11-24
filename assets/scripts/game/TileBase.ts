@@ -12,6 +12,7 @@ export class TileBase extends Component {
     private col: number;
 
     private isBonus: boolean;
+    private isEmpty: boolean;
 
     private potentialBonus: string = "";
 
@@ -53,6 +54,10 @@ export class TileBase extends Component {
 
     isBonusTile(): boolean {
         return this.isBonus;
+    }
+
+    isEmptyTile(): boolean {
+        return this.isEmpty;
     }
 
     isCurrentTile(row: number, col: number) {

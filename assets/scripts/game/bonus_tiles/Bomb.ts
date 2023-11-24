@@ -11,6 +11,7 @@ export class Bomb extends TileBase {
         this.tileType = tileType;
 
         this.isBonus = true;
+        this.isEmpty = false;
     }
 
 
@@ -44,28 +45,60 @@ export class Bomb extends TileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         if(this.row < numRows - 1) {
-            matches.push(field[this.row + 1][this.col]);
+            const tile = field[this.row + 1][this.col];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
         if(this.row > 0) {
-            matches.push(field[this.row - 1][this.col]);
+            const tile = field[this.row - 1][this.col];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
         if(this.col < numCols - 1) {
-            matches.push(field[this.row][this.col + 1]);
+            const tile = field[this.row][this.col + 1];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
         if(this.col > 0) {
-            matches.push(field[this.row][this.col - 1]);
+            const tile = field[this.row][this.col - 1];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
         if(this.row < numRows - 1 && this.col < numCols - 1) {
-            matches.push(field[this.row + 1][this.col + 1]);
+            const tile = field[this.row + 1][this.col + 1];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
         if(this.row > 0 && this.col > 0) {
-            matches.push(field[this.row - 1][this.col - 1]);
+            const tile = field[this.row - 1][this.col - 1];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
         if(this.row < numRows - 1 && this.col > 0) {
-            matches.push(field[this.row + 1][this.col - 1]);
+            const tile = field[this.row + 1][this.col - 1];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
         if(this.row > 0 && this.col < numCols - 1) {
-            matches.push(field[this.row - 1][this.col + 1]);
+            const tile = field[this.row - 1][this.col + 1];
+            const tileComponent = tile.getComponent("TileBase");
+            if(!tileComponent.isEmptyTile()) {
+                matches.push(tile);
+            }
         }
 
         return matches;
