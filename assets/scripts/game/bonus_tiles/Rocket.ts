@@ -21,6 +21,8 @@ export class Rocket extends TileBase {
 
         this.isBonus = true;
         this.isEmpty = false;
+        this.isShifts = true;
+        this.isSpecial = false;
 
         switch(this.tileType) {
             case 'rocket_vertical':
@@ -79,8 +81,7 @@ export class Rocket extends TileBase {
 
         for(let i = 0; i < numRows; i++) {
             const tile = field[i][this.col];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
@@ -95,8 +96,7 @@ export class Rocket extends TileBase {
 
         for(let i = 0; i < numCols; i++) {
             const tile = field[this.row][i];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
@@ -116,6 +116,21 @@ export class Rocket extends TileBase {
         })
 
         return bonusTiles;
+    }
+
+
+    checkTileForMatch(tile: Node): boolean {
+        const tileComponent = tile.getComponent("TileBase");
+        if(tileComponent.isSpecialTile()) {
+            tileComponent.getDamage("bonus");
+            return false;
+        }
+
+        if(tileComponent.isEmptyTile()) {
+            return false;
+        }
+
+        return true;
     }
 }
 

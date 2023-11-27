@@ -12,6 +12,8 @@ export class Bomb extends TileBase {
 
         this.isBonus = true;
         this.isEmpty = false;
+        this.isShifts = true;
+        this.isSpecial = false;
     }
 
 
@@ -46,57 +48,49 @@ export class Bomb extends TileBase {
 
         if(this.row < numRows - 1) {
             const tile = field[this.row + 1][this.col];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
         if(this.row > 0) {
             const tile = field[this.row - 1][this.col];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
         if(this.col < numCols - 1) {
             const tile = field[this.row][this.col + 1];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
         if(this.col > 0) {
             const tile = field[this.row][this.col - 1];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
         if(this.row < numRows - 1 && this.col < numCols - 1) {
             const tile = field[this.row + 1][this.col + 1];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
         if(this.row > 0 && this.col > 0) {
             const tile = field[this.row - 1][this.col - 1];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
         if(this.row < numRows - 1 && this.col > 0) {
             const tile = field[this.row + 1][this.col - 1];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
         if(this.row > 0 && this.col < numCols - 1) {
             const tile = field[this.row - 1][this.col + 1];
-            const tileComponent = tile.getComponent("TileBase");
-            if(!tileComponent.isEmptyTile()) {
+            if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
@@ -116,6 +110,21 @@ export class Bomb extends TileBase {
         })
 
         return bonusTiles;
+    }
+
+
+    checkTileForMatch(tile: Node): boolean {
+        const tileComponent = tile.getComponent("TileBase");
+        if(tileComponent.isSpecialTile()) {
+            tileComponent.getDamage("bonus");
+            return false;
+        }
+
+        if(tileComponent.isEmptyTile()) {
+            return false;
+        }
+
+        return true;
     }
 }
 

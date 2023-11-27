@@ -17,9 +17,11 @@ export class Field extends Component {
     @property(Prefab)
     discoballPrefab: Prefab = null;
 
+    @property([Prefab])
+    specialPrefabs: Prefab[] = [];
+
     @property
     numRows: number = 8;
-
     @property
     numCols: number = 8;
 
@@ -53,6 +55,13 @@ export class Field extends Component {
             let tileComponent = tile.getComponent("TileBase");
             tileComponent.destroyTile();
             this.spawnEmptyTile(level.emptyTiles[i].y, level.emptyTiles[i].x);
+        }
+
+        for(let i = 0; i < level.specialTiles.length; i++) {
+            const tile = this.tileArray[level.specialTiles[i].row][level.specialTiles[i].col];
+            let tileComponent = tile.getComponent("TileBase");
+            tileComponent.destroyTile();
+            this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
         }
 
         this.checkForPotentialBonuses();
@@ -96,6 +105,13 @@ export class Field extends Component {
         return spawnedTile;
     }
 
+    spawnSpecialTile(row: number, col: number, tileId: number): Node {
+        const tileNode = instantiate(this.specialPrefabs[tileId]);
+        const tileComponent = tileNode.getComponent("SpecTileBase");
+        let spawnedTile = this.initTile(tileComponent, row, col, "special");
+        return spawnedTile;
+    }
+
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
@@ -120,8 +136,6 @@ export class Field extends Component {
 
 
     findAndDestroyMatches(tile: Node): boolean {
-        let tilesToNull = [];
-
         let choosenTile = tile.getComponent("TileBase");
         const choosenRow = choosenTile.getRow();
         const choosenCol = choosenTile.getCol();
@@ -134,7 +148,8 @@ export class Field extends Component {
         if(matches.length >= 2) {
             matches.forEach(matchedTile => {
                 let tileComponent = matchedTile.getComponent("TileBase");
-                tilesToNull.push(new Vec2(tileComponent.getRow(), tileComponent.getCol()));
+                tileComponent.giveDamage(this.tileArray);
+                this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
                 tileComponent.destroyTile();
             })
         }
@@ -142,17 +157,15 @@ export class Field extends Component {
             return false;
         }
 
-        for(let i = 0; i < tilesToNull.length; i++) {
-            this.tileArray[tilesToNull[i].x][tilesToNull[i].y] = null;
-        }
+        this.checkSpecTilesForDestroy();
 
-        if(matches.length > 7 && !isBonus) {
+        if(matches.length >= 9 && !isBonus) {
             this.spawnDiscoball(choosenRow, choosenCol, choosenType);
         }
-        else if(matches.length > 5 && !isBonus) {
+        else if(matches.length >= 7 && !isBonus) {
             this.spawnBomb(choosenRow, choosenCol);
         }
-        else if(matches.length > 3 && !isBonus) {
+        else if(matches.length >= 5 && !isBonus) {
             this.spawnRocket(choosenRow, choosenCol, potentialBonus);
         }
 
@@ -178,8 +191,9 @@ export class Field extends Component {
         }, 0.2);
 
         this.scheduleOnce(() => {
+            this.clearAll();
             this.isClickAvailable = true;
-        }, 0.2);
+        }, 0.3);
     }
 
 
@@ -216,8 +230,26 @@ export class Field extends Component {
                             const posX = col * (tile.width + this.tileSpacing) + this.xOffset;
                             const posY = newRow * (tile.height + this.tileSpacing) + this.yOffset;
                             cc.tween(tile)
-                                .to(0.2, { position: new cc.Vec3(posX, posY, 0) })
+                                .to(0.25, { position: new cc.Vec3(posX, posY, 0) })
                                 .start();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    checkSpecTilesForDestroy() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    let tileComponent = tile.getComponent("TileBase");
+                    if(tileComponent.isSpecialTile()) {
+                        if(tileComponent.isReadyToDestroy()) {
+                            this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
+                            tileComponent.destroyTile(this.tileArray);
                         }
                     }
                 }
@@ -256,13 +288,13 @@ export class Field extends Component {
                     if(!isBonus) {
                         matches = tileComponent.getMatches(this.tileArray);
 
-                        if(matches.length > 7 && !isBonus) {
+                        if(matches.length >= 9 && !isBonus) {
                             this.setPotentialBonus(matches, "discoball");
                         }
-                        else if(matches.length > 5 && !isBonus) {
+                        else if(matches.length >= 7 && !isBonus) {
                             this.setPotentialBonus(matches, "bomb");
                         }
-                        else if(matches.length > 3 && !isBonus) {
+                        else if(matches.length >= 5 && !isBonus) {
                             const tileType = Math.floor(Math.random() * 2);
                             if(tileType === 0) {
                                 this.setPotentialBonus(matches, "rocket_vertical");
@@ -307,6 +339,17 @@ export class Field extends Component {
         }
         const tileComponent = tile.getComponent("TileBase");
         return tileComponent.isEmptyTile();
+    }
+
+
+    clearAll() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                let tileComponent = tile.getComponent("TileBase");
+                tileComponent.clear();
+            }
+        }
     }
 }
 

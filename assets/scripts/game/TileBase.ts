@@ -13,6 +13,8 @@ export class TileBase extends Component {
 
     private isBonus: boolean;
     private isEmpty: boolean;
+    private isShifts: boolean;
+    private isSpecial: boolean;
 
     private potentialBonus: string = "";
 
@@ -32,6 +34,7 @@ export class TileBase extends Component {
         this.tileType = tileType;
     }
 
+
     getTileType(): string {
         return this.tileType;
     }
@@ -44,6 +47,7 @@ export class TileBase extends Component {
         return this.col;
     }
 
+
     setRow(_row: number) {
         this.row = _row;
     }
@@ -51,6 +55,7 @@ export class TileBase extends Component {
     setCol(_col: number) {
         this.col = _col;
     }
+
 
     isBonusTile(): boolean {
         return this.isBonus;
@@ -60,13 +65,24 @@ export class TileBase extends Component {
         return this.isEmpty;
     }
 
+    isTileShifts(): boolean {
+        return this.isShifts;
+    }
+
+    isSpecialTile(): boolean {
+        return this.isSpecial;
+    }
+
+
     isCurrentTile(row: number, col: number) {
         return row === this.row && col === this.col;
     }
 
+
     destroyTile() {
         this.node.destroy();
     }
+
 
     getMatches(field: Node[][]): Node[] {
         let matches = [];
@@ -91,10 +107,15 @@ export class TileBase extends Component {
         this.potentialBonusIcon.spriteFrame = null;
     }
 
+    giveDamage(field: Node[][]) {}
+
 
     onTouchStart(event: cc.Event.EventTouch) {
         this.node.emit("click", this.node);
     }
+
+
+    clear() {}
 }
 
 

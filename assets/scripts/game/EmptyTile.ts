@@ -37,9 +37,7 @@ export class EmptyTile extends TileBase {
         return true;
     }
 
-    onTouchStart(event: cc.Event.EventTouch) {
-        
-    }
+    onTouchStart(event: cc.Event.EventTouch) {}
 }
 
 

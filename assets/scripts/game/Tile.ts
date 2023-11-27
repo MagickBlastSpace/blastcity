@@ -42,6 +42,9 @@ export class Tile extends TileBase {
         this.tileType = tileType;
 
         this.isBonus = false;
+        this.isEmpty = false;
+        this.isShifts = true;
+        this.isSpecial = false;
         
         switch(this.tileType) {
             case '0':
@@ -140,6 +143,46 @@ export class Tile extends TileBase {
                 this.potentialBonusIcon.spriteFrame = this.rocketHorizontal;
                 break;
         }
+    }
+
+
+    giveDamage(field: Node[][]) {
+        const adjTiles = this.getAdjacentTiles(field);
+        console.log("Adj: " + adjTiles.length);
+
+        for(let i = 0; i < adjTiles.length; i++) {
+            console.log("Check: " + i);
+            if(adjTiles[i] !== null) {
+                const tileComponent = adjTiles[i].getComponent("TileBase");
+                if(tileComponent.isSpecialTile()) {
+                    console.log("Special: " + i);
+                    tileComponent.getDamage(this.tileType);
+                }
+            }
+        }
+    }
+
+
+    getAdjacentTiles(field: Node[][]) {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        if(this.row < numRows - 1) {
+            matches.push(field[this.row + 1][this.col]);
+        }
+        if(this.row > 0) {
+            matches.push(field[this.row - 1][this.col]);
+        }
+        if(this.col < numCols - 1) {
+            matches.push(field[this.row][this.col + 1]);
+        }
+        if(this.col > 0) {
+            matches.push(field[this.row][this.col - 1]);
+        }
+
+        return matches;
     }
 }
 
