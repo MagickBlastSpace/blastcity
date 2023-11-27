@@ -148,14 +148,11 @@ export class Tile extends TileBase {
 
     giveDamage(field: Node[][]) {
         const adjTiles = this.getAdjacentTiles(field);
-        console.log("Adj: " + adjTiles.length);
-
+        
         for(let i = 0; i < adjTiles.length; i++) {
-            console.log("Check: " + i);
             if(adjTiles[i] !== null) {
                 const tileComponent = adjTiles[i].getComponent("TileBase");
                 if(tileComponent.isSpecialTile()) {
-                    console.log("Special: " + i);
                     tileComponent.getDamage(this.tileType);
                 }
             }

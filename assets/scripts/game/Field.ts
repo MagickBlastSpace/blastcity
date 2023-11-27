@@ -179,6 +179,12 @@ export class Field extends Component {
         this.fallTiles();
 
         this.scheduleOnce(() => {
+
+            if(this.checkSpecTilesConditions()) {
+                this.spawnNewTiles();
+                return;
+            }
+
             for (let col = 0; col < this.numCols; col++) {
                 for (let row = 0; row < this.numRows; row++) {
                     const tile = this.tileArray[row][col];
@@ -188,12 +194,12 @@ export class Field extends Component {
                 }
             }
             this.checkForPotentialBonuses();
-        }, 0.2);
 
-        this.scheduleOnce(() => {
-            this.clearAll();
-            this.isClickAvailable = true;
-        }, 0.3);
+            this.scheduleOnce(() => {
+                this.clearAll();
+                this.isClickAvailable = true;
+            }, 0.1);
+        }, 0.2);
     }
 
 
@@ -249,12 +255,32 @@ export class Field extends Component {
                     if(tileComponent.isSpecialTile()) {
                         if(tileComponent.isReadyToDestroy()) {
                             this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-                            tileComponent.destroyTile(this.tileArray);
+                            tileComponent.destroyTile();
                         }
                     }
                 }
             }
         }
+    }
+
+    checkSpecTilesConditions(): boolean {
+        let isDestroyed = false;
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    let tileComponent = tile.getComponent("TileBase");
+                    if(tileComponent.isSpecialTile()) {
+                        if(tileComponent.checkSpecialCondition()) {
+                            this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
+                            tileComponent.destroyTile();
+                            isDestroyed = true;
+                        }
+                    }
+                }
+            }
+        }
+        return isDestroyed;
     }
     
 

@@ -41,7 +41,6 @@ export class SpecTileBase extends TileBase {
             this.strength--;
         }
         else if((this.strengthType === "any" || this.strengthType === damageType) && !this.isDamaged) {
-            console.log("Succesfully damaged");
             this.strength--;
             this.isDamaged = true;
         }
