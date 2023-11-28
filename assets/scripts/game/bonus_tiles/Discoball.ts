@@ -60,9 +60,12 @@ export class Discoball extends TileBase {
 
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
-                let tileComp = field[i][j].getComponent("TileBase");
-                if(tileComp.getTileType() === this.getTileType()) {
-                    matches.push(field[i][j]);
+                const tile = field[i][j];
+                if(tile !== null) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.getTileType() === this.getTileType()) {
+                        matches.push(tile);
+                    }
                 }
             }
         }

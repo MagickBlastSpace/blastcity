@@ -114,6 +114,10 @@ export class Bomb extends TileBase {
 
 
     checkTileForMatch(tile: Node): boolean {
+        if(tile === null) {
+            return false;
+        }
+        
         const tileComponent = tile.getComponent("TileBase");
         if(tileComponent.isSpecialTile()) {
             tileComponent.getDamage("bonus");

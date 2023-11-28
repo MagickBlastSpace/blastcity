@@ -177,46 +177,60 @@ export class Field extends Component {
 
     spawnNewTiles() {
         this.fallTiles();
-
+    
         this.scheduleOnce(() => {
-
-            if(this.checkSpecTilesConditions()) {
+            if (this.checkSpecTilesConditions()) {
                 this.spawnNewTiles();
                 return;
             }
-
+    
             for (let col = 0; col < this.numCols; col++) {
-                for (let row = 0; row < this.numRows; row++) {
+                let shouldSpawnNewTile = true;
+    
+                for (let row = this.numRows - 1; row >= 0; row--) {
                     const tile = this.tileArray[row][col];
-                    if (tile === null) {
+                    if (tile !== null) {
+                        const tileComponent = tile.getComponent("TileBase");
+                        if (!tileComponent.isTileShifts()) {
+                            shouldSpawnNewTile = false;
+                            break;
+                        }
+                    }
+                    if (tile === null && shouldSpawnNewTile) {
                         this.spawnCommonTile(row, col);
                     }
                 }
             }
-            this.checkForPotentialBonuses();
 
+            this.checkForPotentialBonuses();
+    
             this.scheduleOnce(() => {
                 this.clearAll();
                 this.isClickAvailable = true;
             }, 0.1);
         }, 0.2);
     }
+    
 
 
     fallTiles() {
         for (let col = 0; col < this.numCols; col++) {
             let emptySpaces = 0;
             let holes = 0;
+            let continueProcessing = true;
     
-            for (let row = 0; row < this.numRows; row++) {
+            for (let row = 0; row < this.numRows && continueProcessing; row++) {
                 const tile = this.tileArray[row][col];
     
                 if (tile === null) {
                     emptySpaces++;
                 } else {
                     let tileComponent = tile.getComponent("TileBase");
-    
-                    if (tileComponent.isEmptyTile()) {
+
+                    if(!tileComponent.isTileShifts()) {
+                        continueProcessing = false;
+                    }
+                    else if (tileComponent.isEmptyTile()) {
                         if (!tileComponent.isBorder(this.tileArray)) {
                             holes++;
                         }
@@ -306,13 +320,15 @@ export class Field extends Component {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
 
-                if(!checkedTiles.includes(tile)) {
+                if(!checkedTiles.includes(tile) && tile !== null) {
                     const tileComponent = tile.getComponent("TileBase");
                     const isBonus = tileComponent.isBonusTile();
+                    const isSpecial = tileComponent.isSpecialTile();
+                    const isEmpty = tileComponent.isEmptyTile();
                     let matches = [];
 
-                    if(!isBonus) {
-                        matches = tileComponent.getMatches(this.tileArray);
+                    if(!isBonus && !isSpecial && !isEmpty) {
+                        matches = tileComponent.getMatches(this.tileArray); //bug
 
                         if(matches.length >= 9 && !isBonus) {
                             this.setPotentialBonus(matches, "discoball");
@@ -351,8 +367,10 @@ export class Field extends Component {
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
-                let tileComponent = tile.getComponent("TileBase");
-                tileComponent.clearPotentialBonus();
+                if(tile !== null) {
+                    let tileComponent = tile.getComponent("TileBase");
+                    tileComponent.clearPotentialBonus();
+                }
             }
         }
     }
@@ -372,8 +390,10 @@ export class Field extends Component {
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
-                let tileComponent = tile.getComponent("TileBase");
-                tileComponent.clear();
+                if(tile !== null) {
+                    let tileComponent = tile.getComponent("TileBase");
+                    tileComponent.clear();
+                }
             }
         }
     }

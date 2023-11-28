@@ -11,6 +11,7 @@ export class EmptyTile extends TileBase {
 
         this.isBonus = false;
         this.isEmpty = true;
+        this.isShifts = true;
     }
 
 

@@ -111,14 +111,19 @@ export class Tile extends TileBase {
         while (currentRow >= 0 && currentRow < numRows &&
             currentCol >= 0 && currentCol < numCols) {
             const currentTile = field[currentRow][currentCol];
-            const currentTileComponent = currentTile.getComponent("TileBase");
-            const isBonus = currentTileComponent.isBonusTile();
+            if(currentTile !== null) {
+                const currentTileComponent = currentTile.getComponent("TileBase");
+                const isBonus = currentTileComponent.isBonusTile();
 
-            if (currentTileComponent.getTileType() === this.tileType && !isBonus) {
-                matches.push(currentTile);
-                currentRow += dirY;
-                currentCol += dirX;
-            } else {
+                if (currentTileComponent.getTileType() === this.tileType && !isBonus) {
+                    matches.push(currentTile);
+                    currentRow += dirY;
+                    currentCol += dirX;
+                } else {
+                    break;
+                }
+            }
+            else {
                 break;
             }
         }
@@ -148,7 +153,7 @@ export class Tile extends TileBase {
 
     giveDamage(field: Node[][]) {
         const adjTiles = this.getAdjacentTiles(field);
-        
+
         for(let i = 0; i < adjTiles.length; i++) {
             if(adjTiles[i] !== null) {
                 const tileComponent = adjTiles[i].getComponent("TileBase");
