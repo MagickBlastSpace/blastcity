@@ -17,6 +17,24 @@ export class Box extends SpecTileBase {
         this.strength = 1;
         this.strengthType = "any";
     }
+
+
+    getDamage(damageType: string) {
+        if(damageType === "bonus") {
+            this.strength--;
+        }
+        else if((this.strengthType === "any" || this.strengthType === damageType) && !this.isDamaged) {
+            this.strength--;
+            this.setAsDamaged();
+        }
+    }
+
+    isReadyToDestroy(): boolean {
+        if(this.strength <= 0) {
+            return true;
+        }
+        return false;
+    }
 }
 
 

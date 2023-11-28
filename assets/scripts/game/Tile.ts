@@ -159,6 +159,13 @@ export class Tile extends TileBase {
                 const tileComponent = adjTiles[i].getComponent("TileBase");
                 if(tileComponent.isSpecialTile()) {
                     tileComponent.getDamage(this.tileType);
+                    if(tileComponent.isGroupedTile()) {
+                        let groupedTiles = tileComponent.getGroupedTiles(field);
+                        for(let i = 0; i < groupedTiles.length; i++) {
+                            let groupedTile = groupedTiles[i].getComponent("SpecTileBase");
+                            groupedTile.setAsDamaged();
+                        }
+                    }
                 }
             }
         }

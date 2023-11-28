@@ -17,9 +17,9 @@ export class Bottle extends SpecTileBase {
         this.strength = 1;
         this.strengthType = "untouchable";
     }
+    
 
-
-    checkSpecialCondition(): boolean {
+    isReadyToDestroy(): boolean {
         if(this.row === 0) {
             return true;
         }

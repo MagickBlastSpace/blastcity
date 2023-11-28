@@ -2,8 +2,8 @@ import { _decorator, Component, Node } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
-@ccclass('Sticker')
-export class Sticker extends SpecTileBase {
+@ccclass('MagicHat')
+export class MagicHat extends SpecTileBase {
     init(row: number, col: number, tileType: string) {
         this.row = row;
         this.col = col;
@@ -11,28 +11,20 @@ export class Sticker extends SpecTileBase {
 
         this.isBonus = false;
         this.isEmpty = false;
-        this.isShifts = true;
+        this.isShifts = false;
         this.isSpecial = true;
+        this.isGrouped = true;
 
         this.strength = 1;
         this.strengthType = "any";
     }
 
     getDamage(damageType: string) {
-        if(damageType === "bonus") {
-            this.strength--;
+        if(this.isDamaged) {
+            return;
         }
-        else if((this.strengthType === "any" || this.strengthType === damageType) && !this.isDamaged) {
-            this.strength--;
-            this.setAsDamaged();
-        }
-    }
-
-    isReadyToDestroy(): boolean {
-        if(this.strength <= 0) {
-            return true;
-        }
-        return false;
+        this.setAsDamaged();
+        console.log("Magic Hat Group Damaged!");
     }
 }
 

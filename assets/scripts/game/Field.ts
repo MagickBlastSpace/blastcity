@@ -108,7 +108,7 @@ export class Field extends Component {
     spawnSpecialTile(row: number, col: number, tileId: number): Node {
         const tileNode = instantiate(this.specialPrefabs[tileId]);
         const tileComponent = tileNode.getComponent("SpecTileBase");
-        let spawnedTile = this.initTile(tileComponent, row, col, "special");
+        let spawnedTile = this.initTile(tileComponent, row, col, "special_" + tileId);
         return spawnedTile;
     }
 
@@ -179,7 +179,7 @@ export class Field extends Component {
         this.fallTiles();
     
         this.scheduleOnce(() => {
-            if (this.checkSpecTilesConditions()) {
+            if (this.checkSpecTilesForDestroy()) {
                 this.spawnNewTiles();
                 return;
             }
@@ -207,7 +207,7 @@ export class Field extends Component {
             this.scheduleOnce(() => {
                 this.clearAll();
                 this.isClickAvailable = true;
-            }, 0.1);
+            }, 0.25);
         }, 0.2);
     }
     
@@ -260,24 +260,7 @@ export class Field extends Component {
     }
 
 
-    checkSpecTilesForDestroy() {
-        for(let i = 0; i < this.numRows; i++) {
-            for(let j = 0; j < this.numCols; j++) {
-                let tile = this.tileArray[i][j];
-                if(tile !== null) {
-                    let tileComponent = tile.getComponent("TileBase");
-                    if(tileComponent.isSpecialTile()) {
-                        if(tileComponent.isReadyToDestroy()) {
-                            this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-                            tileComponent.destroyTile();
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    checkSpecTilesConditions(): boolean {
+    checkSpecTilesForDestroy(): boolean {
         let isDestroyed = false;
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
@@ -285,7 +268,7 @@ export class Field extends Component {
                 if(tile !== null) {
                     let tileComponent = tile.getComponent("TileBase");
                     if(tileComponent.isSpecialTile()) {
-                        if(tileComponent.checkSpecialCondition()) {
+                        if(tileComponent.isReadyToDestroy()) {
                             this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
                             tileComponent.destroyTile();
                             isDestroyed = true;
@@ -296,9 +279,8 @@ export class Field extends Component {
         }
         return isDestroyed;
     }
+
     
-
-
     onTileClick(tile: Node) {
         if(!this.isClickAvailable) {
             return;
