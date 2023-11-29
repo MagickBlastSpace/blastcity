@@ -26,7 +26,7 @@
     "_active": true,
     "_components": [],
     "_prefab": {
-      "__id__": 48
+      "__id__": 57
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -57,7 +57,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 49
+      "__id__": 58
     },
     "_id": "7b2dc026-88d5-4e1b-8f76-c916ba7bb4f8"
   },
@@ -498,6 +498,10 @@
       },
       {
         "__uuid__": "be60d5af-6ed5-4e7e-bf63-9437bae4e427",
+        "__expectedType__": "cc.Prefab"
+      },
+      {
+        "__uuid__": "da99f9c1-5c47-4d59-b35b-79ef6926383b",
         "__expectedType__": "cc.Prefab"
       }
     ],
@@ -986,6 +990,9 @@
     "levels": [
       {
         "__id__": 27
+      },
+      {
+        "__id__": 48
       }
     ],
     "_id": "95xb5wWS5HkKoWHJiqB3+u"
@@ -1219,6 +1226,85 @@
     "col": 8
   },
   {
+    "__type__": "LevelData",
+    "id": "2",
+    "emptyTiles": [],
+    "specialTiles": [
+      {
+        "__id__": 49
+      },
+      {
+        "__id__": 50
+      },
+      {
+        "__id__": 51
+      },
+      {
+        "__id__": 52
+      },
+      {
+        "__id__": 53
+      },
+      {
+        "__id__": 54
+      },
+      {
+        "__id__": 55
+      },
+      {
+        "__id__": 56
+      }
+    ]
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": 8,
+    "row": 2,
+    "col": 2
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": 8,
+    "row": 2,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": 8,
+    "row": 2,
+    "col": 7
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": 8,
+    "row": 4,
+    "col": 4
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": 8,
+    "row": 6,
+    "col": 1
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": 8,
+    "row": 6,
+    "col": 3
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": 8,
+    "row": 6,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": 8,
+    "row": 7,
+    "col": 7
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": null,
     "asset": null,
@@ -1229,25 +1315,25 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 50
+      "__id__": 59
     },
     "shadows": {
-      "__id__": 51
+      "__id__": 60
     },
     "_skybox": {
-      "__id__": 52
+      "__id__": 61
     },
     "fog": {
-      "__id__": 53
+      "__id__": 62
     },
     "octree": {
-      "__id__": 54
+      "__id__": 63
     },
     "skin": {
-      "__id__": 55
+      "__id__": 64
     },
     "lightProbeInfo": {
-      "__id__": 56
+      "__id__": 65
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false
