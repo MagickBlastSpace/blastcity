@@ -5,19 +5,12 @@ const { ccclass, property } = _decorator;
 @ccclass('Bottle')
 export class Bottle extends SpecTileBase {
     init(row: number, col: number, tileType: string) {
-        this.row = row;
-        this.col = col;
-        this.tileType = tileType;
+        super.init(row, col, tileType);
 
-        this.isBonus = false;
-        this.isEmpty = false;
         this.isShifts = true;
         this.isSpecial = true;
-
-        this.strength = 1;
-        this.strengthType = "untouchable";
     }
-    
+
 
     isReadyToDestroy(): boolean {
         if(this.row === 0) {

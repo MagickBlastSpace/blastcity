@@ -140,9 +140,12 @@ export class Field extends Component {
         const choosenRow = choosenTile.getRow();
         const choosenCol = choosenTile.getCol();
         const choosenType = choosenTile.getTileType();
-        const isBonus = choosenTile.isBonusTile();
-        const potentialBonus = choosenTile.getPotentialBonus();
-
+        const isCommon = choosenTile.isCommonTile();
+        let potentialBonus = "";
+        if(isCommon) {
+            potentialBonus = choosenTile.getPotentialBonus();
+        }
+        
         const matches = choosenTile.getMatches(this.tileArray);
         
         if(matches.length >= 2) {
@@ -159,16 +162,18 @@ export class Field extends Component {
 
         this.checkSpecTilesForDestroy();
 
-        if(matches.length >= 9 && !isBonus) {
-            this.spawnDiscoball(choosenRow, choosenCol, choosenType);
+        if(isCommon) {
+            if(matches.length >= 9) {
+                this.spawnDiscoball(choosenRow, choosenCol, choosenType);
+            }
+            else if(matches.length >= 7) {
+                this.spawnBomb(choosenRow, choosenCol);
+            }
+            else if(matches.length >= 5) {
+                this.spawnRocket(choosenRow, choosenCol, potentialBonus);
+            }
         }
-        else if(matches.length >= 7 && !isBonus) {
-            this.spawnBomb(choosenRow, choosenCol);
-        }
-        else if(matches.length >= 5 && !isBonus) {
-            this.spawnRocket(choosenRow, choosenCol, potentialBonus);
-        }
-
+        
         this.spawnNewTiles();
 
         return true;
@@ -304,21 +309,18 @@ export class Field extends Component {
 
                 if(!checkedTiles.includes(tile) && tile !== null) {
                     const tileComponent = tile.getComponent("TileBase");
-                    const isBonus = tileComponent.isBonusTile();
-                    const isSpecial = tileComponent.isSpecialTile();
-                    const isEmpty = tileComponent.isEmptyTile();
                     let matches = [];
 
-                    if(!isBonus && !isSpecial && !isEmpty) {
-                        matches = tileComponent.getMatches(this.tileArray); //bug
+                    if(tileComponent.isCommonTile()) {
+                        matches = tileComponent.getMatches(this.tileArray);
 
-                        if(matches.length >= 9 && !isBonus) {
+                        if(matches.length >= 9) {
                             this.setPotentialBonus(matches, "discoball");
                         }
-                        else if(matches.length >= 7 && !isBonus) {
+                        else if(matches.length >= 7) {
                             this.setPotentialBonus(matches, "bomb");
                         }
-                        else if(matches.length >= 5 && !isBonus) {
+                        else if(matches.length >= 5) {
                             const tileType = Math.floor(Math.random() * 2);
                             if(tileType === 0) {
                                 this.setPotentialBonus(matches, "rocket_vertical");
@@ -351,7 +353,9 @@ export class Field extends Component {
                 let tile = this.tileArray[i][j];
                 if(tile !== null) {
                     let tileComponent = tile.getComponent("TileBase");
-                    tileComponent.clearPotentialBonus();
+                    if(tileComponent.isCommonTile()) {
+                        tileComponent.clearPotentialBonus();
+                    }
                 }
             }
         }

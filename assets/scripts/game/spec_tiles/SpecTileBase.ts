@@ -6,7 +6,6 @@ const { ccclass, property } = _decorator;
 export class SpecTileBase extends TileBase {
 
     private strength: number;
-    private strengthType: string;
 
     private isDamaged: boolean;
     private isGrouped: boolean;

@@ -1,11 +1,8 @@
-import { _decorator, Component, Node, Sprite } from 'cc';
+import { _decorator, Component, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('TileBase')
 export class TileBase extends Component {
-
-    @property(Sprite)
-    potentialBonusIcon: Sprite = null;
 
     private tileType: string;
     private row: number;
@@ -15,8 +12,6 @@ export class TileBase extends Component {
     private isEmpty: boolean;
     private isShifts: boolean;
     private isSpecial: boolean;
-
-    private potentialBonus: string = "";
 
 
     onLoad() {
@@ -73,6 +68,10 @@ export class TileBase extends Component {
         return this.isSpecial;
     }
 
+    isCommonTile(): boolean {
+        return !this.isBonus && !this.isSpecial && !this.isEmpty;
+    }
+
 
     isCurrentTile(row: number, col: number) {
         return row === this.row && col === this.col;
@@ -94,26 +93,12 @@ export class TileBase extends Component {
         return matches;
     }
 
-    getPotentialBonus(): string {
-        return this.potentialBonus;
-    }
-
-    setPotentialBonus(bonus: string) {
-
-    }
-
-    clearPotentialBonus() {
-        this.potentialBonus = "";
-        this.potentialBonusIcon.spriteFrame = null;
-    }
-
     giveDamage(field: Node[][]) {}
 
 
     onTouchStart(event: cc.Event.EventTouch) {
         this.node.emit("click", this.node);
     }
-
 
     clear() {}
 }

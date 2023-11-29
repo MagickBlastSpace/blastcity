@@ -26,6 +26,11 @@ export class Tile extends TileBase {
     @property(SpriteFrame)
     discoball: SpriteFrame | null = null;
 
+    @property(Sprite)
+    potentialBonusIcon: Sprite = null;
+
+    private potentialBonus: string = "";
+
 
     onLoad() {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
@@ -148,6 +153,15 @@ export class Tile extends TileBase {
                 this.potentialBonusIcon.spriteFrame = this.rocketHorizontal;
                 break;
         }
+    }
+
+    getPotentialBonus(): string {
+        return this.potentialBonus;
+    }
+
+    clearPotentialBonus() {
+        this.potentialBonus = "";
+        this.potentialBonusIcon.spriteFrame = null;
     }
 
 
