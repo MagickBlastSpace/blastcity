@@ -38,13 +38,21 @@ export class Field extends Component {
 
 
     start() {
+        for (let row = 0; row < this.numRows; row++) {
+            this.tileArray[row] = [];
+            for (let col = 0; col < this.numCols; col++) {
+                this.tileArray[row][col] = null;
+            }
+        }
+
         this.spawnInitialBoard(GameData.instance.levels[0]);
     }
 
 
     spawnInitialBoard(level: LevelData) {
+        this.clearBoard();
+        
         for (let row = 0; row < this.numRows; row++) {
-            this.tileArray[row] = [];
             for (let col = 0; col < this.numCols; col++) {
                 this.spawnCommonTile(row, col);
             }
@@ -66,6 +74,18 @@ export class Field extends Component {
 
         this.checkForPotentialBonuses();
         this.isClickAvailable = true;
+    }
+
+    clearBoard() {
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                let tile = this.tileArray[row][col];
+                if(tile !== null) {
+                    tile.destroy();
+                    this.tileArray[row][col] = null;
+                }
+            }
+        }
     }
 
 
