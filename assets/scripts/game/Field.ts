@@ -160,6 +160,9 @@ export class Field extends Component {
         tileNode.on("click", (tile) => {
             this.onTileClick(tile);
         });
+        tileNode.on("change", (row, col, tileId) => {
+            this.spawnSpecialTile(row, col, tileId);
+        });
 
         this.tileArray[row][col] = tileNode;
         this.node.addChild(tileNode);
