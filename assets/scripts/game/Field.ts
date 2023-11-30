@@ -54,6 +54,9 @@ export class Field extends Component {
 
 
     spawnInitialBoard(level: LevelData) {
+        /*const jsonString = JSON.stringify(level);
+        console.log(jsonString);*/
+
         this.clearBoard();
 
         for (let row = 0; row < this.numRows; row++) {
