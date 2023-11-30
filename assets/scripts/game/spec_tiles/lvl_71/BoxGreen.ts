@@ -1,9 +1,9 @@
 import { _decorator, Component, Node } from 'cc';
-import { Sticker } from '../lvl_6/Sticker';
+import { Box } from '../lvl_21/Box';
 const { ccclass, property } = _decorator;
 
-@ccclass('StickerGreen')
-export class StickerGreen extends Sticker {
+@ccclass('BoxGreen')
+export class BoxGreen extends Box {
     getDamage(damageType: string) {
         if(damageType === "bonus") {
             this.strength--;
