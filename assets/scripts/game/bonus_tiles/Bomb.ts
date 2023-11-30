@@ -117,7 +117,6 @@ export class Bomb extends TileBase {
         if(tile === null) {
             return false;
         }
-        
         const tileComponent = tile.getComponent("TileBase");
         if(tileComponent.isSpecialTile()) {
             tileComponent.getDamage("bonus");

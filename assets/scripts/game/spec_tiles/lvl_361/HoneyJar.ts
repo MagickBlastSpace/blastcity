@@ -1,31 +1,27 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
-@ccclass('Lamp')
-export class Lamp extends SpecTileBase {
-
-    @property(Label)
-    hpLabel: Label = null;
-
-
+@ccclass('HoneyJar')
+export class HoneyJar extends SpecTileBase {
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
         this.isShifts = true;
         this.isSpecial = true;
 
-        this.strength = 2;
-        this.refresh();
+        this.strength = 1;
     }
 
     getDamage(damageType: string) {
-        if(!this.isDamaged) {
+        if(damageType === "bonus") {
+            this.strength--;
+        }
+        else if(!this.isDamaged) {
+            this.changeColor = damageType;
             this.strength--;
             this.setAsDamaged();
         }
-
-        this.refresh();
     }
 
     isReadyToDestroy(): boolean {
@@ -36,8 +32,8 @@ export class Lamp extends SpecTileBase {
     }
 
 
-    refresh() {
-        this.hpLabel.string = this.strength;
+    startDestroyConsequences() {
+        this.node.emit("change", this.row, this.col, "honey");
     }
 }
 

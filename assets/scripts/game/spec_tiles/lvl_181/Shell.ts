@@ -2,8 +2,8 @@ import { _decorator, Component, Node, Label } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
-@ccclass('Lamp')
-export class Lamp extends SpecTileBase {
+@ccclass('Shell')
+export class Shell extends SpecTileBase {
 
     @property(Label)
     hpLabel: Label = null;
@@ -24,20 +24,28 @@ export class Lamp extends SpecTileBase {
             this.strength--;
             this.setAsDamaged();
         }
-
         this.refresh();
     }
 
     isReadyToDestroy(): boolean {
+        if(!this.isDamaged) {
+            this.strength = 2;
+            this.refresh();
+        }
+
         if(this.strength <= 0) {
             return true;
         }
         return false;
     }
 
-
     refresh() {
-        this.hpLabel.string = this.strength;
+        if(this.strength > 1) {
+            this.hpLabel.string = "Закрыта";
+        }
+        else {
+            this.hpLabel.string = "Открыта";
+        }
     }
 }
 
