@@ -8,7 +8,7 @@ export class StickerRed extends Sticker {
         if(damageType === "bonus") {
             this.strength--;
         }
-        else if(damageType === '1' && !this.isDamaged) {
+        else if(damageType === "red" && !this.isDamaged) {
             this.strength--;
             this.setAsDamaged();
         }

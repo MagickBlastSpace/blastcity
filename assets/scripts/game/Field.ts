@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, instantiate, Prefab, Vec2, Vec3 } from 'cc';
-import { GameData, LevelData } from '../data/GameData';
+import { GameData, LevelData, SpecialPrefabData } from '../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -17,8 +17,8 @@ export class Field extends Component {
     @property(Prefab)
     discoballPrefab: Prefab = null;
 
-    @property([Prefab])
-    specialPrefabs: Prefab[] = [];
+    @property([SpecialPrefabData])
+    specialPrefabs: SpecialPrefabData[] = [];
 
     @property
     numRows: number = 8;
@@ -36,6 +36,8 @@ export class Field extends Component {
 
     private isClickAvailable: bool = false;
 
+    private availableColors: string[] = [];
+
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -45,13 +47,15 @@ export class Field extends Component {
             }
         }
 
+        this.availableColors = ["blue", "red", "green", "yellow"];
+
         this.spawnInitialBoard(GameData.instance.levels[0]);
     }
 
 
     spawnInitialBoard(level: LevelData) {
         this.clearBoard();
-        
+
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
                 this.spawnCommonTile(row, col);
@@ -59,16 +63,10 @@ export class Field extends Component {
         }
 
         for(let i = 0; i < level.emptyTiles.length; i++) {
-            const tile = this.tileArray[level.emptyTiles[i].y][level.emptyTiles[i].x];
-            let tileComponent = tile.getComponent("TileBase");
-            tileComponent.destroyTile();
             this.spawnEmptyTile(level.emptyTiles[i].y, level.emptyTiles[i].x);
         }
 
         for(let i = 0; i < level.specialTiles.length; i++) {
-            const tile = this.tileArray[level.specialTiles[i].row][level.specialTiles[i].col];
-            let tileComponent = tile.getComponent("TileBase");
-            tileComponent.destroyTile();
             this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
         }
 
@@ -90,14 +88,17 @@ export class Field extends Component {
 
 
     spawnCommonTile(row: number, col: number): Node {
+        this.destroyTile(row, col);
         const tileNode = instantiate(this.tilePrefab);
         const tileComponent = tileNode.getComponent("Tile");
-        const tileType = Math.floor(Math.random() * 4).toString();
+        const tileTypeIndex = Math.floor(Math.random() * this.availableColors.length).toString();
+        const tileType = this.availableColors[tileTypeIndex];
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
         return spawnedTile;
     }
 
     spawnBomb(row: number, col: number): Node {
+        this.destroyTile(row, col);
         const tileNode = instantiate(this.bombPrefab);
         const tileComponent = tileNode.getComponent("Bomb");
         let spawnedTile = this.initTile(tileComponent, row, col, "bomb");
@@ -105,6 +106,7 @@ export class Field extends Component {
     }
 
     spawnRocket(row: number, col: number, tileType: string): Node {
+        this.destroyTile(row, col);
         const tileNode = instantiate(this.rocketPrefab);
         const tileComponent = tileNode.getComponent("Rocket");
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
@@ -112,6 +114,7 @@ export class Field extends Component {
     }
 
     spawnDiscoball(row: number, col: number, tileType: string): Node {
+        this.destroyTile(row, col);
         const tileNode = instantiate(this.discoballPrefab);
         const tileComponent = tileNode.getComponent("Discoball");
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
@@ -119,16 +122,23 @@ export class Field extends Component {
     }
 
     spawnEmptyTile(row: number, col: number): Node {
+        this.destroyTile(row, col);
         const tileNode = instantiate(this.emptyPrefab);
         const tileComponent = tileNode.getComponent("EmptyTile");
         let spawnedTile = this.initTile(tileComponent, row, col, "empty");
         return spawnedTile;
     }
 
-    spawnSpecialTile(row: number, col: number, tileId: number): Node {
-        const tileNode = instantiate(this.specialPrefabs[tileId]);
+    spawnSpecialTile(row: number, col: number, tileId: string): Node {
+        const prefab = this.specialPrefabs.find(p => p.id === tileId)?.prefab;
+        if(prefab === null) {
+            return;
+        }
+
+        this.destroyTile(row, col);
+        const tileNode = instantiate(prefab);
         const tileComponent = tileNode.getComponent("SpecTileBase");
-        let spawnedTile = this.initTile(tileComponent, row, col, "special_" + tileId);
+        let spawnedTile = this.initTile(tileComponent, row, col, tileId);
         return spawnedTile;
     }
 
@@ -152,6 +162,14 @@ export class Field extends Component {
         this.node.addChild(tileNode);
 
         return tileNode;
+    }
+
+    destroyTile(row: number, col: number) {
+        const tile = this.tileArray[row][col];
+        if(tile !== null) {
+            let tileComponent = tile.getComponent("TileBase");
+            tileComponent.destroyTile();
+        }
     }
 
 

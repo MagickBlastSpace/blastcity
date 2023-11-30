@@ -1,15 +1,24 @@
-import { _decorator, Component, Node, Vec2 } from 'cc';
+import { _decorator, Component, Node, Vec2, Prefab } from 'cc';
 const { ccclass, property } = _decorator;
 
 
 @ccclass('SpecialTileData')
 export class SpecialTileData {
     @property
-    id = 0;
+    id = '';
     @property
     row = 0;
     @property
     col = 0;
+}
+
+
+@ccclass('SpecialPrefabData')
+export class SpecialPrefabData {
+    @property
+    id = '';
+    @property(Prefab)
+    prefab: Prefab = null;
 }
 
 

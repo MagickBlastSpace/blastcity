@@ -8,7 +8,7 @@ export class BoxGreen extends Box {
         if(damageType === "bonus") {
             this.strength--;
         }
-        else if(damageType === '2' && !this.isDamaged) {
+        else if(damageType === "green" && !this.isDamaged) {
             this.strength--;
             this.setAsDamaged();
         }

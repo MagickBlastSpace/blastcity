@@ -52,16 +52,16 @@ export class Tile extends TileBase {
         this.isSpecial = false;
         
         switch(this.tileType) {
-            case '0':
+            case 'blue':
                 this.icon.spriteFrame = this.blue;
                 break;
-            case '1':
+            case 'red':
                 this.icon.spriteFrame = this.red;
                 break;
-            case '2':
+            case 'green':
                 this.icon.spriteFrame = this.green;
                 break;
-            case '3':
+            case 'yellow':
                 this.icon.spriteFrame = this.yellow;
                 break;
         }
