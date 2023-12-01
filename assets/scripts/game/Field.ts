@@ -250,13 +250,12 @@ export class Field extends Component {
                     }
                 }
             }
-
-            this.checkForPotentialBonuses();
     
             this.scheduleOnce(() => {
                 this.clearAll();
+                this.checkForPotentialBonuses();
                 this.isClickAvailable = true;
-            }, 0.25);
+            }, 0.1);
         }, 0.2);
     }
     
@@ -345,8 +344,6 @@ export class Field extends Component {
     checkForPotentialBonuses() {
         let checkedTiles = [];
 
-        this.clearAllPotentialBonuses();
-
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
@@ -389,20 +386,6 @@ export class Field extends Component {
             let tileComponent = matchedTile.getComponent("TileBase");
             tileComponent.setPotentialBonus(bonus);
         })
-    }
-
-    clearAllPotentialBonuses() {
-        for(let i = 0; i < this.numRows; i++) {
-            for(let j = 0; j < this.numCols; j++) {
-                let tile = this.tileArray[i][j];
-                if(tile !== null) {
-                    let tileComponent = tile.getComponent("TileBase");
-                    if(tileComponent.isCommonTile()) {
-                        tileComponent.clearPotentialBonus();
-                    }
-                }
-            }
-        }
     }
 
 

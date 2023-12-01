@@ -159,7 +159,7 @@ export class Tile extends TileBase {
         return this.potentialBonus;
     }
 
-    clearPotentialBonus() {
+    clear() {
         this.potentialBonus = "";
         this.potentialBonusIcon.spriteFrame = null;
     }
@@ -183,29 +183,6 @@ export class Tile extends TileBase {
                 }
             }
         }
-    }
-
-
-    getAdjacentTiles(field: Node[][]) {
-        let matches = [];
-
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        if(this.row < numRows - 1) {
-            matches.push(field[this.row + 1][this.col]);
-        }
-        if(this.row > 0) {
-            matches.push(field[this.row - 1][this.col]);
-        }
-        if(this.col < numCols - 1) {
-            matches.push(field[this.row][this.col + 1]);
-        }
-        if(this.col > 0) {
-            matches.push(field[this.row][this.col - 1]);
-        }
-
-        return matches;
     }
 }
 

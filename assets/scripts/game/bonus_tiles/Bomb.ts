@@ -1,19 +1,12 @@
 import { _decorator, Component, Node } from 'cc';
-import { TileBase } from '../TileBase';
+import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Bomb')
-export class Bomb extends TileBase {
+export class Bomb extends BonusTileBase {
     
     init(row: number, col: number, tileType: string) {
-        this.row = row;
-        this.col = col;
-        this.tileType = tileType;
-
-        this.isBonus = true;
-        this.isEmpty = false;
-        this.isShifts = true;
-        this.isSpecial = false;
+        super.init(row, col, tileType);
     }
 
 

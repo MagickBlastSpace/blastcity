@@ -1,9 +1,9 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
-import { TileBase } from '../TileBase';
+import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Discoball')
-export class Discoball extends TileBase {
+export class Discoball extends BonusTileBase {
 
     @property(Sprite)
     icon: Sprite = null;
@@ -19,14 +19,7 @@ export class Discoball extends TileBase {
 
     
     init(row: number, col: number, tileType: string) {
-        this.row = row;
-        this.col = col;
-        this.tileType = tileType;
-
-        this.isBonus = true;
-        this.isEmpty = false;
-        this.isShifts = true;
-        this.isSpecial = false;
+        super.init(row, col, tileType);
 
         switch(this.tileType) {
             case 'blue':

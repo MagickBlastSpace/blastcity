@@ -1,9 +1,9 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
-import { TileBase } from '../TileBase';
+import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Rocket')
-export class Rocket extends TileBase {
+export class Rocket extends BonusTileBase {
 
     @property(Sprite)
     icon: Sprite = null;
@@ -15,14 +15,7 @@ export class Rocket extends TileBase {
 
     
     init(row: number, col: number, tileType: string) {
-        this.row = row;
-        this.col = col;
-        this.tileType = tileType;
-
-        this.isBonus = true;
-        this.isEmpty = false;
-        this.isShifts = true;
-        this.isSpecial = false;
+        super.init(row, col, tileType);
 
         switch(this.tileType) {
             case 'rocket_vertical':
@@ -135,6 +128,44 @@ export class Rocket extends TileBase {
         }
 
         return true;
+    }
+
+
+    getCombo(field: Node[][]): string {
+        let possibleCombos = [];
+
+        let adjTiles = this.getAdjacentTiles(field);
+        for(let i = 0; i < adjTiles.length; i++) {
+            const tile = adjTiles[i];
+            if(tile !== null) {
+                const tileComponent = tile.getComponent("TileBase");
+                if(tileComponent.isBonusTile()) {
+                    possibleCombos.push(tileComponent.getTileType());
+                }
+            }
+        }
+
+        if(possibleCombos.includes("blue")) {
+            return "blue";
+        }
+        else if(possibleCombos.includes("red")) {
+            return "red";
+        }
+        else if(possibleCombos.includes("green")) {
+            return "green";
+        }
+        else if(possibleCombos.includes("yellow")) {
+            return "yellow";
+        }
+        else if(possibleCombos.includes("bomb")) {
+            return "bomb";
+        }
+        else if(possibleCombos.includes("rocket_vertical")) {
+            return "rocket_vertical";
+        }
+        else if(possibleCombos.includes("rocket_horizontal")) {
+            return "rocket_horizontal";
+        }
     }
 }
 
