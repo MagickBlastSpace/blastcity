@@ -78,7 +78,8 @@ export class Discoball extends BonusTileBase {
         let matches = [];
 
         switch(this.combo) {
-            case "rocket":
+            case "rocket_vertical":
+            case "rocket_horizontal":
                 matches = this.getRocketComboMatches(field);
                 break;
             case "bomb":
@@ -120,7 +121,7 @@ export class Discoball extends BonusTileBase {
         const totalTime = timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, "rocket_horizontal"); //to do: direction random
+                this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, this.combo);
             }, timeBetweenTiles * i);
         }
 

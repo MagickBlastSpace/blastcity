@@ -85,7 +85,8 @@ export class Rocket extends BonusTileBase {
         let matches = [];
 
         switch(this.combo) {
-            case "rocket":
+            case "rocket_vertical":
+            case "rocket_horizontal":
                 matches = this.getRocketComboMatches(field);
                 break;
             case "bomb":

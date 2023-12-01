@@ -51,8 +51,11 @@ export class BonusTileBase extends TileBase {
         else if(possibleCombos.includes("bomb")) {
             return "bomb";
         }
-        else if(possibleCombos.includes("rocket_vertical") || possibleCombos.includes("rocket_horizontal")) {
-            return "rocket";
+        else if(possibleCombos.includes("rocket_vertical")) {
+            return "rocket_vertical";
+        }
+        else if(possibleCombos.includes("rocket_horizontal")) {
+            return "rocket_horizontal";
         }
 
         return "";
