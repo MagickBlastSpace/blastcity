@@ -34,6 +34,10 @@ export class TileBase extends Component {
         return this.tileType;
     }
 
+    setTileType(newType: string) {
+        this.tileType = newType;
+    }
+
     getRow(): number {
         return this.row;
     }

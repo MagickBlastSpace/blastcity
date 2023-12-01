@@ -32,9 +32,15 @@ export class Rocket extends BonusTileBase {
         let tilesToDestroy = this.getMatchesByType(field);
         let bonusTiles = this.findBonusTiles(tilesToDestroy);
 
+        let direction = this.tileType;
+
         while(bonusTiles.length > 0) {
             let newTilesToDestroy = [];
             bonusTiles.forEach(bonusTile => {
+                const bonusType = bonusTile.getTileType();
+                if(direction === bonusType) {
+                    direction = bonusTile.changeDirection();
+                }
                 let newMatches = bonusTile.getMatchesByType(field);
                 
                 newMatches.forEach(newMatch => {
@@ -152,6 +158,18 @@ export class Rocket extends BonusTileBase {
     setRespawnEvent(timeToRespawn: number) {
         console.log("respawn");
         this.node.emit("respawn", timeToRespawn);
+    }
+
+
+
+    changeDirection(): string {
+        if(this.tileType === "rocket_horizontal") {
+            this.tileType = "rocket_vertical";
+        }
+        else {
+            this.tileType = "rocket_horizontal";
+        }
+        return this.tileType;
     }
 }
 
