@@ -145,6 +145,30 @@ export class Field extends Component {
         return spawnedTile;
     }
 
+    spawnBonusTile(row: number, col: number, bonusId: string, timeToDestroy: number) {
+        let spawnedTile = null;
+        switch(bonusId) {
+            case "bomb":
+                spawnedTile = this.spawnBomb(row, col);
+                break;
+            case "rocket_horizontal": 
+            case "rocket_vertical":
+                spawnedTile = this.spawnRocket(row, col, bonusId);
+                break;
+            case "blue":
+            case "red":
+            case "green":
+            case "yellow":
+                spawnedTile = this.spawnDiscoball(row, col, bonusId);
+                break;
+        }
+
+        console.log(timeToDestroy);
+        this.scheduleOnce(() => {
+            this.findAndDestroyMatches(spawnedTile, false);
+        }, timeToDestroy);
+    }
+
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
@@ -163,6 +187,12 @@ export class Field extends Component {
         tileNode.on("change", (row, col, tileId) => {
             this.spawnSpecialTile(row, col, tileId);
         });
+        tileNode.on("change_bonus", (row, col, bonusId, timeToDestroy) => {
+            this.spawnBonusTile(row, col, bonusId, timeToDestroy);
+        });
+        tileNode.on("respawn", (timeToRespawn) => {
+            this.scheduleRespawn(timeToRespawn);
+        });
 
         this.tileArray[row][col] = tileNode;
         this.node.addChild(tileNode);
@@ -179,29 +209,51 @@ export class Field extends Component {
     }
 
 
-    findAndDestroyMatches(tile: Node): boolean {
-        let choosenTile = tile.getComponent("TileBase");
+    findAndDestroyMatches(tile: Node, isRespawn: boolean): boolean {
+        if(!tile) {
+            return false;
+        }
+
+        let choosenTile = null;
+        try {
+            choosenTile = tile.getComponent("TileBase");
+        } catch (error) {
+            //console.error("Произошла ошибка при обработке tile:", error);
+            return false;
+        }
+
         const choosenRow = choosenTile.getRow();
         const choosenCol = choosenTile.getCol();
         const choosenType = choosenTile.getTileType();
         const isCommon = choosenTile.isCommonTile();
+        const isBonus = choosenTile.isBonusTile();
         let potentialBonus = "";
         if(isCommon) {
             potentialBonus = choosenTile.getPotentialBonus();
         }
         
+        console.log(choosenRow + " - " + choosenCol + " - " + choosenType);
         const matches = choosenTile.getMatches(this.tileArray);
         
         if(matches.length >= 2) {
             matches.forEach(matchedTile => {
-                let tileComponent = matchedTile.getComponent("TileBase");
-                tileComponent.giveDamage(this.tileArray);
-                this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-                tileComponent.destroyTile();
+                if(matchedTile !== null) {
+                    let tileComponent = matchedTile.getComponent("TileBase");
+                    tileComponent.giveDamage(this.tileArray);
+                    this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
+                    tileComponent.destroyTile();
+                }
             })
         }
         else {
+            if(isBonus) {
+                return true;
+            }
             return false;
+        }
+
+        if(!isRespawn) {
+            return true;
         }
 
         this.checkSpecTilesForDestroy();
@@ -257,6 +309,12 @@ export class Field extends Component {
                 this.isClickAvailable = true;
             }, 0.1);
         }, 0.2);
+    }
+
+    scheduleRespawn(timeToRespawn: number) {
+        this.scheduleOnce(() => {
+            this.spawnNewTiles();
+        }, timeToRespawn);
     }
     
 
@@ -334,7 +392,7 @@ export class Field extends Component {
             return;
         }
 
-        let isMatchesFound = this.findAndDestroyMatches(tile);
+        let isMatchesFound = this.findAndDestroyMatches(tile, true);
         
         this.isClickAvailable = !isMatchesFound;
     }
