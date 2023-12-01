@@ -36,53 +36,73 @@ export class Bomb extends BonusTileBase {
         let matches = [];
         matches.push(field[this.row][this.col]);
 
+        this.combo = this.getCombo(field);
+
+        if(this.combo !== "") {
+            matches = matches.concat(this.getMatchesByCombo(field));
+            return matches;
+        }
+
+        matches = matches.concat(this.getBombMatches(field, this.row, this.col));
+
+        return matches;
+    }
+
+
+    getBombMatches(field: Node[][], row: number, col: number): Node[] {
+        let matches = [];
+
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        if(this.row < numRows - 1) {
-            const tile = field[this.row + 1][this.col];
+        if(row < 0 || row >= numRows || col < 0 || col >= numCols) {
+            return matches;
+        }
+
+        if(row < numRows - 1) {
+            const tile = field[row + 1][col];
             if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
-        if(this.row > 0) {
-            const tile = field[this.row - 1][this.col];
+        if(row > 0) {
+            const tile = field[row - 1][col];
             if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
-        if(this.col < numCols - 1) {
-            const tile = field[this.row][this.col + 1];
+        if(col < numCols - 1) {
+            const tile = field[row][col + 1];
             if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
-        if(this.col > 0) {
-            const tile = field[this.row][this.col - 1];
+        if(col > 0) {
+            const tile = field[row][col - 1];
             if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
-        if(this.row < numRows - 1 && this.col < numCols - 1) {
-            const tile = field[this.row + 1][this.col + 1];
+        if(row < numRows - 1 && col < numCols - 1) {
+            const tile = field[row + 1][col + 1];
             if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
-        if(this.row > 0 && this.col > 0) {
-            const tile = field[this.row - 1][this.col - 1];
+        if(row > 0 && col > 0) {
+            const tile = field[row - 1][col - 1];
             if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
-        if(this.row < numRows - 1 && this.col > 0) {
-            const tile = field[this.row + 1][this.col - 1];
+        if(row < numRows - 1 && col > 0) {
+            const tile = field[row + 1][col - 1];
             if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
         }
-        if(this.row > 0 && this.col < numCols - 1) {
-            const tile = field[this.row - 1][this.col + 1];
+        if(row > 0 && col < numCols - 1) {
+            const tile = field[row - 1][col + 1];
             if(this.checkTileForMatch(tile)) {
                 matches.push(tile);
             }
@@ -92,35 +112,97 @@ export class Bomb extends BonusTileBase {
     }
 
 
-    findBonusTiles(matches: Node[]): Tile[] {
-        let bonusTiles = [];
-        matches.forEach(matchedTile => {
-            let tileComponent = matchedTile.getComponent("TileBase");
-            const isBonus = tileComponent.isBonusTile();
-            if(isBonus && !tileComponent.isCurrentTile(this.row, this.col)) {
-                bonusTiles.push(tileComponent);
-            }
-        })
 
-        return bonusTiles;
+    getMatchesByCombo(field: Node[][]): Node[] {
+        let matches = [];
+
+        switch(this.combo) {
+            case "rocket":
+                matches = this.getRocketComboMatches(field);
+                break;
+            case "bomb":
+                matches = this.getBombComboMatches(field);
+                break;
+            case "blue":
+            case "red":
+            case "green":
+            case "yellow":
+                matches = this.getDiscoballComboMatches(field, this.combo);
+                break;
+        }
+
+        return matches;
     }
 
+    getRocketComboMatches(field: Node[][]): Node[] {
+        let matches = [];
 
-    checkTileForMatch(tile: Node): boolean {
-        if(tile === null) {
-            return false;
-        }
-        const tileComponent = tile.getComponent("TileBase");
-        if(tileComponent.isSpecialTile()) {
-            tileComponent.getDamage("bonus");
-            return false;
+        matches = matches.concat(this.getHorizontalMatches(field, this.row));
+        matches = matches.concat(this.getVerticalMatches(field, this.col));
+        matches = matches.concat(this.getHorizontalMatches(field, this.row - 1));
+        matches = matches.concat(this.getHorizontalMatches(field, this.row + 1));
+        matches = matches.concat(this.getVerticalMatches(field, this.col - 1));
+        matches = matches.concat(this.getVerticalMatches(field, this.col + 1));
+
+        return matches;
+    }
+
+    getBombComboMatches(field: Node[][]): Node[] {
+        let matches = [];
+
+        matches = matches.concat(this.getBombMatches(field, this.row, this.col));
+        matches = matches.concat(this.getBombMatches(field, this.row + 2, this.col));
+        matches = matches.concat(this.getBombMatches(field, this.row - 2, this.col));
+        matches = matches.concat(this.getBombMatches(field, this.row + 2, this.col + 2));
+        matches = matches.concat(this.getBombMatches(field, this.row + 2, this.col - 2));
+        matches = matches.concat(this.getBombMatches(field, this.row - 2, this.col + 2));
+        matches = matches.concat(this.getBombMatches(field, this.row - 2, this.col - 2));
+        matches = matches.concat(this.getBombMatches(field, this.row, this.col + 2));
+        matches = matches.concat(this.getBombMatches(field, this.row, this.col - 2));
+
+        return matches;
+    }
+
+    getDiscoballComboMatches(field: Node[][], discoballType: string): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        const timeBetweenTiles = 0.2;
+
+        let tiles = [];
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                const tile = field[i][j];
+                if(tile !== null) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.getTileType() === discoballType) {
+                        tiles.push(tileComp);
+                    }
+                }
+            }
         }
 
-        if(tileComponent.isEmptyTile()) {
-            return false;
+        const totalTime = timeBetweenTiles * tiles.length;
+        for(let i = 0; i < tiles.length; i++) {
+            this.scheduleOnce(() => {
+                this.changeTile(tiles[i], totalTime - timeBetweenTiles * i);
+            }, timeBetweenTiles * i);
         }
 
-        return true;
+        this.setRespawnEvent(totalTime + 1);
+
+        return matches;
+    }
+
+    changeTile(tile: TileBase, timeToDestroy: number) {
+        this.node.emit("change_bonus", tile.getRow(), tile.getCol(), this.tileType, timeToDestroy);
+    }
+
+    setRespawnEvent(timeToRespawn: number) {
+        console.log("respawn");
+        this.node.emit("respawn", timeToRespawn);
     }
 }
 

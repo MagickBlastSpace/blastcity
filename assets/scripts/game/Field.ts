@@ -163,7 +163,6 @@ export class Field extends Component {
                 break;
         }
 
-        console.log(timeToDestroy);
         this.scheduleOnce(() => {
             this.findAndDestroyMatches(spawnedTile, false);
         }, timeToDestroy);
@@ -232,7 +231,6 @@ export class Field extends Component {
             potentialBonus = choosenTile.getPotentialBonus();
         }
         
-        console.log(choosenRow + " - " + choosenCol + " - " + choosenType);
         const matches = choosenTile.getMatches(this.tileArray);
         
         if(matches.length >= 2) {
