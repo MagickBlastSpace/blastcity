@@ -103,10 +103,12 @@ export class BonusTileBase extends TileBase {
     findBonusTiles(matches: Node[]): Tile[] {
         let bonusTiles = [];
         matches.forEach(matchedTile => {
-            let tileComponent = matchedTile.getComponent("TileBase");
-            const isBonus = tileComponent.isBonusTile();
-            if(isBonus && !tileComponent.isCurrentTile(this.row, this.col)) {
-                bonusTiles.push(tileComponent);
+            if(matchedTile !== null) {
+                let tileComponent = matchedTile.getComponent("TileBase");
+                const isBonus = tileComponent.isBonusTile();
+                if(isBonus && !tileComponent.isCurrentTile(this.row, this.col)) {
+                    bonusTiles.push(tileComponent);
+                }
             }
         })
 

@@ -48,6 +48,13 @@ export class Discoball extends BonusTileBase {
     getMatchesByType(field: Node[][]): Node[] {
         let matches = [];
 
+        this.combo = this.getCombo(field);
+
+        if(this.combo !== "") {
+            matches = this.getMatchesByCombo(field);
+            return matches;
+        }
+
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
@@ -64,6 +71,131 @@ export class Discoball extends BonusTileBase {
         }
 
         return matches;
+    }
+
+
+    getMatchesByCombo(field: Node[][]): Node[] {
+        let matches = [];
+
+        switch(this.combo) {
+            case "rocket":
+                matches = this.getRocketComboMatches(field);
+                break;
+            case "bomb":
+                matches = this.getBombComboMatches(field);
+                break;
+            case "blue":
+            case "red":
+            case "green":
+            case "yellow":
+                matches = this.getDiscoballComboMatches(field);
+                break;
+        }
+
+        return matches;
+    }
+
+    getRocketComboMatches(field: Node[][]): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        const timeBetweenTiles = 0.2;
+
+        let tiles = [];
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                const tile = field[i][j];
+                if(tile !== null && tile !== this.node) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.getTileType() === this.tileType) {
+                        tiles.push(tileComp);
+                    }
+                }
+            }
+        }
+        tiles.push(this);
+
+        const totalTime = timeBetweenTiles * tiles.length;
+        for(let i = 0; i < tiles.length; i++) {
+            this.scheduleOnce(() => {
+                this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, "rocket_horizontal"); //to do: direction random
+            }, timeBetweenTiles * i);
+        }
+
+        this.setRespawnEvent(totalTime + 1);
+
+        return matches;
+    }
+
+    getBombComboMatches(field: Node[][]): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        const timeBetweenTiles = 0.2;
+
+        let tiles = [];
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                const tile = field[i][j];
+                if(tile !== null && tile !== this.node) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.getTileType() === this.tileType) {
+                        tiles.push(tileComp);
+                    }
+                }
+            }
+        }
+        tiles.push(this);
+
+        const totalTime = timeBetweenTiles * tiles.length;
+        for(let i = 0; i < tiles.length; i++) {
+            this.scheduleOnce(() => {
+                this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, "bomb");
+            }, timeBetweenTiles * i);
+        }
+
+        this.setRespawnEvent(totalTime + 1);
+
+        return matches;
+    }
+
+    getDiscoballComboMatches(field: Node[][]): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                const tile = field[i][j];
+                if(tile !== null) {
+                    matches.push(tile);
+                }
+            }
+        }
+
+        return matches;
+    }
+
+    changeTile(tile: TileBase, timeToDestroy: number, tileType: string) {
+        if(tile === null) {
+            return;
+        }
+        try {
+            this.node.emit("change_bonus", tile.getRow(), tile.getCol(), tileType, timeToDestroy);
+        }
+        catch (error) {
+            //console.error("Произошла ошибка при обработке tile:", error);
+            return;
+        }
+    }
+
+    setRespawnEvent(timeToRespawn: number) {
+        this.node.emit("respawn", timeToRespawn);
     }
 }
 
