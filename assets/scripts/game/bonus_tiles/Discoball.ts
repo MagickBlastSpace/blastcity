@@ -121,7 +121,13 @@ export class Discoball extends BonusTileBase {
         const totalTime = timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, this.combo);
+                const rocketType = Math.floor(Math.random() * 2);
+                if(rocketType === 0) {
+                    this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, "rocket_vertical");
+                }
+                else {
+                    this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, "rocket_horizontal");
+                }
             }, timeBetweenTiles * i);
         }
 
@@ -174,7 +180,9 @@ export class Discoball extends BonusTileBase {
             for(let j = 0; j < numCols; j++) {
                 const tile = field[i][j];
                 if(tile !== null) {
-                    matches.push(tile);
+                    if(this.checkTileForMatch(tile)) {
+                        matches.push(tile);
+                    }
                 }
             }
         }

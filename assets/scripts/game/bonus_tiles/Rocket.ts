@@ -153,7 +153,14 @@ export class Rocket extends BonusTileBase {
     }
 
     changeTile(tile: TileBase, timeToDestroy: number) {
-        this.node.emit("change_bonus", tile.getRow(), tile.getCol(), this.tileType, timeToDestroy);
+        const rocketType = Math.floor(Math.random() * 2);
+        if(rocketType === 0) {
+            this.node.emit("change_bonus", tile.getRow(), tile.getCol(), "rocket_vertical", timeToDestroy);
+        }
+        else {
+            this.node.emit("change_bonus", tile.getRow(), tile.getCol(), "rocket_horizontal", timeToDestroy);
+        }
+        
     }
 
     setRespawnEvent(timeToRespawn: number) {
