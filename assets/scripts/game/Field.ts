@@ -339,14 +339,14 @@ export class Field extends Component {
                             holes++;
                         }
                     } else if (emptySpaces > 0) {
-                        let newRow = row - emptySpaces;
+                        let newRow = row - emptySpaces - holes;
     
-                        while (holes > 0 && this.checkPlaceForEmptyTile(newRow, col)) {
-                            newRow = row - emptySpaces - holes;
+                        while (holes >= 0 && !this.isAvailablePlace(newRow, col)) {
                             holes--;
+                            newRow = row - emptySpaces - holes;
                         }
     
-                        if (!this.checkPlaceForEmptyTile(newRow, col)) {
+                        if (this.isAvailablePlace(newRow, col)) {
                             tileComponent.setRow(newRow);
                             this.tileArray[newRow][col] = tile;
                             this.tileArray[row][col] = null;
@@ -445,13 +445,12 @@ export class Field extends Component {
     }
 
 
-    checkPlaceForEmptyTile(row: number, col: number): boolean {
+    isAvailablePlace(row: number, col: number): boolean {
         const tile = this.tileArray[row][col];
         if(tile === null) {
-            return false;
+            return true;
         }
-        const tileComponent = tile.getComponent("TileBase");
-        return tileComponent.isEmptyTile();
+        return false;
     }
 
 
