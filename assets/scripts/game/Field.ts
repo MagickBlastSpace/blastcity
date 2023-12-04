@@ -233,7 +233,7 @@ export class Field extends Component {
         
         const matches = choosenTile.getMatches(this.tileArray);
         
-        if(matches.length >= 2) {
+        if(matches.length >= 2 || isBonus) {
             matches.forEach(matchedTile => {
                 if(matchedTile !== null) {
                     let tileComponent = matchedTile.getComponent("TileBase");
@@ -244,9 +244,6 @@ export class Field extends Component {
             })
         }
         else {
-            if(isBonus) {
-                return true;
-            }
             return false;
         }
 

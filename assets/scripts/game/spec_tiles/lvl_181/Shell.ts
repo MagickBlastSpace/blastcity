@@ -41,10 +41,10 @@ export class Shell extends SpecTileBase {
 
     refresh() {
         if(this.strength > 1) {
-            this.hpLabel.string = "Закрыта";
+            this.hpLabel.string = "Close";
         }
         else {
-            this.hpLabel.string = "Открыта";
+            this.hpLabel.string = "Open";
         }
     }
 }
