@@ -82,8 +82,7 @@ export class Field extends Component {
             for (let col = 0; col < this.numCols; col++) {
                 let tile = this.tileArray[row][col];
                 if(tile !== null) {
-                    tile.destroy();
-                    this.tileArray[row][col] = null;
+                    this.destroyTile(row, col);
                 }
             }
         }
@@ -204,6 +203,7 @@ export class Field extends Component {
         if(tile !== null) {
             let tileComponent = tile.getComponent("TileBase");
             tileComponent.destroyTile();
+            this.tileArray[row][col] = null;
         }
     }
 
@@ -253,19 +253,21 @@ export class Field extends Component {
 
         this.checkSpecTilesForDestroy();
 
-        if(isCommon) {
-            if(matches.length >= 9) {
-                this.spawnDiscoball(choosenRow, choosenCol, choosenType);
+        this.scheduleOnce(() => {
+            if(isCommon) {
+                if(matches.length >= 9) {
+                    this.spawnDiscoball(choosenRow, choosenCol, choosenType);
+                }
+                else if(matches.length >= 7) {
+                    this.spawnBomb(choosenRow, choosenCol);
+                }
+                else if(matches.length >= 5) {
+                    this.spawnRocket(choosenRow, choosenCol, potentialBonus);
+                }
             }
-            else if(matches.length >= 7) {
-                this.spawnBomb(choosenRow, choosenCol);
-            }
-            else if(matches.length >= 5) {
-                this.spawnRocket(choosenRow, choosenCol, potentialBonus);
-            }
-        }
-        
-        this.spawnNewTiles();
+
+            this.spawnNewTiles();
+        }, 0.2);
 
         return true;
     }

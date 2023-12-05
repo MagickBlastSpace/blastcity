@@ -25,7 +25,7 @@ export class SpecTileBase extends TileBase {
 
     destroyTile() {
         this.startDestroyConsequences();
-        this.node.destroy();
+        super.destroyTile();
     }
 
     onTouchStart(event: cc.Event.EventTouch) {}

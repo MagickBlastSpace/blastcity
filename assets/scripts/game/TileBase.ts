@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, tween, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('TileBase')
@@ -12,6 +12,8 @@ export class TileBase extends Component {
     private isEmpty: boolean;
     private isShifts: boolean;
     private isSpecial: boolean;
+
+    private currentTween: any = null;
 
 
     onLoad() {
@@ -27,6 +29,8 @@ export class TileBase extends Component {
         this.row = row;
         this.col = col;
         this.tileType = tileType;
+
+        this.currentTween = null;
     }
 
 
@@ -83,7 +87,12 @@ export class TileBase extends Component {
 
 
     destroyTile() {
-        this.node.destroy();
+        if (!this.currentTween) {
+            this.currentTween = tween(this.node)
+                .to(0.15, { scale: new Vec3(2.5, 2.5, 2.5) }, { easing: 'linear' })
+                .call(() => this.node.destroy())
+                .start();
+        }
     }
 
 
