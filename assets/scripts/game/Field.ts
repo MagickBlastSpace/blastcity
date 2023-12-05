@@ -318,9 +318,8 @@ export class Field extends Component {
         for (let col = 0; col < this.numCols; col++) {
             let emptySpaces = 0;
             let holes = 0;
-            let continueProcessing = true;
     
-            for (let row = 0; row < this.numRows && continueProcessing; row++) {
+            for (let row = 0; row < this.numRows; row++) {
                 const tile = this.tileArray[row][col];
     
                 if (tile === null) {
@@ -329,7 +328,8 @@ export class Field extends Component {
                     let tileComponent = tile.getComponent("TileBase");
 
                     if(!tileComponent.isTileShifts()) {
-                        continueProcessing = false;
+                        emptySpaces = 0;
+                        holes = 0;
                     }
                     else if (tileComponent.isEmptyTile()) {
                         if (!tileComponent.isBorder(this.tileArray)) {
