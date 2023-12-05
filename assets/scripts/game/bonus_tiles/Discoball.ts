@@ -39,6 +39,7 @@ export class Discoball extends BonusTileBase {
 
 
     getMatches(field: Node[][]): Node[] {
+        this.combo = this.getCombo(field);
         let tilesToDestroy = this.getMatchesByType(field);
 
         return tilesToDestroy;
@@ -48,9 +49,7 @@ export class Discoball extends BonusTileBase {
     getMatchesByType(field: Node[][]): Node[] {
         let matches = [];
 
-        this.combo = this.getCombo(field);
-
-        if(this.combo !== "") {
+        if(this.isCombo()) {
             matches = this.getMatchesByCombo(field);
             return matches;
         }

@@ -11,6 +11,8 @@ export class Bomb extends BonusTileBase {
 
 
     getMatches(field: Node[][]): Node[] {
+        this.combo = this.getCombo(field);
+
         let tilesToDestroy = this.getMatchesByType(field);
         let bonusTiles = this.findBonusTiles(tilesToDestroy);
 
@@ -34,15 +36,13 @@ export class Bomb extends BonusTileBase {
 
     getMatchesByType(field: Node[][]): Node[] {
         let matches = [];
-        matches.push(field[this.row][this.col]);
 
-        this.combo = this.getCombo(field);
-
-        if(this.combo !== "") {
+        if(this.isCombo()) {
             matches = matches.concat(this.getMatchesByCombo(field));
             return matches;
         }
 
+        matches.push(field[this.row][this.col]);
         matches = matches.concat(this.getBombMatches(field, this.row, this.col));
 
         return matches;
@@ -198,11 +198,10 @@ export class Bomb extends BonusTileBase {
     }
 
     changeTile(tile: TileBase, timeToDestroy: number) {
-        this.node.emit("change_bonus", tile.getRow(), tile.getCol(), this.tileType, timeToDestroy);
+        this.node.emit("change_bonus", tile.getRow(), tile.getCol(), "bomb", timeToDestroy);
     }
 
     setRespawnEvent(timeToRespawn: number) {
-        console.log("respawn");
         this.node.emit("respawn", timeToRespawn);
     }
 }

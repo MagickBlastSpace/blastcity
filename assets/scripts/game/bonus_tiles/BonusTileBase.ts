@@ -136,6 +136,16 @@ export class BonusTileBase extends TileBase {
 
         return true;
     }
+
+
+    isCombo(): boolean {
+        return this.combo !== "";
+    }
+
+
+    clear() {
+        this.combo = "";
+    }
 }
 
 
