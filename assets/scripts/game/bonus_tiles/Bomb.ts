@@ -42,7 +42,6 @@ export class Bomb extends BonusTileBase {
             return matches;
         }
 
-        matches.push(field[this.row][this.col]);
         matches = matches.concat(this.getBombMatches(field, this.row, this.col));
 
         return matches;
@@ -57,6 +56,11 @@ export class Bomb extends BonusTileBase {
 
         if(row < 0 || row >= numRows || col < 0 || col >= numCols) {
             return matches;
+        }
+
+        const tile = field[row][col];
+        if(this.checkTileForMatch(tile)) {
+            matches.push(tile);
         }
 
         if(row < numRows - 1) {
