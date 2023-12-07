@@ -32,6 +32,9 @@ export class Field extends Component {
     @property
     yOffset: number = -175;
 
+    @property
+    tileSize: number = 40;
+
     private tileArray: Node[][] = [];
 
     private isClickAvailable: bool = false;
@@ -170,9 +173,16 @@ export class Field extends Component {
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
+
+        let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
+        let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
+
         const tileNode = tileComponent.node;
-        const posX = col * (tileNode.width + this.tileSpacing) + this.xOffset;
-        const posY = row * (tileNode.height + this.tileSpacing) + this.yOffset;
+        let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
+        let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
+        posX = isDoubleWidth ? posX + this.tileSize / 2 : posX;
+        posY = isDoubleHeight ? posY + this.tileSize / 2 : posY;
+
         tileComponent.node.setPosition(posX, posY + tileNode.height);
 
         cc.tween(tileNode)
@@ -193,6 +203,19 @@ export class Field extends Component {
         });
 
         this.tileArray[row][col] = tileNode;
+        if(isDoubleWidth) {
+            this.destroyTile(row, col + 1);
+            this.tileArray[row][col + 1] = tileNode;
+        }
+        if(isDoubleHeight) {
+            this.destroyTile(row + 1, col);
+            this.tileArray[row + 1][col] = tileNode;
+        }
+        if(isDoubleWidth && isDoubleHeight) {
+            this.destroyTile(row + 1, col + 1);
+            this.tileArray[row + 1][col + 1] = tileNode;
+        }
+
         this.node.addChild(tileNode);
 
         return tileNode;
@@ -202,6 +225,9 @@ export class Field extends Component {
         const tile = this.tileArray[row][col];
         if(tile !== null) {
             let tileComponent = tile.getComponent("TileBase");
+            if(tileComponent.isEmptyTile()) {
+                return;
+            }
             tileComponent.destroyTile();
             this.tileArray[row][col] = null;
         }
@@ -217,7 +243,6 @@ export class Field extends Component {
         try {
             choosenTile = tile.getComponent("TileBase");
         } catch (error) {
-            //console.error("Произошла ошибка при обработке tile:", error);
             return false;
         }
 
@@ -289,7 +314,7 @@ export class Field extends Component {
                     const tile = this.tileArray[row][col];
                     if (tile !== null) {
                         const tileComponent = tile.getComponent("TileBase");
-                        if (!tileComponent.isTileShifts()) {
+                        if (!tileComponent.isTileShifts() || tileComponent.getRow() !== row) {
                             shouldSpawnNewTile = false;
                             break;
                         }
@@ -329,7 +354,7 @@ export class Field extends Component {
                 } else {
                     let tileComponent = tile.getComponent("TileBase");
 
-                    if(!tileComponent.isTileShifts()) {
+                    if(!tileComponent.isTileShifts() || tileComponent.getRow() !== row) {
                         emptySpaces = 0;
                         holes = 0;
                     }
@@ -337,24 +362,62 @@ export class Field extends Component {
                         if (!tileComponent.isBorder(this.tileArray)) {
                             holes++;
                         }
-                    } else if (emptySpaces > 0) {
+                    }
+                    else if (emptySpaces > 0) {
                         let newRow = row - emptySpaces - holes;
     
-                        while (holes >= 0 && !this.isAvailablePlace(newRow, col)) {
+                        let balance = 0;
+                        while (holes >= 0 && newRow < row - 1 && !tileComponent.canFall(this.tileArray, newRow)) {
                             holes--;
-                            newRow = row - emptySpaces - holes;
+                            newRow = row - emptySpaces - holes + balance;
+                            if(holes <= 0) {
+                                balance++;
+                            }
                         }
     
-                        if (this.isAvailablePlace(newRow, col)) {
+                        if (tileComponent.canFall(this.tileArray, newRow)) {
                             tileComponent.setRow(newRow);
+
+                            let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
+                            let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
+
+                            let posX = tileComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
+                            let posY = newRow * (this.tileSize + this.tileSpacing) + this.yOffset;
+                            posX = isDoubleWidth ? posX + this.tileSize / 2 : posX;
+                            posY = isDoubleHeight ? posY + this.tileSize / 2 : posY;
+
                             this.tileArray[newRow][col] = tile;
                             this.tileArray[row][col] = null;
-    
-                            const posX = col * (tile.width + this.tileSpacing) + this.xOffset;
-                            const posY = newRow * (tile.height + this.tileSpacing) + this.yOffset;
+
+                            if(isDoubleWidth) {
+                                this.tileArray[row][tileComponent.getCol()] = null;
+                                this.tileArray[row][tileComponent.getCol() + 1] = null;
+                                this.tileArray[newRow][tileComponent.getCol()] = tile;
+                                this.tileArray[newRow][tileComponent.getCol() + 1] = tile;
+                            }
+                            if(isDoubleHeight) {
+                                this.tileArray[row + 1][tileComponent.getCol()] = null;
+                                this.tileArray[newRow + 1][tileComponent.getCol()] = tile;
+                            }
+                            if(isDoubleWidth && isDoubleHeight) {
+                                this.tileArray[row + 1][tileComponent.getCol() + 1] = null;
+                                this.tileArray[newRow + 1][tileComponent.getCol() + 1] = tile;
+                            }
+                            
                             cc.tween(tile)
                                 .to(0.25, { position: new cc.Vec3(posX, posY, 0) })
+                                .call(() => {
+                                    if(isDoubleWidth) {
+                                        //this.showMatrixDebugMessage();
+                                        this.fallTiles();
+                                        return;
+                                    }
+                                })
                                 .start();
+                        }
+                        else {
+                            emptySpaces = 0;
+                            holes = 0;
                         }
                     }
                 }
@@ -369,10 +432,26 @@ export class Field extends Component {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
                 if(tile !== null) {
-                    let tileComponent = tile.getComponent("TileBase");
+                    let tileComponent = null;
+                    try {
+                        tileComponent = tile.getComponent("TileBase");
+                    } catch (error) {
+                        this.tileArray[i][j] = null;
+                        continue;
+                    }
+
                     if(tileComponent.isSpecialTile()) {
                         if(tileComponent.isReadyToDestroy()) {
                             this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
+                            if(tileComponent.isDoubleWidth()) {
+                                this.tileArray[tileComponent.getRow()][tileComponent.getCol() + 1] = null;
+                            }
+                            if(tileComponent.isDoubleHeight()) {
+                                this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol()] = null;
+                            }
+                            if(tileComponent.isDoubleWidth() && tileComponent.isDoubleHeight()) {
+                                this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol() + 1] = null;
+                            }
                             tileComponent.destroyTile();
                             isDestroyed = true;
                         }
@@ -444,15 +523,6 @@ export class Field extends Component {
     }
 
 
-    isAvailablePlace(row: number, col: number): boolean {
-        const tile = this.tileArray[row][col];
-        if(tile === null) {
-            return true;
-        }
-        return false;
-    }
-
-
     clearAll() {
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
@@ -462,6 +532,26 @@ export class Field extends Component {
                     tileComponent.clear();
                 }
             }
+        }
+    }
+
+
+
+    showMatrixDebugMessage() {
+        for (let row = this.numRows - 1; row >= 0; row--) {
+            let debugMatrix = "";
+            for (let col = 0; col < this.numCols; col++) {
+                const tile = this.tileArray[row][col];
+                if(tile !== null) {
+                    debugMatrix += tile.getComponent("TileBase").getTileType();
+                }
+                else {
+                    debugMatrix += "null";
+                }
+                debugMatrix += "(" + row + ", " + col + ") ";
+            }
+            console.log(debugMatrix);
+            console.log('-----------------');
         }
     }
 }

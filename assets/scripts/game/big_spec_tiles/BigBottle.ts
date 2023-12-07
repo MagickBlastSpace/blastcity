@@ -1,13 +1,15 @@
 import { _decorator, Component, Node } from 'cc';
-import { SpecTileBase } from '../SpecTileBase';
+import { BigTileBase } from './BigTileBase';
 const { ccclass, property } = _decorator;
 
-@ccclass('Bottle')
-export class Bottle extends SpecTileBase {
+@ccclass('BigBottle')
+export class BigBottle extends BigTileBase {
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
         this.isShifts = true;
+        this.isDoubleX = true;
+        this.isDoubleY = true;
     }
 
 

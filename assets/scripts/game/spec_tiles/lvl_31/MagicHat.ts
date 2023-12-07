@@ -8,7 +8,6 @@ export class MagicHat extends SpecTileBase {
         super.init(row, col, tileType);
 
         this.isShifts = false;
-        this.isSpecial = true;
         this.isGrouped = true;
     }
 

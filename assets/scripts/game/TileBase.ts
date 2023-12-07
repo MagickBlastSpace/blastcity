@@ -137,6 +137,28 @@ export class TileBase extends Component {
 
         return matches;
     }
+
+
+    canFall(field: Node[][], rowIndexToFall: number): boolean {
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+        if(this.row <= 0) {
+            return false;
+        }
+
+        for(let i = this.row - 1; i >= rowIndexToFall; i--) {
+            if(field[i][this.col] !== null) {
+                const tileComp = field[i][this.col].getComponent("TileBase");
+                if(!tileComp.isEmptyTile()) {
+                    return false;
+                }
+                else if(tileComp.isEmptyTile() && i === rowIndexToFall) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }
 
 

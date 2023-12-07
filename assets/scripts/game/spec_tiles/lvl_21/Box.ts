@@ -8,8 +8,6 @@ export class Box extends SpecTileBase {
         super.init(row, col, tileType);
 
         this.isShifts = false;
-        this.isSpecial = true;
-
         this.strength = 1;
     }
 

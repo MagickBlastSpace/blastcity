@@ -10,6 +10,9 @@ export class SpecTileBase extends TileBase {
     private isDamaged: boolean;
     private isGrouped: boolean;
 
+    private isDoubleX: boolean;
+    private isDoubleY: boolean;
+
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -20,6 +23,10 @@ export class SpecTileBase extends TileBase {
         this.isEmpty = false;
 
         this.isDamaged = false;
+        this.isSpecial = true;
+
+        this.isDoubleX = false;
+        this.isDoubleY = false;
     }
 
 
@@ -46,6 +53,15 @@ export class SpecTileBase extends TileBase {
 
     isGroupedTile(): boolean {
         return this.isGrouped;
+    }
+
+
+    isDoubleWidth(): boolean {
+        return this.isDoubleX;
+    }
+
+    isDoubleHeight(): boolean {
+        return this.isDoubleY;
     }
 
 

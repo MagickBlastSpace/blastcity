@@ -8,8 +8,6 @@ export class Pinata extends SpecTileBase {
         super.init(row, col, tileType);
 
         this.isShifts = true;
-        this.isSpecial = true;
-
         this.strength = 1;
     }
 
