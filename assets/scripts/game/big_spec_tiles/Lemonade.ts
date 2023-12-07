@@ -1,0 +1,72 @@
+import { _decorator, Component, Node } from 'cc';
+import { BigTileBase } from './BigTileBase';
+const { ccclass, property } = _decorator;
+
+@ccclass('Lemonade')
+export class Lemonade extends BigTileBase {
+
+    @property(Node)
+    redHp: Node = null;
+    @property(Node)
+    blueHp: Node = null;
+    @property(Node)
+    greenHp: Node = null;
+    @property(Node)
+    yellowHp: Node = null;
+
+    private strengthRed: number;
+    private strengthBlue: number;
+    private strengthGreen: number;
+    private strengthYellow: number;
+
+
+    init(row: number, col: number, tileType: string) {
+        super.init(row, col, tileType);
+
+        this.isShifts = false;
+        this.isDoubleX = true;
+        this.isDoubleY = true;
+
+        this.strengthRed = 1;
+        this.strengthBlue = 1;
+        this.strengthGreen = 1;
+        this.strengthYellow = 1;
+
+        this.refresh();
+    }
+
+
+    getDamage(damageType: string) {
+        if(damageType === "red") {
+            this.strengthRed--;
+        }
+        else if(damageType === "blue") {
+            this.strengthBlue--;
+        }
+        else if(damageType === "green") {
+            this.strengthGreen--;
+        }
+        else if(damageType === "yellow") {
+            this.strengthYellow--;
+        }
+        
+        this.refresh();
+    }
+
+    isReadyToDestroy(): boolean {
+        if(this.strengthRed <= 0 && this.strengthBlue <= 0 && this.strengthGreen <= 0 && this.strengthYellow <= 0) {
+            return true;
+        }
+        return false;
+    }
+
+
+    refresh() {
+        this.redHp.active = this.strengthRed > 0;
+        this.blueHp.active = this.strengthBlue > 0;
+        this.greenHp.active = this.strengthGreen > 0;
+        this.yellowHp.active = this.strengthYellow > 0;
+    }
+}
+
+
