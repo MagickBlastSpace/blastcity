@@ -20,13 +20,13 @@
         "__id__": 2
       },
       {
-        "__id__": 52
+        "__id__": 53
       }
     ],
     "_active": true,
     "_components": [],
     "_prefab": {
-      "__id__": 117
+      "__id__": 121
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -57,7 +57,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 118
+      "__id__": 122
     },
     "_id": "7b2dc026-88d5-4e1b-8f76-c916ba7bb4f8"
   },
@@ -80,19 +80,19 @@
         "__id__": 8
       },
       {
-        "__id__": 39
+        "__id__": 40
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 49
-      },
-      {
         "__id__": 50
       },
       {
         "__id__": 51
+      },
+      {
+        "__id__": 52
       }
     ],
     "_prefab": null,
@@ -548,6 +548,9 @@
       },
       {
         "__id__": 38
+      },
+      {
+        "__id__": 39
       }
     ],
     "numRows": 9,
@@ -775,6 +778,14 @@
     }
   },
   {
+    "__type__": "SpecialPrefabData",
+    "id": "big_pinata",
+    "prefab": {
+      "__uuid__": "4b9689f6-1d8f-4aa5-a106-c9aa4ca17458",
+      "__expectedType__": "cc.Prefab"
+    }
+  },
+  {
     "__type__": "cc.Node",
     "_name": "LevelSwitcher (Debug)",
     "_objFlags": 0,
@@ -784,22 +795,22 @@
     },
     "_children": [
       {
-        "__id__": 40
+        "__id__": 41
       },
       {
-        "__id__": 43
+        "__id__": 44
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 46
-      },
-      {
         "__id__": 47
       },
       {
         "__id__": 48
+      },
+      {
+        "__id__": 49
       }
     ],
     "_prefab": null,
@@ -838,16 +849,16 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
-      "__id__": 39
+      "__id__": 40
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 41
+        "__id__": 42
       },
       {
-        "__id__": 42
+        "__id__": 43
       }
     ],
     "_prefab": null,
@@ -886,7 +897,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 40
+      "__id__": 41
     },
     "_enabled": true,
     "__prefab": null,
@@ -908,7 +919,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 40
+      "__id__": 41
     },
     "_enabled": true,
     "__prefab": null,
@@ -947,16 +958,16 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
-      "__id__": 39
+      "__id__": 40
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 44
+        "__id__": 45
       },
       {
-        "__id__": 45
+        "__id__": 46
       }
     ],
     "_prefab": null,
@@ -995,7 +1006,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 43
+      "__id__": 44
     },
     "_enabled": true,
     "__prefab": null,
@@ -1017,7 +1028,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 43
+      "__id__": 44
     },
     "_enabled": true,
     "__prefab": null,
@@ -1049,7 +1060,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 39
+      "__id__": 40
     },
     "_enabled": true,
     "__prefab": null,
@@ -1071,7 +1082,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 39
+      "__id__": 40
     },
     "_enabled": true,
     "__prefab": null,
@@ -1110,7 +1121,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 39
+      "__id__": 40
     },
     "_enabled": true,
     "__prefab": null,
@@ -1119,7 +1130,7 @@
       "__expectedType__": "cc.Prefab"
     },
     "levelItemsContainer": {
-      "__id__": 43
+      "__id__": 44
     },
     "field": {
       "__id__": 11
@@ -1206,7 +1217,7 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 53
+        "__id__": 54
       }
     ],
     "_prefab": null,
@@ -1245,37 +1256,40 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 52
+      "__id__": 53
     },
     "_enabled": true,
     "__prefab": null,
     "levels": [
       {
-        "__id__": 54
+        "__id__": 55
       },
       {
-        "__id__": 67
+        "__id__": 68
       },
       {
-        "__id__": 74
+        "__id__": 75
       },
       {
-        "__id__": 84
+        "__id__": 85
       },
       {
-        "__id__": 91
+        "__id__": 92
       },
       {
-        "__id__": 98
+        "__id__": 99
       },
       {
-        "__id__": 106
+        "__id__": 107
       },
       {
-        "__id__": 112
+        "__id__": 113
       },
       {
-        "__id__": 114
+        "__id__": 115
+      },
+      {
+        "__id__": 118
       }
     ],
     "_id": "95xb5wWS5HkKoWHJiqB3+u"
@@ -1327,9 +1341,6 @@
     ],
     "specialTiles": [
       {
-        "__id__": 55
-      },
-      {
         "__id__": 56
       },
       {
@@ -1361,6 +1372,9 @@
       },
       {
         "__id__": 66
+      },
+      {
+        "__id__": 67
       }
     ]
   },
@@ -1488,9 +1502,6 @@
     ],
     "specialTiles": [
       {
-        "__id__": 68
-      },
-      {
         "__id__": 69
       },
       {
@@ -1504,6 +1515,9 @@
       },
       {
         "__id__": 73
+      },
+      {
+        "__id__": 74
       }
     ]
   },
@@ -1549,9 +1563,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 75
-      },
-      {
         "__id__": 76
       },
       {
@@ -1574,6 +1585,9 @@
       },
       {
         "__id__": 83
+      },
+      {
+        "__id__": 84
       }
     ]
   },
@@ -1637,9 +1651,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 85
-      },
-      {
         "__id__": 86
       },
       {
@@ -1653,6 +1664,9 @@
       },
       {
         "__id__": 90
+      },
+      {
+        "__id__": 91
       }
     ]
   },
@@ -1698,9 +1712,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 92
-      },
-      {
         "__id__": 93
       },
       {
@@ -1714,6 +1725,9 @@
       },
       {
         "__id__": 97
+      },
+      {
+        "__id__": 98
       }
     ]
   },
@@ -1759,9 +1773,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 99
-      },
-      {
         "__id__": 100
       },
       {
@@ -1778,6 +1789,9 @@
       },
       {
         "__id__": 105
+      },
+      {
+        "__id__": 106
       }
     ]
   },
@@ -1829,9 +1843,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 107
-      },
-      {
         "__id__": 108
       },
       {
@@ -1842,6 +1853,9 @@
       },
       {
         "__id__": 111
+      },
+      {
+        "__id__": 112
       }
     ]
   },
@@ -1881,7 +1895,7 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 113
+        "__id__": 114
       }
     ]
   },
@@ -1897,10 +1911,10 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 115
+        "__id__": 116
       },
       {
-        "__id__": 116
+        "__id__": 117
       }
     ]
   },
@@ -1917,6 +1931,31 @@
     "col": 6
   },
   {
+    "__type__": "LevelData",
+    "id": "10",
+    "emptyTiles": [],
+    "specialTiles": [
+      {
+        "__id__": 119
+      },
+      {
+        "__id__": 120
+      }
+    ]
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "big_pinata",
+    "row": 4,
+    "col": 2
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "big_pinata",
+    "row": 6,
+    "col": 6
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": null,
     "asset": null,
@@ -1927,25 +1966,25 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 119
-    },
-    "shadows": {
-      "__id__": 120
-    },
-    "_skybox": {
-      "__id__": 121
-    },
-    "fog": {
-      "__id__": 122
-    },
-    "octree": {
       "__id__": 123
     },
-    "skin": {
+    "shadows": {
       "__id__": 124
     },
-    "lightProbeInfo": {
+    "_skybox": {
       "__id__": 125
+    },
+    "fog": {
+      "__id__": 126
+    },
+    "octree": {
+      "__id__": 127
+    },
+    "skin": {
+      "__id__": 128
+    },
+    "lightProbeInfo": {
+      "__id__": 129
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false
