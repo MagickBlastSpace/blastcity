@@ -262,7 +262,9 @@ export class Field extends Component {
             matches.forEach(matchedTile => {
                 if(matchedTile !== null) {
                     let tileComponent = matchedTile.getComponent("TileBase");
-                    tileComponent.giveDamage(this.tileArray);
+                    if(this.availableColors.includes(choosenType)) {
+                        tileComponent.giveDamage(this.tileArray);
+                    }
                     this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
                     tileComponent.destroyTile();
                 }
@@ -291,7 +293,9 @@ export class Field extends Component {
                 }
             }
 
-            this.spawnNewTiles();
+            if(matches.length > 0) {
+                this.spawnNewTiles();
+            }
         }, 0.2);
 
         return true;
@@ -325,15 +329,15 @@ export class Field extends Component {
                 }
             }
     
-            this.scheduleOnce(() => {
-                this.clearAll();
-                this.checkForPotentialBonuses();
-                this.isClickAvailable = true;
-            }, 0.1);
+            this.clearAll();
+            this.checkForPotentialBonuses();
+            this.isClickAvailable = true;
+
         }, 0.2);
     }
 
     scheduleRespawn(timeToRespawn: number) {
+        this.isClickAvailable = false;
         this.scheduleOnce(() => {
             this.spawnNewTiles();
         }, timeToRespawn);
