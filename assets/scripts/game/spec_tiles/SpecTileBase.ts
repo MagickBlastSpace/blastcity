@@ -39,6 +39,8 @@ export class SpecTileBase extends TileBase {
 
     startDestroyConsequences() {}
 
+    startInActionEffect() {}
+
 
     getDamage(damageType: string) {}
 

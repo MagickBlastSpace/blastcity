@@ -201,6 +201,9 @@ export class Field extends Component {
         tileNode.on("respawn", (timeToRespawn) => {
             this.scheduleRespawn(timeToRespawn);
         });
+        tileNode.on("damage_all", (tileId) => {
+            this.setAllDamagedByType(tileId);
+        });
 
         this.tileArray[row][col] = tileNode;
         if(isDoubleWidth) {
@@ -329,6 +332,7 @@ export class Field extends Component {
                 }
             }
     
+            this.checkSpecTilesInActionEffect();
             this.clearAll();
             this.checkForPotentialBonuses();
             this.isClickAvailable = true;
@@ -466,6 +470,28 @@ export class Field extends Component {
         return isDestroyed;
     }
 
+
+    checkSpecTilesInActionEffect() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    let tileComponent = null;
+                    try {
+                        tileComponent = tile.getComponent("TileBase");
+                    } catch (error) {
+                        this.tileArray[i][j] = null;
+                        continue;
+                    }
+
+                    if(tileComponent.isSpecialTile()) {
+                        tileComponent.startInActionEffect(this.tileArray);
+                    }
+                }
+            }
+        }
+    }
+
     
     onTileClick(tile: Node) {
         if(!this.isClickAvailable) {
@@ -534,6 +560,27 @@ export class Field extends Component {
                 if(tile !== null) {
                     let tileComponent = tile.getComponent("TileBase");
                     tileComponent.clear();
+                }
+            }
+        }
+    }
+
+    setAllDamagedByType(tileId: string) {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    let tileComponent = null;
+                    try {
+                        tileComponent = tile.getComponent("TileBase");
+                    } catch (error) {
+                        this.tileArray[i][j] = null;
+                        continue;
+                    }
+
+                    if(tileComponent.getTileType() === tileId) {
+                        tileComponent.setAsDamaged();
+                    }
                 }
             }
         }
