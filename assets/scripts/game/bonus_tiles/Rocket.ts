@@ -164,7 +164,6 @@ export class Rocket extends BonusTileBase {
     }
 
     setRespawnEvent(timeToRespawn: number) {
-        console.log("respawn");
         this.node.emit("respawn", timeToRespawn);
     }
 

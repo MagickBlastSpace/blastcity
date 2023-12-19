@@ -19,6 +19,13 @@ export class Field extends Component {
 
     @property([SpecialPrefabData])
     specialPrefabs: SpecialPrefabData[] = [];
+    @property([SpecialPrefabData])
+    statusPrefabs: SpecialPrefabData[] = [];
+
+    @property(Node)
+    tilesLayout: Node = null;
+    @property(Node)
+    statusLayout: Node = null;
 
     @property
     numRows: number = 8;
@@ -36,6 +43,7 @@ export class Field extends Component {
     tileSize: number = 40;
 
     private tileArray: Node[][] = [];
+    private statusArray: Node[][] = [];
 
     private isClickAvailable: bool = false;
 
@@ -45,8 +53,10 @@ export class Field extends Component {
     start() {
         for (let row = 0; row < this.numRows; row++) {
             this.tileArray[row] = [];
+            this.statusArray[row] = [];
             for (let col = 0; col < this.numCols; col++) {
                 this.tileArray[row][col] = null;
+                this.statusArray[row][col] = null;
             }
         }
 
@@ -76,6 +86,10 @@ export class Field extends Component {
             this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
         }
 
+        for(let i = 0; i < level.statuses.length; i++) {
+            this.spawnStatus(level.statuses[i].row, level.statuses[i].col, level.statuses[i].id);
+        }
+
         this.checkForPotentialBonuses();
         this.isClickAvailable = true;
     }
@@ -86,6 +100,11 @@ export class Field extends Component {
                 let tile = this.tileArray[row][col];
                 if(tile !== null) {
                     this.destroyTile(row, col);
+                }
+
+                let status = this.statusArray[row][col];
+                if(status !== null) {
+                    this.destroyStatus(row, col);
                 }
             }
         }
@@ -145,6 +164,19 @@ export class Field extends Component {
         const tileComponent = tileNode.getComponent("SpecTileBase");
         let spawnedTile = this.initTile(tileComponent, row, col, tileId);
         return spawnedTile;
+    }
+
+    spawnStatus(row: number, col: number, statusId: string): Node {
+        const prefab = this.statusPrefabs.find(p => p.id === statusId)?.prefab;
+        if(prefab === null) {
+            return;
+        }
+
+        this.destroyStatus(row, col);
+        const statusNode = instantiate(prefab);
+        const statusComponent = statusNode.getComponent("StatusBase");
+        let spawnedStatus = this.initStatus(statusComponent, row, col, statusId);
+        return spawnedStatus;
     }
 
     spawnBonusTile(row: number, col: number, bonusId: string, timeToDestroy: number) {
@@ -219,9 +251,28 @@ export class Field extends Component {
             this.tileArray[row + 1][col + 1] = tileNode;
         }
 
-        this.node.addChild(tileNode);
+        this.tilesLayout.addChild(tileNode);
 
         return tileNode;
+    }
+
+    initStatus(statusComponent: any, row: number, col: number, statusType: string): Node {
+        statusComponent.init(row, col, statusType);
+
+        const statusNode = statusComponent.node;
+        let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
+        let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
+
+        statusComponent.node.setPosition(posX, posY);
+
+        statusNode.on("change", (row, col, statusId) => {
+            this.spawnStatus(row, col, statusId);
+        });
+
+        this.statusArray[row][col] = statusNode;
+        this.statusLayout.addChild(statusNode);
+
+        return statusNode;
     }
 
     destroyTile(row: number, col: number) {
@@ -233,6 +284,15 @@ export class Field extends Component {
             }
             tileComponent.destroyTile();
             this.tileArray[row][col] = null;
+        }
+    }
+
+    destroyStatus(row: number, col: number) {
+        const status = this.statusArray[row][col];
+        if(status !== null) {
+            let statusComponent = status.getComponent("StatusBase");
+            this.statusArray[row][col] = null;
+            statusComponent.destroyStatus();
         }
     }
 
@@ -267,6 +327,10 @@ export class Field extends Component {
                     let tileComponent = matchedTile.getComponent("TileBase");
                     if(this.availableColors.includes(choosenType)) {
                         tileComponent.giveDamage(this.tileArray);
+                        tileComponent.giveStatusDamage(this.statusArray);
+                    }
+                    else {
+                        this.destroyStatus(tileComponent.getRow(), tileComponent.getCol());
                     }
                     this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
                     tileComponent.destroyTile();
@@ -281,6 +345,7 @@ export class Field extends Component {
             return true;
         }
 
+        this.checkStatusesForDestroy();
         this.checkSpecTilesForDestroy();
 
         this.scheduleOnce(() => {
@@ -468,6 +533,21 @@ export class Field extends Component {
             }
         }
         return isDestroyed;
+    }
+
+    checkStatusesForDestroy() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let status = this.statusArray[i][j];
+                if(status !== null) {
+                    let statusComponent = status.getComponent("StatusBase");
+                    if(statusComponent.isReadyToDestroy()) {
+                        this.statusArray[i][j] = null;
+                        statusComponent.destroyStatus();
+                    }
+                }
+            }
+        }
     }
 
 

@@ -108,6 +108,8 @@ export class TileBase extends Component {
 
     giveDamage(field: Node[][]) {}
 
+    giveStatusDamage(field: Node[][]) {}
+
 
     onTouchStart(event: cc.Event.EventTouch) {
         this.node.emit("click", this.node);

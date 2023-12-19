@@ -30,6 +30,8 @@ export class LevelData {
     emptyTiles: Vec2[] = [];
     @property([SpecialTileData])
     specialTiles: SpecialTileData[] = [];
+    @property([SpecialTileData])
+    statuses: SpecialTileData[] = [];
 }
 
 
