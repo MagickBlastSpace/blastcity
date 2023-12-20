@@ -165,41 +165,45 @@ export class Tile extends TileBase {
     }
 
 
-    giveDamage(field: Node[][]) {
+    giveDamage(field: Node[][], statuses: Node[][]) {
         const adjTiles = this.getAdjacentTiles(field);
+        const adjStatuses = this.getAdjacentTiles(statuses);
 
         for(let i = 0; i < adjTiles.length; i++) {
             if(adjTiles[i] !== null) {
-                const tileComponent = adjTiles[i].getComponent("TileBase");
-                if(tileComponent.isSpecialTile()) {
-                    tileComponent.getDamage(this.tileType);
-                    if(tileComponent.isGroupedTile()) {
-                        let groupedTiles = tileComponent.getGroupedTiles(field);
-                        for(let i = 0; i < groupedTiles.length; i++) {
-                            let groupedTile = groupedTiles[i].getComponent("SpecTileBase");
-                            groupedTile.setAsDamaged();
+                let isDamageAvailable = true;
+                
+                if(adjStatuses[i] !== null) {
+                    const statusComponent = adjStatuses[i].getComponent("StatusBase");
+                    switch(statusComponent.getStatusType()) {
+                        case "jail":
+                            statusComponent.getDamage();
+                            break;
+                    }
+                    
+                    isDamageAvailable = !statusComponent.isBlockingDestroyTile();
+                }
+
+                if(isDamageAvailable) {
+                    const tileComponent = adjTiles[i].getComponent("TileBase");
+                    if(tileComponent.isSpecialTile()) {
+                        tileComponent.getDamage(this.tileType);
+                        if(tileComponent.isGroupedTile()) {
+                            let groupedTiles = tileComponent.getGroupedTiles(field);
+                            for(let i = 0; i < groupedTiles.length; i++) {
+                                let groupedTile = groupedTiles[i].getComponent("SpecTileBase");
+                                groupedTile.setAsDamaged();
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    giveStatusDamage(field: Node[][]) {
-        let adjStatuses = this.getAdjacentTiles(field);
-        adjStatuses.push(field[this.row][this.col]);
-
-        for(let i = 0; i < adjStatuses.length; i++) {
-            if(adjStatuses[i] !== null) {
-                const statusComponent = adjStatuses[i].getComponent("StatusBase");
-                switch(statusComponent.getStatusType()) {
-                    case "bubble":
-                        if(this.row === statusComponent.getRow() && this.col === statusComponent.getCol()) {
-                            statusComponent.getDamage(this.tileType);
-                        }
-                        break;
-                }
-                
+        if(statuses[this.row][this.col] !== null) {
+            const status = statuses[this.row][this.col].getComponent("StatusBase");
+            if(status.getStatusType() === "bubble") {
+                status.getDamage();
             }
         }
     }

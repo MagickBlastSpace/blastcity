@@ -47,7 +47,7 @@ export class StatusBase extends Component {
         return this.isBlockInteraction;
     }
 
-    isBlockingDestoryTile(): boolean {
+    isBlockingDestroyTile(): boolean {
         return this.isBlockDestroyTile;
     }
 
@@ -67,11 +67,15 @@ export class StatusBase extends Component {
         }
     }
 
+    destroyClear() {
+        this.node.destroy();
+    }
+
 
     startDestroyConsequences() {}
 
 
-    getDamage(damageType: string) {}
+    getDamage() {}
 
     setAsDamaged() {
         this.isDamaged = true;

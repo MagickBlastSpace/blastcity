@@ -125,10 +125,6 @@ export class BonusTileBase extends TileBase {
         }
         
         const tileComponent = tile.getComponent("TileBase");
-        if(tileComponent.isSpecialTile()) {
-            tileComponent.getDamage("bonus");
-            return false;
-        }
 
         if(tileComponent.isEmptyTile()) {
             return false;

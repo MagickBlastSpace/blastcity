@@ -20,13 +20,13 @@
         "__id__": 2
       },
       {
-        "__id__": 64
+        "__id__": 65
       }
     ],
     "_active": true,
     "_components": [],
     "_prefab": {
-      "__id__": 160
+      "__id__": 178
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -57,7 +57,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 161
+      "__id__": 179
     },
     "_id": "7b2dc026-88d5-4e1b-8f76-c916ba7bb4f8"
   },
@@ -80,19 +80,19 @@
         "__id__": 8
       },
       {
-        "__id__": 51
+        "__id__": 52
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 61
-      },
-      {
         "__id__": 62
       },
       {
         "__id__": 63
+      },
+      {
+        "__id__": 64
       }
     ],
     "_prefab": null,
@@ -715,6 +715,9 @@
     "statusPrefabs": [
       {
         "__id__": 50
+      },
+      {
+        "__id__": 51
       }
     ],
     "tilesLayout": {
@@ -1012,6 +1015,14 @@
     }
   },
   {
+    "__type__": "SpecialPrefabData",
+    "id": "jail",
+    "prefab": {
+      "__uuid__": "31931b0f-b2b8-4942-8c87-4be4467866fd",
+      "__expectedType__": "cc.Prefab"
+    }
+  },
+  {
     "__type__": "cc.Node",
     "_name": "LevelSwitcher (Debug)",
     "_objFlags": 0,
@@ -1021,22 +1032,22 @@
     },
     "_children": [
       {
-        "__id__": 52
+        "__id__": 53
       },
       {
-        "__id__": 55
+        "__id__": 56
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 58
-      },
-      {
         "__id__": 59
       },
       {
         "__id__": 60
+      },
+      {
+        "__id__": 61
       }
     ],
     "_prefab": null,
@@ -1075,16 +1086,16 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
-      "__id__": 51
+      "__id__": 52
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 53
+        "__id__": 54
       },
       {
-        "__id__": 54
+        "__id__": 55
       }
     ],
     "_prefab": null,
@@ -1123,7 +1134,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 52
+      "__id__": 53
     },
     "_enabled": true,
     "__prefab": null,
@@ -1145,7 +1156,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 52
+      "__id__": 53
     },
     "_enabled": true,
     "__prefab": null,
@@ -1184,16 +1195,16 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
-      "__id__": 51
+      "__id__": 52
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 56
+        "__id__": 57
       },
       {
-        "__id__": 57
+        "__id__": 58
       }
     ],
     "_prefab": null,
@@ -1232,7 +1243,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 55
+      "__id__": 56
     },
     "_enabled": true,
     "__prefab": null,
@@ -1254,7 +1265,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 55
+      "__id__": 56
     },
     "_enabled": true,
     "__prefab": null,
@@ -1286,7 +1297,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 51
+      "__id__": 52
     },
     "_enabled": true,
     "__prefab": null,
@@ -1308,7 +1319,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 51
+      "__id__": 52
     },
     "_enabled": true,
     "__prefab": null,
@@ -1347,7 +1358,7 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 51
+      "__id__": 52
     },
     "_enabled": true,
     "__prefab": null,
@@ -1356,7 +1367,7 @@
       "__expectedType__": "cc.Prefab"
     },
     "levelItemsContainer": {
-      "__id__": 55
+      "__id__": 56
     },
     "field": {
       "__id__": 15
@@ -1443,7 +1454,7 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 65
+        "__id__": 66
       }
     ],
     "_prefab": null,
@@ -1482,52 +1493,55 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 64
+      "__id__": 65
     },
     "_enabled": true,
     "__prefab": null,
     "levels": [
       {
-        "__id__": 66
+        "__id__": 67
       },
       {
-        "__id__": 79
+        "__id__": 80
       },
       {
-        "__id__": 86
+        "__id__": 87
       },
       {
-        "__id__": 96
+        "__id__": 97
       },
       {
-        "__id__": 103
+        "__id__": 104
       },
       {
-        "__id__": 110
+        "__id__": 111
       },
       {
-        "__id__": 118
+        "__id__": 119
       },
       {
-        "__id__": 124
+        "__id__": 125
       },
       {
-        "__id__": 126
+        "__id__": 127
       },
       {
-        "__id__": 129
+        "__id__": 130
       },
       {
-        "__id__": 132
+        "__id__": 133
       },
       {
-        "__id__": 135
+        "__id__": 136
       },
       {
-        "__id__": 144
+        "__id__": 145
       },
       {
-        "__id__": 149
+        "__id__": 150
+      },
+      {
+        "__id__": 161
       }
     ],
     "_id": "95xb5wWS5HkKoWHJiqB3+u"
@@ -1579,9 +1593,6 @@
     ],
     "specialTiles": [
       {
-        "__id__": 67
-      },
-      {
         "__id__": 68
       },
       {
@@ -1613,6 +1624,9 @@
       },
       {
         "__id__": 78
+      },
+      {
+        "__id__": 79
       }
     ],
     "statuses": []
@@ -1741,9 +1755,6 @@
     ],
     "specialTiles": [
       {
-        "__id__": 80
-      },
-      {
         "__id__": 81
       },
       {
@@ -1757,6 +1768,9 @@
       },
       {
         "__id__": 85
+      },
+      {
+        "__id__": 86
       }
     ],
     "statuses": []
@@ -1803,9 +1817,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 87
-      },
-      {
         "__id__": 88
       },
       {
@@ -1828,6 +1839,9 @@
       },
       {
         "__id__": 95
+      },
+      {
+        "__id__": 96
       }
     ],
     "statuses": []
@@ -1892,9 +1906,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 97
-      },
-      {
         "__id__": 98
       },
       {
@@ -1908,6 +1919,9 @@
       },
       {
         "__id__": 102
+      },
+      {
+        "__id__": 103
       }
     ],
     "statuses": []
@@ -1954,9 +1968,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 104
-      },
-      {
         "__id__": 105
       },
       {
@@ -1970,6 +1981,9 @@
       },
       {
         "__id__": 109
+      },
+      {
+        "__id__": 110
       }
     ],
     "statuses": []
@@ -2016,9 +2030,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 111
-      },
-      {
         "__id__": 112
       },
       {
@@ -2035,6 +2046,9 @@
       },
       {
         "__id__": 117
+      },
+      {
+        "__id__": 118
       }
     ],
     "statuses": []
@@ -2087,9 +2101,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 119
-      },
-      {
         "__id__": 120
       },
       {
@@ -2100,6 +2111,9 @@
       },
       {
         "__id__": 123
+      },
+      {
+        "__id__": 124
       }
     ],
     "statuses": []
@@ -2140,7 +2154,7 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 125
+        "__id__": 126
       }
     ],
     "statuses": []
@@ -2157,10 +2171,10 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 127
+        "__id__": 128
       },
       {
-        "__id__": 128
+        "__id__": 129
       }
     ],
     "statuses": []
@@ -2183,10 +2197,10 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 130
+        "__id__": 131
       },
       {
-        "__id__": 131
+        "__id__": 132
       }
     ],
     "statuses": []
@@ -2209,10 +2223,10 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 133
+        "__id__": 134
       },
       {
-        "__id__": 134
+        "__id__": 135
       }
     ],
     "statuses": []
@@ -2235,9 +2249,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 136
-      },
-      {
         "__id__": 137
       },
       {
@@ -2257,6 +2268,9 @@
       },
       {
         "__id__": 143
+      },
+      {
+        "__id__": 144
       }
     ],
     "statuses": []
@@ -2315,9 +2329,6 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 145
-      },
-      {
         "__id__": 146
       },
       {
@@ -2325,6 +2336,9 @@
       },
       {
         "__id__": 148
+      },
+      {
+        "__id__": 149
       }
     ],
     "statuses": []
@@ -2360,9 +2374,6 @@
     "specialTiles": [],
     "statuses": [
       {
-        "__id__": 150
-      },
-      {
         "__id__": 151
       },
       {
@@ -2388,6 +2399,9 @@
       },
       {
         "__id__": 159
+      },
+      {
+        "__id__": 160
       }
     ]
   },
@@ -2452,6 +2466,159 @@
     "col": 6
   },
   {
+    "__type__": "LevelData",
+    "id": "15",
+    "emptyTiles": [],
+    "specialTiles": [
+      {
+        "__id__": 162
+      },
+      {
+        "__id__": 163
+      },
+      {
+        "__id__": 164
+      },
+      {
+        "__id__": 165
+      },
+      {
+        "__id__": 166
+      },
+      {
+        "__id__": 167
+      },
+      {
+        "__id__": 168
+      },
+      {
+        "__id__": 169
+      }
+    ],
+    "statuses": [
+      {
+        "__id__": 170
+      },
+      {
+        "__id__": 171
+      },
+      {
+        "__id__": 172
+      },
+      {
+        "__id__": 173
+      },
+      {
+        "__id__": 174
+      },
+      {
+        "__id__": 175
+      },
+      {
+        "__id__": 176
+      },
+      {
+        "__id__": 177
+      }
+    ]
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "honey_jar",
+    "row": 6,
+    "col": 3
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "honey_jar",
+    "row": 6,
+    "col": 4
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "honey_jar",
+    "row": 6,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "honey_jar",
+    "row": 6,
+    "col": 6
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "honey_jar",
+    "row": 7,
+    "col": 3
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "honey_jar",
+    "row": 7,
+    "col": 4
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "honey_jar",
+    "row": 7,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "honey_jar",
+    "row": 7,
+    "col": 6
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "jail",
+    "row": 6,
+    "col": 3
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "jail",
+    "row": 6,
+    "col": 4
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "jail",
+    "row": 6,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "jail",
+    "row": 6,
+    "col": 6
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "jail",
+    "row": 7,
+    "col": 3
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "jail",
+    "row": 7,
+    "col": 4
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "jail",
+    "row": 7,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "jail",
+    "row": 7,
+    "col": 6
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": null,
     "asset": null,
@@ -2462,25 +2629,25 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 162
+      "__id__": 180
     },
     "shadows": {
-      "__id__": 163
+      "__id__": 181
     },
     "_skybox": {
-      "__id__": 164
+      "__id__": 182
     },
     "fog": {
-      "__id__": 165
+      "__id__": 183
     },
     "octree": {
-      "__id__": 166
+      "__id__": 184
     },
     "skin": {
-      "__id__": 167
+      "__id__": 185
     },
     "lightProbeInfo": {
-      "__id__": 168
+      "__id__": 186
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false

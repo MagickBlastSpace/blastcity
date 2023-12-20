@@ -95,6 +95,10 @@ export class TileBase extends Component {
         }
     }
 
+    destroyClear() {
+        this.node.destroy();
+    }
+
 
     getMatches(field: Node[][]): Node[] {
         let matches = [];
@@ -106,9 +110,7 @@ export class TileBase extends Component {
         return matches;
     }
 
-    giveDamage(field: Node[][]) {}
-
-    giveStatusDamage(field: Node[][]) {}
+    giveDamage(field: Node[][], statuses: Node[][]) {}
 
 
     onTouchStart(event: cc.Event.EventTouch) {
