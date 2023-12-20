@@ -351,7 +351,7 @@ export class Field extends Component {
                         if(tileComponent.isSpecialTile() && this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol())) {
                             tileComponent.getDamage("bonus");
                         }
-                        this.destroyStatus(tileComponent.getRow(), tileComponent.getCol());
+                        this.giveStatusDamage(tileComponent.getRow(), tileComponent.getCol());
                     }
                 }
             })
@@ -412,6 +412,15 @@ export class Field extends Component {
         })
 
         return cleanMatches;
+    }
+
+    giveStatusDamage(row: number, col: number) {
+        if(this.statusArray[row][col] === null) {
+            return;
+        }
+
+        const statusComp = this.statusArray[row][col].getComponent("StatusBase");
+        statusComp.getDamage();
     }
 
 
