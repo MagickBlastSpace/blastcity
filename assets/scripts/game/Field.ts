@@ -339,9 +339,7 @@ export class Field extends Component {
                 if(matchedTile !== null) {
                     let tileComponent = matchedTile.getComponent("TileBase");
                     if(this.availableColors.includes(choosenType)) {
-                        if(this.isMatchHitAvailable(tileComponent.getRow(), tileComponent.getCol())) {
-                            tileComponent.giveDamage(this.tileArray, this.statusArray);
-                        }
+                        tileComponent.giveDamage(this.tileArray, this.statusArray);
                     }
 
                     if(this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol()) && !tileComponent.isSpecialTile()) {
@@ -388,18 +386,6 @@ export class Field extends Component {
         }, 0.2);
 
         return true;
-    }
-
-
-    isMatchHitAvailable(row: number, col: number): boolean {
-        let status = this.statusArray[row][col];
-        if(status === null) {
-            return true;
-        }
-
-        const statusComponent = status.getComponent("StatusBase");
-
-        return !statusComponent.isBlockingMatchHit();
     }
 
     isDestroyAvailable(row: number, col: number): boolean {

@@ -11,7 +11,6 @@ export class StatusBase extends Component {
     private isBlockMovement: boolean;
     private isBlockInteraction: boolean;
     private isBlockDestroyTile: boolean;
-    private isBlockMatchHit: boolean;
 
     private isDamaged: boolean;
 
@@ -49,10 +48,6 @@ export class StatusBase extends Component {
 
     isBlockingDestroyTile(): boolean {
         return this.isBlockDestroyTile;
-    }
-
-    isBlockingMatchHit(): boolean {
-        return this.isBlockMatchHit;
     }
 
 

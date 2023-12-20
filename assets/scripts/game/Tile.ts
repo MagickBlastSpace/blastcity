@@ -176,7 +176,7 @@ export class Tile extends TileBase {
                 if(adjStatuses[i] !== null) {
                     const statusComponent = adjStatuses[i].getComponent("StatusBase");
                     switch(statusComponent.getStatusType()) {
-                        case "jail":
+                        case "jail": case "bushes":
                             statusComponent.getDamage();
                             break;
                     }
