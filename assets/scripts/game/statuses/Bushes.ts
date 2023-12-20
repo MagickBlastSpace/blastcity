@@ -10,6 +10,7 @@ export class Bushes extends StatusBase {
         this.isBlockMovement = false;
         this.isBlockInteraction = true;
         this.isBlockDestroyTile = true;
+        this.isMatchHit = true;
     }
 
     getDamage() {

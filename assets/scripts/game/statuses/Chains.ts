@@ -2,15 +2,15 @@ import { _decorator, Component, Node } from 'cc';
 import { StatusBase } from './StatusBase';
 const { ccclass, property } = _decorator;
 
-@ccclass('Jail')
-export class Jail extends StatusBase {
+@ccclass('Chains')
+export class Chains extends StatusBase {
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
-        this.isBlockMovement = true;
+        this.isBlockMovement = false;
         this.isBlockInteraction = true;
         this.isBlockDestroyTile = true;
-        this.isMatchHit = true;
+        this.isMatchHit = false;
     }
 
     getDamage() {

@@ -175,10 +175,8 @@ export class Tile extends TileBase {
                 
                 if(adjStatuses[i] !== null) {
                     const statusComponent = adjStatuses[i].getComponent("StatusBase");
-                    switch(statusComponent.getStatusType()) {
-                        case "jail": case "bushes":
-                            statusComponent.getDamage();
-                            break;
+                    if(statusComponent.isMatchHitResponsive()) {
+                        statusComponent.getDamage();
                     }
                     
                     isDamageAvailable = !statusComponent.isBlockingDestroyTile();
@@ -202,7 +200,7 @@ export class Tile extends TileBase {
 
         if(statuses[this.row][this.col] !== null) {
             const status = statuses[this.row][this.col].getComponent("StatusBase");
-            if(status.getStatusType() === "bubble") {
+            if(!status.isBlockingInteraction()) {
                 status.getDamage();
             }
         }

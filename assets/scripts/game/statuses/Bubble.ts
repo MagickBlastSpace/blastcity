@@ -10,6 +10,7 @@ export class Bubble extends StatusBase {
         this.isBlockMovement = false;
         this.isBlockInteraction = false;
         this.isBlockDestroyTile = false;
+        this.isMatchHit = false;
     }
 
     getDamage() {
