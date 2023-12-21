@@ -68,13 +68,13 @@ export class Tile extends TileBase {
     }
 
 
-    getMatches(field: Node[][]): Node[] {
+    getMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        matches = this.checkMatchesInDirection(field, 1, 0)
-            .concat(this.checkMatchesInDirection(field, -1, 0))
-            .concat(this.checkMatchesInDirection(field, 0, 1))
-            .concat(this.checkMatchesInDirection(field, 0, -1));
+        matches = this.checkMatchesInDirection(field, statuses, 1, 0)
+            .concat(this.checkMatchesInDirection(field, statuses, -1, 0))
+            .concat(this.checkMatchesInDirection(field, statuses, 0, 1))
+            .concat(this.checkMatchesInDirection(field, statuses, 0, -1));
 
         let newMatchesCount = matches.length;
         let startIndex = 0;
@@ -84,10 +84,10 @@ export class Tile extends TileBase {
                 let tileComponent = matches[i].getComponent("TileBase");
                 const isBonus = tileComponent.isBonusTile();
                 if(!isBonus) {
-                    const newMatches = tileComponent.checkMatchesInDirection(field, 1, 0)
-                        .concat(tileComponent.checkMatchesInDirection(field, -1, 0))
-                        .concat(tileComponent.checkMatchesInDirection(field, 0, 1))
-                        .concat(tileComponent.checkMatchesInDirection(field, 0, -1));
+                    const newMatches = tileComponent.checkMatchesInDirection(field, statuses, 1, 0)
+                        .concat(tileComponent.checkMatchesInDirection(field, statuses, -1, 0))
+                        .concat(tileComponent.checkMatchesInDirection(field, statuses, 0, 1))
+                        .concat(tileComponent.checkMatchesInDirection(field, statuses, 0, -1));
 
                     for(let j = 0; j < newMatches.length; j++) {
                         if (!matches.includes(newMatches[j])) {
@@ -104,7 +104,7 @@ export class Tile extends TileBase {
         return matches;
     }
 
-    checkMatchesInDirection(field: Node[][], dirX: number, dirY: number): Node[] {
+    checkMatchesInDirection(field: Node[][], statuses: Node[][], dirX: number, dirY: number): Node[] {
         let matches: Node[] = [];
 
         let currentRow = this.row + dirY;
@@ -119,8 +119,9 @@ export class Tile extends TileBase {
             if(currentTile !== null) {
                 const currentTileComponent = currentTile.getComponent("TileBase");
                 const isBonus = currentTileComponent.isBonusTile();
+                const isStatusBlock = this.checkStatusBlock(statuses[currentRow][currentCol]);
 
-                if (currentTileComponent.getTileType() === this.tileType && !isBonus) {
+                if (currentTileComponent.getTileType() === this.tileType && !isBonus && !isStatusBlock) {
                     matches.push(currentTile);
                     currentRow += dirY;
                     currentCol += dirX;
@@ -136,6 +137,14 @@ export class Tile extends TileBase {
         return matches;
     }
 
+    checkStatusBlock(statusNode: Node): boolean {
+        if(statusNode === null) {
+            return false;
+        }
+
+        const statusComp = statusNode.getComponent("StatusBase");
+        return statusComp.isBlockingDestroyTile();
+    }
 
     setPotentialBonus(bonus: string) {
         this.potentialBonus = bonus;

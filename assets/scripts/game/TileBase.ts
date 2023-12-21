@@ -100,7 +100,7 @@ export class TileBase extends Component {
     }
 
 
-    getMatches(field: Node[][]): Node[] {
+    getMatches(field: Node[][], statuses: Node[][]) {
         let matches = [];
         return matches;
     }

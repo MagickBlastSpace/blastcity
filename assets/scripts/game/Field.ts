@@ -272,6 +272,8 @@ export class Field extends Component {
         this.statusArray[row][col] = statusNode;
         this.statusLayout.addChild(statusNode);
 
+        this.checkForPotentialBonuses();
+
         return statusNode;
     }
 
@@ -329,26 +331,24 @@ export class Field extends Component {
             potentialBonus = choosenTile.getPotentialBonus();
         }
         
-        let matches = choosenTile.getMatches(this.tileArray);
-        if(!isBonus) {
-            matches = this.cleanMatches(matches);
-        }
+        let matches = choosenTile.getMatches(this.tileArray, this.statusArray);
         
         if(matches.length >= 2 || isBonus) {
             matches.forEach(matchedTile => {
                 if(matchedTile !== null) {
                     let tileComponent = matchedTile.getComponent("TileBase");
-                    if(this.availableColors.includes(choosenType)) {
+                    let isDestroyAvailable = this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol());
+                    if(this.availableColors.includes(choosenType) && isDestroyAvailable) {
                         tileComponent.giveDamage(this.tileArray, this.statusArray);
                     }
 
-                    if(this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol()) && !tileComponent.isSpecialTile()) {
+                    if(isDestroyAvailable && !tileComponent.isSpecialTile()) {
                         this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
                         tileComponent.destroyTile();
                     }
 
-                    if(isBonus) {
-                        if(tileComponent.isSpecialTile() && this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol())) {
+                    if(isBonus && !this.availableColors.includes(choosenType)) {
+                        if(tileComponent.isSpecialTile() && isDestroyAvailable) {
                             tileComponent.getDamage("bonus");
                         }
                         this.giveStatusDamage(tileComponent.getRow(), tileComponent.getCol());
@@ -364,7 +364,6 @@ export class Field extends Component {
             return true;
         }
 
-        this.checkStatusesForDestroy();
         this.checkSpecTilesForDestroy();
 
         this.scheduleOnce(() => {
@@ -399,21 +398,6 @@ export class Field extends Component {
         return !statusComponent.isBlockingDestroyTile();
     }
 
-    cleanMatches(matches: Node[]): Node[] {
-        let cleanMatches = [];
-
-        matches.forEach(matchedTile => {
-            if(matchedTile !== null) {
-                let tileComponent = matchedTile.getComponent("TileBase");
-                if(this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol())) {
-                    cleanMatches.push(matchedTile);
-                }
-            }
-        })
-
-        return cleanMatches;
-    }
-
     giveStatusDamage(row: number, col: number) {
         if(this.statusArray[row][col] === null) {
             return;
@@ -425,6 +409,7 @@ export class Field extends Component {
 
 
     spawnNewTiles() {
+        this.checkStatusesForDestroy();
         this.fallTiles();
     
         this.scheduleOnce(() => {
@@ -452,7 +437,6 @@ export class Field extends Component {
             }
     
             this.checkSpecTilesInActionEffect();
-            this.clearAll();
             this.checkForPotentialBonuses();
             this.isClickAvailable = true;
 
@@ -668,6 +652,8 @@ export class Field extends Component {
 
 
     checkForPotentialBonuses() {
+        this.clearAll();
+
         let checkedTiles = [];
 
         for(let i = 0; i < this.numRows; i++) {
@@ -679,7 +665,7 @@ export class Field extends Component {
                     let matches = [];
 
                     if(tileComponent.isCommonTile()) {
-                        matches = tileComponent.getMatches(this.tileArray);
+                        matches = tileComponent.getMatches(this.tileArray, this.statusArray);
 
                         if(matches.length >= 9) {
                             this.setPotentialBonus(matches, "discoball");
