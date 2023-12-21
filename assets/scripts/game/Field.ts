@@ -236,6 +236,13 @@ export class Field extends Component {
         tileNode.on("damage_all", (tileId) => {
             this.setAllDamagedByType(tileId);
         });
+        tileNode.on("status", (statusId) => {
+            let cleanTiles = this.getAllCleanTilesPositions();
+            if(cleanTiles.length > 0) {
+                const tileIndex = Math.floor(Math.random() * cleanTiles.length);
+                this.spawnStatus(cleanTiles[tileIndex].x, cleanTiles[tileIndex].y, statusId);
+            }
+        });
 
         this.tileArray[row][col] = tileNode;
         if(isDoubleWidth) {
@@ -306,6 +313,31 @@ export class Field extends Component {
             }
             this.statusArray[row][col] = null;
         }
+    }
+
+    getAllCleanTilesPositions(): Vec2[] {
+        let tiles = [];
+
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                let tile = this.tileArray[row][col];
+                let status = this.statusArray[row][col];
+
+                if(status === null) {
+                    if(tile !== null) {
+                        let tileComp = tile.getComponent("TileBase");
+                        if(!tileComp.isEmptyTile() && !tileComp.isSpecialTile()) {
+                            tiles.push(new Vec2(row, col));
+                        }
+                    }
+                    else {
+                        tiles.push(new Vec2(row, col));
+                    }
+                }
+            }
+        }
+
+        return tiles;
     }
 
 
