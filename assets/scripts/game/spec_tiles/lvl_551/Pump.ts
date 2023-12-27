@@ -4,11 +4,15 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Pump')
 export class Pump extends SpecTileBase {
+
+    private isGenerate: boolean = false;
+
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
         this.isShifts = false;
         this.isGrouped = true;
+        this.isGenerate = false;
     }
 
     getDamage(damageType: string) {
@@ -17,8 +21,25 @@ export class Pump extends SpecTileBase {
         }
         this.setAsDamaged();
 
+        this.isGenerate = true;
+    }
 
-        this.node.emit("special", "sticker");
+    startInActionEffect(field: Node[][]): boolean {
+        if(this.isGenerate) {
+            this.node.emit("special", "sticker");
+
+            let tiles = this.getGroupedTiles(field);
+            tiles.forEach(tile => {
+                let tileComponent = tile.getComponent("Pump");
+                tileComponent.clearGenerate();
+            })
+        }
+
+        return true;
+    }
+
+    clearGenerate() {
+        this.isGenerate = false;
     }
 }
 
