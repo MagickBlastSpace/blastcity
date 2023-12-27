@@ -163,6 +163,9 @@ export class TileBase extends Component {
 
         return true;
     }
+
+
+    subscribeOnFieldEvents(field: Node) {}
 }
 
 

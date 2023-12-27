@@ -53,6 +53,22 @@ export class SpecTileBase extends TileBase {
         return false;
     }
 
+    isGroupReadyToDestroy(field: Node[][]): boolean {
+        if(!this.isReadyToDestroy) {
+            return false;
+        }
+
+        let tiles = this.getGroupedTiles(field);
+        for(let i = 0; i < tiles.length; i++) {
+            const tileComp = tiles[i].getComponent("SpecTileBase");
+            if(!tileComp.isReadyToDestroy()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     isGroupedTile(): boolean {
         return this.isGrouped;
     }
@@ -147,6 +163,28 @@ export class SpecTileBase extends TileBase {
         }
 
         return matches;
+    }
+
+
+    findAllTilesThisType(field: Node[][]): Node[] {
+        let tiles = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                const tile = field[i][j];
+                if(tile !== null) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.getTileType() === this.tileType) {
+                        tiles.push(tileComp);
+                    }
+                }
+            }
+        }
+
+        return tiles;
     }
 }
 

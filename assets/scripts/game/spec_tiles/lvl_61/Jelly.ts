@@ -30,7 +30,7 @@ export class Jelly extends SpecTileBase {
             return false;
         }
 
-        let jellies = this.findAllJellies(field);
+        let jellies = this.findAllTilesThisType(field);
 
         let matches = [];
 
@@ -51,28 +51,6 @@ export class Jelly extends SpecTileBase {
         this.node.emit("damage_all", this.tileType);
 
         return true;
-    }
-
-
-    findAllJellies(field: Node[][]): Node[] {
-        let jellies = [];
-
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
-                const tile = field[i][j];
-                if(tile !== null) {
-                    const tileComp = tile.getComponent("TileBase");
-                    if(tileComp.getTileType() === this.tileType) {
-                        jellies.push(tileComp);
-                    }
-                }
-            }
-        }
-
-        return jellies;
     }
 
 

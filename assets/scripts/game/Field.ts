@@ -213,6 +213,7 @@ export class Field extends Component {
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
+        tileComponent.subscribeOnFieldEvents(this.node);
 
         let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
         let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
@@ -249,6 +250,13 @@ export class Field extends Component {
             if(cleanTiles.length > 0) {
                 const tileIndex = Math.floor(Math.random() * cleanTiles.length);
                 this.spawnStatus(cleanTiles[tileIndex].x, cleanTiles[tileIndex].y, statusId);
+            }
+        });
+        tileNode.on("special", (tileId) => {
+            let cleanTiles = this.getAllCleanTilesPositions();
+            if(cleanTiles.length > 0) {
+                const tileIndex = Math.floor(Math.random() * cleanTiles.length);
+                this.spawnSpecialTile(cleanTiles[tileIndex].x, cleanTiles[tileIndex].y, tileId);
             }
         });
 
@@ -385,6 +393,8 @@ export class Field extends Component {
                     if(isDestroyAvailable && !tileComponent.isSpecialTile()) {
                         this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
                         tileComponent.destroyTile();
+
+                        this.node.emit("destroy", tileComponent.getTileType());
                     }
 
                     if(isBonus && !this.availableColors.includes(choosenType)) {
@@ -604,19 +614,28 @@ export class Field extends Component {
                     }
 
                     if(tileComponent.isSpecialTile()) {
-                        if(tileComponent.isReadyToDestroy()) {
-                            this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-                            if(tileComponent.isDoubleWidth()) {
-                                this.tileArray[tileComponent.getRow()][tileComponent.getCol() + 1] = null;
+                        if(!tileComponent.isGroupedTile()) {
+                            if(tileComponent.isReadyToDestroy()) {
+                                this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
+                                if(tileComponent.isDoubleWidth()) {
+                                    this.tileArray[tileComponent.getRow()][tileComponent.getCol() + 1] = null;
+                                }
+                                if(tileComponent.isDoubleHeight()) {
+                                    this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol()] = null;
+                                }
+                                if(tileComponent.isDoubleWidth() && tileComponent.isDoubleHeight()) {
+                                    this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol() + 1] = null;
+                                }
+                                tileComponent.destroyTile();
+                                isDestroyed = true;
                             }
-                            if(tileComponent.isDoubleHeight()) {
-                                this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol()] = null;
+                        }
+                        else {
+                            if(tileComponent.isGroupReadyToDestroy(this.tileArray)) {
+                                this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
+                                tileComponent.destroyTile();
+                                isDestroyed = true;
                             }
-                            if(tileComponent.isDoubleWidth() && tileComponent.isDoubleHeight()) {
-                                this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol() + 1] = null;
-                            }
-                            tileComponent.destroyTile();
-                            isDestroyed = true;
                         }
                     }
                 }
