@@ -54,7 +54,7 @@ export class SpecTileBase extends TileBase {
     }
 
     isGroupReadyToDestroy(field: Node[][]): boolean {
-        if(!this.isReadyToDestroy) {
+        if(!this.isReadyToDestroy()) {
             return false;
         }
 
