@@ -67,14 +67,11 @@ export class Field extends Component {
 
 
     spawnInitialBoard(level: LevelData) {
-        /*const jsonString = JSON.stringify(level);
-        console.log(jsonString);*/
-
         this.clearBoard();
 
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
-                this.spawnCommonTile(row, col);
+                this.spawnCommonTile(row, col, "random");
             }
         }
 
@@ -83,7 +80,18 @@ export class Field extends Component {
         }
 
         for(let i = 0; i < level.specialTiles.length; i++) {
-            this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
+            if(this.availableColors.includes(level.specialTiles[i].id)) {
+                this.spawnCommonTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
+            }
+            else if(level.specialTiles[i].id === "rocket_horizontal" || level.specialTiles[i].id === "rocket_vertical") {
+                this.spawnRocket(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
+            }
+            else if(level.specialTiles[i].id === "bomb") {
+                this.spawnBomb(level.specialTiles[i].row, level.specialTiles[i].col);
+            }
+            else {
+                this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
+            }
         }
 
         for(let i = 0; i < level.statuses.length; i++) {
@@ -111,12 +119,12 @@ export class Field extends Component {
     }
 
 
-    spawnCommonTile(row: number, col: number): Node {
+    spawnCommonTile(row: number, col: number, tType: string): Node {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.tilePrefab);
         const tileComponent = tileNode.getComponent("Tile");
         const tileTypeIndex = Math.floor(Math.random() * this.availableColors.length).toString();
-        const tileType = this.availableColors[tileTypeIndex];
+        const tileType = tType === "random" ? this.availableColors[tileTypeIndex] : tType;
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
         return spawnedTile;
     }
@@ -463,7 +471,7 @@ export class Field extends Component {
                         }
                     }
                     if (tile === null && shouldSpawnNewTile) {
-                        this.spawnCommonTile(row, col);
+                        this.spawnCommonTile(row, col, "random");
                     }
                 }
             }
