@@ -133,7 +133,7 @@ export class Bomb extends BonusTileBase {
             case "red":
             case "green":
             case "yellow":
-                matches = this.getDiscoballComboMatches(field, statuses, this.combo);
+                matches = this.getDiscoballComboMatches(field, this.combo);
                 break;
         }
 

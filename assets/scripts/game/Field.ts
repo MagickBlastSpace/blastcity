@@ -295,8 +295,6 @@ export class Field extends Component {
         this.statusArray[row][col] = statusNode;
         this.statusLayout.addChild(statusNode);
 
-        this.checkForPotentialBonuses();
-
         return statusNode;
     }
 
@@ -500,7 +498,6 @@ export class Field extends Component {
         }, timeToRespawn);
     }
     
-
 
     fallTiles() {
         for (let col = 0; col < this.numCols; col++) {
@@ -718,12 +715,19 @@ export class Field extends Component {
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
+                let status = this.statusArray[i][j];
 
                 if(!checkedTiles.includes(tile) && tile !== null) {
                     const tileComponent = tile.getComponent("TileBase");
                     let matches = [];
 
-                    if(tileComponent.isCommonTile()) {
+                    let isStatusBlock = false;
+                    if(status !== null) {
+                        let statusComp = status.getComponent("StatusBase");
+                        isStatusBlock = statusComp.isBlockingDestroyTile();
+                    }
+
+                    if(tileComponent.isCommonTile() && !isStatusBlock) {
                         matches = tileComponent.getMatches(this.tileArray, this.statusArray);
 
                         if(matches.length >= 9) {
