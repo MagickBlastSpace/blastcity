@@ -10,16 +10,16 @@ export class Bomb extends BonusTileBase {
     }
 
 
-    getMatches(field: Node[][]): Node[] {
+    getMatches(field: Node[][], statuses: Node[][]): Node[] {
         this.combo = this.getCombo(field);
 
-        let tilesToDestroy = this.getMatchesByType(field);
+        let tilesToDestroy = this.getMatchesByType(field, statuses);
         let bonusTiles = this.findBonusTiles(tilesToDestroy);
 
         while(bonusTiles.length > 0) {
             let newTilesToDestroy = [];
             bonusTiles.forEach(bonusTile => {
-                const newMatches = bonusTile.getMatchesByType(field);
+                const newMatches = bonusTile.getMatchesByType(field, statuses);
                 newMatches.forEach(newMatch => {
                     if(!tilesToDestroy.includes(newMatch)) {
                         newTilesToDestroy.push(newMatch);
@@ -34,21 +34,21 @@ export class Bomb extends BonusTileBase {
     }
 
 
-    getMatchesByType(field: Node[][]): Node[] {
+    getMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         if(this.isCombo()) {
-            matches = matches.concat(this.getMatchesByCombo(field));
+            matches = matches.concat(this.getMatchesByCombo(field, statuses));
             return matches;
         }
 
-        matches = matches.concat(this.getBombMatches(field, this.row, this.col));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row, this.col));
 
         return matches;
     }
 
 
-    getBombMatches(field: Node[][], row: number, col: number): Node[] {
+    getBombMatches(field: Node[][], statuses: Node[][], row: number, col: number): Node[] {
         let matches = [];
 
         const numRows: number = field.length;
@@ -59,55 +59,56 @@ export class Bomb extends BonusTileBase {
         }
 
         const tile = field[row][col];
-        if(this.checkTileForMatch(tile)) {
+        const status = statuses[row][col];
+        if(this.checkTileForMatch(tile, status)) {
             matches.push(tile);
         }
 
         if(row < numRows - 1) {
             const tile = field[row + 1][col];
-            if(this.checkTileForMatch(tile)) {
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
         if(row > 0) {
             const tile = field[row - 1][col];
-            if(this.checkTileForMatch(tile)) {
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
         if(col < numCols - 1) {
             const tile = field[row][col + 1];
-            if(this.checkTileForMatch(tile)) {
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
         if(col > 0) {
             const tile = field[row][col - 1];
-            if(this.checkTileForMatch(tile)) {
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
         if(row < numRows - 1 && col < numCols - 1) {
             const tile = field[row + 1][col + 1];
-            if(this.checkTileForMatch(tile)) {
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
         if(row > 0 && col > 0) {
             const tile = field[row - 1][col - 1];
-            if(this.checkTileForMatch(tile)) {
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
         if(row < numRows - 1 && col > 0) {
             const tile = field[row + 1][col - 1];
-            if(this.checkTileForMatch(tile)) {
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
         if(row > 0 && col < numCols - 1) {
             const tile = field[row - 1][col + 1];
-            if(this.checkTileForMatch(tile)) {
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
@@ -117,53 +118,53 @@ export class Bomb extends BonusTileBase {
 
 
 
-    getMatchesByCombo(field: Node[][]): Node[] {
+    getMatchesByCombo(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         switch(this.combo) {
             case "rocket_vertical":
             case "rocket_horizontal":
-                matches = this.getRocketComboMatches(field);
+                matches = this.getRocketComboMatches(field, statuses);
                 break;
             case "bomb":
-                matches = this.getBombComboMatches(field);
+                matches = this.getBombComboMatches(field, statuses);
                 break;
             case "blue":
             case "red":
             case "green":
             case "yellow":
-                matches = this.getDiscoballComboMatches(field, this.combo);
+                matches = this.getDiscoballComboMatches(field, statuses, this.combo);
                 break;
         }
 
         return matches;
     }
 
-    getRocketComboMatches(field: Node[][]): Node[] {
+    getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        matches = matches.concat(this.getHorizontalMatches(field, this.row));
-        matches = matches.concat(this.getVerticalMatches(field, this.col));
-        matches = matches.concat(this.getHorizontalMatches(field, this.row - 1));
-        matches = matches.concat(this.getHorizontalMatches(field, this.row + 1));
-        matches = matches.concat(this.getVerticalMatches(field, this.col - 1));
-        matches = matches.concat(this.getVerticalMatches(field, this.col + 1));
+        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row));
+        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col));
+        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row - 1));
+        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row + 1));
+        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col - 1));
+        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col + 1));
 
         return matches;
     }
 
-    getBombComboMatches(field: Node[][]): Node[] {
+    getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        matches = matches.concat(this.getBombMatches(field, this.row, this.col));
-        matches = matches.concat(this.getBombMatches(field, this.row + 2, this.col));
-        matches = matches.concat(this.getBombMatches(field, this.row - 2, this.col));
-        matches = matches.concat(this.getBombMatches(field, this.row + 2, this.col + 2));
-        matches = matches.concat(this.getBombMatches(field, this.row + 2, this.col - 2));
-        matches = matches.concat(this.getBombMatches(field, this.row - 2, this.col + 2));
-        matches = matches.concat(this.getBombMatches(field, this.row - 2, this.col - 2));
-        matches = matches.concat(this.getBombMatches(field, this.row, this.col + 2));
-        matches = matches.concat(this.getBombMatches(field, this.row, this.col - 2));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row, this.col));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row + 2, this.col));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row - 2, this.col));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row + 2, this.col + 2));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row + 2, this.col - 2));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row - 2, this.col + 2));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row - 2, this.col - 2));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row, this.col + 2));
+        matches = matches.concat(this.getBombMatches(field, statuses, this.row, this.col - 2));
 
         return matches;
     }

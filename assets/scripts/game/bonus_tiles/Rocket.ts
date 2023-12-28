@@ -28,10 +28,10 @@ export class Rocket extends BonusTileBase {
     }
 
 
-    getMatches(field: Node[][]): Node[] {
+    getMatches(field: Node[][], statuses: Node[][]): Node[] {
         this.combo = this.getCombo(field);
 
-        let tilesToDestroy = this.getMatchesByType(field);
+        let tilesToDestroy = this.getMatchesByType(field, statuses);
         let bonusTiles = this.findBonusTiles(tilesToDestroy);
 
         let direction = this.tileType;
@@ -43,7 +43,7 @@ export class Rocket extends BonusTileBase {
                 if(direction === bonusType) {
                     direction = bonusTile.changeDirection();
                 }
-                let newMatches = bonusTile.getMatchesByType(field);
+                let newMatches = bonusTile.getMatchesByType(field, statuses);
                 
                 newMatches.forEach(newMatch => {
                     if(!tilesToDestroy.includes(newMatch)) {
@@ -59,20 +59,20 @@ export class Rocket extends BonusTileBase {
     }
 
 
-    getMatchesByType(field: Node[][]): Node[] {
+    getMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         if(this.isCombo()) {
-            matches = this.getMatchesByCombo(field);
+            matches = this.getMatchesByCombo(field, statuses);
             return matches;
         }
 
         switch(this.tileType) {
             case 'rocket_vertical':
-                matches = this.getVerticalMatches(field, this.col);
+                matches = this.getVerticalMatches(field, statuses, this.col);
                 break;
             case 'rocket_horizontal':
-                matches = this.getHorizontalMatches(field, this.row);
+                matches = this.getHorizontalMatches(field, statuses, this.row);
                 break;
         }
 
@@ -81,16 +81,16 @@ export class Rocket extends BonusTileBase {
 
 
 
-    getMatchesByCombo(field: Node[][]): Node[] {
+    getMatchesByCombo(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         switch(this.combo) {
             case "rocket_vertical":
             case "rocket_horizontal":
-                matches = this.getRocketComboMatches(field);
+                matches = this.getRocketComboMatches(field, statuses);
                 break;
             case "bomb":
-                matches = this.getBombComboMatches(field);
+                matches = this.getBombComboMatches(field, statuses);
                 break;
             case "blue":
             case "red":
@@ -103,18 +103,18 @@ export class Rocket extends BonusTileBase {
         return matches;
     }
 
-    getRocketComboMatches(field: Node[][]): Node[] {
-        return this.getVerticalMatches(field, this.col).concat(this.getHorizontalMatches(field, this.row));
+    getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
+        return this.getVerticalMatches(field, statuses, this.col).concat(this.getHorizontalMatches(field, statuses, this.row));
     }
 
-    getBombComboMatches(field: Node[][]): Node[] {
+    getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        matches = this.getRocketComboMatches(field);
-        matches = matches.concat(this.getHorizontalMatches(field, this.row - 1));
-        matches = matches.concat(this.getHorizontalMatches(field, this.row + 1));
-        matches = matches.concat(this.getVerticalMatches(field, this.col - 1));
-        matches = matches.concat(this.getVerticalMatches(field, this.col + 1));
+        matches = this.getRocketComboMatches(field, statuses);
+        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row - 1));
+        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row + 1));
+        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col - 1));
+        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col + 1));
 
         return matches;
     }

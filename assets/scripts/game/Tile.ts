@@ -179,28 +179,25 @@ export class Tile extends TileBase {
         const adjStatuses = this.getAdjacentTiles(statuses);
 
         for(let i = 0; i < adjTiles.length; i++) {
-            if(adjTiles[i] !== null) {
-                let isDamageAvailable = true;
+            let isDamageAvailable = true;
                 
-                if(adjStatuses[i] !== null) {
-                    const statusComponent = adjStatuses[i].getComponent("StatusBase");
-                    if(statusComponent.isMatchHitResponsive()) {
-                        statusComponent.getDamage();
-                    }
-                    
-                    isDamageAvailable = !statusComponent.isBlockingDestroyTile();
+            if(adjStatuses[i] !== null) {
+                const statusComponent = adjStatuses[i].getComponent("StatusBase");
+                if(statusComponent.isMatchHitResponsive()) {
+                    statusComponent.getDamage();
                 }
+                isDamageAvailable = !statusComponent.isBlockingDestroyTile();
+            }
 
-                if(isDamageAvailable) {
-                    const tileComponent = adjTiles[i].getComponent("TileBase");
-                    if(tileComponent.isSpecialTile()) {
-                        tileComponent.getDamage(this.tileType);
-                        if(tileComponent.isGroupedTile()) {
-                            let groupedTiles = tileComponent.getGroupedTiles(field);
-                            for(let i = 0; i < groupedTiles.length; i++) {
-                                let groupedTile = groupedTiles[i].getComponent("SpecTileBase");
-                                groupedTile.setAsDamaged();
-                            }
+            if(adjTiles[i] !== null && isDamageAvailable) {
+                const tileComponent = adjTiles[i].getComponent("TileBase");
+                if(tileComponent.isSpecialTile()) {
+                    tileComponent.getDamage(this.tileType);
+                    if(tileComponent.isGroupedTile()) {
+                        let groupedTiles = tileComponent.getGroupedTiles(field);
+                        for(let i = 0; i < groupedTiles.length; i++) {
+                            let groupedTile = groupedTiles[i].getComponent("SpecTileBase");
+                            groupedTile.setAsDamaged();
                         }
                     }
                 }

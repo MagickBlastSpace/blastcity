@@ -62,7 +62,7 @@ export class BonusTileBase extends TileBase {
     }
 
 
-    getVerticalMatches(field: Node[][], col: number): Node[] {
+    getVerticalMatches(field: Node[][], statuses: Node[][], col: number): Node[] {
         let matches = [];
 
         const numRows: number = field.length;
@@ -74,7 +74,8 @@ export class BonusTileBase extends TileBase {
 
         for(let i = 0; i < numRows; i++) {
             const tile = field[i][col];
-            if(this.checkTileForMatch(tile)) {
+            const status = statuses[i][col];
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
@@ -82,7 +83,7 @@ export class BonusTileBase extends TileBase {
         return matches;
     }
 
-    getHorizontalMatches(field: Node[][], row: number): Node[] {
+    getHorizontalMatches(field: Node[][], statuses: Node[][], row: number): Node[] {
         let matches = [];
 
         const numRows: number = field.length;
@@ -94,7 +95,8 @@ export class BonusTileBase extends TileBase {
 
         for(let i = 0; i < numCols; i++) {
             const tile = field[row][i];
-            if(this.checkTileForMatch(tile)) {
+            const status = statuses[row][i];
+            if(this.checkTileForMatch(tile, status)) {
                 matches.push(tile);
             }
         }
@@ -119,8 +121,9 @@ export class BonusTileBase extends TileBase {
     }
 
 
-    checkTileForMatch(tile: Node): boolean {
+    checkTileForMatch(tile: Node, status: Node): boolean {
         if(tile === null) {
+            this.giveStatusDamage(status);
             return false;
         }
         
@@ -141,6 +144,16 @@ export class BonusTileBase extends TileBase {
 
     clear() {
         this.combo = "";
+    }
+
+
+    giveStatusDamage(statusNode: Node) {
+        if(statusNode === null) {
+            return;
+        }
+
+        const statusComp = statusNode.getComponent("StatusBase");
+        statusComp.getDamage();
     }
 }
 
