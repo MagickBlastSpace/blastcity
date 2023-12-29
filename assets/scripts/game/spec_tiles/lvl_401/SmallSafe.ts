@@ -1,11 +1,13 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('SmallSafe')
 export class SmallSafe extends SpecTileBase {
-    @property(Label)
-    hpLabel: Label = null;
+    @property(Node)
+    closed: Node = null;
+    @property(Node)
+    open: Node = null;
 
     private isClosed: boolean = true;
 
@@ -26,12 +28,8 @@ export class SmallSafe extends SpecTileBase {
     }
 
     refresh() {
-        if(this.isClosed) {
-            this.hpLabel.string = "Close";
-        }
-        else {
-            this.hpLabel.string = "Open";
-        }
+        this.closed.active = this.isClosed;
+        this.open.active = !this.isClosed;
     }
 
     startInActionEffect(field: Node[][]): boolean {

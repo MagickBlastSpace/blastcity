@@ -1,12 +1,14 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Shell')
 export class Shell extends SpecTileBase {
 
-    @property(Label)
-    hpLabel: Label = null;
+    @property(Node)
+    closed: Node = null;
+    @property(Node)
+    open: Node = null;
 
 
     init(row: number, col: number, tileType: string) {
@@ -38,12 +40,8 @@ export class Shell extends SpecTileBase {
     }
 
     refresh() {
-        if(this.strength > 1) {
-            this.hpLabel.string = "Close";
-        }
-        else {
-            this.hpLabel.string = "Open";
-        }
+        this.closed.active = this.strength === 2;
+        this.open.active = this.strength < 2;
     }
 }
 

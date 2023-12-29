@@ -5,8 +5,8 @@ const { ccclass, property } = _decorator;
 @ccclass('Lamp')
 export class Lamp extends SpecTileBase {
 
-    @property(Label)
-    hpLabel: Label = null;
+    @property(Node)
+    hp: Node = null;
 
 
     init(row: number, col: number, tileType: string) {
@@ -35,7 +35,7 @@ export class Lamp extends SpecTileBase {
 
 
     refresh() {
-        this.hpLabel.string = this.strength;
+        this.hp.active = this.strength === 1;
     }
 }
 

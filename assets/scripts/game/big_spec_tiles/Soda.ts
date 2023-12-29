@@ -1,12 +1,12 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node } from 'cc';
 import { BigTileBase } from './BigTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Soda')
 export class Soda extends BigTileBase {
 
-    @property(Label)
-    hpLabel: Label = null;
+    @property([Node])
+    hps: Node[] = [];
 
 
     init(row: number, col: number, tileType: string) {
@@ -31,7 +31,13 @@ export class Soda extends BigTileBase {
 
 
     refresh() {
-        this.hpLabel.string = this.strength;
+        for(let i = 0; i < this.hps.length; i++) {
+            this.hps[i].active = false;
+        }
+
+        for(let i = 0; i < this.strength; i++) {
+            this.hps[i].active = true;
+        }
     }
 }
 

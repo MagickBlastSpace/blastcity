@@ -2,6 +2,16 @@ import { _decorator, Component, Node, Sprite, SpriteFrame, Vec2, Vec3, UITransfo
 import { TileBase } from './TileBase';
 const { ccclass, property } = _decorator;
 
+
+@ccclass('SpriteTileData')
+export class SpriteTileData {
+    @property
+    id = '';
+    @property(SpriteFrame)
+    icon: SpriteFrame | null = null;
+}
+
+
 @ccclass('Tile')
 export class Tile extends TileBase {
 
@@ -17,14 +27,23 @@ export class Tile extends TileBase {
     @property(SpriteFrame)
     yellow: SpriteFrame | null = null;
 
-    @property(SpriteFrame)
+    @property([SpriteTileData])
+    rocketIcons: SpriteTileData[] = [];
+
+    @property([SpriteTileData])
+    bombIcons: SpriteTileData[] = [];
+
+    @property([SpriteTileData])
+    discoballIcons: SpriteTileData[] = [];
+
+    /*@property(SpriteFrame)
     rocketHorizontal: SpriteFrame | null = null;
     @property(SpriteFrame)
     rocketVertical: SpriteFrame | null = null;
     @property(SpriteFrame)
     bomb: SpriteFrame | null = null;
     @property(SpriteFrame)
-    discoball: SpriteFrame | null = null;
+    discoball: SpriteFrame | null = null;*/
 
     @property(Sprite)
     potentialBonusIcon: Sprite = null;
@@ -150,16 +169,14 @@ export class Tile extends TileBase {
         this.potentialBonus = bonus;
         switch(bonus) {
             case 'discoball':
-                this.potentialBonusIcon.spriteFrame = this.discoball;
+                this.potentialBonusIcon.spriteFrame = this.discoballIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
             case 'bomb':
-                this.potentialBonusIcon.spriteFrame = this.bomb;
+                this.potentialBonusIcon.spriteFrame = this.bombIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
             case 'rocket_vertical':
-                this.potentialBonusIcon.spriteFrame = this.rocketVertical;
-                break;
             case 'rocket_horizontal':
-                this.potentialBonusIcon.spriteFrame = this.rocketHorizontal;
+                this.potentialBonusIcon.spriteFrame = this.rocketIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
         }
     }
