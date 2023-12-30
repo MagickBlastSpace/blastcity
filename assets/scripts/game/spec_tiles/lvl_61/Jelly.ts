@@ -95,7 +95,7 @@ export class Jelly extends SpecTileBase {
         
         const tileComponent = tile.getComponent("TileBase");
 
-        if(tileComponent.isSpecialTile() || tileComponent.isEmptyTile()) {
+        if(tileComponent.isSpecialTile() || tileComponent.isEmptyTile() || tileComponent.isBonusTile()) {
             return false;
         }
 
