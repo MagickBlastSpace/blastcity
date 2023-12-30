@@ -11,20 +11,37 @@ export class SmallSafe extends SpecTileBase {
 
     private isClosed: boolean = true;
 
+    private diamonds: number = 0;
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
         this.isShifts = false;
         this.isClosed = true;
+        this.strength = 1;
+        this.diamonds = 1;
         this.refresh();
     }
 
     getDamage(damageType: string) {
-        if(!this.isClosed && !this.isDamaged) {
-            console.log("diamond plus");
+        if(!this.isClosed) {
+            if(this.diamonds > 0) {
+                this.diamonds--;
+                console.log("diamond event");
+            }
+            this.strength--;
         }
-        this.node.emit("damage_all", this.tileType);
+        else {
+            this.node.emit("damage_all", this.tileType);
+        }
+    }
+
+    isReadyToDestroy(): boolean {
+        if(this.strength <= 0) {
+            return true;
+        }
+        return false;
     }
 
     refresh() {
