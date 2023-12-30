@@ -2,8 +2,8 @@ import { _decorator, Component, Node } from 'cc';
 import { CosmoRocket } from './CosmoRocket';
 const { ccclass, property } = _decorator;
 
-@ccclass('CosmoRocket_Yellow')
-export class CosmoRocket_Yellow extends CosmoRocket {
+@ccclass('CosmoRocket_Green')
+export class CosmoRocket_Green extends CosmoRocket {
 
     private fieldNode: Node = null;
     private destroyTileCallback: Function = null;
@@ -12,7 +12,7 @@ export class CosmoRocket_Yellow extends CosmoRocket {
         this.fieldNode = field;
 
         this.destroyTileCallback = (tileType) => {
-            if(tileType === "yellow") {
+            if(tileType === "green") {
                 this.getDamageFromEvent();
             }
         };
