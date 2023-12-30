@@ -48,6 +48,7 @@ export class Field extends Component {
     private isClickAvailable: bool = false;
 
     private availableColors: string[] = [];
+    private spawnPool: string[] = [];
 
 
     start() {
@@ -67,6 +68,11 @@ export class Field extends Component {
 
 
     spawnInitialBoard(level: LevelData) {
+        this.spawnPool = level.spawnPool;
+        if(this.spawnPool.length === 0) {
+            this.spawnPool = ["blue", "red", "green", "yellow"];
+        }
+
         this.clearBoard();
 
         for (let row = 0; row < this.numRows; row++) {
@@ -126,8 +132,12 @@ export class Field extends Component {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.tilePrefab);
         const tileComponent = tileNode.getComponent("Tile");
-        const tileTypeIndex = Math.floor(Math.random() * this.availableColors.length).toString();
-        const tileType = tType === "random" ? this.availableColors[tileTypeIndex] : tType;
+        const tileTypeIndex = Math.floor(Math.random() * this.spawnPool.length).toString();
+        const tileType = tType === "random" ? this.spawnPool[tileTypeIndex] : tType;
+        if(!this.availableColors.includes(tileType)) {
+            this.spawnSpecialTile(row, col, tileType);
+            return;
+        }
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
         return spawnedTile;
     }

@@ -34,6 +34,8 @@ export class LevelData {
     statuses: SpecialTileData[] = [];
     @property([Vec2])
     destroyedOnStart: Vec2[] = [];
+    @property([cc.String])
+    spawnPool: string[] = [];
 
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
@@ -75,6 +77,12 @@ export class LevelData {
                 vec2.x = coord.x;
                 vec2.y = coord.y;
                 return vec2;
+            });
+        }
+
+        if (jsonData.spawnPool) {
+            levelData.spawnPool = jsonData.spawnPool.map((spawnItem: any) => {
+                return spawnItem || '';
             });
         }
 
