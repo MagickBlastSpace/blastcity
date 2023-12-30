@@ -37,6 +37,10 @@ export class Lemonade extends BigTileBase {
 
 
     getDamage(damageType: string) {
+        if(this.isDamaged) {
+            return;
+        }
+        
         if(damageType === "red") {
             this.strengthRed--;
         }
@@ -49,7 +53,22 @@ export class Lemonade extends BigTileBase {
         else if(damageType === "yellow") {
             this.strengthYellow--;
         }
+        else if(damageType === "bonus") {
+            if(this.strengthRed > 0) {
+                this.strengthRed--;
+            }
+            else if(this.strengthBlue > 0) {
+                this.strengthBlue--;
+            }
+            else if(this.strengthGreen > 0) {
+                this.strengthGreen--;
+            }
+            else if(this.strengthYellow > 0) {
+                this.strengthYellow--;
+            }
+        }
         
+        this.setAsDamaged();
         this.refresh();
     }
 

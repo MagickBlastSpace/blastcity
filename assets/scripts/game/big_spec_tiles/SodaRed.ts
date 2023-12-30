@@ -5,7 +5,7 @@ const { ccclass, property } = _decorator;
 @ccclass('SodaRed')
 export class SodaRed extends Soda {
     getDamage(damageType: string) {
-        if(damageType === "red" && !this.isDamaged) {
+        if( (damageType === "red" || damageType === "bonus") && !this.isDamaged) {
             this.strength--;
             this.setAsDamaged();
         }
