@@ -32,6 +32,8 @@ export class LevelData {
     specialTiles: SpecialTileData[] = [];
     @property([SpecialTileData])
     statuses: SpecialTileData[] = [];
+    @property([Vec2])
+    destroyedOnStart: Vec2[] = [];
 
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
@@ -64,6 +66,15 @@ export class LevelData {
                 tileData.row = specialTile.row;
                 tileData.col = specialTile.col;
                 return tileData;
+            });
+        }
+
+        if (jsonData.destroyedOnStart) {
+            levelData.destroyedOnStart = jsonData.destroyedOnStart.map((coord: any) => {
+                const vec2 = new Vec2();
+                vec2.x = coord.x;
+                vec2.y = coord.y;
+                return vec2;
             });
         }
 

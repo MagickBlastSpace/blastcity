@@ -98,8 +98,11 @@ export class Field extends Component {
             this.spawnStatus(level.statuses[i].row, level.statuses[i].col, level.statuses[i].id);
         }
 
-        this.checkForPotentialBonuses();
-        this.isClickAvailable = true;
+        for(let i = 0; i < level.destroyedOnStart.length; i++) {
+            this.destroyTile(level.destroyedOnStart[i].y, level.destroyedOnStart[i].x, true);
+        }
+
+        this.spawnNewTiles();
     }
 
     clearBoard() {
