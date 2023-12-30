@@ -48,6 +48,9 @@ export class BonusTileBase extends TileBase {
         else if(possibleCombos.includes("yellow")) {
             return "yellow";
         }
+        else if(possibleCombos.includes("purple")) {
+            return "purple";
+        }
         else if(possibleCombos.includes("bomb")) {
             return "bomb";
         }

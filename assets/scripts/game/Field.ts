@@ -61,7 +61,7 @@ export class Field extends Component {
             }
         }
 
-        this.availableColors = ["blue", "red", "green", "yellow"];
+        this.availableColors = ["blue", "red", "green", "yellow", "purple"];
 
         this.spawnInitialBoard(GameData.instance.levels[0]);
     }

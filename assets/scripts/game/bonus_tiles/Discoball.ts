@@ -16,6 +16,8 @@ export class Discoball extends BonusTileBase {
     green: SpriteFrame | null = null;
     @property(SpriteFrame)
     yellow: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    purple: SpriteFrame | null = null;
 
     
     init(row: number, col: number, tileType: string) {
@@ -33,6 +35,9 @@ export class Discoball extends BonusTileBase {
                 break;
             case 'yellow':
                 this.icon.spriteFrame = this.yellow;
+                break;
+            case 'purple':
+                this.icon.spriteFrame = this.purple;
                 break;
         }
     }
@@ -88,6 +93,7 @@ export class Discoball extends BonusTileBase {
             case "red":
             case "green":
             case "yellow":
+            case "purple":
                 matches = this.getDiscoballComboMatches(field);
                 break;
         }

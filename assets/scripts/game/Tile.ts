@@ -26,6 +26,8 @@ export class Tile extends TileBase {
     green: SpriteFrame | null = null;
     @property(SpriteFrame)
     yellow: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    purple: SpriteFrame | null = null;
 
     @property([SpriteTileData])
     rocketIcons: SpriteTileData[] = [];
@@ -82,6 +84,9 @@ export class Tile extends TileBase {
                 break;
             case 'yellow':
                 this.icon.spriteFrame = this.yellow;
+                break;
+            case 'purple':
+                this.icon.spriteFrame = this.purple;
                 break;
         }
     }
