@@ -109,6 +109,8 @@ export class Field extends Component {
         }
 
         this.spawnNewTiles();
+
+        this.node.emit("level_init", level.movesCount);
     }
 
     clearBoard() {
@@ -500,7 +502,6 @@ export class Field extends Component {
             this.checkSpecTilesInActionEffect();
             this.checkForPotentialBonuses();
             this.isClickAvailable = true;
-
         }, 0.2);
     }
 
@@ -705,6 +706,10 @@ export class Field extends Component {
         let isMatchesFound = this.findAndDestroyMatches(tile, true);
         
         this.isClickAvailable = !isMatchesFound;
+
+        if(isMatchesFound) {
+            this.node.emit("move");
+        }
     }
 
     isInteractionAvailable(row: number, col: number): boolean {

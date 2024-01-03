@@ -18,16 +18,8 @@ export class Tile extends TileBase {
     @property(Sprite)
     icon: Sprite = null;
 
-    @property(SpriteFrame)
-    blue: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    red: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    green: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    yellow: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    purple: SpriteFrame | null = null;
+    @property([SpriteTileData])
+    commonIcons: SpriteTileData[] = [];
 
     @property([SpriteTileData])
     rocketIcons: SpriteTileData[] = [];
@@ -71,24 +63,8 @@ export class Tile extends TileBase {
         this.isEmpty = false;
         this.isShifts = true;
         this.isSpecial = false;
-        
-        switch(this.tileType) {
-            case 'blue':
-                this.icon.spriteFrame = this.blue;
-                break;
-            case 'red':
-                this.icon.spriteFrame = this.red;
-                break;
-            case 'green':
-                this.icon.spriteFrame = this.green;
-                break;
-            case 'yellow':
-                this.icon.spriteFrame = this.yellow;
-                break;
-            case 'purple':
-                this.icon.spriteFrame = this.purple;
-                break;
-        }
+
+        this.icon.spriteFrame = this.commonIcons.find(i => i.id === this.getTileType())?.icon;
     }
 
 

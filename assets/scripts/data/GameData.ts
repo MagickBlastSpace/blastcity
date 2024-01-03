@@ -36,6 +36,8 @@ export class LevelData {
     destroyedOnStart: Vec2[] = [];
     @property([cc.String])
     spawnPool: string[] = [];
+    @property
+    movesCount = 0;
 
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
@@ -84,6 +86,13 @@ export class LevelData {
             levelData.spawnPool = jsonData.spawnPool.map((spawnItem: any) => {
                 return spawnItem || '';
             });
+        }
+
+        if (jsonData.movesCount !== cc.undefined && jsonData.movesCount !== null) {
+            levelData.movesCount = Number(jsonData.movesCount);
+        }
+        else {
+            levelData.movesCount = 0;
         }
 
         return levelData;
