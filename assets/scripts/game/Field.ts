@@ -267,6 +267,11 @@ export class Field extends Component {
                 this.spawnStatus(cleanTiles[tileIndex].x, cleanTiles[tileIndex].y, statusId);
             }
         });
+        tileNode.on("status_static", (row, col, statusId) => {
+            if(this.checkPositionForStatus(row, col)) {
+                this.spawnStatus(row, col, statusId);
+            }
+        });
         tileNode.on("special", (tileId) => {
             let cleanTiles = this.getAllCleanTilesPositions();
             if(cleanTiles.length > 0) {
@@ -349,24 +354,34 @@ export class Field extends Component {
 
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
-                let tile = this.tileArray[row][col];
-                let status = this.statusArray[row][col];
-
-                if(status === null) {
-                    if(tile !== null) {
-                        let tileComp = tile.getComponent("TileBase");
-                        if(!tileComp.isEmptyTile() && !tileComp.isSpecialTile()) {
-                            tiles.push(new Vec2(row, col));
-                        }
-                    }
-                    else {
-                        tiles.push(new Vec2(row, col));
-                    }
+                if(this.checkPositionForStatus(row, col)) {
+                    tiles.push(new Vec2(row, col));
                 }
             }
         }
 
         return tiles;
+    }
+
+    checkPositionForStatus(row: number, col: number): boolean {
+        if(row < this.numRows && row >= 0 && col < this.numCols && col >= 0) {
+            let tile = this.tileArray[row][col];
+            let status = this.statusArray[row][col];
+
+            if(status === null) {
+                if(tile !== null) {
+                    let tileComp = tile.getComponent("TileBase");
+                    if(!tileComp.isEmptyTile() && !tileComp.isSpecialTile()) {
+                        return true;
+                    }
+                }
+                else {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 
