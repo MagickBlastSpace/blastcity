@@ -287,6 +287,9 @@ export class Field extends Component {
         tileNode.on("swap", (pos_1, pos_2) => {
             this.swapTiles(pos_1, pos_2);
         });
+        tileNode.on("destroy_random_tile", () => {
+            this.destroyRandomTile();
+        });
 
         this.tileArray[row][col] = tileNode;
         if(isDoubleWidth) {
@@ -341,6 +344,30 @@ export class Field extends Component {
             }
             this.tileArray[row][col] = null;
         }
+    }
+
+    destroyRandomTile() {
+        let tiles = [];
+
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                const tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.isCommonTile()) {
+                        tiles.push(tileComp);
+                    }
+                }
+            }
+        }
+
+        if(tiles.length === 0) {
+            return;
+        }
+
+        let randomIndex = Math.floor(Math.random() * tiles.length);
+
+        this.destroyTile(tiles[randomIndex].getRow(), tiles[randomIndex].getCol());
     }
 
     destroyStatus(row: number, col: number, isClear: boolean) {

@@ -40,7 +40,7 @@ export class Jars extends BigTileBase {
             this.hps[i].active = false;
         }
 
-        for(let i = 0; i < this.strength; i++) {
+        for(let i = 0; i < this.strength && i < this.hps.length; i++) {
             this.hps[i].active = true;
         }
     }
