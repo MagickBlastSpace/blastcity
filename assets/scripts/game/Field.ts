@@ -216,8 +216,13 @@ export class Field extends Component {
             case "red":
             case "green":
             case "yellow":
+            case "purple":
                 spawnedTile = this.spawnDiscoball(row, col, bonusId);
                 break;
+        }
+
+        if(timeToDestroy < 0) {
+            return;
         }
 
         this.scheduleOnce(() => {
@@ -278,6 +283,9 @@ export class Field extends Component {
                 const tileIndex = Math.floor(Math.random() * cleanTiles.length);
                 this.spawnSpecialTile(cleanTiles[tileIndex].x, cleanTiles[tileIndex].y, tileId);
             }
+        });
+        tileNode.on("swap", (pos_1, pos_2) => {
+            this.swapTiles(pos_1, pos_2);
         });
 
         this.tileArray[row][col] = tileNode;
@@ -828,6 +836,45 @@ export class Field extends Component {
                 }
             }
         }
+    }
+
+
+    getAvailableColors(): string[] {
+        let colors = [];
+        for(let i = 0; i < this.spawnPool.length; i++) {
+            if(this.availableColors.includes(this.spawnPool[i])) {
+                colors.push(this.spawnPool[i]);
+            }
+        }
+        return colors;
+    }
+
+
+    swapTiles(pos_1: Vec2, pos_2: Vec2) {
+        let tile1 = this.tileArray[pos_1.x][pos_1.y];
+        let tileComp1 = tile1.getComponent("TileBase");
+
+        let tile2 = this.tileArray[pos_2.x][pos_2.y];
+        let tileComp2 = tile2.getComponent("TileBase");
+
+        this.tileArray[pos_1.x][pos_1.y] = tile2;
+        this.tileArray[pos_2.x][pos_2.y] = tile1;
+
+        tileComp1.setRow(pos_2.x);
+        tileComp2.setRow(pos_1.x);
+
+        let posX_1 = pos_2.y * (this.tileSize + this.tileSpacing) + this.xOffset;
+        let posY_1 = pos_2.x * (this.tileSize + this.tileSpacing) + this.yOffset;
+
+        let posX_2 = pos_1.y * (this.tileSize + this.tileSpacing) + this.xOffset;
+        let posY_2 = pos_1.x * (this.tileSize + this.tileSpacing) + this.yOffset;
+
+        cc.tween(tile1)
+            .to(0.15, { position: new cc.Vec3(posX_1, posY_1, 0) })
+            .start();
+        cc.tween(tile2)
+            .to(0.15, { position: new cc.Vec3(posX_2, posY_2, 0) })
+            .start();
     }
 
 
