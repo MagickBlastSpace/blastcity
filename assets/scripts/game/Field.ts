@@ -944,6 +944,10 @@ export class Field extends Component {
         return null;
     }
 
+    getTilesArray(): Node[][] {
+        return this.tileArray;
+    }
+
 
     swapTiles(pos_1: Vec2, pos_2: Vec2) {
         let tile1 = this.tileArray[pos_1.x][pos_1.y];
