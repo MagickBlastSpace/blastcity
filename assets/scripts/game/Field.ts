@@ -297,6 +297,9 @@ export class Field extends Component {
         tileNode.on("destroy_random_tile", () => {
             this.destroyRandomTile();
         });
+        tileNode.on("extra_hit", (row, col) => {
+            this.extraHit(row, col);
+        });
 
         this.tileArray[row][col] = tileNode;
         if(isDoubleWidth || isTripleWidth) {
@@ -422,6 +425,11 @@ export class Field extends Component {
         return tiles;
     }
 
+    extraHit(row: number, col: number) {
+        let tile = this.tileArray[row][col];
+        this.giveDamage(tile, "extra_hit", true);
+    }
+
     checkPositionForStatus(row: number, col: number): boolean {
         if(row < this.numRows && row >= 0 && col < this.numCols && col >= 0) {
             let tile = this.tileArray[row][col];
@@ -470,27 +478,7 @@ export class Field extends Component {
         
         if(matches.length >= 2 || isBonus) {
             matches.forEach(matchedTile => {
-                if(matchedTile !== null) {
-                    let tileComponent = matchedTile.getComponent("TileBase");
-                    let isDestroyAvailable = this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol());
-                    if(this.availableColors.includes(choosenType) && isDestroyAvailable) {
-                        tileComponent.giveDamage(this.tileArray, this.statusArray);
-                    }
-
-                    if(isDestroyAvailable && !tileComponent.isSpecialTile()) {
-                        this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-                        tileComponent.destroyTile();
-
-                        this.node.emit("destroy", tileComponent.getTileType());
-                    }
-
-                    if(isBonus && !this.availableColors.includes(choosenType)) {
-                        if(tileComponent.isSpecialTile() && isDestroyAvailable) {
-                            tileComponent.getDamage("bonus");
-                        }
-                        this.giveStatusDamage(tileComponent.getRow(), tileComponent.getCol());
-                    }
-                }
+                this.giveDamage(matchedTile, choosenType, isBonus);
             })
         }
         else {
@@ -522,6 +510,30 @@ export class Field extends Component {
         }, 0.2);
 
         return true;
+    }
+
+    giveDamage(tile: Node, choosenType: string, isBonus: boolean) {
+        if(tile !== null) {
+            let tileComponent = tile.getComponent("TileBase");
+            let isDestroyAvailable = this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol());
+            if(this.availableColors.includes(choosenType) && isDestroyAvailable) {
+                tileComponent.giveDamage(this.tileArray, this.statusArray);
+            }
+
+            if(isDestroyAvailable && !tileComponent.isSpecialTile()) {
+                this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
+                tileComponent.destroyTile();
+
+                this.node.emit("destroy", tileComponent.getTileType());
+            }
+
+            if(isBonus && !this.availableColors.includes(choosenType)) {
+                if(tileComponent.isSpecialTile() && isDestroyAvailable) {
+                    tileComponent.getDamage("bonus");
+                }
+                this.giveStatusDamage(tileComponent.getRow(), tileComponent.getCol());
+            }
+        }
     }
 
     isDestroyAvailable(row: number, col: number): boolean {
@@ -912,6 +924,14 @@ export class Field extends Component {
             }
         }
         return colors;
+    }
+
+    getNumRows(): number {
+        return this.numRows;
+    }
+
+    getNumCols(): number {
+        return this.numCols;
     }
 
 
