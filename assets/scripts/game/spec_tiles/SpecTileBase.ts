@@ -13,6 +13,9 @@ export class SpecTileBase extends TileBase {
     private isDoubleX: boolean;
     private isDoubleY: boolean;
 
+    private isTripleX: boolean;
+    private isTripleY: boolean;
+
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -27,6 +30,9 @@ export class SpecTileBase extends TileBase {
 
         this.isDoubleX = false;
         this.isDoubleY = false;
+
+        this.isTripleX = false;
+        this.isTripleY = false;
     }
 
 
@@ -80,6 +86,14 @@ export class SpecTileBase extends TileBase {
 
     isDoubleHeight(): boolean {
         return this.isDoubleY;
+    }
+
+    isTripleWidth(): boolean {
+        return this.isTripleX;
+    }
+
+    isTripleHeight(): boolean {
+        return this.isTripleY;
     }
 
 

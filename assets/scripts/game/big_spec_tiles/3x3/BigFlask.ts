@@ -1,13 +1,13 @@
-import { _decorator, Component, Node, Sprite } from 'cc';
-import { Sticker } from '../lvl_6/Sticker';
+import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
+import { Soda } from '../Soda';
 import { SpriteTileData } from '../../Tile';
 const { ccclass, property } = _decorator;
 
-@ccclass('Flask')
-export class Flask extends Sticker {
+@ccclass('BigFlask')
+export class BigFlask extends Soda {
 
-    @property(Sprite)
-    icon: Sprite = null;
+    @property([Sprite])
+    icons: Sprite[] = [];
 
     @property([SpriteTileData])
     colorIcons: SpriteTileData[] = [];
@@ -15,16 +15,32 @@ export class Flask extends Sticker {
     private availableColors: string[] = [];
     private currentColorIndex = 0;
 
+    private isBlockingDamage: boolean = false;
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
+        this.isTripleX = true;
+        this.isTripleY = true;
+
+        this.strength = 8;
         this.currentColorIndex = 0;
+
+        this.isBlockingDamage = false;
+
+        this.refresh();
     }
 
+
     getDamage(damageType: string) {
+        if(this.isBlockingDamage) {
+            return;
+        }
+
         if(damageType === "bonus" || damageType === this.availableColors[this.currentColorIndex]) {
             this.strength--;
+            this.isBlockingDamage = true;
             this.node.emit("damage_all", this.tileType);
         }
     }
@@ -53,10 +69,23 @@ export class Flask extends Sticker {
         this.currentColorIndex++;
 
         this.refresh();
+
+        this.clear();
     }
 
     refresh() {
-        this.icon.spriteFrame = this.colorIcons.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        super.refresh();
+
+        for(let i = 0; i < this.icons.length; i++) {
+            this.icons[i].spriteFrame = this.colorIcons.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        }
+    }
+
+
+    clear() {
+        super.clear();
+
+        this.isBlockingDamage = false;
     }
 }
 

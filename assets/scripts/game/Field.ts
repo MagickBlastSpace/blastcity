@@ -238,11 +238,18 @@ export class Field extends Component {
         let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
         let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
 
+        let isTripleWidth = tileComponent.isSpecialTile() ? tileComponent.isTripleWidth() : false;
+        let isTripleHeight = tileComponent.isSpecialTile() ? tileComponent.isTripleHeight() : false;
+
         const tileNode = tileComponent.node;
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
+
         posX = isDoubleWidth ? posX + this.tileSize / 2 : posX;
         posY = isDoubleHeight ? posY + this.tileSize / 2 : posY;
+
+        posX = isTripleWidth ? posX + this.tileSize / 2 : posX;
+        posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
         tileComponent.node.setPosition(posX, posY + tileNode.height);
 
@@ -292,17 +299,34 @@ export class Field extends Component {
         });
 
         this.tileArray[row][col] = tileNode;
-        if(isDoubleWidth) {
+        if(isDoubleWidth || isTripleWidth) {
             this.destroyTile(row, col + 1, false);
             this.tileArray[row][col + 1] = tileNode;
         }
-        if(isDoubleHeight) {
+        if(isDoubleHeight || isTripleHeight) {
             this.destroyTile(row + 1, col, false);
             this.tileArray[row + 1][col] = tileNode;
         }
-        if(isDoubleWidth && isDoubleHeight) {
+        if( (isDoubleWidth && isDoubleHeight) || (isTripleWidth && isTripleHeight)) {
             this.destroyTile(row + 1, col + 1, false);
             this.tileArray[row + 1][col + 1] = tileNode;
+        }
+
+        if(isTripleWidth) {
+            this.destroyTile(row, col + 2, false);
+            this.tileArray[row][col + 2] = tileNode;
+        }
+        if(isTripleHeight) {
+            this.destroyTile(row + 2, col, false);
+            this.tileArray[row + 2][col] = tileNode;
+        }
+        if(isTripleWidth && isTripleHeight) {
+            this.destroyTile(row + 2, col + 2, false);
+            this.tileArray[row + 2][col + 2] = tileNode;
+            this.destroyTile(row + 2, col + 1, false);
+            this.tileArray[row + 2][col + 1] = tileNode;
+            this.destroyTile(row + 1, col + 2, false);
+            this.tileArray[row + 1][col + 2] = tileNode;
         }
 
         this.tilesLayout.addChild(tileNode);
@@ -678,15 +702,29 @@ export class Field extends Component {
                         if(!tileComponent.isGroupedTile()) {
                             if(tileComponent.isReadyToDestroy()) {
                                 this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-                                if(tileComponent.isDoubleWidth()) {
+
+                                if(tileComponent.isDoubleWidth() || tileComponent.isTripleWidth()) {
                                     this.tileArray[tileComponent.getRow()][tileComponent.getCol() + 1] = null;
                                 }
-                                if(tileComponent.isDoubleHeight()) {
+                                if(tileComponent.isDoubleHeight() || tileComponent.isTripleHeight()) {
                                     this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol()] = null;
                                 }
-                                if(tileComponent.isDoubleWidth() && tileComponent.isDoubleHeight()) {
+                                if((tileComponent.isDoubleWidth() && tileComponent.isDoubleHeight()) || (tileComponent.isTripleWidth() && tileComponent.isTripleHeight())) {
                                     this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol() + 1] = null;
                                 }
+
+                                if(tileComponent.isTripleWidth()) {
+                                    this.tileArray[tileComponent.getRow()][tileComponent.getCol() + 2] = null;
+                                }
+                                if(tileComponent.isTripleHeight()) {
+                                    this.tileArray[tileComponent.getRow() + 2][tileComponent.getCol()] = null;
+                                }
+                                if(tileComponent.isTripleWidth() && tileComponent.isTripleHeight()) {
+                                    this.tileArray[tileComponent.getRow() + 2][tileComponent.getCol() + 2] = null;
+                                    this.tileArray[tileComponent.getRow() + 2][tileComponent.getCol() + 1] = null;
+                                    this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol() + 2] = null;
+                                }
+
                                 tileComponent.destroyTile();
                                 isDestroyed = true;
                             }
