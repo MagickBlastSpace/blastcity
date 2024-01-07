@@ -300,6 +300,9 @@ export class Field extends Component {
         tileNode.on("extra_hit", (row, col) => {
             this.extraHit(row, col);
         });
+        tileNode.on("destroy_tile", (row, col) => {
+            this.destroyTile(row, col, false);
+        });
 
         this.tileArray[row][col] = tileNode;
         if(isDoubleWidth || isTripleWidth) {
@@ -932,6 +935,13 @@ export class Field extends Component {
 
     getNumCols(): number {
         return this.numCols;
+    }
+
+    getTile(row: number, col: number): Node {
+        if(row >= 0 && row < this.numRows && col >= 0 && col < this.numCols) {
+            return this.tileArray[row][col];
+        }
+        return null;
     }
 
 

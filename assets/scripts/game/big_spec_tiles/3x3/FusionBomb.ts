@@ -52,8 +52,6 @@ export class FusionBomb extends Lemonade {
                 this.node.emit("extra_hit", i, j);
             }
         }
-
-        //this.node.emit("respawn", timeToRespawn);
     }
 }
 
