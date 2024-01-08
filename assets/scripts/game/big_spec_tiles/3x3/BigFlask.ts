@@ -55,6 +55,12 @@ export class BigFlask extends Soda {
 
 
     subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
         let fieldComp = field.getComponent("Field");
         this.availableColors = fieldComp.getAvailableColors();
 
@@ -66,7 +72,9 @@ export class BigFlask extends Soda {
         if(this.currentColorIndex >= this.availableColors.length - 1) {
             this.currentColorIndex = 0;
         }
-        this.currentColorIndex++;
+        else {
+            this.currentColorIndex++;
+        }
 
         this.refresh();
 

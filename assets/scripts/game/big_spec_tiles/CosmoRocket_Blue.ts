@@ -9,6 +9,12 @@ export class CosmoRocket_Blue extends CosmoRocket {
     private destroyTileCallback: Function = null;
 
     subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
         this.fieldNode = field;
 
         this.destroyTileCallback = (tileType) => {

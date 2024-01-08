@@ -48,6 +48,12 @@ export class Dynamite extends CosmoRocket {
     
 
     subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
         this.fieldNode = field;
         let availableColors = field.getComponent("Field").getAvailableColors();
         let colorIndex = Math.floor(Math.random() * availableColors.length);

@@ -39,6 +39,12 @@ export class Flask extends Sticker {
 
 
     subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
         let fieldComp = field.getComponent("Field");
         this.availableColors = fieldComp.getAvailableColors();
 
@@ -50,7 +56,9 @@ export class Flask extends Sticker {
         if(this.currentColorIndex >= this.availableColors.length - 1) {
             this.currentColorIndex = 0;
         }
-        this.currentColorIndex++;
+        else {
+            this.currentColorIndex++;
+        }
 
         this.refresh();
     }

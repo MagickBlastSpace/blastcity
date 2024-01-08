@@ -110,6 +110,8 @@ export class Field extends Component {
 
         this.spawnNewTiles();
 
+        this.subscribeAll();
+
         this.node.emit("level_init", level.movesCount);
     }
 
@@ -124,6 +126,18 @@ export class Field extends Component {
                 let status = this.statusArray[row][col];
                 if(status !== null) {
                     this.destroyStatus(row, col, true);
+                }
+            }
+        }
+    }
+
+    subscribeAll() {
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                let tile = this.tileArray[row][col];
+                if(tile !== null) {
+                    let tileComp = tile.getComponent("TileBase");
+                    tileComp.subscribeOnFieldEvents(this.node);
                 }
             }
         }
@@ -233,7 +247,7 @@ export class Field extends Component {
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
-        tileComponent.subscribeOnFieldEvents(this.node);
+        //tileComponent.subscribeOnFieldEvents(this.node);
 
         let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
         let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;

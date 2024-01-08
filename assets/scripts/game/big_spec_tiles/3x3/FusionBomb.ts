@@ -32,6 +32,12 @@ export class FusionBomb extends Lemonade {
     }
     
     subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
         let fieldComp = field.getComponent("Field");
         this.numRows = fieldComp.getNumRows();
         this.numCols = fieldComp.getNumCols();

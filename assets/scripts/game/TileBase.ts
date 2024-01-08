@@ -15,6 +15,8 @@ export class TileBase extends Component {
 
     private currentTween: any = null;
 
+    private isSubscribed: boolean = false;
+
 
     onLoad() {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
@@ -31,6 +33,8 @@ export class TileBase extends Component {
         this.tileType = tileType;
 
         this.currentTween = null;
+
+        this.isSubscribed = false;
     }
 
 
@@ -165,7 +169,9 @@ export class TileBase extends Component {
     }
 
 
-    subscribeOnFieldEvents(field: Node) {}
+    subscribeOnFieldEvents(field: Node) {
+        this.isSubscribed = true;
+    }
 }
 
 

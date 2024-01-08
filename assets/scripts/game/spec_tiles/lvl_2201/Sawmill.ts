@@ -23,6 +23,12 @@ export class Sawmill extends SpecTileBase {
 
 
     subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
         this.icon.spriteFrame = this.log;
 
         let fieldComp = field.getComponent("Field");
