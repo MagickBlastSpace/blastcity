@@ -35,6 +35,10 @@ export class Watermelon extends Lamp {
                 break;
         }
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "watermelon");
+    }
 }
 
 

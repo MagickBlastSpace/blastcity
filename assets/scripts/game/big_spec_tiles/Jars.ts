@@ -24,6 +24,8 @@ export class Jars extends BigTileBase {
     getDamage(damageType: string) {
         this.strength--;
 
+        this.node.emit("goal", "jars");
+
         this.refresh();
     }
 

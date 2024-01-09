@@ -19,6 +19,10 @@ export class BigBottle extends BigTileBase {
         }
         return false;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "bottle");
+    }
 }
 
 

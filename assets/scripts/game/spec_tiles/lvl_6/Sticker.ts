@@ -29,9 +29,7 @@ export class Sticker extends SpecTileBase {
     }
 
 
-    destroyTile() {
-        super.destroyTile();
-        
+    startDestroyConsequences() {
         this.node.emit("goal", "sticker");
     }
 }

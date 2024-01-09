@@ -35,6 +35,8 @@ export class EasterEgg extends SpecTileBase {
 
 
     startDestroyConsequences() {
+        this.node.emit("goal", "easter_egg");
+
         if(this.changeColor === "") {
             return;
         }

@@ -37,6 +37,10 @@ export class Lamp extends SpecTileBase {
     refresh() {
         this.hp.active = this.strength === 1;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "lamp");
+    }
 }
 
 

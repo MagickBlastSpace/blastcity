@@ -43,6 +43,10 @@ export class Shell extends SpecTileBase {
         this.closed.active = this.strength === 2;
         this.open.active = this.strength < 2;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "shell");
+    }
 }
 
 

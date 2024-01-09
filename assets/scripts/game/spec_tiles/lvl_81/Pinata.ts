@@ -23,6 +23,11 @@ export class Pinata extends SpecTileBase {
         }
         return false;
     }
+
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "pinata");
+    }
 }
 
 

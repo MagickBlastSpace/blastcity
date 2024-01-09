@@ -30,9 +30,7 @@ export class Box extends SpecTileBase {
     }
 
 
-    destroyTile() {
-        super.destroyTile();
-        
+    startDestroyConsequences() {
         this.node.emit("goal", "box");
     }
 }

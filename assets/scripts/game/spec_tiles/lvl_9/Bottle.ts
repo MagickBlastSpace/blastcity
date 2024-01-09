@@ -18,9 +18,7 @@ export class Bottle extends SpecTileBase {
         return false;
     }
 
-    destroyTile() {
-        super.destroyTile();
-        
+    startDestroyConsequences() {
         this.node.emit("goal", "bottle");
     }
 }
