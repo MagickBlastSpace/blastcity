@@ -9,6 +9,8 @@ export class Jelly extends SpecTileBase {
 
         this.isShifts = false;
         this.strength = 1;
+
+        this.setAsDamaged();
     }
 
     getDamage(damageType: string) {
