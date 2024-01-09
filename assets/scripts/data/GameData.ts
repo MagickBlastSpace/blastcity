@@ -22,6 +22,15 @@ export class SpecialPrefabData {
 }
 
 
+@ccclass('GoalData')
+export class GoalData {
+    @property
+    id = '';
+    @property
+    count = 0;
+}
+
+
 @ccclass('LevelData')
 export class LevelData {
     @property
@@ -36,6 +45,8 @@ export class LevelData {
     destroyedOnStart: Vec2[] = [];
     @property([cc.String])
     spawnPool: string[] = [];
+    @property([GoalData])
+    goals: GoalData[] = [];
     @property
     movesCount = 0;
 
@@ -85,6 +96,15 @@ export class LevelData {
         if (jsonData.spawnPool) {
             levelData.spawnPool = jsonData.spawnPool.map((spawnItem: any) => {
                 return spawnItem || '';
+            });
+        }
+
+        if (jsonData.goals) {
+            levelData.goals = jsonData.goals.map((goal: any) => {
+                const goalData = new GoalData();
+                goalData.id = goal.id;
+                goalData.count = goal.count;
+                return goalData;
             });
         }
 

@@ -28,6 +28,13 @@ export class Box extends SpecTileBase {
         }
         return false;
     }
+
+
+    destroyTile() {
+        super.destroyTile();
+        
+        this.node.emit("goal", "box");
+    }
 }
 
 

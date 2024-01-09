@@ -111,8 +111,8 @@ export class Field extends Component {
         this.spawnNewTiles();
 
         this.subscribeAll();
-
-        this.node.emit("level_init", level.movesCount);
+        
+        this.node.emit("level_init", level.movesCount, level.goals);
     }
 
     clearBoard() {
@@ -316,6 +316,9 @@ export class Field extends Component {
         });
         tileNode.on("destroy_tile", (row, col) => {
             this.destroyTile(row, col, false);
+        });
+        tileNode.on("goal", (goalType) => {
+            this.node.emit("destroy", goalType);
         });
 
         this.tileArray[row][col] = tileNode;
@@ -540,8 +543,6 @@ export class Field extends Component {
             if(isDestroyAvailable && !tileComponent.isSpecialTile()) {
                 this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
                 tileComponent.destroyTile();
-
-                this.node.emit("destroy", tileComponent.getTileType());
             }
 
             if(isBonus && !this.availableColors.includes(choosenType)) {

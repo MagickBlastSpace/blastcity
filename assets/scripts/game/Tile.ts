@@ -200,6 +200,13 @@ export class Tile extends TileBase {
             }
         }
     }
+
+
+    destroyTile() {
+        super.destroyTile();
+        
+        this.node.emit("goal", this.tileType);
+    }
 }
 
 
