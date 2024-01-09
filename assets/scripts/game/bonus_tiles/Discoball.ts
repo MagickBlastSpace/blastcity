@@ -183,14 +183,11 @@ export class Discoball extends BonusTileBase {
 
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
-                const tile = field[i][j];
-                if(tile !== null) {
-                    if(this.checkTileForMatch(tile)) {
-                        matches.push(tile);
-                    }
-                }
+                this.node.emit("extra_hit", i, j);
             }
         }
+
+        this.setRespawnEvent(0.2);
 
         return matches;
     }
