@@ -30,15 +30,6 @@ export class Tile extends TileBase {
     @property([SpriteTileData])
     discoballIcons: SpriteTileData[] = [];
 
-    /*@property(SpriteFrame)
-    rocketHorizontal: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    rocketVertical: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    bomb: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    discoball: SpriteFrame | null = null;*/
-
     @property(Sprite)
     potentialBonusIcon: Sprite = null;
 
