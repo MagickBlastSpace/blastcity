@@ -247,7 +247,6 @@ export class Field extends Component {
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
-        //tileComponent.subscribeOnFieldEvents(this.node);
 
         let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
         let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
@@ -319,6 +318,9 @@ export class Field extends Component {
         });
         tileNode.on("goal", (goalType) => {
             this.node.emit("destroy", goalType);
+        });
+        tileNode.on("goal_inc", (goalType) => {
+            this.node.emit("goal_inc", goalType);
         });
 
         this.tileArray[row][col] = tileNode;

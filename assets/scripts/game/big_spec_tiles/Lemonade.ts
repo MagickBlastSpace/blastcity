@@ -41,34 +41,41 @@ export class Lemonade extends BigTileBase {
             return;
         }
         
-        if(damageType === "red") {
+        if(damageType === "red" && this.strengthRed > 0) {
             this.strengthRed--;
+            this.setAsDamaged();
         }
-        else if(damageType === "blue") {
+        else if(damageType === "blue" && this.strengthBlue > 0) {
             this.strengthBlue--;
+            this.setAsDamaged();
         }
-        else if(damageType === "green") {
+        else if(damageType === "green" && this.strengthGreen > 0) {
             this.strengthGreen--;
+            this.setAsDamaged();
         }
-        else if(damageType === "yellow") {
+        else if(damageType === "yellow" && this.strengthYellow > 0) {
             this.strengthYellow--;
+            this.setAsDamaged();
         }
         else if(damageType === "bonus") {
             if(this.strengthRed > 0) {
                 this.strengthRed--;
+                this.setAsDamaged();
             }
             else if(this.strengthBlue > 0) {
                 this.strengthBlue--;
+                this.setAsDamaged();
             }
             else if(this.strengthGreen > 0) {
                 this.strengthGreen--;
+                this.setAsDamaged();
             }
             else if(this.strengthYellow > 0) {
                 this.strengthYellow--;
+                this.setAsDamaged();
             }
         }
         
-        this.setAsDamaged();
         this.refresh();
     }
 
@@ -85,6 +92,13 @@ export class Lemonade extends BigTileBase {
         this.blueHp.active = this.strengthBlue > 0;
         this.greenHp.active = this.strengthGreen > 0;
         this.yellowHp.active = this.strengthYellow > 0;
+    }
+
+
+    setAsDamaged() {
+        super.setAsDamaged();
+
+        this.node.emit("goal", "lemonade");
     }
 }
 

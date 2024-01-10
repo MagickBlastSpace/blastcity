@@ -52,6 +52,8 @@ export class Jelly extends SpecTileBase {
         this.node.emit("change", rndTileComp.getRow(), rndTileComp.getCol(), this.tileType);
         this.node.emit("damage_all", this.tileType);
 
+        this.node.emit("goal_inc", "jelly");
+
         return true;
     }
 
@@ -102,6 +104,11 @@ export class Jelly extends SpecTileBase {
         }
 
         return true;
+    }
+
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "jelly");
     }
 }
 

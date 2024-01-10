@@ -20,6 +20,7 @@ export class Level extends Component {
         this.field.on("move", () => this.moveCallback());
         this.field.on("level_init", (movesCount: number, goals: GoalData[]) => this.init(movesCount, goals));
         this.field.on("destroy", (tileType) => this.updateGoals(tileType));
+        this.field.on("goal_inc", (tileType) => this.incrementGoal(tileType));
     }
 
 
@@ -71,6 +72,14 @@ export class Level extends Component {
                 goal.count--;
                 this.node.emit("refresh_goals", this.goals);
             }
+        }
+    }
+
+    incrementGoal(tileType: string) {
+        const goal = this.goals.find(g => g.id === tileType);
+        if(goal !== null && goal !== undefined) {
+            goal.count++;
+            this.node.emit("refresh_goals", this.goals);
         }
     }
 }

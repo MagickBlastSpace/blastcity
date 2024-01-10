@@ -39,6 +39,13 @@ export class Soda extends BigTileBase {
             this.hps[i].active = true;
         }
     }
+
+
+    setAsDamaged() {
+        super.setAsDamaged();
+
+        this.node.emit("goal", "soda");
+    }
 }
 
 
