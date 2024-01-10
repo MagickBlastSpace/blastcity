@@ -71,6 +71,10 @@ export class Level extends Component {
             if(goal.count > 0) {
                 goal.count--;
                 this.node.emit("refresh_goals", this.goals);
+
+                if(goal.count === 0) {
+                    this.setGoalCompleteEvent(goal.id);
+                }
             }
         }
     }
@@ -81,6 +85,10 @@ export class Level extends Component {
             goal.count++;
             this.node.emit("refresh_goals", this.goals);
         }
+    }
+
+    setGoalCompleteEvent(goalId: string) {
+        this.field.getComponent("Field").setGoalCompleteEvent(goalId);
     }
 }
 

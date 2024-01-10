@@ -20,6 +20,10 @@ export class Bushes extends StatusBase {
     isReadyToDestroy(): boolean {
         return this.isDamaged;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "bushes");
+    }
 }
 
 

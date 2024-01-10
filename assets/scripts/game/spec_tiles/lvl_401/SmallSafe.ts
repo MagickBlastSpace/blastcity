@@ -53,6 +53,11 @@ export class SmallSafe extends SpecTileBase {
 
         return true;
     }
+
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "small_safe");
+    }
 }
 
 

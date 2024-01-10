@@ -295,6 +295,7 @@ export class Field extends Component {
         tileNode.on("status_static", (row, col, statusId) => {
             if(this.checkPositionForStatus(row, col)) {
                 this.spawnStatus(row, col, statusId);
+                this.node.emit("goal_inc", statusId);
             }
         });
         tileNode.on("special", (tileId) => {
@@ -370,6 +371,9 @@ export class Field extends Component {
 
         statusNode.on("change", (row, col, statusId) => {
             this.spawnStatus(row, col, statusId);
+        });
+        statusNode.on("goal", (goalType) => {
+            this.node.emit("destroy", goalType);
         });
 
         this.statusArray[row][col] = statusNode;
@@ -991,6 +995,23 @@ export class Field extends Component {
         cc.tween(tile2)
             .to(0.15, { position: new cc.Vec3(posX_2, posY_2, 0) })
             .start();
+    }
+
+
+    setGoalCompleteEvent(goalId: string) {
+        this.node.emit("goal_complete", goalId);
+
+        if(this.spawnPool.includes(goalId) && !this.availableColors.includes(goalId)) {
+            this.removeStringFromArray(this.spawnPool, goalId);
+        }
+    }
+
+
+    removeStringFromArray(array: string[], target: string) {
+        const index = array.indexOf(target);
+        if (index !== -1) {
+            array.splice(index, 1);
+        }
     }
 
 

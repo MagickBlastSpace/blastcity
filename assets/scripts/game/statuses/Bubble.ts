@@ -20,6 +20,10 @@ export class Bubble extends StatusBase {
     isReadyToDestroy(): boolean {
         return this.isDamaged;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "bubble");
+    }
 }
 
 

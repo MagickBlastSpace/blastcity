@@ -39,6 +39,8 @@ export class Soap extends SpecTileBase {
         this.node.emit("status_static", this.row + 1, this.col - 1, "bubble");
         this.node.emit("status_static", this.row - 1, this.col + 1, "bubble");
         this.node.emit("status_static", this.row - 1, this.col - 1, "bubble");
+
+        this.node.emit("goal", "soap");
     }
 }
 
