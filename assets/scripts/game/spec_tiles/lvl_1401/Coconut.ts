@@ -14,6 +14,11 @@ export class Coconut extends Lamp {
 
         this.refresh();
     }
+
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "coconut");
+    }
 }
 
 

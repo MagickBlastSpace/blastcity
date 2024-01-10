@@ -30,6 +30,10 @@ export class Penguin extends Watermelon {
                 break;
         }
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "penguin");
+    }
 }
 
 

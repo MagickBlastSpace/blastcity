@@ -67,6 +67,11 @@ export class UFO extends Bottle {
 
         this.isSwapped = false;
     }
+
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "ufo");
+    }
 }
 
 

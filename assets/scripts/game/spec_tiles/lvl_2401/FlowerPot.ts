@@ -14,6 +14,8 @@ export class FlowerPot extends Soap {
         this.node.emit("status_static", this.row + 1, this.col - 1, "bushes");
         this.node.emit("status_static", this.row - 1, this.col + 1, "bushes");
         this.node.emit("status_static", this.row - 1, this.col - 1, "bushes");
+
+        this.node.emit("goal", "flower_pot");
     }
 }
 

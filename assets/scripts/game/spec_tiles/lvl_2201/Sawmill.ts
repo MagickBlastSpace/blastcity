@@ -80,6 +80,8 @@ export class Sawmill extends SpecTileBase {
             for(let i = 0; i < group.length; i++) {
                 let tileComp = group[i].getComponent("TileBase");
                 this.node.emit("destroy_tile", tileComp.getRow(), tileComp.getCol());
+
+                this.node.emit("goal", "sawmill");
             }
         }
         else {

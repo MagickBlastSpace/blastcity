@@ -9,6 +9,10 @@ export class Mole extends Shell {
 
         this.isShifts = false;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "mole");
+    }
 }
 
 

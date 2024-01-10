@@ -10,6 +10,10 @@ export class BrickWall extends SpecTileBase {
         this.isShifts = false;
         this.isGrouped = true;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "brick_wall");
+    }
 }
 
 

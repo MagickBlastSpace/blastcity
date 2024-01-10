@@ -84,6 +84,10 @@ export class Vent extends SpecTileBase {
         this.greenHp.active = this.strengthGreen > 0;
         this.yellowHp.active = this.strengthYellow > 0;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "vent");
+    }
 }
 
 

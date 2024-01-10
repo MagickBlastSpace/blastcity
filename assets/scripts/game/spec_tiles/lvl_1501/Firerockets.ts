@@ -11,6 +11,8 @@ export class Firerockets extends Sticker {
         
         this.node.emit("respawn", 0.1);
 
+        this.node.emit("goal", "firerockets");
+
         return true;
     }
 

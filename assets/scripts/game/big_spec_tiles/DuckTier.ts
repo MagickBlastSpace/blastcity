@@ -24,6 +24,10 @@ export class DuckTier extends Soda {
         }
         return false;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "duck_tier");
+    }
 }
 
 

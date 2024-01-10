@@ -58,6 +58,10 @@ export class Stone extends Penguin {
     kill() {
         this.strength = 0;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "stone");
+    }
 }
 
 

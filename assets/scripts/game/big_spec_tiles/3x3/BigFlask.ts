@@ -42,6 +42,8 @@ export class BigFlask extends Soda {
             this.strength--;
             this.isBlockingDamage = true;
             this.node.emit("damage_all", this.tileType);
+
+            this.node.emit("goal", "big_flask");
         }
     }
 

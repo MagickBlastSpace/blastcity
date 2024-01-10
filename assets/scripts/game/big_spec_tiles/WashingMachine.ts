@@ -41,6 +41,8 @@ export class WashingMachine extends Jars {
         this.node.emit("status_static", this.row, this.col + 2, "bubble");
         this.node.emit("status_static", this.row + 1, this.col + 2, "bubble");
         this.node.emit("status_static", this.row - 1, this.col + 2, "bubble");
+
+        this.node.emit("goal", "washing_machine");
     }
 }
 

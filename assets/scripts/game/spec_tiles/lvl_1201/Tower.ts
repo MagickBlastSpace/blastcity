@@ -39,6 +39,10 @@ export class Tower extends SpecTileBase {
             this.hpNodes[i].active = this.strength > i;
         }
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "tower");
+    }
 }
 
 

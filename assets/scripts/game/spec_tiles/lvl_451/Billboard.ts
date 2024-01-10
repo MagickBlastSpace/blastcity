@@ -42,6 +42,10 @@ export class Billboard extends SpecTileBase {
         }
         return false;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "billboard");
+    }
 }
 
 

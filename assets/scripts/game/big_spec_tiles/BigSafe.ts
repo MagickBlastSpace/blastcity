@@ -24,7 +24,7 @@ export class BigSafe extends WashingMachine {
     getDamage(damageType: string) {
         if(!this.isClosed && !this.isDamaged) {
             this.strength--;
-            console.log("gold event");
+            this.node.emit("goal", "big_safe");
             this.setAsDamaged();
         }
         else {

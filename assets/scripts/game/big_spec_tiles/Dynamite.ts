@@ -43,6 +43,7 @@ export class Dynamite extends CosmoRocket {
                 this.node.emit("destroy_tile", tileComp.getRow(), tileComp.getCol());
             }
         }
+        this.node.emit("goal", "dynamite");
     }
 
     

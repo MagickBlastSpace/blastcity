@@ -66,6 +66,11 @@ export class Flask extends Sticker {
     refresh() {
         this.icon.spriteFrame = this.colorIcons.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
     }
+
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "flask");
+    }
 }
 
 

@@ -13,6 +13,10 @@ export class Tomb extends Coconut {
     refresh() {
         this.hp.active = this.strength === 2;
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "tomb");
+    }
 }
 
 

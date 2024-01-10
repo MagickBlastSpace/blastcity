@@ -26,7 +26,7 @@
     "_active": true,
     "_components": [],
     "_prefab": {
-      "__id__": 546
+      "__id__": 575
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -57,7 +57,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 557
+      "__id__": 586
     },
     "_id": "7b2dc026-88d5-4e1b-8f76-c916ba7bb4f8"
   },
@@ -4436,70 +4436,70 @@
         "__id__": 412
       },
       {
-        "__id__": 422
+        "__id__": 423
       },
       {
-        "__id__": 427
+        "__id__": 429
       },
       {
-        "__id__": 434
+        "__id__": 436
       },
       {
-        "__id__": 439
-      },
-      {
-        "__id__": 444
+        "__id__": 442
       },
       {
         "__id__": 449
       },
       {
-        "__id__": 454
+        "__id__": 455
       },
       {
-        "__id__": 464
+        "__id__": 461
       },
       {
-        "__id__": 469
+        "__id__": 472
       },
       {
-        "__id__": 474
+        "__id__": 478
       },
       {
-        "__id__": 479
+        "__id__": 485
       },
       {
-        "__id__": 484
+        "__id__": 491
       },
       {
-        "__id__": 490
+        "__id__": 497
       },
       {
-        "__id__": 493
+        "__id__": 504
       },
       {
-        "__id__": 498
-      },
-      {
-        "__id__": 501
-      },
-      {
-        "__id__": 508
-      },
-      {
-        "__id__": 511
-      },
-      {
-        "__id__": 514
+        "__id__": 509
       },
       {
         "__id__": 516
       },
       {
-        "__id__": 526
+        "__id__": 520
       },
       {
-        "__id__": 540
+        "__id__": 531
+      },
+      {
+        "__id__": 535
+      },
+      {
+        "__id__": 539
+      },
+      {
+        "__id__": 542
+      },
+      {
+        "__id__": 553
+      },
+      {
+        "__id__": 569
       }
     ],
     "_id": "95xb5wWS5HkKoWHJiqB3+u"
@@ -6639,7 +6639,11 @@
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
+    "goals": [
+      {
+        "__id__": 422
+      }
+    ],
     "movesCount": 20
   },
   {
@@ -6697,13 +6701,15 @@
     "col": 8
   },
   {
+    "__type__": "GoalData",
+    "id": "billboard",
+    "count": 9
+  },
+  {
     "__type__": "LevelData",
     "id": "23",
     "emptyTiles": [],
     "specialTiles": [
-      {
-        "__id__": 423
-      },
       {
         "__id__": 424
       },
@@ -6712,12 +6718,19 @@
       },
       {
         "__id__": 426
+      },
+      {
+        "__id__": 427
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
+    "goals": [
+      {
+        "__id__": 428
+      }
+    ],
     "movesCount": 20
   },
   {
@@ -6745,21 +6758,26 @@
     "col": 4
   },
   {
+    "__type__": "GoalData",
+    "id": "cosmorocket",
+    "count": 4
+  },
+  {
     "__type__": "LevelData",
     "id": "24",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 428
-      },
-      {
-        "__id__": 429
-      },
-      {
         "__id__": 430
       },
       {
         "__id__": 431
+      },
+      {
+        "__id__": 432
+      },
+      {
+        "__id__": 433
       }
     ],
     "statuses": [],
@@ -6767,10 +6785,10 @@
     "spawnPool": [],
     "goals": [
       {
-        "__id__": 432
+        "__id__": 434
       },
       {
-        "__id__": 433
+        "__id__": 435
       }
     ],
     "movesCount": 20
@@ -6815,23 +6833,27 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 435
-      },
-      {
-        "__id__": 436
-      },
-      {
         "__id__": 437
       },
       {
         "__id__": 438
+      },
+      {
+        "__id__": 439
+      },
+      {
+        "__id__": 440
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 441
+      }
+    ],
+    "movesCount": 20
   },
   {
     "__type__": "SpecialTileData",
@@ -6856,6 +6878,11 @@
     "id": "mole",
     "row": 7,
     "col": 7
+  },
+  {
+    "__type__": "GoalData",
+    "id": "mole",
+    "count": 4
   },
   {
     "__type__": "LevelData",
@@ -6863,23 +6890,30 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 440
-      },
-      {
-        "__id__": 441
-      },
-      {
-        "__id__": 442
-      },
-      {
         "__id__": 443
+      },
+      {
+        "__id__": 444
+      },
+      {
+        "__id__": 445
+      },
+      {
+        "__id__": 446
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 447
+      },
+      {
+        "__id__": 448
+      }
+    ],
+    "movesCount": 20
   },
   {
     "__type__": "SpecialTileData",
@@ -6906,56 +6940,18 @@
     "col": 5
   },
   {
+    "__type__": "GoalData",
+    "id": "penguin",
+    "count": 2
+  },
+  {
+    "__type__": "GoalData",
+    "id": "birds",
+    "count": 10
+  },
+  {
     "__type__": "LevelData",
     "id": "27",
-    "emptyTiles": [],
-    "specialTiles": [
-      {
-        "__id__": 445
-      },
-      {
-        "__id__": 446
-      },
-      {
-        "__id__": 447
-      },
-      {
-        "__id__": 448
-      }
-    ],
-    "statuses": [],
-    "destroyedOnStart": [],
-    "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "flask",
-    "row": 7,
-    "col": 0
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "flask",
-    "row": 7,
-    "col": 3
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "flask",
-    "row": 7,
-    "col": 5
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "flask",
-    "row": 7,
-    "col": 7
-  },
-  {
-    "__type__": "LevelData",
-    "id": "28",
     "emptyTiles": [],
     "specialTiles": [
       {
@@ -6974,8 +6970,69 @@
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 454
+      }
+    ],
+    "movesCount": 20
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "flask",
+    "row": 7,
+    "col": 0
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "flask",
+    "row": 7,
+    "col": 3
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "flask",
+    "row": 7,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "flask",
+    "row": 7,
+    "col": 7
+  },
+  {
+    "__type__": "GoalData",
+    "id": "flask",
+    "count": 4
+  },
+  {
+    "__type__": "LevelData",
+    "id": "28",
+    "emptyTiles": [],
+    "specialTiles": [
+      {
+        "__id__": 456
+      },
+      {
+        "__id__": 457
+      },
+      {
+        "__id__": 458
+      },
+      {
+        "__id__": 459
+      }
+    ],
+    "statuses": [],
+    "destroyedOnStart": [],
+    "spawnPool": [],
+    "goals": [
+      {
+        "__id__": 460
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7002,43 +7059,52 @@
     "col": 7
   },
   {
+    "__type__": "GoalData",
+    "id": "barrel",
+    "count": 4
+  },
+  {
     "__type__": "LevelData",
     "id": "29",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 455
-      },
-      {
-        "__id__": 456
-      },
-      {
-        "__id__": 457
-      },
-      {
-        "__id__": 458
-      },
-      {
-        "__id__": 459
-      },
-      {
-        "__id__": 460
-      },
-      {
-        "__id__": 461
-      },
-      {
         "__id__": 462
       },
       {
         "__id__": 463
+      },
+      {
+        "__id__": 464
+      },
+      {
+        "__id__": 465
+      },
+      {
+        "__id__": 466
+      },
+      {
+        "__id__": 467
+      },
+      {
+        "__id__": 468
+      },
+      {
+        "__id__": 469
+      },
+      {
+        "__id__": 470
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 471
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7095,28 +7161,37 @@
     "col": 8
   },
   {
+    "__type__": "GoalData",
+    "id": "stone",
+    "count": 9
+  },
+  {
     "__type__": "LevelData",
     "id": "30",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 465
+        "__id__": 473
       },
       {
-        "__id__": 466
+        "__id__": 474
       },
       {
-        "__id__": 467
+        "__id__": 475
       },
       {
-        "__id__": 468
+        "__id__": 476
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 477
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7141,6 +7216,11 @@
     "id": "tower",
     "row": 7,
     "col": 7
+  },
+  {
+    "__type__": "GoalData",
+    "id": "tower",
+    "count": 4
   },
   {
     "__type__": "LevelData",
@@ -7148,101 +7228,8 @@
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 470
+        "__id__": 479
       },
-      {
-        "__id__": 471
-      },
-      {
-        "__id__": 472
-      },
-      {
-        "__id__": 473
-      }
-    ],
-    "statuses": [],
-    "destroyedOnStart": [],
-    "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "coconut",
-    "row": 7,
-    "col": 1
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "coconut",
-    "row": 7,
-    "col": 3
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "gift",
-    "row": 7,
-    "col": 5
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "gift",
-    "row": 7,
-    "col": 7
-  },
-  {
-    "__type__": "LevelData",
-    "id": "32",
-    "emptyTiles": [],
-    "specialTiles": [
-      {
-        "__id__": 475
-      },
-      {
-        "__id__": 476
-      },
-      {
-        "__id__": 477
-      },
-      {
-        "__id__": 478
-      }
-    ],
-    "statuses": [],
-    "destroyedOnStart": [],
-    "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "ufo",
-    "row": 6,
-    "col": 1
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "ufo",
-    "row": 6,
-    "col": 3
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "ufo",
-    "row": 6,
-    "col": 5
-  },
-  {
-    "__type__": "SpecialTileData",
-    "id": "ufo",
-    "row": 6,
-    "col": 7
-  },
-  {
-    "__type__": "LevelData",
-    "id": "33",
-    "emptyTiles": [],
-    "specialTiles": [
       {
         "__id__": 480
       },
@@ -7251,49 +7238,60 @@
       },
       {
         "__id__": 482
-      },
-      {
-        "__id__": 483
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 483
+      },
+      {
+        "__id__": 484
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
-    "id": "firebox",
+    "id": "coconut",
     "row": 7,
     "col": 1
   },
   {
     "__type__": "SpecialTileData",
-    "id": "firebox",
+    "id": "coconut",
     "row": 7,
     "col": 3
   },
   {
     "__type__": "SpecialTileData",
-    "id": "firebox",
+    "id": "gift",
     "row": 7,
     "col": 5
   },
   {
     "__type__": "SpecialTileData",
-    "id": "firebox",
+    "id": "gift",
     "row": 7,
     "col": 7
   },
   {
+    "__type__": "GoalData",
+    "id": "coconut",
+    "count": 2
+  },
+  {
+    "__type__": "GoalData",
+    "id": "gift_open",
+    "count": 2
+  },
+  {
     "__type__": "LevelData",
-    "id": "34",
+    "id": "32",
     "emptyTiles": [],
     "specialTiles": [
-      {
-        "__id__": 485
-      },
       {
         "__id__": 486
       },
@@ -7310,8 +7308,129 @@
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 490
+      }
+    ],
+    "movesCount": 10
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "ufo",
+    "row": 6,
+    "col": 1
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "ufo",
+    "row": 6,
+    "col": 3
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "ufo",
+    "row": 6,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "ufo",
+    "row": 6,
+    "col": 7
+  },
+  {
+    "__type__": "GoalData",
+    "id": "ufo",
+    "count": 4
+  },
+  {
+    "__type__": "LevelData",
+    "id": "33",
+    "emptyTiles": [],
+    "specialTiles": [
+      {
+        "__id__": 492
+      },
+      {
+        "__id__": 493
+      },
+      {
+        "__id__": 494
+      },
+      {
+        "__id__": 495
+      }
+    ],
+    "statuses": [],
+    "destroyedOnStart": [],
+    "spawnPool": [],
+    "goals": [
+      {
+        "__id__": 496
+      }
+    ],
+    "movesCount": 10
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "firebox",
+    "row": 7,
+    "col": 1
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "firebox",
+    "row": 7,
+    "col": 3
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "firebox",
+    "row": 7,
+    "col": 5
+  },
+  {
+    "__type__": "SpecialTileData",
+    "id": "firebox",
+    "row": 7,
+    "col": 7
+  },
+  {
+    "__type__": "GoalData",
+    "id": "firerockets",
+    "count": 4
+  },
+  {
+    "__type__": "LevelData",
+    "id": "34",
+    "emptyTiles": [],
+    "specialTiles": [
+      {
+        "__id__": 498
+      },
+      {
+        "__id__": 499
+      },
+      {
+        "__id__": 500
+      },
+      {
+        "__id__": 501
+      },
+      {
+        "__id__": 502
+      }
+    ],
+    "statuses": [],
+    "destroyedOnStart": [],
+    "spawnPool": [],
+    "goals": [
+      {
+        "__id__": 503
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7344,22 +7463,34 @@
     "col": 8
   },
   {
+    "__type__": "GoalData",
+    "id": "money_bag",
+    "count": 5
+  },
+  {
     "__type__": "LevelData",
     "id": "35",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 491
+        "__id__": 505
       },
       {
-        "__id__": 492
+        "__id__": 506
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 507
+      },
+      {
+        "__id__": 508
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7374,28 +7505,45 @@
     "col": 6
   },
   {
+    "__type__": "GoalData",
+    "id": "washing_machine",
+    "count": 2
+  },
+  {
+    "__type__": "GoalData",
+    "id": "bubble",
+    "count": 0
+  },
+  {
     "__type__": "LevelData",
     "id": "36",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 494
+        "__id__": 510
       },
       {
-        "__id__": 495
+        "__id__": 511
       },
       {
-        "__id__": 496
+        "__id__": 512
       },
       {
-        "__id__": 497
+        "__id__": 513
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 514
+      },
+      {
+        "__id__": 515
+      }
+    ],
+    "movesCount": 15
   },
   {
     "__type__": "SpecialTileData",
@@ -7422,22 +7570,36 @@
     "col": 7
   },
   {
+    "__type__": "GoalData",
+    "id": "flower_pot",
+    "count": 4
+  },
+  {
+    "__type__": "GoalData",
+    "id": "bushes",
+    "count": 0
+  },
+  {
     "__type__": "LevelData",
     "id": "37",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 499
+        "__id__": 517
       },
       {
-        "__id__": 500
+        "__id__": 518
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 519
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7452,34 +7614,52 @@
     "col": 5
   },
   {
+    "__type__": "GoalData",
+    "id": "big_safe",
+    "count": 12
+  },
+  {
     "__type__": "LevelData",
     "id": "38",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 502
+        "__id__": 521
       },
       {
-        "__id__": 503
+        "__id__": 522
       },
       {
-        "__id__": 504
+        "__id__": 523
       },
       {
-        "__id__": 505
+        "__id__": 524
       },
       {
-        "__id__": 506
+        "__id__": 525
       },
       {
-        "__id__": 507
+        "__id__": 526
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 527
+      },
+      {
+        "__id__": 528
+      },
+      {
+        "__id__": 529
+      },
+      {
+        "__id__": 530
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7518,22 +7698,46 @@
     "col": 7
   },
   {
+    "__type__": "GoalData",
+    "id": "tomb",
+    "count": 1
+  },
+  {
+    "__type__": "GoalData",
+    "id": "bubble",
+    "count": 10
+  },
+  {
+    "__type__": "GoalData",
+    "id": "vent",
+    "count": 1
+  },
+  {
+    "__type__": "GoalData",
+    "id": "surprise_box",
+    "count": 1
+  },
+  {
     "__type__": "LevelData",
     "id": "39",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 509
+        "__id__": 532
       },
       {
-        "__id__": 510
+        "__id__": 533
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 534
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7548,22 +7752,31 @@
     "col": 6
   },
   {
+    "__type__": "GoalData",
+    "id": "duck_tier",
+    "count": 2
+  },
+  {
     "__type__": "LevelData",
     "id": "40",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 512
+        "__id__": 536
       },
       {
-        "__id__": 513
+        "__id__": 537
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 538
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7578,19 +7791,28 @@
     "col": 5
   },
   {
+    "__type__": "GoalData",
+    "id": "big_flask",
+    "count": 16
+  },
+  {
     "__type__": "LevelData",
     "id": "41",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 515
+        "__id__": 540
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 541
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7599,43 +7821,52 @@
     "col": 4
   },
   {
+    "__type__": "GoalData",
+    "id": "fusion_bomb",
+    "count": 1
+  },
+  {
     "__type__": "LevelData",
     "id": "42",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 517
+        "__id__": 543
       },
       {
-        "__id__": 518
+        "__id__": 544
       },
       {
-        "__id__": 519
+        "__id__": 545
       },
       {
-        "__id__": 520
+        "__id__": 546
       },
       {
-        "__id__": 521
+        "__id__": 547
       },
       {
-        "__id__": 522
+        "__id__": 548
       },
       {
-        "__id__": 523
+        "__id__": 549
       },
       {
-        "__id__": 524
+        "__id__": 550
       },
       {
-        "__id__": 525
+        "__id__": 551
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 552
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7692,55 +7923,67 @@
     "col": 8
   },
   {
+    "__type__": "GoalData",
+    "id": "sawmill",
+    "count": 1
+  },
+  {
     "__type__": "LevelData",
     "id": "43",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 527
+        "__id__": 554
       },
       {
-        "__id__": 528
+        "__id__": 555
       },
       {
-        "__id__": 529
+        "__id__": 556
       },
       {
-        "__id__": 530
+        "__id__": 557
       },
       {
-        "__id__": 531
+        "__id__": 558
       },
       {
-        "__id__": 532
+        "__id__": 559
       },
       {
-        "__id__": 533
+        "__id__": 560
       },
       {
-        "__id__": 534
+        "__id__": 561
       },
       {
-        "__id__": 535
+        "__id__": 562
       },
       {
-        "__id__": 536
+        "__id__": 563
       },
       {
-        "__id__": 537
+        "__id__": 564
       },
       {
-        "__id__": 538
+        "__id__": 565
       },
       {
-        "__id__": 539
+        "__id__": 566
       }
     ],
     "statuses": [],
     "destroyedOnStart": [],
     "spawnPool": [],
-    "goals": [],
-    "movesCount": 0
+    "goals": [
+      {
+        "__id__": 567
+      },
+      {
+        "__id__": 568
+      }
+    ],
+    "movesCount": 10
   },
   {
     "__type__": "SpecialTileData",
@@ -7821,21 +8064,31 @@
     "col": 4
   },
   {
+    "__type__": "GoalData",
+    "id": "brick_wall",
+    "count": 12
+  },
+  {
+    "__type__": "GoalData",
+    "id": "dynamite",
+    "count": 1
+  },
+  {
     "__type__": "LevelData",
     "id": "44",
     "emptyTiles": [],
     "specialTiles": [
       {
-        "__id__": 541
+        "__id__": 570
       },
       {
-        "__id__": 542
+        "__id__": 571
       },
       {
-        "__id__": 543
+        "__id__": 572
       },
       {
-        "__id__": 544
+        "__id__": 573
       }
     ],
     "statuses": [],
@@ -7843,7 +8096,7 @@
     "spawnPool": [],
     "goals": [
       {
-        "__id__": 545
+        "__id__": 574
       }
     ],
     "movesCount": 20
@@ -7885,19 +8138,19 @@
     "instance": null,
     "targetOverrides": [
       {
-        "__id__": 547
+        "__id__": 576
       },
       {
-        "__id__": 549
+        "__id__": 578
       },
       {
-        "__id__": 551
+        "__id__": 580
       },
       {
-        "__id__": 553
+        "__id__": 582
       },
       {
-        "__id__": 555
+        "__id__": 584
       }
     ],
     "nestedPrefabInstanceRoots": [
@@ -7932,7 +8185,7 @@
       "__id__": 109
     },
     "targetInfo": {
-      "__id__": 548
+      "__id__": 577
     }
   },
   {
@@ -7955,7 +8208,7 @@
       "__id__": 117
     },
     "targetInfo": {
-      "__id__": 550
+      "__id__": 579
     }
   },
   {
@@ -7978,7 +8231,7 @@
       "__id__": 125
     },
     "targetInfo": {
-      "__id__": 552
+      "__id__": 581
     }
   },
   {
@@ -8001,7 +8254,7 @@
       "__id__": 133
     },
     "targetInfo": {
-      "__id__": 554
+      "__id__": 583
     }
   },
   {
@@ -8024,7 +8277,7 @@
       "__id__": 141
     },
     "targetInfo": {
-      "__id__": 556
+      "__id__": 585
     }
   },
   {
@@ -8036,25 +8289,25 @@
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 558
+      "__id__": 587
     },
     "shadows": {
-      "__id__": 559
+      "__id__": 588
     },
     "_skybox": {
-      "__id__": 560
+      "__id__": 589
     },
     "fog": {
-      "__id__": 561
+      "__id__": 590
     },
     "octree": {
-      "__id__": 562
+      "__id__": 591
     },
     "skin": {
-      "__id__": 563
+      "__id__": 592
     },
     "lightProbeInfo": {
-      "__id__": 564
+      "__id__": 593
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false
