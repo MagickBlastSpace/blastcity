@@ -7,6 +7,8 @@ export class EasterEgg extends SpecTileBase {
 
     private changeColor: string = "";
 
+    private availableColors: string[] = [];
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -16,14 +18,20 @@ export class EasterEgg extends SpecTileBase {
     }
 
     getDamage(damageType: string) {
+        if(this.isDamaged) {
+            return;
+        }
+
         if(damageType === "bonus") {
-            this.strength--;
+            const colorIndex = Math.floor(Math.random() * this.availableColors.length);
+            this.changeColor = this.availableColors[colorIndex];
         }
-        else if(!this.isDamaged) {
+        else {
             this.changeColor = damageType;
-            this.strength--;
-            this.setAsDamaged();
         }
+
+        this.strength--;
+        this.setAsDamaged();
     }
 
     isReadyToDestroy(): boolean {
@@ -35,12 +43,22 @@ export class EasterEgg extends SpecTileBase {
 
 
     startDestroyConsequences() {
-        this.node.emit("goal", "easter_egg");
-
         if(this.changeColor === "") {
             return;
         }
         this.node.emit("change", this.row, this.col, "easteregg_" + this.changeColor);
+    }
+
+
+    subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
+        let fieldComp = field.getComponent("Field");
+        this.availableColors = fieldComp.getAvailableColors();
     }
 }
 
