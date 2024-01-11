@@ -27,6 +27,7 @@ export class FusionBomb extends Lemonade {
         this.strengthBlue = 2;
         this.strengthGreen = 2;
         this.strengthYellow = 2;
+        this.strengthPurple = 0;
 
         this.refresh();
     }
