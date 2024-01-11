@@ -4,8 +4,11 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Billboard')
 export class Billboard extends SpecTileBase {
+
     @property(Node)
     isActive: Node = null;
+
+    private isGoalEventCreated: boolean = false;
 
     
     init(row: number, col: number, tileType: string) {
@@ -43,8 +46,32 @@ export class Billboard extends SpecTileBase {
         return false;
     }
 
-    startDestroyConsequences() {
-        this.node.emit("goal", "billboard");
+    isGroupReadyToDestroy(field: Node[][]): boolean {
+        let isReady = super.isGroupReadyToDestroy(field);
+
+        if(isReady) {
+            let tiles = this.getGroupedTiles(field);
+            this.killAll(tiles);
+        }
+
+        return isReady;
+    }
+
+    killAll(tiles: Node[]) {
+        if(!this.isGoalEventCreated) {
+            this.node.emit("goal", "billboard");
+            this.isGoalEventCreated = true;
+        }
+
+        for(let i = 0; i < tiles.length; i++) {
+            const tileComp = tiles[i].getComponent("Billboard");
+            tileComp.kill();
+        }
+    }
+    
+    kill() {
+        this.strength = 0;
+        this.isGoalEventCreated = true;
     }
 }
 

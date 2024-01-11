@@ -13,6 +13,8 @@ export class Sawmill extends SpecTileBase {
     @property(SpriteFrame)
     log: SpriteFrame | null = null;
 
+    private isGoalEventCreated: boolean = false;
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -76,12 +78,15 @@ export class Sawmill extends SpecTileBase {
             tileComp.clear();
         }
 
-        if(group.length <= 2) {
+        if(group.length === 2) {
             for(let i = 0; i < group.length; i++) {
                 let tileComp = group[i].getComponent("TileBase");
                 this.node.emit("destroy_tile", tileComp.getRow(), tileComp.getCol());
 
-                this.node.emit("goal", "sawmill");
+                if(!this.isGoalEventCreated) {
+                    this.node.emit("goal", "sawmill");
+                    this.isGoalEventCreated = true;
+                }
             }
         }
         else {
@@ -90,7 +95,7 @@ export class Sawmill extends SpecTileBase {
             this.node.emit("destroy_tile", tileComp.getRow(), tileComp.getCol());
         }
         
-        this.node.emit("respawn", 0.15);
+        this.node.emit("respawn", 0.05);
 
         return true;
     }

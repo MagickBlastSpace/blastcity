@@ -8,6 +8,9 @@ export class Stone extends Penguin {
     @property(SpriteFrame)
     hp5: SpriteFrame | null = null;
 
+    private isGoalEventCreated: boolean = false;
+
+
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
@@ -49,6 +52,11 @@ export class Stone extends Penguin {
 
     
     killAll(tiles: Node[]) {
+        if(!this.isGoalEventCreated) {
+            this.node.emit("goal", "stone");
+            this.isGoalEventCreated = true;
+        }
+
         for(let i = 0; i < tiles.length; i++) {
             const tileComp = tiles[i].getComponent("Stone");
             tileComp.kill();
@@ -57,10 +65,7 @@ export class Stone extends Penguin {
     
     kill() {
         this.strength = 0;
-    }
-
-    startDestroyConsequences() {
-        this.node.emit("goal", "stone");
+        this.isGoalEventCreated = true;
     }
 }
 
