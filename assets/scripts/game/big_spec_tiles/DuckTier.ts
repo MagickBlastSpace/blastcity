@@ -4,6 +4,9 @@ const { ccclass, property } = _decorator;
 
 @ccclass('DuckTier')
 export class DuckTier extends Soda {
+
+    private isHealAvailable: boolean = false;
+
     getDamage(damageType: string) {
         if(!this.isDamaged) {
             this.strength--;
@@ -14,9 +17,10 @@ export class DuckTier extends Soda {
     }
 
     isReadyToDestroy(): boolean {
-        if(!this.isDamaged) {
-            this.strength = 4;
+        if(!this.isDamaged && this.strength < 4 && this.isHealAvailable) {
+            this.strength++;
             this.refresh();
+            this.isHealAvailable = false;
         }
 
         if(this.strength <= 0) {
@@ -27,6 +31,12 @@ export class DuckTier extends Soda {
 
     startDestroyConsequences() {
         this.node.emit("goal", "duck_tier");
+    }
+
+    clear() {
+        super.clear();
+
+        this.isHealAvailable = true;
     }
 }
 
