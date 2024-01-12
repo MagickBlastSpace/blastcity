@@ -648,10 +648,16 @@ export class Field extends Component {
                     }
                 }
             }
-    
-            this.checkSpecTilesInActionEffect();
-            this.checkForPotentialBonuses();
+
             this.isClickAvailable = true;
+    
+            this.scheduleOnce(() => {
+                this.checkSpecTilesInActionEffect();
+
+                this.scheduleOnce(() => {
+                    this.checkForPotentialBonuses();
+                }, 0.1);
+            }, 0.1);
         }, 0.2);
     }
 
@@ -1023,6 +1029,8 @@ export class Field extends Component {
 
 
     swapTiles(pos_1: Vec2, pos_2: Vec2) {
+        this.isClickAvailable = false;
+
         let tile1 = this.tileArray[pos_1.x][pos_1.y];
         if(tile1 === null || tile1 === undefined) {
             return;
@@ -1052,6 +1060,9 @@ export class Field extends Component {
             .start();
         cc.tween(tile2)
             .to(0.15, { position: new cc.Vec3(posX_2, posY_2, 0) })
+            .call(() => {
+                this.isClickAvailable = true;
+            })
             .start();
     }
 

@@ -47,6 +47,10 @@ export class UFO extends Bottle {
 
 
     isTileAvailableForSwap(tile: Node): boolean {
+        if(tile === null || tile === undefined) {
+            return false;
+        }
+        
         let tileComp = tile.getComponent("TileBase");
         if(tileComp.isCommonTile()) {
             return true;
