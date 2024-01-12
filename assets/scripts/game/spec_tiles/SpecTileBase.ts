@@ -101,6 +101,10 @@ export class SpecTileBase extends TileBase {
         this.isDamaged = false;
     }
 
+    isTileDamaged(): boolean {
+        return this.isDamaged;
+    }
+
 
     getGroupedTiles(field: Node[][]): Node[] {
         let matches = [];

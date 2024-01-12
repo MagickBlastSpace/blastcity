@@ -45,7 +45,7 @@ export class Field extends Component {
     private tileArray: Node[][] = [];
     private statusArray: Node[][] = [];
 
-    private isClickAvailable: bool = false;
+    private isClickAvailable: boolean = false;
 
     private availableColors: string[] = [];
     private spawnPool: string[] = [];
@@ -314,6 +314,9 @@ export class Field extends Component {
         tileNode.on("extra_hit", (row, col) => {
             this.extraHit(row, col);
         });
+        tileNode.on("random_extra_hit", (except, except2) => {
+            this.randomExtraHit(except, except2);
+        });
         tileNode.on("destroy_tile", (row, col) => {
             this.destroyTile(row, col, false);
         });
@@ -419,7 +422,6 @@ export class Field extends Component {
         }
 
         let randomIndex = Math.floor(Math.random() * tiles.length);
-
         this.destroyTile(tiles[randomIndex].getRow(), tiles[randomIndex].getCol());
     }
 
@@ -454,6 +456,41 @@ export class Field extends Component {
     extraHit(row: number, col: number) {
         let tile = this.tileArray[row][col];
         this.giveDamage(tile, "extra_hit", true);
+    }
+
+    randomExtraHit(except: string, except2: string) {
+        let tiles = [];
+        let specTiles = [];
+
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                const tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.isCommonTile()) {
+                        tiles.push(tile);
+                    }
+                    else if(tileComp.isSpecialTile() && tileComp.getTileType() !== except && tileComp.getTileType() !== except2) {
+                        if(!tileComp.isTileDamaged()) {
+                            specTiles.push(tile);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(tiles.length === 0 && specTiles.length === 0) {
+            return;
+        }
+
+        if(specTiles.length > 0) {
+            let randomIndex = Math.floor(Math.random() * specTiles.length);
+            this.giveDamage(specTiles[randomIndex], "extra_hit", true);
+        }
+        else {
+            let randomIndex = Math.floor(Math.random() * tiles.length);
+            this.giveDamage(tiles[randomIndex], "extra_hit", true);
+        }
     }
 
     checkPositionForStatus(row: number, col: number): boolean {
@@ -856,6 +893,7 @@ export class Field extends Component {
         this.clearAll();
 
         let checkedTiles = [];
+        let isMoveAvailable = false;
 
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
@@ -890,14 +928,25 @@ export class Field extends Component {
                                 this.setPotentialBonus(matches, "rocket_horizontal");
                             }
                         }
+                        else if(matches.length >= 2) {
+                            isMoveAvailable = true;
+                        }
 
                         checkedTiles.concat(matches);
                     }
                     else {
                         checkedTiles.push(tile);
+
+                        if(tileComponent.isBonusTile() && !this.availableColors.includes(tileComponent.getTileType())) {
+                            isMoveAvailable = true;
+                        }
                     }
                 }
             }
+        }
+
+        if(!isMoveAvailable) {
+            this.shuffleTiles();
         }
     }
 
@@ -975,9 +1024,15 @@ export class Field extends Component {
 
     swapTiles(pos_1: Vec2, pos_2: Vec2) {
         let tile1 = this.tileArray[pos_1.x][pos_1.y];
+        if(tile1 === null || tile1 === undefined) {
+            return;
+        }
         let tileComp1 = tile1.getComponent("TileBase");
 
         let tile2 = this.tileArray[pos_2.x][pos_2.y];
+        if(tile2 === null || tile2 === undefined) {
+            return;
+        }
         let tileComp2 = tile2.getComponent("TileBase");
 
         this.tileArray[pos_1.x][pos_1.y] = tile2;
@@ -1015,6 +1070,24 @@ export class Field extends Component {
         if (index !== -1) {
             array.splice(index, 1);
         }
+    }
+
+
+    shuffleTiles(): boolean {
+        let tilesPositions = this.getAllCleanTilesPositions();
+        let swappedTiles = [];
+        for(let i = 0; i < tilesPositions.length; i++) {
+            if(!swappedTiles.includes(tilesPositions[i])) {
+                swappedTiles.push(tilesPositions[i]);
+                let tileToSwap = tilesPositions[Math.floor(Math.random() * tilesPositions.length)];
+                if(!swappedTiles.includes(tileToSwap)) {
+                    swappedTiles.push(tileToSwap);
+                    this.swapTiles(tilesPositions[i], tileToSwap);
+                }
+            }
+        }
+
+        this.checkForPotentialBonuses();
     }
 
 

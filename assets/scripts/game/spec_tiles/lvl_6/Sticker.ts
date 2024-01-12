@@ -12,13 +12,13 @@ export class Sticker extends SpecTileBase {
     }
 
     getDamage(damageType: string) {
-        if(damageType === "bonus") {
-            this.strength--;
+        if(this.isDamaged) {
+            return;
         }
-        else if(!this.isDamaged) {
-            this.strength--;
-            this.setAsDamaged();
-        }
+
+        this.strength--;
+
+        this.setAsDamaged();
     }
 
     isReadyToDestroy(): boolean {
