@@ -541,6 +541,9 @@ export class Field extends Component {
     giveDamage(tile: Node, choosenType: string, isBonus: boolean) {
         if(tile !== null) {
             let tileComponent = tile.getComponent("TileBase");
+            if(tileComponent.isEmptyTile()) {
+                return;
+            }
             let isDestroyAvailable = this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol());
             if(this.availableColors.includes(choosenType) && isDestroyAvailable) {
                 tileComponent.giveDamage(this.tileArray, this.statusArray);
