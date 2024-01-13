@@ -44,6 +44,8 @@ export class LevelData {
     @property([Vec2])
     destroyedOnStart: Vec2[] = [];
     @property([cc.String])
+    startPool: string[] = [];
+    @property([cc.String])
     spawnPool: string[] = [];
     @property([GoalData])
     goals: GoalData[] = [];
@@ -90,6 +92,12 @@ export class LevelData {
                 vec2.x = coord.x;
                 vec2.y = coord.y;
                 return vec2;
+            });
+        }
+
+        if (jsonData.startPool) {
+            levelData.startPool = jsonData.startPool.map((startItem: any) => {
+                return startItem || '';
             });
         }
 

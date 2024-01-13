@@ -48,6 +48,7 @@ export class Field extends Component {
     private isClickAvailable: boolean = false;
 
     private availableColors: string[] = [];
+    private startPool: string[] = [];
     private spawnPool: string[] = [];
 
     private fallTime: number = 0.25;
@@ -71,6 +72,11 @@ export class Field extends Component {
 
 
     spawnInitialBoard(level: LevelData) {
+        this.startPool = level.startPool;
+        if(this.startPool.length === 0) {
+            this.startPool = ["blue", "red", "green", "yellow"];
+        }
+
         this.spawnPool = level.spawnPool;
         if(this.spawnPool.length === 0) {
             this.spawnPool = ["blue", "red", "green", "yellow"];
@@ -80,7 +86,7 @@ export class Field extends Component {
 
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
-                this.spawnCommonTile(row, col, "random");
+                this.spawnCommonTile(row, col, "start");
             }
         }
 
@@ -151,12 +157,15 @@ export class Field extends Component {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.tilePrefab);
         const tileComponent = tileNode.getComponent("Tile");
-        const tileTypeIndex = Math.floor(Math.random() * this.spawnPool.length).toString();
-        const tileType = tType === "random" ? this.spawnPool[tileTypeIndex] : tType;
+        const tileTypeIndex = tType === "start" ? Math.floor(Math.random() * this.startPool.length).toString() : Math.floor(Math.random() * this.spawnPool.length).toString();
+        let tileType = tType === "random" ? this.spawnPool[tileTypeIndex] : tType;
+        tileType = tType === "start" ? this.startPool[tileTypeIndex] : tileType;
+
         if(!this.availableColors.includes(tileType)) {
             this.spawnSpecialTile(row, col, tileType);
             return;
         }
+
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
         return spawnedTile;
     }
@@ -706,7 +715,6 @@ export class Field extends Component {
                 if (tile === null) {
                     emptySpaces++;
                 } else {
-                    console.log(row + " --- " + col);
                     let tileComponent = tile.getComponent("TileBase");
 
                     if(!tileComponent.isTileShifts() || tileComponent.getRow() !== row || !this.isFallMovementAvailable(tileComponent.getRow(), tileComponent.getCol())) {
