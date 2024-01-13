@@ -50,6 +50,9 @@ export class Field extends Component {
     private availableColors: string[] = [];
     private spawnPool: string[] = [];
 
+    private fallTime: number = 0.25;
+    private swapTime: number = 0.15;
+
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -299,7 +302,7 @@ export class Field extends Component {
             }
         });
         tileNode.on("special", (tileId) => {
-            let cleanTiles = this.getAllCleanTilesPositions();
+            let cleanTiles = this.getAllCommonTilesPositions();
             if(cleanTiles.length > 0) {
                 const tileIndex = Math.floor(Math.random() * cleanTiles.length);
                 this.spawnSpecialTile(cleanTiles[tileIndex].x, cleanTiles[tileIndex].y, tileId);
@@ -453,6 +456,27 @@ export class Field extends Component {
         return tiles;
     }
 
+    getAllCommonTilesPositions(): Vec2[] {
+        let tiles = [];
+
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                let tile = this.tileArray[row][col];
+                if(tile === null) {
+                    tiles.push(new Vec2(row, col));
+                }
+                else {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.isCommonTile()) {
+                        tiles.push(new Vec2(row, col));
+                    }
+                }
+            }
+        }
+
+        return tiles;
+    }
+
     extraHit(row: number, col: number) {
         let tile = this.tileArray[row][col];
         this.giveDamage(tile, "extra_hit", true);
@@ -506,6 +530,12 @@ export class Field extends Component {
                     }
                 }
                 else {
+                    return true;
+                }
+            }
+            else {
+                const statusComp = status.getComponent("StatusBase");
+                if(statusComp.isReadyToDestroy()) {
                     return true;
                 }
             }
@@ -650,15 +680,9 @@ export class Field extends Component {
             }
 
             this.isClickAvailable = true;
-    
-            this.scheduleOnce(() => {
-                this.checkSpecTilesInActionEffect();
-
-                this.scheduleOnce(() => {
-                    this.checkForPotentialBonuses();
-                }, 0.1);
-            }, 0.1);
-        }, 0.2);
+            this.checkSpecTilesInActionEffect();
+            this.checkForPotentialBonuses();
+        }, this.fallTime + 0.05);
     }
 
     scheduleRespawn(timeToRespawn: number) {
@@ -680,6 +704,7 @@ export class Field extends Component {
                 if (tile === null) {
                     emptySpaces++;
                 } else {
+                    console.log(row + " --- " + col);
                     let tileComponent = tile.getComponent("TileBase");
 
                     if(!tileComponent.isTileShifts() || tileComponent.getRow() !== row || !this.isFallMovementAvailable(tileComponent.getRow(), tileComponent.getCol())) {
@@ -733,7 +758,7 @@ export class Field extends Component {
                             }
                             
                             cc.tween(tile)
-                                .to(0.25, { position: new cc.Vec3(posX, posY, 0) })
+                                .to(this.fallTime, { position: new cc.Vec3(posX, posY, 0) })
                                 .call(() => {
                                     if(isDoubleWidth) {
                                         //this.showMatrixDebugMessage();
@@ -919,6 +944,10 @@ export class Field extends Component {
                     if(tileComponent.isCommonTile() && !isStatusBlock) {
                         matches = tileComponent.getMatches(this.tileArray, this.statusArray);
 
+                        if(matches.length >= 2) {
+                            isMoveAvailable = true;
+                        }
+
                         if(matches.length >= 9) {
                             this.setPotentialBonus(matches, "discoball");
                         }
@@ -933,9 +962,6 @@ export class Field extends Component {
                             else {
                                 this.setPotentialBonus(matches, "rocket_horizontal");
                             }
-                        }
-                        else if(matches.length >= 2) {
-                            isMoveAvailable = true;
                         }
 
                         checkedTiles.concat(matches);
@@ -1049,6 +1075,9 @@ export class Field extends Component {
         tileComp1.setRow(pos_2.x);
         tileComp2.setRow(pos_1.x);
 
+        tileComp1.setCol(pos_2.y);
+        tileComp2.setCol(pos_1.y);
+
         let posX_1 = pos_2.y * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY_1 = pos_2.x * (this.tileSize + this.tileSpacing) + this.yOffset;
 
@@ -1056,10 +1085,10 @@ export class Field extends Component {
         let posY_2 = pos_1.x * (this.tileSize + this.tileSpacing) + this.yOffset;
 
         cc.tween(tile1)
-            .to(0.15, { position: new cc.Vec3(posX_1, posY_1, 0) })
+            .to(this.swapTime, { position: new cc.Vec3(posX_1, posY_1, 0) })
             .start();
         cc.tween(tile2)
-            .to(0.15, { position: new cc.Vec3(posX_2, posY_2, 0) })
+            .to(this.swapTime, { position: new cc.Vec3(posX_2, posY_2, 0) })
             .call(() => {
                 this.isClickAvailable = true;
             })
@@ -1087,18 +1116,26 @@ export class Field extends Component {
     shuffleTiles(): boolean {
         let tilesPositions = this.getAllCleanTilesPositions();
         let swappedTiles = [];
+
+        let swapsCount = 0;
+        let stepTime = 0.05;
         for(let i = 0; i < tilesPositions.length; i++) {
             if(!swappedTiles.includes(tilesPositions[i])) {
                 swappedTiles.push(tilesPositions[i]);
                 let tileToSwap = tilesPositions[Math.floor(Math.random() * tilesPositions.length)];
                 if(!swappedTiles.includes(tileToSwap)) {
                     swappedTiles.push(tileToSwap);
-                    this.swapTiles(tilesPositions[i], tileToSwap);
+                    this.scheduleOnce(() => {
+                        this.swapTiles(tilesPositions[i], tileToSwap);
+                    }, this.swapTime + stepTime * swapsCount);
+                    swapsCount++;
                 }
             }
         }
 
-        this.checkForPotentialBonuses();
+        this.scheduleOnce(() => {
+            this.checkForPotentialBonuses();
+        }, this.swapTime + stepTime * (swapsCount + 1));
     }
 
 
