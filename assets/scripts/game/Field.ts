@@ -461,14 +461,16 @@ export class Field extends Component {
 
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
-                let tile = this.tileArray[row][col];
-                if(tile === null) {
-                    tiles.push(new Vec2(row, col));
-                }
-                else {
-                    const tileComp = tile.getComponent("TileBase");
-                    if(tileComp.isCommonTile()) {
+                if(this.checkPositionForStatus(row, col)) {
+                    let tile = this.tileArray[row][col];
+                    if(tile === null) {
                         tiles.push(new Vec2(row, col));
+                    }
+                    else {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.isCommonTile()) {
+                            tiles.push(new Vec2(row, col));
+                        }
                     }
                 }
             }
@@ -1114,7 +1116,7 @@ export class Field extends Component {
 
 
     shuffleTiles(): boolean {
-        let tilesPositions = this.getAllCleanTilesPositions();
+        let tilesPositions = this.getAllCommonTilesPositions();
         let swappedTiles = [];
 
         let swapsCount = 0;
