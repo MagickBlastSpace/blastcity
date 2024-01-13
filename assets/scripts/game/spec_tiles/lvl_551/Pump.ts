@@ -19,8 +19,7 @@ export class Pump extends SpecTileBase {
         super.init(row, col, tileType);
 
         this.isShifts = false;
-        this.isGrouped = true;
-        this.isGenerate = false;
+        this.isGrouped = false;
     }
 
     getDamage(damageType: string) {
@@ -28,26 +27,14 @@ export class Pump extends SpecTileBase {
             return;
         }
         this.setAsDamaged();
-
-        this.isGenerate = true;
     }
 
     startInActionEffect(field: Node[][]): boolean {
-        if(this.isGenerate) {
+        if(this.isDamaged) {
             this.node.emit("special", "sticker");
-
-            let tiles = this.getGroupedTiles(field);
-            tiles.forEach(tile => {
-                let tileComponent = tile.getComponent("Pump");
-                tileComponent.clearGenerate();
-            })
         }
 
         return true;
-    }
-
-    clearGenerate() {
-        this.isGenerate = false;
     }
 
 
