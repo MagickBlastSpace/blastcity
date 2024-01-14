@@ -88,6 +88,7 @@ export class Rocket extends BonusTileBase {
             case "green":
             case "yellow":
             case "purple":
+            case "orange":
                 matches = this.getDiscoballComboMatches(field, this.combo);
                 break;
         }

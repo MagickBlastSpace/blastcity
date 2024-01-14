@@ -65,7 +65,7 @@ export class Field extends Component {
             }
         }
 
-        this.availableColors = ["blue", "red", "green", "yellow", "purple"];
+        this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
 
         this.spawnInitialBoard(GameData.instance.levels[0]);
     }
@@ -171,7 +171,7 @@ export class Field extends Component {
     }
 
     spawnBomb(row: number, col: number): Node {
-        this.destroyTile(row, col, true);
+        this.destroyTile(row, col, false);
         const tileNode = instantiate(this.bombPrefab);
         const tileComponent = tileNode.getComponent("Bomb");
         let spawnedTile = this.initTile(tileComponent, row, col, "bomb");
@@ -179,7 +179,7 @@ export class Field extends Component {
     }
 
     spawnRocket(row: number, col: number, tileType: string): Node {
-        this.destroyTile(row, col, true);
+        this.destroyTile(row, col, false);
         const tileNode = instantiate(this.rocketPrefab);
         const tileComponent = tileNode.getComponent("Rocket");
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
@@ -243,6 +243,7 @@ export class Field extends Component {
             case "green":
             case "yellow":
             case "purple":
+            case "orange":
                 spawnedTile = this.spawnDiscoball(row, col, bonusId);
                 break;
         }
@@ -1037,7 +1038,7 @@ export class Field extends Component {
     getAvailableColors(): string[] {
         let colors = [];
         for(let i = 0; i < this.spawnPool.length; i++) {
-            if(this.availableColors.includes(this.spawnPool[i])) {
+            if(this.availableColors.includes(this.spawnPool[i]) && this.spawnPool[i] !== "orange") {
                 colors.push(this.spawnPool[i]);
             }
         }
