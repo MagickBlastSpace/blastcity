@@ -468,7 +468,6 @@ export class Field extends Component {
 
     getAllCommonTilesPositions(): Vec2[] {
         let tiles = [];
-        //const availableTypes = this.getAvailableColors();
 
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
@@ -482,10 +481,6 @@ export class Field extends Component {
                         if(tileComp.isCommonTile()) {
                             tiles.push(new Vec2(row, col));
                         }
-                        /*const tileComp = tile.getComponent("TileBase");
-                        if(availableTypes.includes(tileComp.getTileType())) {
-                            tiles.push(new Vec2(row, col));
-                        }*/
                     }
                 }
             }
@@ -493,27 +488,6 @@ export class Field extends Component {
 
         return tiles;
     }
-
-    getAllTilesPositionsByType(tileType: string): Vec2[] {
-        let tiles = [];
-
-        for (let row = 0; row < this.numRows; row++) {
-            for (let col = 0; col < this.numCols; col++) {
-                if(this.checkPositionForStatus(row, col)) {
-                    let tile = this.tileArray[row][col];
-                    if(tile !== null) {
-                        const tileComp = tile.getComponent("TileBase");
-                        if(tileComp.isCommonTile() && tileComp.getTileType() === tileType) {
-                            tiles.push(new Vec2(row, col));
-                        }
-                    }
-                }
-            }
-        }
-
-        return tiles;
-    }
-
 
     extraHit(row: number, col: number) {
         let tile = this.tileArray[row][col];
@@ -1006,9 +980,9 @@ export class Field extends Component {
                     else {
                         checkedTiles.push(tile);
 
-                        /*if(tileComponent.isBonusTile() && !this.availableColors.includes(tileComponent.getTileType())) {
+                        if(tileComponent.isBonusTile() && !this.availableColors.includes(tileComponent.getTileType())) {
                             isMoveAvailable = true;
-                        }*/ //this is for B mechanic of field shuffle
+                        }
                     }
                 }
             }
@@ -1151,45 +1125,31 @@ export class Field extends Component {
 
 
     shuffleTiles(): boolean {
-        this.shuffleSegment(0, 0);
-    }
-    
-    shuffleSegment(colorIndex: number, allTilesIndex: number) {
-        if (colorIndex >= this.availableColors.length) {
-            this.checkForPotentialBonuses();
-            return;
-        }
-    
-        const tilesPositions = this.getAllCommonTilesPositions();
-        if (allTilesIndex >= tilesPositions.length) {
-            return;
-        }
-    
-        let swapsCount = 0;
-        const stepTime = 0.02;
-    
-        const tilesByColor = this.getAllTilesPositionsByType(this.availableColors[colorIndex]);
-        for (let j = 0; j < tilesByColor.length; j++) {
-            this.scheduleOnce(() => {
-                this.swapTiles(tilesByColor[j], tilesPositions[allTilesIndex]);
-                allTilesIndex++;
-    
-                if (allTilesIndex === tilesPositions.length) {
-                    this.scheduleOnce(() => {
-                        this.shuffleSegment(colorIndex + 1, 0);
-                    }, stepTime * (j + 1));
-                }
-            }, stepTime * j);
-            swapsCount++;
-        }
-    
-        this.scheduleOnce(() => {
-            this.shuffleSegment(colorIndex + 1, allTilesIndex);
-        }, this.swapTime + stepTime * (swapsCount + 2));
-    }
-    
+        let tilesPositions = this.getAllCommonTilesPositions();
+        let swappedTiles = [];
 
-    
+        let swapsCount = 0;
+        let stepTime = 0.05;
+        for(let i = 0; i < tilesPositions.length; i++) {
+            if(!swappedTiles.includes(tilesPositions[i])) {
+                swappedTiles.push(tilesPositions[i]);
+                let tileToSwap = tilesPositions[Math.floor(Math.random() * tilesPositions.length)];
+                if(!swappedTiles.includes(tileToSwap)) {
+                    swappedTiles.push(tileToSwap);
+                    this.scheduleOnce(() => {
+                        this.swapTiles(tilesPositions[i], tileToSwap);
+                    }, this.swapTime + stepTime * swapsCount);
+                    swapsCount++;
+                }
+            }
+        }
+
+        this.scheduleOnce(() => {
+            this.checkForPotentialBonuses();
+        }, this.swapTime + stepTime * (swapsCount + 1));
+    }
+
+
 
     showMatrixDebugMessage() {
         for (let row = this.numRows - 1; row >= 0; row--) {
