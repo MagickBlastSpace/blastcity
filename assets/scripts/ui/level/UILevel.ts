@@ -27,7 +27,14 @@ export class UILevel extends Component {
 
     refreshGoals(goals: GoalData[]) {
         for(let i = 0; i < goals.length && i < this.goalItems.length; i++) {
-            this.goalItems[i].refresh(goals[i]);
+            if(i < goals.length) {
+                this.goalItems[i].refresh(goals[i]);
+            }
+            else {
+                let goalData = new GoalData();
+                goalData.id = "common";
+                this.goalItems[i].refresh(goalData);
+            }
         }
     }
 }

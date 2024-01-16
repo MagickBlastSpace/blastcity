@@ -17,6 +17,8 @@ export class StatusBase extends Component {
     private isDamaged: boolean;
 
     private currentTween: any = null;
+
+    private isSubscribed: boolean = false;
     
     
     init(row: number, col: number, statusType: string) {
@@ -85,6 +87,29 @@ export class StatusBase extends Component {
 
     isReadyToDestroy(): boolean {
         return false;
+    }
+
+    subscribeOnFieldEvents(field: Node) {}
+
+    findAllStatusesByType(field: Node[][], sType: string): Node[] {
+        let statuses = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                const status = field[i][j];
+                if(status !== null) {
+                    const statusComp = status.getComponent("StatusBase");
+                    if(statusComp.getStatusType() === sType) {
+                        statuses.push(status);
+                    }
+                }
+            }
+        }
+
+        return statuses;
     }
 }
 

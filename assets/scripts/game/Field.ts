@@ -120,6 +120,7 @@ export class Field extends Component {
         this.spawnNewTiles();
 
         this.subscribeAll();
+        this.sortStatuses();
         
         this.node.emit("level_init", level.movesCount, level.goals);
     }
@@ -143,10 +144,31 @@ export class Field extends Component {
     subscribeAll() {
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
+
                 let tile = this.tileArray[row][col];
                 if(tile !== null) {
                     let tileComp = tile.getComponent("TileBase");
                     tileComp.subscribeOnFieldEvents(this.node);
+                }
+
+                let status = this.statusArray[row][col];
+                if(status !== null) {
+                    let statusComp = status.getComponent("StatusBase");
+                    statusComp.subscribeOnFieldEvents(this.node);
+                }
+            }
+        }
+    }
+
+    sortStatuses() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let status = this.statusArray[i][j];
+                if(status !== null) {
+                    let statusComp = status.getComponent("StatusBase");
+                    if(statusComp.getStatusType().split("_")[0] === "dynamite") {
+                        status.setSiblingIndex(this.statusLayout.childrenCount - 1);
+                    }
                 }
             }
         }
@@ -290,7 +312,9 @@ export class Field extends Component {
             this.spawnSpecialTile(row, col, tileId);
         });
         tileNode.on("change_bonus", (row, col, bonusId, timeToDestroy) => {
-            this.spawnBonusTile(row, col, bonusId, timeToDestroy);
+            if(this.checkPositionForStatus(row, col)) {
+                this.spawnBonusTile(row, col, bonusId, timeToDestroy);
+            }
         });
         tileNode.on("respawn", (timeToRespawn) => {
             this.scheduleRespawn(timeToRespawn);
@@ -390,6 +414,12 @@ export class Field extends Component {
         });
         statusNode.on("goal", (goalType) => {
             this.node.emit("destroy", goalType);
+        });
+        statusNode.on("respawn", (timeToRespawn) => {
+            this.scheduleRespawn(timeToRespawn);
+        });
+        statusNode.on("destroy_status", (row, col) => {
+            this.destroyStatus(row, col, false);
         });
 
         this.statusArray[row][col] = statusNode;
@@ -1062,6 +1092,10 @@ export class Field extends Component {
 
     getTilesArray(): Node[][] {
         return this.tileArray;
+    }
+
+    getStatusArray(): Node[][] {
+        return this.statusArray;
     }
 
 
