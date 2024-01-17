@@ -51,7 +51,7 @@ export class SmallSafe extends SpecTileBase {
 
         this.refresh();
 
-        return true;
+        return false;
     }
 
 

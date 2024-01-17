@@ -51,7 +51,7 @@ export class Field extends Component {
     private startPool: string[] = [];
     private spawnPool: string[] = [];
 
-    private fallTime: number = 0.25;
+    private fallTime: number = 0.3;
     private swapTime: number = 0.15;
 
 
@@ -302,7 +302,7 @@ export class Field extends Component {
         tileComponent.node.setPosition(posX, posY + tileNode.height);
 
         cc.tween(tileNode)
-            .to(0.2, { position: new Vec3(posX, posY, 0) })
+            .to(this.fallTime / 2, { position: new Vec3(posX, posY, 0) })
             .start();
 
         tileNode.on("click", (tile) => {
@@ -721,10 +721,10 @@ export class Field extends Component {
                 }
             }
 
-            this.isClickAvailable = true;
             this.checkSpecTilesInActionEffect();
             this.checkForPotentialBonuses();
-        }, this.fallTime + 0.05);
+
+        }, this.fallTime / 2);
     }
 
     scheduleRespawn(timeToRespawn: number) {
@@ -1010,9 +1010,9 @@ export class Field extends Component {
                     else {
                         checkedTiles.push(tile);
 
-                        if(tileComponent.isBonusTile() && !this.availableColors.includes(tileComponent.getTileType())) {
+                        /*if(tileComponent.isBonusTile() && !this.availableColors.includes(tileComponent.getTileType())) {
                             isMoveAvailable = true;
-                        }
+                        }*/ //this is for B mechanic
                     }
                 }
             }
@@ -1020,6 +1020,11 @@ export class Field extends Component {
 
         if(!isMoveAvailable) {
             this.shuffleTiles();
+        }
+        else {
+            this.scheduleOnce(() => {
+                this.isClickAvailable = true;
+            }, this.swapTime);
         }
     }
 
@@ -1100,8 +1105,6 @@ export class Field extends Component {
 
 
     swapTiles(pos_1: Vec2, pos_2: Vec2) {
-        this.isClickAvailable = false;
-
         let tile1 = this.tileArray[pos_1.x][pos_1.y];
         if(tile1 === null || tile1 === undefined) {
             return;
@@ -1129,14 +1132,14 @@ export class Field extends Component {
         let posX_2 = pos_1.y * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY_2 = pos_1.x * (this.tileSize + this.tileSpacing) + this.yOffset;
 
+        cc.tween(this.tile1).stop();
+        cc.tween(this.tile2).stop();
+
         cc.tween(tile1)
             .to(this.swapTime, { position: new cc.Vec3(posX_1, posY_1, 0) })
             .start();
         cc.tween(tile2)
             .to(this.swapTime, { position: new cc.Vec3(posX_2, posY_2, 0) })
-            .call(() => {
-                this.isClickAvailable = true;
-            })
             .start();
     }
 

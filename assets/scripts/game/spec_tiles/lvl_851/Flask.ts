@@ -34,7 +34,7 @@ export class Flask extends Sticker {
             this.setNextColor();
         }
 
-        return true;
+        return false;
     }
 
 

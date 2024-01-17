@@ -55,7 +55,7 @@ export class BigSafe extends WashingMachine {
 
         this.refresh();
 
-        return true;
+        return false;
     }
 
     startDestroyConsequences() {}

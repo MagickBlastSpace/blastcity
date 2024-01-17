@@ -34,7 +34,7 @@ export class Pump extends SpecTileBase {
             this.node.emit("special", "sticker");
         }
 
-        return true;
+        return false;
     }
 
 

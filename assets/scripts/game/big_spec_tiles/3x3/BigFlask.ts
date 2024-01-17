@@ -52,7 +52,7 @@ export class BigFlask extends Soda {
             this.setNextColor();
         }
 
-        return true;
+        return false;
     }
 
 
