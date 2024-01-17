@@ -501,14 +501,38 @@ export class Field extends Component {
 
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
-                if(this.checkPositionForStatus(row, col)) {
-                    let tile = this.tileArray[row][col];
+
+                let actualCol = row % 2 === 0 ? col : this.numCols - col - 1;
+
+                if(this.checkPositionForStatus(row, actualCol)) {
+                    let tile = this.tileArray[row][actualCol];
                     if(tile === null) {
-                        tiles.push(new Vec2(row, col));
+                        tiles.push(new Vec2(row, actualCol));
                     }
                     else {
                         const tileComp = tile.getComponent("TileBase");
                         if(tileComp.isCommonTile()) {
+                            tiles.push(new Vec2(row, actualCol));
+                        }
+                    }
+                }
+            }
+        }
+
+        return tiles;
+    }
+
+
+    getAllTilesPositionsByType(tileType: string): Vec2[] {
+        let tiles = [];
+
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                if(this.checkPositionForStatus(row, col)) {
+                    let tile = this.tileArray[row][col];
+                    if(tile !== null) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.isCommonTile() && tileComp.getTileType() === tileType) {
                             tiles.push(new Vec2(row, col));
                         }
                     }
@@ -518,6 +542,7 @@ export class Field extends Component {
 
         return tiles;
     }
+
 
     extraHit(row: number, col: number) {
         let tile = this.tileArray[row][col];
@@ -722,7 +747,10 @@ export class Field extends Component {
             }
 
             this.checkSpecTilesInActionEffect();
-            this.checkForPotentialBonuses();
+            
+            this.scheduleOnce(() => {
+                this.checkForPotentialBonuses();
+            }, this.fallTime / 2);
 
         }, this.fallTime / 2);
     }
@@ -1022,9 +1050,7 @@ export class Field extends Component {
             this.shuffleTiles();
         }
         else {
-            this.scheduleOnce(() => {
-                this.isClickAvailable = true;
-            }, this.swapTime);
+            this.isClickAvailable = true;
         }
     }
 
@@ -1162,29 +1188,46 @@ export class Field extends Component {
 
 
     shuffleTiles(): boolean {
-        let tilesPositions = this.getAllCommonTilesPositions();
-        let swappedTiles = [];
-
-        let swapsCount = 0;
-        let stepTime = 0.05;
-        for(let i = 0; i < tilesPositions.length; i++) {
-            if(!swappedTiles.includes(tilesPositions[i])) {
-                swappedTiles.push(tilesPositions[i]);
-                let tileToSwap = tilesPositions[Math.floor(Math.random() * tilesPositions.length)];
-                if(!swappedTiles.includes(tileToSwap)) {
-                    swappedTiles.push(tileToSwap);
-                    this.scheduleOnce(() => {
-                        this.swapTiles(tilesPositions[i], tileToSwap);
-                    }, this.swapTime + stepTime * swapsCount);
-                    swapsCount++;
-                }
-            }
-        }
-
-        this.scheduleOnce(() => {
-            this.checkForPotentialBonuses();
-        }, this.swapTime + stepTime * (swapsCount + 1));
+        this.shuffleSegment(0, 0);
     }
+    
+    shuffleSegment(colorIndex: number, allTilesIndex: number) {
+        if (colorIndex >= this.availableColors.length) {
+            this.checkForPotentialBonuses();
+            return;
+        }
+    
+        const tilesPositions = this.getAllCommonTilesPositions();
+        if (allTilesIndex >= tilesPositions.length) {
+            this.checkForPotentialBonuses();
+            return;
+        }
+    
+        let swapsCount = 0;
+        const stepTime = 0.01;
+    
+        const tilesByColor = this.getAllTilesPositionsByType(this.availableColors[colorIndex]);
+        for (let j = 0; j < tilesByColor.length; j++) {
+            this.scheduleOnce(() => {
+                while(this.tileArray[tilesPositions[allTilesIndex].x][tilesPositions[allTilesIndex].y] === null) {
+                    allTilesIndex++;
+                    if (allTilesIndex >= tilesPositions.length) {
+                        this.checkForPotentialBonuses();
+                        return;
+                    }
+                }
+                this.swapTiles(tilesByColor[j], tilesPositions[allTilesIndex]);
+                allTilesIndex++;
+            }, stepTime * j);
+            swapsCount++;
+        }
+    
+        this.scheduleOnce(() => {
+            this.shuffleSegment(colorIndex + 1, allTilesIndex);
+        }, this.swapTime + stepTime * swapsCount);
+    }
+
+
 
 
 
