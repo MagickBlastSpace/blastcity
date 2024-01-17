@@ -113,7 +113,7 @@ export class Discoball extends BonusTileBase {
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        const timeBetweenTiles = 0.2;
+        const timeBetweenTiles = 0.05;
 
         let tiles = [];
         for(let i = 0; i < numRows; i++) {
@@ -153,7 +153,7 @@ export class Discoball extends BonusTileBase {
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        const timeBetweenTiles = 0.2;
+        const timeBetweenTiles = 0.05;
 
         let tiles = [];
         for(let i = 0; i < numRows; i++) {
