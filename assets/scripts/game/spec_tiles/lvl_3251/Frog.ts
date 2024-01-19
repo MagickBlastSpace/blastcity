@@ -5,10 +5,6 @@ const { ccclass, property } = _decorator;
 @ccclass('Frog')
 export class Frog extends Fish {
     isReadyToDestroy(): boolean {
-        /*if(this.goalCount <= 0) {
-            return true;
-        }*/
-
         return false;
     }
 

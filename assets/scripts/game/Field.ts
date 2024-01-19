@@ -555,7 +555,14 @@ export class Field extends Component {
 
     extraHit(row: number, col: number) {
         let tile = this.tileArray[row][col];
-        this.giveDamage(tile, "extra_hit", true);
+        let status = this.statusArray[row][col];
+
+        if(tile !== null) {
+            this.giveDamage(tile, "extra_hit", true);
+        }
+        else {
+            this.giveStatusDamage(row, col);
+        }
     }
 
     randomExtraHit(except: string, except2: string) {
