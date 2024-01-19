@@ -175,6 +175,11 @@ export class TileBase extends Component {
     }
 
     subscribeOnGoals(goals: GoalData[]) {}
+
+
+    clearTiles() {
+        this.node.emit("clear");
+    }
 }
 
 

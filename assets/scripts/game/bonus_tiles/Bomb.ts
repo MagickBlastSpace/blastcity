@@ -145,12 +145,15 @@ export class Bomb extends BonusTileBase {
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row));
-        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col));
-        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row - 1));
-        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row + 1));
-        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col - 1));
-        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col + 1));
+        this.rowExtraHit(field, this.row);
+        this.rowExtraHit(field, this.row + 1);
+        this.rowExtraHit(field, this.row - 1);
+
+        this.colExtraHit(field, this.col);
+        this.colExtraHit(field, this.col + 1);
+        this.colExtraHit(field, this.col - 1);
+
+        this.setRespawnEvent(0.2);
 
         return matches;
     }

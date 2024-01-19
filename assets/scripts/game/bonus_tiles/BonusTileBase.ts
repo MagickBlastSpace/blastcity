@@ -161,6 +161,27 @@ export class BonusTileBase extends TileBase {
         const statusComp = statusNode.getComponent("StatusBase");
         statusComp.getDamage();
     }
+
+
+    rowExtraHit(field: Node[][], row: number) {
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        for(let j = 0; j < numCols; j++) {
+            this.node.emit("extra_hit", row, j);
+        }
+
+        this.clearTiles();
+    }
+
+    colExtraHit(field: Node[][], col: number) {
+        const numRows: number = field.length;
+
+        for(let j = 0; j < numRows; j++) {
+            this.node.emit("extra_hit", j, col);
+        }
+
+        this.clearTiles();
+    }
 }
 
 

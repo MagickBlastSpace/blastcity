@@ -372,6 +372,9 @@ export class Field extends Component {
         tileNode.on("goal_inc", (goalType) => {
             this.node.emit("goal_inc", goalType);
         });
+        tileNode.on("clear", () => {
+            this.clearAll();
+        });
 
         this.tileArray[row][col] = tileNode;
         if(isDoubleWidth || isTripleWidth) {
@@ -554,8 +557,11 @@ export class Field extends Component {
 
 
     extraHit(row: number, col: number) {
+        if(row > this.numRows - 1 || col > this.numCols - 1 || row < 0 || col < 0) {
+            return;
+        }
+
         let tile = this.tileArray[row][col];
-        let status = this.statusArray[row][col];
 
         if(tile !== null) {
             this.giveDamage(tile, "extra_hit", true);
@@ -662,6 +668,7 @@ export class Field extends Component {
         }
 
         if(!isRespawn) {
+            this.clearAll();
             return true;
         }
 
@@ -689,7 +696,7 @@ export class Field extends Component {
     }
 
     giveDamage(tile: Node, choosenType: string, isBonus: boolean) {
-        if(tile !== null) {
+        if(tile !== null && tile !== undefined) {
             let tileComponent = tile.getComponent("TileBase");
             if(tileComponent.isEmptyTile()) {
                 return;

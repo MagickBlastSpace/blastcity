@@ -31,7 +31,7 @@ export class Rocket extends BonusTileBase {
             let newTilesToDestroy = [];
             bonusTiles.forEach(bonusTile => {
                 const bonusType = bonusTile.getTileType();
-                if(direction === bonusType && !this.isCombo() || direction !== bonusType && this.isCombo() && bonusType.split("_")[0] === "rocket") {
+                if(direction === bonusType && !this.isCombo()) {
                     direction = bonusTile.changeDirection();
                 }
                 let newMatches = bonusTile.getMatchesByType(field, statuses);
@@ -97,20 +97,32 @@ export class Rocket extends BonusTileBase {
     }
 
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        return this.getVerticalMatches(field, statuses, this.col).concat(this.getHorizontalMatches(field, statuses, this.row));
+        let matches = [];
+
+        this.rowExtraHit(field, this.row);
+        this.colExtraHit(field, this.col);
+
+        this.setRespawnEvent(0.2);
+
+        return matches;
     }
 
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        matches = this.getRocketComboMatches(field, statuses);
-        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row - 1));
-        matches = matches.concat(this.getHorizontalMatches(field, statuses, this.row + 1));
-        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col - 1));
-        matches = matches.concat(this.getVerticalMatches(field, statuses, this.col + 1));
+        this.rowExtraHit(field, this.row);
+        this.rowExtraHit(field, this.row + 1);
+        this.rowExtraHit(field, this.row - 1);
+
+        this.colExtraHit(field, this.col);
+        this.colExtraHit(field, this.col + 1);
+        this.colExtraHit(field, this.col - 1);
+
+        this.setRespawnEvent(0.2);
 
         return matches;
     }
+
 
     getDiscoballComboMatches(field: Node[][], discoballType: string): Node[] {
         let matches = [];
@@ -121,6 +133,7 @@ export class Rocket extends BonusTileBase {
         const timeBetweenTiles = 0.05;
 
         let tiles = [];
+
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
                 const tile = field[i][j];
