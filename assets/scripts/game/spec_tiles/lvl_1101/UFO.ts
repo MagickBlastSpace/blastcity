@@ -62,6 +62,10 @@ export class UFO extends Bottle {
             }
         }
 
+        if(tileComp.isBonusTile()) {
+            return true;
+        }
+
         return false;
     }
 

@@ -4,6 +4,13 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Birds')
 export class Birds extends MagicHat {
+
+    init(row: number, col: number, tileType: string) {
+        super.init(row, col, tileType);
+
+        this.isGrouped = false;
+    }
+
     getDamage(damageType: string) {
         if(this.isDamaged || this.isInactive) {
             return;
