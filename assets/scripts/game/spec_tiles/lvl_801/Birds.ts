@@ -5,19 +5,8 @@ const { ccclass, property } = _decorator;
 @ccclass('Birds')
 export class Birds extends MagicHat {
 
-    init(row: number, col: number, tileType: string) {
-        super.init(row, col, tileType);
-
-        this.isGrouped = false;
-    }
-
-    getDamage(damageType: string) {
-        if(this.isDamaged || this.isInactive) {
-            return;
-        }
-        this.setAsDamaged();
-        this.node.emit("goal", "birds");
-    }
+    private fieldNode: Node = null;
+    private destroyTileCallback: Function = null;
 
 
     subscribeOnFieldEvents(field: Node) {
@@ -29,13 +18,61 @@ export class Birds extends MagicHat {
 
         this.fieldNode = field;
 
-        this.goalCompleteCallback = (tileType) => {
+        this.destroyTileCallback = (tileType) => {
             if(tileType === "birds") {
-                this.setInactiveState();
+                this.goalCount--;
+
+                if(this.goalCount <= 0) {
+                    this.setInactiveState();
+                }
             }
         };
 
-        field.on("goal_complete", this.goalCompleteCallback);
+        field.on("spawn", this.destroyTileCallback);
+    }
+
+    destroyTile() {
+        this.fieldNode.off("spawn", this.destroyTileCallback);
+
+        super.destroyTile();
+    }
+
+    destroyClear() {
+        this.fieldNode.off("spawn", this.destroyTileCallback);
+
+        super.destroyClear();
+    }
+
+
+    init(row: number, col: number, tileType: string) {
+        super.init(row, col, tileType);
+
+        this.isGrouped = false;
+    }
+
+    getDamage(damageType: string) {
+        if(this.isDamaged || this.isInactive || this.goalCount <= 0) {
+            return;
+        }
+        this.setAsDamaged();
+
+        this.node.emit("goal", "birds");
+    }
+
+
+    subscribeOnGoals(goals: GoalData[]) {
+        this.goalCount = 0;
+
+        for(let i = 0; i < goals.length; i++) {
+            if(goals[i].id === this.tileType) {
+                this.goalCount = goals[i].count;
+                return;
+            }
+        }
+    }
+
+    isReadyToDestroy(): boolean {
+        return false;
     }
 }
 

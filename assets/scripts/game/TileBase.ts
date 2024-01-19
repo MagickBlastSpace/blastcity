@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, tween, Vec3 } from 'cc';
+import { GoalData } from '../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('TileBase')
@@ -172,6 +173,8 @@ export class TileBase extends Component {
     subscribeOnFieldEvents(field: Node) {
         this.isSubscribed = true;
     }
+
+    subscribeOnGoals(goals: GoalData[]) {}
 }
 
 

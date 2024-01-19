@@ -7,7 +7,18 @@ export class Frog extends Fish {
     getDamage(damageType: string) {
         super.getDamage(damageType);
 
-        this.node.emit("status", "bubble");
+        if(this.goalCount > 1) {
+            this.node.emit("status", "bubble");
+        }
+    }
+
+
+    isReadyToDestroy(): boolean {
+        if(this.goalCount <= 0) {
+            return true;
+        }
+
+        return false;
     }
 }
 

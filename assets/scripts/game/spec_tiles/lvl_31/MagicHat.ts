@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
+import { GoalData } from '../../../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('MagicHat')
@@ -10,26 +11,12 @@ export class MagicHat extends SpecTileBase {
     @property(Node)
     activeState: Node = null;
 
-    private fieldNode: Node = null;
-    private goalCompleteCallback: Function = null;
-
     private isInactive: boolean = false;
 
+    private goalCount: number = 0;
 
-    init(row: number, col: number, tileType: string) {
-        super.init(row, col, tileType);
-
-        this.isShifts = false;
-        this.isGrouped = true;
-    }
-
-    getDamage(damageType: string) {
-        if(this.isDamaged || this.isInactive) {
-            return;
-        }
-        this.setAsDamaged();
-        this.node.emit("goal", "magic_hat");
-    }
+    private fieldNode: Node = null;
+    private destroyTileCallback: Function = null;
 
 
     subscribeOnFieldEvents(field: Node) {
@@ -41,13 +28,62 @@ export class MagicHat extends SpecTileBase {
 
         this.fieldNode = field;
 
-        this.goalCompleteCallback = (tileType) => {
+        this.destroyTileCallback = (tileType) => {
             if(tileType === "magic_hat") {
-                this.setInactiveState();
+                this.goalCount--;
+
+                if(this.goalCount <= 0) {
+                    this.setInactiveState();
+                }
             }
         };
 
-        field.on("goal_complete", this.goalCompleteCallback);
+        field.on("spawn", this.destroyTileCallback);
+    }
+
+    destroyTile() {
+        this.fieldNode.off("spawn", this.destroyTileCallback);
+
+        super.destroyTile();
+    }
+
+    destroyClear() {
+        this.fieldNode.off("spawn", this.destroyTileCallback);
+
+        super.destroyClear();
+    }
+
+
+    init(row: number, col: number, tileType: string) {
+        super.init(row, col, tileType);
+
+        this.isShifts = false;
+        this.isGrouped = true;
+    }
+
+    getDamage(damageType: string) {
+        if(this.isDamaged || this.isInactive || this.goalCount <= 0) {
+            return;
+        }
+        this.setAsDamaged();
+        
+        this.node.emit("goal", "magic_hat");
+    }
+
+
+    subscribeOnGoals(goals: GoalData[]) {
+        this.goalCount = 0;
+
+        for(let i = 0; i < goals.length; i++) {
+            if(goals[i].id === this.tileType) {
+                this.goalCount = goals[i].count;
+                return;
+            }
+        }
+    }
+
+    isReadyToDestroy(): boolean {
+        return false;
     }
 
 
@@ -55,18 +91,6 @@ export class MagicHat extends SpecTileBase {
         this.isInactive = true;
         this.inactiveState.active = true;
         this.activeState.active = false;
-    }
-
-    destroyTile() {
-        this.fieldNode.off("goal_complete", this.goalCompleteCallback);
-
-        super.destroyTile();
-    }
-
-    destroyClear() {
-        this.fieldNode.off("goal_complete", this.goalCompleteCallback);
-
-        super.destroyClear();
     }
 }
 

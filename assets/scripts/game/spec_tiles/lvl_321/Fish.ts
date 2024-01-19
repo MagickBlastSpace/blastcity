@@ -8,28 +8,12 @@ export class Fish extends SpecTileBase {
     @property(Node)
     inactiveState: Node = null;
 
-    private fieldNode: Node = null;
-    private goalCompleteCallback: Function = null;
-
     private isInactive: boolean = false;
 
+    private goalCount: number = 0;
 
-    init(row: number, col: number, tileType: string) {
-        super.init(row, col, tileType);
-
-        this.isShifts = false;
-        this.isGrouped = true;
-    }
-
-    getDamage(damageType: string) {
-        if(this.isDamaged || this.isInactive) {
-            return;
-        }
-        this.setAsDamaged();
-
-
-        this.node.emit("status", "bubble");
-    }
+    private fieldNode: Node = null;
+    private destroyTileCallback: Function = null;
 
 
     subscribeOnFieldEvents(field: Node) {
@@ -41,13 +25,61 @@ export class Fish extends SpecTileBase {
 
         this.fieldNode = field;
 
-        this.goalCompleteCallback = (tileType) => {
+        this.destroyTileCallback = (tileType) => {
             if(tileType === "bubble") {
-                this.setInactiveState();
+                this.goalCount--;
+
+                if(this.goalCount <= 0) {
+                    this.setInactiveState();
+                }
             }
         };
 
-        field.on("goal_complete", this.goalCompleteCallback);
+        field.on("spawn", this.destroyTileCallback);
+    }
+
+    destroyTile() {
+        this.fieldNode.off("spawn", this.destroyTileCallback);
+
+        super.destroyTile();
+    }
+
+    destroyClear() {
+        this.fieldNode.off("spawn", this.destroyTileCallback);
+
+        super.destroyClear();
+    }
+
+
+    init(row: number, col: number, tileType: string) {
+        super.init(row, col, tileType);
+
+        this.isShifts = false;
+        this.isGrouped = true;
+    }
+
+    getDamage(damageType: string) {
+        if(this.isDamaged || this.isInactive || this.goalCount <= 0) {
+            return;
+        }
+        this.setAsDamaged();
+
+        this.node.emit("status", "bubble");
+    }
+    
+    subscribeOnGoals(goals: GoalData[]) {
+        this.goalCount = 0;
+
+        for(let i = 0; i < goals.length; i++) {
+            if(goals[i].id === "bubble") {
+                this.goalCount = goals[i].count;
+                return;
+            }
+        }
+    }
+
+    isReadyToDestroy(): boolean {
+        return false;
     }
 
 
@@ -56,16 +88,9 @@ export class Fish extends SpecTileBase {
         this.inactiveState.active = true;
     }
 
-    destroyTile() {
-        this.fieldNode.off("goal_complete", this.goalCompleteCallback);
 
-        super.destroyTile();
-    }
-
-    destroyClear() {
-        this.fieldNode.off("goal_complete", this.goalCompleteCallback);
-
-        super.destroyClear();
+    reduceGoalCount() {
+        this.findAllTilesThisType();
     }
 }
 

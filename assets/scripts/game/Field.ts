@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, instantiate, Prefab, Vec2, Vec3 } from 'cc';
-import { GameData, LevelData, SpecialPrefabData } from '../data/GameData';
+import { GameData, GoalData, LevelData, SpecialPrefabData } from '../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -119,7 +119,7 @@ export class Field extends Component {
 
         this.spawnNewTiles();
 
-        this.subscribeAll();
+        this.subscribeAll(level.goals);
         this.sortStatuses();
         
         this.node.emit("level_init", level.movesCount, level.goals);
@@ -141,7 +141,7 @@ export class Field extends Component {
         }
     }
 
-    subscribeAll() {
+    subscribeAll(goals: GoalData[]) {
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
 
@@ -149,6 +149,7 @@ export class Field extends Component {
                 if(tile !== null) {
                     let tileComp = tile.getComponent("TileBase");
                     tileComp.subscribeOnFieldEvents(this.node);
+                    tileComp.subscribeOnGoals(goals);
                 }
 
                 let status = this.statusArray[row][col];
@@ -327,6 +328,8 @@ export class Field extends Component {
             if(cleanTiles.length > 0) {
                 const tileIndex = Math.floor(Math.random() * cleanTiles.length);
                 this.spawnStatus(cleanTiles[tileIndex].x, cleanTiles[tileIndex].y, statusId);
+
+                this.node.emit("spawn", statusId);
             }
         });
         tileNode.on("status_static", (row, col, statusId) => {
@@ -340,6 +343,8 @@ export class Field extends Component {
             if(cleanTiles.length > 0) {
                 const tileIndex = Math.floor(Math.random() * cleanTiles.length);
                 this.spawnSpecialTile(cleanTiles[tileIndex].x, cleanTiles[tileIndex].y, tileId);
+
+                this.node.emit("spawn", tileId);
             }
         });
         tileNode.on("swap", (pos_1, pos_2) => {
@@ -359,6 +364,10 @@ export class Field extends Component {
         });
         tileNode.on("goal", (goalType) => {
             this.node.emit("destroy", goalType);
+
+            if(goalType === "magic_hat" || goalType === "birds") {
+                this.node.emit("spawn", goalType);
+            }
         });
         tileNode.on("goal_inc", (goalType) => {
             this.node.emit("goal_inc", goalType);

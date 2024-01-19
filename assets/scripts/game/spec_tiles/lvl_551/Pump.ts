@@ -8,12 +8,50 @@ export class Pump extends SpecTileBase {
     @property(Node)
     inactiveState: Node = null;
 
-    private fieldNode: Node = null;
-    private goalCompleteCallback: Function = null;
-
     private isInactive: boolean = false;
 
     private isGenerate: boolean = false;
+
+    private goalCount: number = 0;
+
+    private fieldNode: Node = null;
+    private destroyTileCallback: Function = null;
+
+
+    subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
+        this.fieldNode = field;
+
+        this.destroyTileCallback = (tileType) => {
+            if(tileType === "sticker") {
+                this.goalCount--;
+
+                if(this.goalCount <= 0) {
+                    this.setInactiveState();
+                }
+            }
+        };
+
+        field.on("spawn", this.destroyTileCallback);
+    }
+
+    destroyTile() {
+        this.fieldNode.off("spawn", this.destroyTileCallback);
+
+        super.destroyTile();
+    }
+
+    destroyClear() {
+        this.fieldNode.off("spawn", this.destroyTileCallback);
+
+        super.destroyClear();
+    }
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -23,9 +61,10 @@ export class Pump extends SpecTileBase {
     }
 
     getDamage(damageType: string) {
-        if(this.isDamaged || this.isInactive) {
+        if(this.isDamaged || this.isInactive || this.goalCount <= 0) {
             return;
         }
+
         this.setAsDamaged();
     }
 
@@ -38,40 +77,25 @@ export class Pump extends SpecTileBase {
     }
 
 
-    subscribeOnFieldEvents(field: Node) {
-        if(this.isSubscribed) {
-            return;
-        }
-        
-        super.subscribeOnFieldEvents(field);
+    subscribeOnGoals(goals: GoalData[]) {
+        this.goalCount = 0;
 
-        this.fieldNode = field;
-
-        this.goalCompleteCallback = (tileType) => {
-            if(tileType === "sticker") {
-                this.setInactiveState();
+        for(let i = 0; i < goals.length; i++) {
+            if(goals[i].id === "sticker") {
+                this.goalCount = goals[i].count;
+                return;
             }
-        };
+        }
+    }
 
-        field.on("goal_complete", this.goalCompleteCallback);
+    isReadyToDestroy(): boolean {
+        return false;
     }
 
 
     setInactiveState() {
         this.isInactive = true;
         this.inactiveState.active = true;
-    }
-
-    destroyTile() {
-        this.fieldNode.off("goal_complete", this.goalCompleteCallback);
-
-        super.destroyTile();
-    }
-
-    destroyClear() {
-        this.fieldNode.off("goal_complete", this.goalCompleteCallback);
-
-        super.destroyClear();
     }
 }
 
