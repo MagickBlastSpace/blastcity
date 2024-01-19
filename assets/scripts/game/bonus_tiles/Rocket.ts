@@ -31,7 +31,7 @@ export class Rocket extends BonusTileBase {
             let newTilesToDestroy = [];
             bonusTiles.forEach(bonusTile => {
                 const bonusType = bonusTile.getTileType();
-                if(direction === bonusType && !this.isCombo() || direction !== bonusType && this.isCombo()) {
+                if(direction === bonusType && !this.isCombo() || direction !== bonusType && this.isCombo() && bonusType.split("_")[0] === "rocket") {
                     direction = bonusTile.changeDirection();
                 }
                 let newMatches = bonusTile.getMatchesByType(field, statuses);
