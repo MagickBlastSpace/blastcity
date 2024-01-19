@@ -15,6 +15,8 @@ export class Fish extends SpecTileBase {
     private fieldNode: Node = null;
     private destroyTileCallback: Function = null;
 
+    private isGenerate: boolean = false;
+
 
     subscribeOnFieldEvents(field: Node) {
         if(this.isSubscribed) {
@@ -64,7 +66,15 @@ export class Fish extends SpecTileBase {
         }
         this.setAsDamaged();
 
-        this.node.emit("status", "bubble");
+        this.isGenerate = true;
+    }
+
+    startInActionEffect(field: Node[][]): boolean {
+        if(this.isGenerate) {
+            this.node.emit("status", "bubble");
+        }
+
+        return false;
     }
     
     subscribeOnGoals(goals: GoalData[]) {
@@ -91,6 +101,12 @@ export class Fish extends SpecTileBase {
 
     reduceGoalCount() {
         this.findAllTilesThisType();
+    }
+
+    clear() {
+        super.clear();
+
+        this.isGenerate = false;
     }
 }
 
