@@ -28,7 +28,6 @@ export class SmallSafe extends SpecTileBase {
         if(!this.isClosed) {
             if(this.diamonds > 0) {
                 this.diamonds--;
-                console.log("goal event");
             }
             this.strength--;
         }

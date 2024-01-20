@@ -38,6 +38,13 @@ export class DuckTier extends Soda {
 
         this.isHealAvailable = true;
     }
+
+    clearExtra() {
+        if(this.isDamaged) {
+            this.isHealAvailable = false;
+        }
+        this.isDamaged = false;
+    }
 }
 
 

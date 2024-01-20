@@ -105,7 +105,7 @@ export class TileBase extends Component {
     }
 
 
-    getMatches(field: Node[][], statuses: Node[][]) {
+    getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean) {
         let matches = [];
         return matches;
     }
@@ -123,6 +123,8 @@ export class TileBase extends Component {
     }
 
     clear() {}
+
+    clearExtra() {}
 
 
     getAdjacentTiles(field: Node[][]): Node[] {

@@ -41,6 +41,10 @@ export class Lamp extends SpecTileBase {
     startDestroyConsequences() {
         this.node.emit("goal", "lamp");
     }
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

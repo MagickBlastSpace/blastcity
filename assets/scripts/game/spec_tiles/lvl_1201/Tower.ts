@@ -43,6 +43,10 @@ export class Tower extends SpecTileBase {
     startDestroyConsequences() {
         this.node.emit("goal", "tower");
     }
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

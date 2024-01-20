@@ -62,6 +62,10 @@ export class BigPinata extends BigTileBase {
     startDestroyConsequences() {
         this.node.emit("goal", "pinata");
     }
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

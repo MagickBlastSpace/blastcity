@@ -59,6 +59,12 @@ export class BigSafe extends WashingMachine {
     }
 
     startDestroyConsequences() {}
+
+    clearExtra() {
+        if(!this.isClosed) {
+            this.isDamaged = false;
+        }
+    }
 }
 
 

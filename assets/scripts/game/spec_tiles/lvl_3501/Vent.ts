@@ -88,6 +88,10 @@ export class Vent extends SpecTileBase {
     startDestroyConsequences() {
         this.node.emit("goal", "vent");
     }
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

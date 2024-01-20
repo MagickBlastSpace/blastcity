@@ -109,6 +109,10 @@ export class Lemonade extends BigTileBase {
 
         this.node.emit("goal", "lemonade");
     }
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

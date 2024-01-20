@@ -48,8 +48,12 @@ export class Discoball extends BonusTileBase {
     }
 
 
-    getMatches(field: Node[][]): Node[] {
-        this.combo = this.getCombo(field);
+    getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
+        this.combo = "";
+        if(!isBlockingCombo) {
+            this.combo = this.getCombo(field);
+        }
+        
         let tilesToDestroy = this.getMatchesByType(field);
 
         return tilesToDestroy;

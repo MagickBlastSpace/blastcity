@@ -46,6 +46,11 @@ export class Soda extends BigTileBase {
 
         this.node.emit("goal", "soda");
     }
+
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

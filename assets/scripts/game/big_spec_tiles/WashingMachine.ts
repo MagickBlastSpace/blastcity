@@ -44,6 +44,10 @@ export class WashingMachine extends Jars {
 
         this.node.emit("goal", "washing_machine");
     }
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

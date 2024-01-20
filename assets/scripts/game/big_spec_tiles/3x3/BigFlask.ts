@@ -97,6 +97,8 @@ export class BigFlask extends Soda {
 
         this.isBlockingDamage = false;
     }
+
+    clearExtra() {}
 }
 
 

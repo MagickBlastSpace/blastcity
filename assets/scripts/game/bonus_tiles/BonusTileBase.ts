@@ -170,6 +170,8 @@ export class BonusTileBase extends TileBase {
             let isBonusChain = j !== col && j !== col + 1 && j !== col - 1;
             this.node.emit("extra_hit", row, j, isBonusChain);
         }
+
+        this.clearTiles();
     }
 
     colExtraHit(field: Node[][], row: number, col: number) {
@@ -179,6 +181,8 @@ export class BonusTileBase extends TileBase {
             let isBonusChain = j !== row && j !== row + 1 && j !== row - 1;
             this.node.emit("extra_hit", j, col, isBonusChain);
         }
+
+        this.clearTiles();
     }
 }
 

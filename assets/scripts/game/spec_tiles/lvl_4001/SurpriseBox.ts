@@ -54,6 +54,10 @@ export class SurpriseBox extends SpecTileBase {
     setRespawnEvent(timeToRespawn: number) {
         this.node.emit("respawn", timeToRespawn);
     }
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

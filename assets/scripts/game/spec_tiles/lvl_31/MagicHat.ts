@@ -92,6 +92,10 @@ export class MagicHat extends SpecTileBase {
         this.inactiveState.active = true;
         this.activeState.active = false;
     }
+
+    clearExtra() {
+        this.isDamaged = false;
+    }
 }
 
 

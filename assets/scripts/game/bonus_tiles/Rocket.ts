@@ -19,8 +19,11 @@ export class Rocket extends BonusTileBase {
     }
 
 
-    getMatches(field: Node[][], statuses: Node[][]): Node[] {
-        this.combo = this.getCombo(field);
+    getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
+        this.combo = "";
+        if(!isBlockingCombo) {
+            this.combo = this.getCombo(field);
+        }
 
         let matches = this.getMatchesByType(field, statuses);
 
@@ -49,7 +52,7 @@ export class Rocket extends BonusTileBase {
                 this.rowExtraHit(field, this.row, this.col);
 
                 this.setRespawnEvent(0.2);
-                
+
                 break;
         }
 

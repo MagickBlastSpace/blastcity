@@ -54,6 +54,9 @@ export class Field extends Component {
     private fallTime: number = 0.3;
     private swapTime: number = 0.15;
 
+    private spawnTilesSchedule: Function = null;
+    private isSpawnScheduled: boolean = false;
+
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -105,17 +108,10 @@ export class Field extends Component {
                 this.spawnBomb(level.specialTiles[i].row, level.specialTiles[i].col);
             }
             else if(level.specialTiles[i].id === "rocket") {
-                const tileType = Math.floor(Math.random() * 2);
-                if(tileType === 0) {
-                    this.spawnRocket(level.specialTiles[i].row, level.specialTiles[i].col, "rocket_vertical");
-                }
-                else {
-                    this.spawnRocket(level.specialTiles[i].row, level.specialTiles[i].col, "rocket_horizontal");
-                }
+                this.spawnRandomRocket(level.specialTiles[i].row, level.specialTiles[i].col);
             }
             else if(level.specialTiles[i].id === "discoball") {
-                const tileType = Math.floor(Math.random() * this.startPool.length);
-                this.spawnDiscoball(level.specialTiles[i].row, level.specialTiles[i].col, this.startPool[tileType]);
+                this.spawnRandomDiscoball(level.specialTiles[i].row, level.specialTiles[i].col);
             }
             else if(level.specialTiles[i].id.split("_")[0] === "discoball") {
                 const tileType = level.specialTiles[i].id.split("_")[1];
@@ -202,13 +198,42 @@ export class Field extends Component {
         tileType = tType === "start" ? this.startPool[tileTypeIndex] : tileType;
 
         if(!this.availableColors.includes(tileType)) {
-            /*switch(tileType) {
+            switch(tileType) {
                 case "rocket":
-                    //rand
+                    this.spawnRandomRocket(row, col);
                     break;
-                case "rocket"
-            }*/ //bonus shit
-            this.spawnSpecialTile(row, col, tileType);
+                case "rocket_horizontal":
+                case "rocket_vertical":
+                    this.spawnRocket(row, col, tileType);
+                    break;
+                case "bomb":
+                    this.spawnBomb(row, col);
+                    break;
+                case "discoball":
+                    this.spawnRandomDiscoball(row, col);
+                    break;
+                case "discoball_red":
+                    this.spawnDiscoball(row, col, "red");
+                    break;
+                case "discoball_blue":
+                    this.spawnDiscoball(row, col, "blue");
+                    break;
+                case "discoball_green":
+                    this.spawnDiscoball(row, col, "green");
+                    break;
+                case "discoball_yellow":
+                    this.spawnDiscoball(row, col, "yellow");
+                    break;
+                case "discoball_purple":
+                    this.spawnDiscoball(row, col, "purple");
+                    break;
+                case "discoball_orange":
+                    this.spawnDiscoball(row, col, "orange");
+                    break;
+                default:
+                    this.spawnSpecialTile(row, col, tileType);
+                    break;
+            }
             return;
         }
 
@@ -230,6 +255,22 @@ export class Field extends Component {
         const tileComponent = tileNode.getComponent("Rocket");
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
         return spawnedTile;
+    }
+
+    spawnRandomRocket(row: number, col: number) {
+        const tileType = Math.floor(Math.random() * 2);
+        if(tileType === 0) {
+            this.spawnRocket(row, col, "rocket_vertical");
+        }
+        else {
+            this.spawnRocket(row, col, "rocket_horizontal");
+        }
+    }
+
+    spawnRandomDiscoball(row: number, col: number) {
+        const colors = this.getAvailableColors();
+        const tileType = Math.floor(Math.random() * colors.length);
+        this.spawnDiscoball(row, col, colors[tileType]);
     }
 
     spawnDiscoball(row: number, col: number, tileType: string): Node {
@@ -396,7 +437,7 @@ export class Field extends Component {
             this.node.emit("goal_inc", goalType);
         });
         tileNode.on("clear", () => {
-            this.clearAll();
+            this.clearExtra();
         });
 
         this.tileArray[row][col] = tileNode;
@@ -590,7 +631,12 @@ export class Field extends Component {
             if(isBonusChain) {
                 const tileComp = tile.getComponent("TileBase");
                 if(tileComp.isBonusTile()) {
-                    tileComp.getMatchesByType(this.tileArray, this.statusArray);
+                    if(this.availableColors.includes(tileComp.getTileType())) {
+                        this.findAndDestroyMatches(tile, false);
+                    }
+                    else {
+                        tileComp.getMatchesByType(this.tileArray, this.statusArray);
+                    }
                     return;
                 }
             }
@@ -686,7 +732,7 @@ export class Field extends Component {
             potentialBonus = choosenTile.getPotentialBonus();
         }
         
-        let matches = choosenTile.getMatches(this.tileArray, this.statusArray);
+        let matches = choosenTile.getMatches(this.tileArray, this.statusArray, !isRespawn);
         
         if(matches.length >= 2 || isBonus) {
             matches.forEach(matchedTile => {
@@ -698,7 +744,7 @@ export class Field extends Component {
         }
 
         if(!isRespawn) {
-            this.clearAll();
+            this.clearExtra();
             return true;
         }
 
@@ -809,10 +855,20 @@ export class Field extends Component {
     }
 
     scheduleRespawn(timeToRespawn: number) {
+        if(this.isSpawnScheduled) {
+            return;
+        }
+        //this.unschedule(this.spawnTilesSchedule);
+
         this.isClickAvailable = false;
-        this.scheduleOnce(() => {
+
+        this.spawnTilesSchedule = () => {
             this.spawnNewTiles();
-        }, timeToRespawn);
+            this.isSpawnScheduled = false;
+        };
+        this.scheduleOnce(this.spawnTilesSchedule, timeToRespawn);
+
+        this.isSpawnScheduled = true;
     }
     
 
@@ -1122,6 +1178,18 @@ export class Field extends Component {
                 if(tile !== null) {
                     let tileComponent = tile.getComponent("TileBase");
                     tileComponent.clear();
+                }
+            }
+        }
+    }
+
+    clearExtra() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    let tileComponent = tile.getComponent("TileBase");
+                    tileComponent.clearExtra();
                 }
             }
         }
