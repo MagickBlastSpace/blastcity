@@ -163,24 +163,22 @@ export class BonusTileBase extends TileBase {
     }
 
 
-    rowExtraHit(field: Node[][], row: number) {
+    rowExtraHit(field: Node[][], row: number, col: number) {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         for(let j = 0; j < numCols; j++) {
-            this.node.emit("extra_hit", row, j);
+            let isBonusChain = j !== col && j !== col + 1 && j !== col - 1;
+            this.node.emit("extra_hit", row, j, isBonusChain);
         }
-
-        this.clearTiles();
     }
 
-    colExtraHit(field: Node[][], col: number) {
+    colExtraHit(field: Node[][], row: number, col: number) {
         const numRows: number = field.length;
 
         for(let j = 0; j < numRows; j++) {
-            this.node.emit("extra_hit", j, col);
+            let isBonusChain = j !== row && j !== row + 1 && j !== row - 1;
+            this.node.emit("extra_hit", j, col, isBonusChain);
         }
-
-        this.clearTiles();
     }
 }
 

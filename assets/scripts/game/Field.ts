@@ -104,6 +104,23 @@ export class Field extends Component {
             else if(level.specialTiles[i].id === "bomb") {
                 this.spawnBomb(level.specialTiles[i].row, level.specialTiles[i].col);
             }
+            else if(level.specialTiles[i].id === "rocket") {
+                const tileType = Math.floor(Math.random() * 2);
+                if(tileType === 0) {
+                    this.spawnRocket(level.specialTiles[i].row, level.specialTiles[i].col, "rocket_vertical");
+                }
+                else {
+                    this.spawnRocket(level.specialTiles[i].row, level.specialTiles[i].col, "rocket_horizontal");
+                }
+            }
+            else if(level.specialTiles[i].id === "discoball") {
+                const tileType = Math.floor(Math.random() * this.startPool.length);
+                this.spawnDiscoball(level.specialTiles[i].row, level.specialTiles[i].col, this.startPool[tileType]);
+            }
+            else if(level.specialTiles[i].id.split("_")[0] === "discoball") {
+                const tileType = level.specialTiles[i].id.split("_")[1];
+                this.spawnDiscoball(level.specialTiles[i].row, level.specialTiles[i].col, tileType);
+            }
             else {
                 this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
             }
@@ -185,6 +202,12 @@ export class Field extends Component {
         tileType = tType === "start" ? this.startPool[tileTypeIndex] : tileType;
 
         if(!this.availableColors.includes(tileType)) {
+            /*switch(tileType) {
+                case "rocket":
+                    //rand
+                    break;
+                case "rocket"
+            }*/ //bonus shit
             this.spawnSpecialTile(row, col, tileType);
             return;
         }
@@ -353,8 +376,8 @@ export class Field extends Component {
         tileNode.on("destroy_random_tile", () => {
             this.destroyRandomTile();
         });
-        tileNode.on("extra_hit", (row, col) => {
-            this.extraHit(row, col);
+        tileNode.on("extra_hit", (row, col, isBonusChain) => {
+            this.extraHit(row, col, isBonusChain);
         });
         tileNode.on("random_extra_hit", (except, except2) => {
             this.randomExtraHit(except, except2);
@@ -556,7 +579,7 @@ export class Field extends Component {
     }
 
 
-    extraHit(row: number, col: number) {
+    extraHit(row: number, col: number, isBonusChain: boolean) {
         if(row > this.numRows - 1 || col > this.numCols - 1 || row < 0 || col < 0) {
             return;
         }
@@ -564,6 +587,13 @@ export class Field extends Component {
         let tile = this.tileArray[row][col];
 
         if(tile !== null) {
+            if(isBonusChain) {
+                const tileComp = tile.getComponent("TileBase");
+                if(tileComp.isBonusTile()) {
+                    tileComp.getMatchesByType(this.tileArray, this.statusArray);
+                    return;
+                }
+            }
             this.giveDamage(tile, "extra_hit", true);
         }
         else {

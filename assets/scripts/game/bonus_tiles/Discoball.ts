@@ -189,7 +189,7 @@ export class Discoball extends BonusTileBase {
 
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
-                this.node.emit("extra_hit", i, j);
+                this.node.emit("extra_hit", i, j, false);
             }
         }
 

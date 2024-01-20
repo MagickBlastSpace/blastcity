@@ -14,21 +14,6 @@ export class Bomb extends BonusTileBase {
         this.combo = this.getCombo(field);
 
         let tilesToDestroy = this.getMatchesByType(field, statuses);
-        let bonusTiles = this.findBonusTiles(tilesToDestroy);
-
-        while(bonusTiles.length > 0) {
-            let newTilesToDestroy = [];
-            bonusTiles.forEach(bonusTile => {
-                const newMatches = bonusTile.getMatchesByType(field, statuses);
-                newMatches.forEach(newMatch => {
-                    if(!tilesToDestroy.includes(newMatch)) {
-                        newTilesToDestroy.push(newMatch);
-                    }
-                })
-            })
-            bonusTiles = this.findBonusTiles(newTilesToDestroy);
-            tilesToDestroy = tilesToDestroy.concat(newTilesToDestroy);
-        }
 
         return tilesToDestroy;
     }
@@ -51,67 +36,14 @@ export class Bomb extends BonusTileBase {
     getBombMatches(field: Node[][], statuses: Node[][], row: number, col: number): Node[] {
         let matches = [];
 
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        if(row < 0 || row >= numRows || col < 0 || col >= numCols) {
-            return matches;
-        }
-
-        const tile = field[row][col];
-        const status = statuses[row][col];
-        if(this.checkTileForMatch(tile, status)) {
-            matches.push(tile);
+        for(let i = this.row - 1; i <= this.row + 1; i++) {
+            for(let j = this.col - 1; j <= this.col + 1; j++) {
+                let isBonusChain = i !== this.row || j !== this.col; 
+                this.node.emit("extra_hit", i, j, isBonusChain);
+            }
         }
 
-        if(row < numRows - 1) {
-            const tile = field[row + 1][col];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-        if(row > 0) {
-            const tile = field[row - 1][col];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-        if(col < numCols - 1) {
-            const tile = field[row][col + 1];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-        if(col > 0) {
-            const tile = field[row][col - 1];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-        if(row < numRows - 1 && col < numCols - 1) {
-            const tile = field[row + 1][col + 1];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-        if(row > 0 && col > 0) {
-            const tile = field[row - 1][col - 1];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-        if(row < numRows - 1 && col > 0) {
-            const tile = field[row + 1][col - 1];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-        if(row > 0 && col < numCols - 1) {
-            const tile = field[row - 1][col + 1];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
+        this.setRespawnEvent(0.2);
 
         return matches;
     }
@@ -145,13 +77,13 @@ export class Bomb extends BonusTileBase {
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.rowExtraHit(field, this.row);
-        this.rowExtraHit(field, this.row + 1);
-        this.rowExtraHit(field, this.row - 1);
+        this.rowExtraHit(field, this.row, this.col);
+        this.rowExtraHit(field, this.row + 1, this.col);
+        this.rowExtraHit(field, this.row - 1, this.col);
 
-        this.colExtraHit(field, this.col);
-        this.colExtraHit(field, this.col + 1);
-        this.colExtraHit(field, this.col - 1);
+        this.colExtraHit(field, this.row, this.col);
+        this.colExtraHit(field, this.row, this.col + 1);
+        this.colExtraHit(field, this.row, this.col - 1);
 
         this.setRespawnEvent(0.2);
 
@@ -161,15 +93,33 @@ export class Bomb extends BonusTileBase {
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row, this.col));
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row + 2, this.col));
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row - 2, this.col));
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row + 2, this.col + 2));
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row + 2, this.col - 2));
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row - 2, this.col + 2));
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row - 2, this.col - 2));
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row, this.col + 2));
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row, this.col - 2));
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        for(let i = this.row - 3; i <= this.row + 3; i++) {
+            for(let j = this.col - 3; j <= this.col + 3; j++) {
+                let isBonusChain = true;
+                if(i === this.row && j === this.col) {
+                    isBonusChain = false;
+                }
+                else if(i > this.row - 2 && i < this.row + 2 && j > this.col - 2 && j < this.col + 2) {
+                    if(i > 0 && i < numRows && j > 0 && j < numCols) {
+                        let tile = field[i][j];
+                        if(tile !== null && tile !== undefined) {
+                            const tileComp = tile.getComponent("TileBase");
+                            if(tileComp.getTileType() === this.tileType) {
+                                isBonusChain = false;
+                            }
+                        }
+                    }
+                }
+
+                console.log("extra hit " + i + "-" + j + "-" + isBonusChain);
+                this.node.emit("extra_hit", i, j, isBonusChain);
+            }
+        }
+
+        this.setRespawnEvent(0.2);
 
         return matches;
     }

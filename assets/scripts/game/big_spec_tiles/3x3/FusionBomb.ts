@@ -56,7 +56,7 @@ export class FusionBomb extends Lemonade {
     startDestroyConsequences() {
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
-                this.node.emit("extra_hit", i, j);
+                this.node.emit("extra_hit", i, j, false);
             }
         }
 
