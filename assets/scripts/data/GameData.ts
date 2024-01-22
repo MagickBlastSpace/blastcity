@@ -45,8 +45,9 @@ export class LevelData {
     destroyedOnStart: Vec2[] = [];
     @property([cc.String])
     startPool: string[] = [];
-    @property([cc.String])
-    spawnPool: string[] = [];
+
+    spawnPools: string[][] = [];
+
     @property([GoalData])
     goals: GoalData[] = [];
     @property
@@ -55,8 +56,8 @@ export class LevelData {
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
         const levelData = new LevelData();
-        levelData.id = jsonData.id;
-
+        levelData.id = (jsonData.id || '').toLowerCase();
+    
         if (jsonData.emptyTiles) {
             levelData.emptyTiles = jsonData.emptyTiles.map((coord: any) => {
                 const vec2 = new Vec2();
@@ -65,27 +66,27 @@ export class LevelData {
                 return vec2;
             });
         }
-
+    
         if (jsonData.specialTiles) {
             levelData.specialTiles = jsonData.specialTiles.map((specialTile: any) => {
                 const tileData = new SpecialTileData();
-                tileData.id = specialTile.id;
+                tileData.id = (specialTile.id || '').toLowerCase();
                 tileData.row = specialTile.row;
                 tileData.col = specialTile.col;
                 return tileData;
             });
         }
-
+    
         if (jsonData.statuses) {
             levelData.statuses = jsonData.statuses.map((specialTile: any) => {
                 const tileData = new SpecialTileData();
-                tileData.id = specialTile.id;
+                tileData.id = (specialTile.id || '').toLowerCase();
                 tileData.row = specialTile.row;
                 tileData.col = specialTile.col;
                 return tileData;
             });
         }
-
+    
         if (jsonData.destroyedOnStart) {
             levelData.destroyedOnStart = jsonData.destroyedOnStart.map((coord: any) => {
                 const vec2 = new Vec2();
@@ -94,35 +95,34 @@ export class LevelData {
                 return vec2;
             });
         }
-
+    
         if (jsonData.startPool) {
             levelData.startPool = jsonData.startPool.map((startItem: any) => {
-                return startItem || '';
+                return (startItem || '').toLowerCase();
             });
         }
-
-        if (jsonData.spawnPool) {
-            levelData.spawnPool = jsonData.spawnPool.map((spawnItem: any) => {
-                return spawnItem || '';
+    
+        if (jsonData.spawnPools) {
+            levelData.spawnPools = jsonData.spawnPools.map((spawnItem: any) => {
+                return spawnItem.map((color: string) => (color || '').toLowerCase()) || [];
             });
         }
-
+    
         if (jsonData.goals) {
             levelData.goals = jsonData.goals.map((goal: any) => {
                 const goalData = new GoalData();
-                goalData.id = goal.id;
+                goalData.id = (goal.id || '').toLowerCase();
                 goalData.count = goal.count;
                 return goalData;
             });
         }
-
+    
         if (jsonData.movesCount !== cc.undefined && jsonData.movesCount !== null) {
             levelData.movesCount = Number(jsonData.movesCount);
-        }
-        else {
+        } else {
             levelData.movesCount = 0;
         }
-
+    
         return levelData;
     }
 }

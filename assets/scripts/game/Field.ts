@@ -49,7 +49,7 @@ export class Field extends Component {
 
     private availableColors: string[] = [];
     private startPool: string[] = [];
-    private spawnPool: string[] = [];
+    private spawnPools: string[][] = [];
 
     private fallTime: number = 0.3;
     private swapTime: number = 0.15;
@@ -80,9 +80,22 @@ export class Field extends Component {
             this.startPool = ["blue", "red", "green", "yellow"];
         }
 
-        this.spawnPool = level.spawnPool;
-        if(this.spawnPool.length === 0) {
-            this.spawnPool = ["blue", "red", "green", "yellow"];
+        this.resetSpawnPools();
+        this.spawnPools = level.spawnPools;
+        if(this.spawnPools.length < this.numCols - 1) {
+            this.resetSpawnPools();
+        }
+        else {
+            for(let i = 0; i < this.spawnPools.length; i++) {
+                if (!this.spawnPools[i]) {
+                    this.spawnPools[i] = ["blue", "red", "green", "yellow"];
+                }
+                else {
+                    if(this.spawnPools[i].length === 0) {
+                        this.spawnPools[i] = ["blue", "red", "green", "yellow"];
+                    }
+                }
+            }
         }
 
         this.clearBoard();
@@ -136,6 +149,12 @@ export class Field extends Component {
         this.sortStatuses();
         
         this.node.emit("level_init", level.movesCount, level.goals);
+    }
+
+    resetSpawnPools() {
+        for (let col = 0; col < this.numCols; col++) {
+            this.spawnPools[col] = ["blue", "red", "green", "yellow"];
+        }
     }
 
     clearBoard() {
@@ -193,8 +212,8 @@ export class Field extends Component {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.tilePrefab);
         const tileComponent = tileNode.getComponent("Tile");
-        const tileTypeIndex = tType === "start" ? Math.floor(Math.random() * this.startPool.length).toString() : Math.floor(Math.random() * this.spawnPool.length).toString();
-        let tileType = tType === "random" ? this.spawnPool[tileTypeIndex] : tType;
+        const tileTypeIndex = tType === "start" ? Math.floor(Math.random() * this.startPool.length).toString() : Math.floor(Math.random() * this.spawnPools[col].length).toString();
+        let tileType = tType === "random" ? this.spawnPools[col][tileTypeIndex] : tType;
         tileType = tType === "start" ? this.startPool[tileTypeIndex] : tileType;
 
         if(!this.availableColors.includes(tileType)) {
@@ -1219,11 +1238,15 @@ export class Field extends Component {
 
     getAvailableColors(): string[] {
         let colors = [];
-        for(let i = 0; i < this.spawnPool.length; i++) {
-            if(this.availableColors.includes(this.spawnPool[i]) && this.spawnPool[i] !== "orange") {
-                colors.push(this.spawnPool[i]);
+
+        for(let j = 0; j < this.spawnPools.length; j++) {
+            for(let i = 0; i < this.spawnPools[j].length; i++) {
+                if(this.availableColors.includes(this.spawnPools[j][i]) && this.spawnPools[j][i] !== "orange") {
+                    colors.push(this.spawnPools[j][i]);
+                }
             }
         }
+        
         return colors;
     }
 
@@ -1294,8 +1317,10 @@ export class Field extends Component {
     setGoalCompleteEvent(goalId: string) {
         this.node.emit("goal_complete", goalId);
 
-        if(this.spawnPool.includes(goalId) && !this.availableColors.includes(goalId)) {
-            this.removeStringFromArray(this.spawnPool, goalId);
+        for(let j = 0; j < this.spawnPools.length; j++) {
+            if(this.spawnPools[j].includes(goalId) && !this.availableColors.includes(goalId)) {
+                this.removeStringFromArray(this.spawnPool[j], goalId);
+            }
         }
     }
 
