@@ -57,6 +57,8 @@ export class Field extends Component {
     private spawnTilesSchedule: Function = null;
     private isSpawnScheduled: boolean = false;
 
+    private rocketPreset: string = "random";
+
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -97,6 +99,9 @@ export class Field extends Component {
                 }
             }
         }
+
+        this.rocketPreset = level.rocketPreset;
+        console.log(this.rocketPreset);
 
         this.clearBoard();
 
@@ -277,12 +282,17 @@ export class Field extends Component {
     }
 
     spawnRandomRocket(row: number, col: number) {
-        const tileType = Math.floor(Math.random() * 2);
-        if(tileType === 0) {
-            this.spawnRocket(row, col, "rocket_vertical");
+        if(this.rocketPreset === "random") {
+            const tileType = Math.floor(Math.random() * 2);
+            if(tileType === 0) {
+                this.spawnRocket(row, col, "rocket_vertical");
+            }
+            else {
+                this.spawnRocket(row, col, "rocket_horizontal");
+            }
         }
         else {
-            this.spawnRocket(row, col, "rocket_horizontal");
+            this.spawnRocket(row, col, "rocket_" + this.rocketPreset);
         }
     }
 
@@ -342,7 +352,7 @@ export class Field extends Component {
                 break;
             case "rocket_horizontal": 
             case "rocket_vertical":
-                spawnedTile = this.spawnRocket(row, col, bonusId);
+                spawnedTile = this.rocketPreset === "random" ? this.spawnRocket(row, col, bonusId) : this.spawnRocket(row, col, "rocket_" + this.rocketPreset);
                 break;
             case "blue":
             case "red":
@@ -1152,12 +1162,17 @@ export class Field extends Component {
                             this.setPotentialBonus(matches, "bomb");
                         }
                         else if(matches.length >= 5) {
-                            const tileType = Math.floor(Math.random() * 2);
-                            if(tileType === 0) {
-                                this.setPotentialBonus(matches, "rocket_vertical");
+                            if(this.rocketPreset === "random") {
+                                const tileType = Math.floor(Math.random() * 2);
+                                if(tileType === 0) {
+                                    this.setPotentialBonus(matches, "rocket_vertical");
+                                }
+                                else {
+                                    this.setPotentialBonus(matches, "rocket_horizontal");
+                                }
                             }
                             else {
-                                this.setPotentialBonus(matches, "rocket_horizontal");
+                                this.setPotentialBonus(matches, "rocket_" + this.rocketPreset);
                             }
                         }
 

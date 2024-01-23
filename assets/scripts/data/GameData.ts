@@ -52,6 +52,8 @@ export class LevelData {
     goals: GoalData[] = [];
     @property
     movesCount = 0;
+    @property
+    rocketPreset = '';
 
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
@@ -121,6 +123,12 @@ export class LevelData {
             levelData.movesCount = Number(jsonData.movesCount);
         } else {
             levelData.movesCount = 0;
+        }
+
+        if (jsonData.rocketPreset !== cc.undefined && jsonData.rocketPreset !== null) {
+            levelData.rocketPreset = jsonData.rocketPreset.toLowerCase();
+        } else {
+            levelData.rocketPreset = "random";
         }
     
         return levelData;
