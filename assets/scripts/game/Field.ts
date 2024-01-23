@@ -101,7 +101,9 @@ export class Field extends Component {
         }
 
         this.rocketPreset = level.rocketPreset;
-        console.log(this.rocketPreset);
+        if(this.rocketPreset !== "random" && this.rocketPreset !== "vertical" && this.rocketPreset !== "horizontal") {
+            this.rocketPreset = "random";
+        }
 
         this.clearBoard();
 

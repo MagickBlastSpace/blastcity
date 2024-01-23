@@ -69,7 +69,7 @@ export class Pump extends SpecTileBase {
     }
 
     startInActionEffect(field: Node[][]): boolean {
-        if(this.isDamaged) {
+        if(this.isDamaged && this.goalCount > 0) {
             this.node.emit("special", "sticker");
         }
 

@@ -70,7 +70,7 @@ export class Fish extends SpecTileBase {
     }
 
     startInActionEffect(field: Node[][]): boolean {
-        if(this.isGenerate) {
+        if(this.isGenerate && this.goalCount > 0) {
             this.node.emit("status", "bubble");
         }
 
