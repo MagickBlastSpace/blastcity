@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { GoalData } from '../data/GameData';
+import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Level')
@@ -59,6 +60,8 @@ export class Level extends Component {
 
         if(this.moves > 0) {
             this.moves--;
+
+            this.checkLevelStatus();
         }
 
         this.node.emit("refresh", this.moves);
@@ -89,6 +92,27 @@ export class Level extends Component {
 
     setGoalCompleteEvent(goalId: string) {
         this.field.getComponent("Field").setGoalCompleteEvent(goalId);
+    }
+
+
+    checkLevelStatus() {
+        let isGoalsComplete = true;
+
+        for(let i = 0; i < this.goals.length; i++) {
+            if(this.goals[i].count > 0) {
+                isGoalsComplete = false;
+            }
+        }
+
+        if(isGoalsComplete) {
+            UserData.instance.addProgress();
+            this.node.emit("complete", isGoalsComplete);
+            return;
+        }
+
+        if(!isGoalsComplete && this.moves <= 0) {
+            this.node.emit("complete", isGoalsComplete);
+        }
     }
 }
 
