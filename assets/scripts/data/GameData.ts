@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Vec2, Prefab } from 'cc';
+import { Field } from '../game/Field';
 const { ccclass, property } = _decorator;
 
 
@@ -146,6 +147,38 @@ export class GameData extends Component {
 
     onLoad() {
         GameData.instance = this;
+
+        //this.loadLevelsFromDirectory("levels");
+    }
+
+    static parseLevelData(jsonString: string): LevelData {
+        const jsonData = JSON.parse(jsonString);
+        return LevelData.fromJSON(JSON.stringify(jsonData));
+    }
+
+
+    loadLevelsFromDirectory(directoryPath: string) {
+        this.levels = [];
+
+        cc.loader.loadResDir(directoryPath, cc.TextAsset, (err, assets) => {
+            if (err) {
+                console.error('Error loading directory:', err);
+                return;
+            }
+
+            console.log(assets.length);
+    
+            assets.forEach((asset: cc.TextAsset) => {
+                const fileData = asset.text;
+                const fileName = asset.name;
+
+                console.log(fileData);
+    
+                const levelData = GameData.parseLevelData(fileData);
+                this.levels.push(levelData);
+                console.log('Level data loaded:', fileName);
+            });
+        });
     }
 }
 

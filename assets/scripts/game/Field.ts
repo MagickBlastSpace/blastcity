@@ -77,7 +77,10 @@ export class Field extends Component {
 
 
     spawnInitialBoard(level: LevelData) {
-        this.startPool = level.startPool;
+        if(level.startPool !== null && level.startPool !== undefined) {
+            this.startPool = level.startPool;
+        }
+        
         if(this.startPool.length === 0) {
             this.startPool = ["blue", "red", "green", "yellow"];
         }
@@ -729,12 +732,12 @@ export class Field extends Component {
                     return true;
                 }
             }
-            else {
+            /*else {
                 const statusComp = status.getComponent("StatusBase");
                 if(statusComp.isReadyToDestroy()) {
                     return true;
                 }
-            }
+            }*/
         }
 
         return false;

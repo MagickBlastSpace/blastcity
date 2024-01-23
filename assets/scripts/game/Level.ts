@@ -77,6 +77,8 @@ export class Level extends Component {
 
                 if(goal.count === 0) {
                     this.setGoalCompleteEvent(goal.id);
+
+                    this.checkLevelStatus();
                 }
             }
         }
