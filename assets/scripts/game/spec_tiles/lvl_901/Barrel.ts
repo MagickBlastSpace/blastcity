@@ -21,18 +21,15 @@ export class Barrel extends Watermelon {
     }
 
     startDestroyConsequences() {
-        this.node.emit("change_bonus", this.row, this.col, this.pickRandomBonus(), -1);
+        let rndBonus = this.pickRandomBonus();
+        this.node.emit("change_bonus", this.row, this.col, rndBonus, -1);
+        this.node.emit("goal", "barrel");
     }
 
 
     pickRandomBonus(): string {
         const randomIndex = Math.floor(Math.random() * this.possibleBonuses.length);
         return this.possibleBonuses[randomIndex];
-    }
-
-
-    startDestroyConsequences() {
-        this.node.emit("goal", "barrel");
     }
 }
 

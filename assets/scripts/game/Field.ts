@@ -351,22 +351,14 @@ export class Field extends Component {
 
     spawnBonusTile(row: number, col: number, bonusId: string, timeToDestroy: number) {
         let spawnedTile = null;
-        switch(bonusId) {
-            case "bomb":
-                spawnedTile = this.spawnBomb(row, col);
-                break;
-            case "rocket_horizontal": 
-            case "rocket_vertical":
-                spawnedTile = this.rocketPreset === "random" ? this.spawnRocket(row, col, bonusId) : this.spawnRocket(row, col, "rocket_" + this.rocketPreset);
-                break;
-            case "blue":
-            case "red":
-            case "green":
-            case "yellow":
-            case "purple":
-            case "orange":
-                spawnedTile = this.spawnDiscoball(row, col, bonusId);
-                break;
+        if(bonusId === "bomb") {
+            spawnedTile = this.spawnBomb(row, col);
+        }
+        else if(bonusId === "rocket_horizontal" || bonusId === "rocket_vertical") {
+            spawnedTile = this.rocketPreset === "random" ? this.spawnRocket(row, col, bonusId) : this.spawnRocket(row, col, "rocket_" + this.rocketPreset);
+        }
+        else if(this.availableColors.includes(bonusId)) {
+            spawnedTile = this.spawnDiscoball(row, col, bonusId);
         }
 
         if(timeToDestroy < 0) {
@@ -892,7 +884,6 @@ export class Field extends Component {
         if(this.isSpawnScheduled) {
             return;
         }
-        //this.unschedule(this.spawnTilesSchedule);
 
         this.isClickAvailable = false;
 
