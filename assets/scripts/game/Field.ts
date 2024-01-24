@@ -227,41 +227,20 @@ export class Field extends Component {
         tileType = tType === "start" ? this.startPool[tileTypeIndex] : tileType;
 
         if(!this.availableColors.includes(tileType)) {
-            switch(tileType) {
-                case "rocket":
-                    this.spawnRandomRocket(row, col);
-                    break;
-                case "rocket_horizontal":
-                case "rocket_vertical":
-                    this.spawnRocket(row, col, tileType);
-                    break;
-                case "bomb":
-                    this.spawnBomb(row, col);
-                    break;
-                case "discoball":
-                    this.spawnRandomDiscoball(row, col);
-                    break;
-                case "discoball_red":
-                    this.spawnDiscoball(row, col, "red");
-                    break;
-                case "discoball_blue":
-                    this.spawnDiscoball(row, col, "blue");
-                    break;
-                case "discoball_green":
-                    this.spawnDiscoball(row, col, "green");
-                    break;
-                case "discoball_yellow":
-                    this.spawnDiscoball(row, col, "yellow");
-                    break;
-                case "discoball_purple":
-                    this.spawnDiscoball(row, col, "purple");
-                    break;
-                case "discoball_orange":
-                    this.spawnDiscoball(row, col, "orange");
-                    break;
-                default:
-                    this.spawnSpecialTile(row, col, tileType);
-                    break;
+            if(tileType === "rocket") {
+                this.spawnRandomRocket(row, col);
+            }
+            else if(tileType === "rocket_horizontal" || tileType === "rocket_vertical") {
+                this.spawnRocket(row, col, tileType);
+            }
+            else if(tileType === "bomb") {
+                this.spawnBomb(row, col);
+            }
+            else if(tileType === "discoball") {
+                this.spawnRandomDiscoball(row, col);
+            }
+            else if(tileType.split("_")[0] === "discoball") {
+                this.spawnDiscoball(row, col, tileType.split("_")[1]);
             }
             return;
         }
@@ -724,12 +703,6 @@ export class Field extends Component {
                     return true;
                 }
             }
-            /*else {
-                const statusComp = status.getComponent("StatusBase");
-                if(statusComp.isReadyToDestroy()) {
-                    return true;
-                }
-            }*/
         }
 
         return false;
@@ -964,7 +937,6 @@ export class Field extends Component {
                                 .to(this.fallTime, { position: new cc.Vec3(posX, posY, 0) })
                                 .call(() => {
                                     if(isDoubleWidth) {
-                                        //this.showMatrixDebugMessage();
                                         this.fallTiles();
                                         return;
                                     }
@@ -1176,10 +1148,6 @@ export class Field extends Component {
                     }
                     else {
                         checkedTiles.push(tile);
-
-                        /*if(tileComponent.isBonusTile() && !this.availableColors.includes(tileComponent.getTileType())) {
-                            isMoveAvailable = true;
-                        }*/ //this is for B mechanic
                     }
                 }
             }
@@ -1382,28 +1350,6 @@ export class Field extends Component {
         this.scheduleOnce(() => {
             this.shuffleSegment(colorIndex + 1, allTilesIndex);
         }, this.swapTime + stepTime * swapsCount);
-    }
-
-
-
-
-
-    showMatrixDebugMessage() {
-        for (let row = this.numRows - 1; row >= 0; row--) {
-            let debugMatrix = "";
-            for (let col = 0; col < this.numCols; col++) {
-                const tile = this.tileArray[row][col];
-                if(tile !== null) {
-                    debugMatrix += tile.getComponent("TileBase").getTileType();
-                }
-                else {
-                    debugMatrix += "null";
-                }
-                debugMatrix += "(" + row + ", " + col + ") ";
-            }
-            console.log(debugMatrix);
-            console.log('-----------------');
-        }
     }
 }
 

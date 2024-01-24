@@ -90,22 +90,14 @@ export class Discoball extends BonusTileBase {
     getMatchesByCombo(field: Node[][]): Node[] {
         let matches = [];
 
-        switch(this.combo) {
-            case "rocket_vertical":
-            case "rocket_horizontal":
-                matches = this.getRocketComboMatches(field);
-                break;
-            case "bomb":
-                matches = this.getBombComboMatches(field);
-                break;
-            case "blue":
-            case "red":
-            case "green":
-            case "yellow":
-            case "purple":
-            case "orange":
-                matches = this.getDiscoballComboMatches(field);
-                break;
+        if(this.combo === "rocket_vertical" || this.combo === "rocket_horizontal") {
+            matches = this.getRocketComboMatches(field);
+        }
+        else if(this.combo === "bomb") {
+            matches = this.getBombComboMatches(field);
+        }
+        else if(this.availableColors.includes(this.combo)) {
+            matches = this.getDiscoballComboMatches(field);
         }
 
         return matches;

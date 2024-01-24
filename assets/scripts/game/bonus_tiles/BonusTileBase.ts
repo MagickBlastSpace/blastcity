@@ -7,6 +7,8 @@ export class BonusTileBase extends TileBase {
 
     private combo: string = "";
 
+    private availableColors: string[] = [];
+
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -19,6 +21,7 @@ export class BonusTileBase extends TileBase {
         this.isSpecial = false;
 
         this.combo = "";
+        this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
     }
 
 
@@ -68,38 +71,6 @@ export class BonusTileBase extends TileBase {
     }
 
 
-    findBonusTiles(matches: Node[]): Tile[] {
-        let bonusTiles = [];
-        matches.forEach(matchedTile => {
-            if(matchedTile !== null) {
-                let tileComponent = matchedTile.getComponent("TileBase");
-                const isBonus = tileComponent.isBonusTile();
-                if(isBonus && !tileComponent.isCurrentTile(this.row, this.col)) {
-                    bonusTiles.push(tileComponent);
-                }
-            }
-        })
-
-        return bonusTiles;
-    }
-
-
-    checkTileForMatch(tile: Node, status: Node): boolean {
-        if(tile === null) {
-            this.giveStatusDamage(status);
-            return false;
-        }
-        
-        const tileComponent = tile.getComponent("TileBase");
-
-        if(tileComponent.isEmptyTile()) {
-            return false;
-        }
-
-        return true;
-    }
-
-
     isCombo(): boolean {
         return this.combo !== "";
     }
@@ -107,16 +78,6 @@ export class BonusTileBase extends TileBase {
 
     clear() {
         this.combo = "";
-    }
-
-
-    giveStatusDamage(statusNode: Node) {
-        if(statusNode === null) {
-            return;
-        }
-
-        const statusComp = statusNode.getComponent("StatusBase");
-        statusComp.getDamage();
     }
 
 
