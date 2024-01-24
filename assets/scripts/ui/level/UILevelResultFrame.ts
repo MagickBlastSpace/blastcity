@@ -11,9 +11,13 @@ export class UILevelResultFrame extends UIStartFrame {
     @property(Label)
     buttonLabel: Label = null;
 
-    refresh(isSuccess: boolean) {
+    @property(Label)
+    goldLabel: Label = null;
+
+    refresh(isSuccess: boolean, goldEarned: number) {
         this.resultLabel.string = isSuccess ? "Level Complete" : "Level Failed";
         this.buttonLabel.string = isSuccess ? "Next" : "Replay";
+        this.goldLabel.string = goldEarned > 0 ? "Gold earned: " + goldEarned : "";
     }
 }
 

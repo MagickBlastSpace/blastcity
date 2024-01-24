@@ -27,6 +27,9 @@ export class Field extends Component {
     @property(Node)
     statusLayout: Node = null;
 
+    @property(Node)
+    level: Node = null;
+
     @property
     numRows: number = 8;
     @property
@@ -46,6 +49,7 @@ export class Field extends Component {
     private statusArray: Node[][] = [];
 
     private isClickAvailable: boolean = false;
+    private isLevelComplete: boolean = false;
 
     private availableColors: string[] = [];
     private startPool: string[] = [];
@@ -73,10 +77,19 @@ export class Field extends Component {
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
 
         this.spawnInitialBoard(GameData.instance.levels[0]);
+
+        this.level.on("goal_complete_event", (goalId) => this.setGoalCompleteEvent(goalId));
+        this.level.on("all_goals_complete_event", (movesRemain) => this.completeLevel(movesRemain));
     }
 
 
     spawnInitialBoard(level: LevelData) {
+        if(level === null || level === undefined) {
+            return;
+        }
+
+        this.isLevelComplete = false;
+        
         if(level.startPool !== null && level.startPool !== undefined) {
             this.startPool = level.startPool;
         }
@@ -1157,7 +1170,9 @@ export class Field extends Component {
             this.shuffleTiles();
         }
         else {
-            this.isClickAvailable = true;
+            if(!this.isLevelComplete) {
+                this.isClickAvailable = true;
+            }
         }
     }
 
@@ -1350,6 +1365,69 @@ export class Field extends Component {
         this.scheduleOnce(() => {
             this.shuffleSegment(colorIndex + 1, allTilesIndex);
         }, this.swapTime + stepTime * swapsCount);
+    }
+
+
+    completeLevel(movesRemain: number) {
+        this.isLevelComplete = true;
+
+        const timeBetweenTiles = 0.2;
+
+        const availableTiles = this.shuffleArray(this.getAllCommonTilesPositions());
+        const totalSpawns = availableTiles.length >= movesRemain ? movesRemain : availableTiles.length;
+        const totalTime =  timeBetweenTiles * totalSpawns + 0.2;
+
+        for(let i = 0; i < totalSpawns; i++) {
+            this.scheduleOnce(() => {
+                this.spawnRandomRocket(availableTiles[i].x, availableTiles[i].y);
+            }, timeBetweenTiles * i);
+        }
+
+        this.scheduleOnce(() => {
+            this.node.emit("complete", this.countBonusGold());
+        }, totalTime);
+    }
+
+    countBonusGold(): number {
+        let bonusGold = 0;
+
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                let tile = this.tileArray[row][col];
+                if(tile !== null && tile !== undefined) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.isBonusTile()) {
+                        const tileType = tileComp.getTileType();
+                        if(tileType === "rocket_horizontal" || tileType === "rocket_vertical") {
+                            bonusGold += 2;
+                        }
+                        else if(tileType === "bomb") {
+                            bonusGold += 3;
+                        }
+                        else if(this.availableColors.includes(tileType)) {
+                            bonusGold += 5;
+                        }
+                    }
+                }
+            }
+        }
+
+        return bonusGold;
+    }
+
+
+    shuffleArray(array: Node[]): Node[] {
+        let currentIndex = array.length;
+        let randomIndex;
+
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+
+        return array;
     }
 }
 

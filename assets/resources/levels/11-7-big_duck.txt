@@ -1,0 +1,256 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 4
+    },
+    {
+      "x": 8,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 1,
+      "y": 7
+    },
+    {
+      "x": 2,
+      "y": 7
+    },
+    {
+      "x": 5,
+      "y": 7
+    },
+    {
+      "x": 6,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 0,
+      "y": 8
+    },
+    {
+      "x": 1,
+      "y": 8
+    },
+    {
+      "x": 2,
+      "y": 8
+    },
+    {
+      "x": 5,
+      "y": 8
+    },
+    {
+      "x": 6,
+      "y": 8
+    },
+    {
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Red",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Green",
+      "row": 0,
+      "col": 4
+    },
+    {
+      "id": "Red",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "Green",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "Purple",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Green",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Purple",
+      "row": 3,
+      "col": 3
+    },
+    {
+      "id": "Blue",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Purple",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Blue",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "Green",
+      "row": 5,
+      "col": 3
+    },
+    {
+      "id": "Red",
+      "row": 5,
+      "col": 4
+    },
+    {
+      "id": "Green",
+      "row": 6,
+      "col": 3
+    },
+    {
+      "id": "Red",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Bottle",
+      "row": 7,
+      "col": 0
+    },
+    {
+      "id": "Big_Bottle",
+      "row": 7,
+      "col": 3
+    },
+    {
+      "id": "Bottle",
+      "row": 7,
+      "col": 7
+    }
+  ],
+  "statuses": [],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Purple"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Purple"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Bottle",
+      "count": 2
+    },
+    {
+      "id": "Big_Bottle",
+      "count": 1
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 40,
+  "rocketPreset": "Random"
+}

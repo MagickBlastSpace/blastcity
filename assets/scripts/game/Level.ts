@@ -22,6 +22,7 @@ export class Level extends Component {
         this.field.on("level_init", (movesCount: number, goals: GoalData[]) => this.init(movesCount, goals));
         this.field.on("destroy", (tileType) => this.updateGoals(tileType));
         this.field.on("goal_inc", (tileType) => this.incrementGoal(tileType));
+        this.field.on("complete", (goldEarned) => this.setLevelCompleteEvent(goldEarned));
     }
 
 
@@ -61,7 +62,9 @@ export class Level extends Component {
         if(this.moves > 0) {
             this.moves--;
 
-            this.checkLevelStatus();
+            if(this.moves <= 0) {
+                this.checkLevelStatus();
+            }
         }
 
         this.node.emit("refresh", this.moves);
@@ -93,7 +96,7 @@ export class Level extends Component {
     }
 
     setGoalCompleteEvent(goalId: string) {
-        this.field.getComponent("Field").setGoalCompleteEvent(goalId);
+        this.node.emit("goal_complete_event", goalId);
     }
 
 
@@ -108,13 +111,18 @@ export class Level extends Component {
 
         if(isGoalsComplete) {
             UserData.instance.addProgress();
-            this.node.emit("complete", isGoalsComplete);
+            this.node.emit("all_goals_complete_event", this.moves);
             return;
         }
 
         if(!isGoalsComplete && this.moves <= 0) {
-            this.node.emit("complete", isGoalsComplete);
+            this.node.emit("complete", false, 0);
         }
+    }
+
+
+    setLevelCompleteEvent(goldEarned: number) {
+        this.node.emit("complete", true, goldEarned);
     }
 }
 

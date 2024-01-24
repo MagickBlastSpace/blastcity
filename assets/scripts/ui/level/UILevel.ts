@@ -24,7 +24,7 @@ export class UILevel extends UIFrameBase {
         this.level.on("refresh", (movesCount: number) => this.refresh(movesCount));
         this.level.on("refresh_goals", (goals: GoalData[]) => this.refreshGoals(goals));
 
-        this.level.on("complete", (isSuccess: boolean) => this.showResult(isSuccess));
+        this.level.on("complete", (isSuccess: boolean, goldEarned: number) => this.showResult(isSuccess, goldEarned));
     }
 
     refresh(movesCount: number) {
@@ -44,9 +44,9 @@ export class UILevel extends UIFrameBase {
         }
     }
 
-    showResult(isSuccess: boolean) {
+    showResult(isSuccess: boolean, goldEarned: number) {
         this.levelResult.show();
-        this.levelResult.refresh(isSuccess);
+        this.levelResult.refresh(isSuccess, goldEarned);
     }
 }
 

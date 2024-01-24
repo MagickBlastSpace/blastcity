@@ -5,7 +5,7 @@ const { ccclass, property } = _decorator;
 @ccclass('EasterEgg_Blue')
 export class EasterEgg_Blue extends StickerBlue {
     startDestroyConsequences() {
-        this.node.emit("goal", "easter_egg");
+        this.node.emit("goal", "easteregg");
     }
 }
 

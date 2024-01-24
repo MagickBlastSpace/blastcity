@@ -1,0 +1,385 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 1,
+      "y": 0
+    },
+    {
+      "x": 2,
+      "y": 0
+    },
+    {
+      "x": 3,
+      "y": 0
+    },
+    {
+      "x": 4,
+      "y": 0
+    },
+    {
+      "x": 5,
+      "y": 0
+    },
+    {
+      "x": 6,
+      "y": 0
+    },
+    {
+      "x": 7,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 1
+    },
+    {
+      "x": 1,
+      "y": 1
+    },
+    {
+      "x": 7,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 0,
+      "y": 2
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 0,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 0,
+      "y": 4
+    },
+    {
+      "x": 8,
+      "y": 4
+    },
+    {
+      "x": 0,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 5
+    },
+    {
+      "x": 0,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 0,
+      "y": 7
+    },
+    {
+      "x": 1,
+      "y": 7
+    },
+    {
+      "x": 7,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 0,
+      "y": 8
+    },
+    {
+      "x": 1,
+      "y": 8
+    },
+    {
+      "x": 2,
+      "y": 8
+    },
+    {
+      "x": 3,
+      "y": 8
+    },
+    {
+      "x": 4,
+      "y": 8
+    },
+    {
+      "x": 5,
+      "y": 8
+    },
+    {
+      "x": 6,
+      "y": 8
+    },
+    {
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Blue",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "Blue",
+      "row": 5,
+      "col": 4
+    }
+  ],
+  "statuses": [
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 5,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 5,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 5,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 5,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 5,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 6,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 6,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 6,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 6,
+      "col": 6
+    }
+  ],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow",
+    "Purple"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Bubble",
+      "count": 25
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 30,
+  "rocketPreset": "Random"
+}

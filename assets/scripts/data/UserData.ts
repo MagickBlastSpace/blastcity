@@ -16,7 +16,6 @@ export class UserData extends Component {
     }
     
     start() {
-        this.levelsCount = GameData.instance.levels.length;
         this.currentProgress = 0;
     }
 
@@ -29,6 +28,10 @@ export class UserData extends Component {
 
     getProgress(): number {
         return this.currentProgress;
+    }
+
+    setLevelsCount(levelsCount: number) {
+        this.levelsCount = levelsCount;
     }
 }
 
