@@ -41,20 +41,14 @@ export class Rocket extends BonusTileBase {
 
         switch(this.tileType) {
             case 'rocket_vertical':
-                this.setRocketDirections(this.getVerticalMatches(field, statuses, this.col));
                 this.colExtraHit(field, this.row, this.col);
-
-                this.setRespawnEvent(0.2);
-
                 break;
             case 'rocket_horizontal':
-                this.setRocketDirections(this.getHorizontalMatches(field, statuses, this.row));
                 this.rowExtraHit(field, this.row, this.col);
-
-                this.setRespawnEvent(0.2);
-
                 break;
         }
+
+        this.setRespawnEvent(0.2);
 
         return matches;
     }
@@ -159,29 +153,6 @@ export class Rocket extends BonusTileBase {
 
     setRespawnEvent(timeToRespawn: number) {
         this.node.emit("respawn", timeToRespawn);
-    }
-
-
-
-    setRocketDirections(matches: Node[]) {
-        let bonusTiles = this.findBonusTiles(matches);
-        let direction = this.tileType;
-        bonusTiles.forEach(bonusTile => {
-            const bonusType = bonusTile.getTileType();
-            if(direction === bonusType && !this.isCombo()) {
-                direction = bonusTile.changeDirection();
-            }
-        })
-    }
-    
-    changeDirection(): string {
-        if(this.tileType === "rocket_horizontal") {
-            this.tileType = "rocket_vertical";
-        }
-        else {
-            this.tileType = "rocket_horizontal";
-        }
-        return this.tileType;
     }
 }
 

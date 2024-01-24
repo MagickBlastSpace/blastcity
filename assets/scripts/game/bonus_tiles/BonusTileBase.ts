@@ -68,49 +68,6 @@ export class BonusTileBase extends TileBase {
     }
 
 
-    getVerticalMatches(field: Node[][], statuses: Node[][], col: number): Node[] {
-        let matches = [];
-
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        if(col < 0 || col >= numCols) {
-            return matches;
-        }
-
-        for(let i = 0; i < numRows; i++) {
-            const tile = field[i][col];
-            const status = statuses[i][col];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-
-        return matches;
-    }
-
-    getHorizontalMatches(field: Node[][], statuses: Node[][], row: number): Node[] {
-        let matches = [];
-
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        if(row < 0 || row >= numRows) {
-            return matches;
-        }
-
-        for(let i = 0; i < numCols; i++) {
-            const tile = field[row][i];
-            const status = statuses[row][i];
-            if(this.checkTileForMatch(tile, status)) {
-                matches.push(tile);
-            }
-        }
-
-        return matches;
-    }
-
-
     findBonusTiles(matches: Node[]): Tile[] {
         let bonusTiles = [];
         matches.forEach(matchedTile => {
