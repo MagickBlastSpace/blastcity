@@ -526,7 +526,7 @@ export class Field extends Component {
         const tile = this.tileArray[row][col];
         if(tile !== null) {
             let tileComponent = tile.getComponent("TileBase");
-            if(tileComponent.isEmptyTile()) {
+            if(tileComponent.isEmptyTile() && !isClear) {
                 return;
             }
             if(isClear) {
@@ -733,7 +733,7 @@ export class Field extends Component {
                         return false;
                     }
                 }
-                
+
                 let tileComp = tile.getComponent("TileBase");
                 if(!tileComp.isEmptyTile() && !tileComp.isSpecialTile()) {
                     return true;

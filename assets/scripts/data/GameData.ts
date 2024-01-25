@@ -167,6 +167,36 @@ export class GameData extends Component {
                 return;
             }
 
+            assets.sort((a: cc.TextAsset, b: cc.TextAsset) => {
+                const aName = a.name.toLowerCase();
+                const bName = b.name.toLowerCase();
+    
+                // Extract numbers from the filenames
+                const extractNumbers = (fileName: string): number[] => {
+                    const numbers: number[] = [];
+                    const regex = /\d+/g;
+                    let match = regex.exec(fileName);
+                    while (match) {
+                        numbers.push(parseInt(match[0], 10));
+                        match = regex.exec(fileName);
+                    }
+                    return numbers;
+                };
+    
+                const aNumbers = extractNumbers(aName);
+                const bNumbers = extractNumbers(bName);
+    
+                // Compare numbers first
+                for (let i = 0; i < Math.min(aNumbers.length, bNumbers.length); i++) {
+                    if (aNumbers[i] !== bNumbers[i]) {
+                        return aNumbers[i] - bNumbers[i];
+                    }
+                }
+    
+                // If numbers are equal, compare the remaining alphabet characters
+                return aName.localeCompare(bName);
+            });
+
             console.log(assets.length);
     
             assets.forEach((asset: cc.TextAsset) => {
@@ -182,8 +212,6 @@ export class GameData extends Component {
                 UserData.instance.setLevelsCount(this.levels.length);
             });
         });
-
-        //UserData.instance.setLevelsCount(this.levels.length);
     }
 }
 
