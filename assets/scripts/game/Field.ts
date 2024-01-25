@@ -395,7 +395,7 @@ export class Field extends Component {
             this.spawnSpecialTile(row, col, tileId);
         });
         tileNode.on("change_bonus", (row, col, bonusId, timeToDestroy) => {
-            if(this.checkPositionForStatus(row, col)) {
+            if(this.checkPositionForBonus(row, col)) {
                 this.spawnBonusTile(row, col, bonusId, timeToDestroy);
             }
         });
@@ -715,6 +715,32 @@ export class Field extends Component {
                 else {
                     return true;
                 }
+            }
+        }
+
+        return false;
+    }
+
+    checkPositionForBonus(row: number, col: number): boolean {
+        if(row < this.numRows && row >= 0 && col < this.numCols && col >= 0) {
+            let tile = this.tileArray[row][col];
+            let status = this.statusArray[row][col];
+
+            if(tile !== null) {
+                if(status !== null && status !== undefined) {
+                    let statusComp = status.getComponent("StatusBase");
+                    if(statusComp.isBlockingInteraction()) {
+                        return false;
+                    }
+                }
+                
+                let tileComp = tile.getComponent("TileBase");
+                if(!tileComp.isEmptyTile() && !tileComp.isSpecialTile()) {
+                    return true;
+                }
+            }
+            else {
+                return true;
             }
         }
 
