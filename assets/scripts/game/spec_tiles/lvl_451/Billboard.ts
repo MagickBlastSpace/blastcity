@@ -8,8 +8,6 @@ export class Billboard extends SpecTileBase {
     @property(Node)
     isActive: Node = null;
 
-    private isGoalEventCreated: boolean = false;
-
     
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -27,6 +25,7 @@ export class Billboard extends SpecTileBase {
             return;
         }
         this.strength--;
+        this.node.emit("goal", "billboard");
 
         this.refresh();
     }
@@ -58,11 +57,6 @@ export class Billboard extends SpecTileBase {
     }
 
     killAll(tiles: Node[]) {
-        if(!this.isGoalEventCreated) {
-            this.node.emit("goal", "billboard");
-            this.isGoalEventCreated = true;
-        }
-
         for(let i = 0; i < tiles.length; i++) {
             const tileComp = tiles[i].getComponent("Billboard");
             tileComp.kill();
@@ -71,7 +65,6 @@ export class Billboard extends SpecTileBase {
     
     kill() {
         this.strength = 0;
-        this.isGoalEventCreated = true;
     }
 }
 
