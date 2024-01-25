@@ -62,7 +62,7 @@ export class Bomb extends BonusTileBase {
         else if(this.combo === "bomb") {
             matches = this.getBombComboMatches(field, statuses);
         }
-        else if(this.availableColors.includes(this.combo)) {
+        else if(this.availableColors.includes(this.combo) || this.combo === "multi") {
             matches = this.getDiscoballComboMatches(field, this.combo);
         }
 
@@ -127,15 +127,25 @@ export class Bomb extends BonusTileBase {
         const timeBetweenTiles = 0.05;
 
         let tiles = [];
-        for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
-                const tile = field[i][j];
-                if(tile !== null) {
-                    const tileComp = tile.getComponent("TileBase");
-                    if(tileComp.getTileType() === discoballType) {
-                        tiles.push(tileComp);
+        if(this.availableColors.includes(this.tileType)) {
+            for(let i = 0; i < numRows; i++) {
+                for(let j = 0; j < numCols; j++) {
+                    const tile = field[i][j];
+                    if(tile !== null) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.getTileType() === discoballType) {
+                            tiles.push(tileComp);
+                        }
                     }
                 }
+            }
+        }
+        else {
+            tiles = this.getBiggestCommonTilesGroup(field);
+            const multiTile = field[this.comboPosition.x][this.comboPosition.y];
+            if(multiTile !== null && multiTile !== undefined) {
+                const multiTileComp = multiTile.getComponent("TileBase");
+                tiles.push(multiTileComp);
             }
         }
 

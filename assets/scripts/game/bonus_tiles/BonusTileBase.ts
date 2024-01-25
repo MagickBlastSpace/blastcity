@@ -42,7 +42,10 @@ export class BonusTileBase extends TileBase {
             }
         }
 
-        if(possibleCombos.includes("blue")) {
+        if(possibleCombos.includes("multi")) {
+            this.combo = "multi";
+        }
+        else if(possibleCombos.includes("blue")) {
             this.combo = "blue";
         }
         else if(possibleCombos.includes("red")) {
@@ -104,6 +107,39 @@ export class BonusTileBase extends TileBase {
         }
 
         this.clearTiles();
+    }
+
+
+    getBiggestCommonTilesGroup(field: Node[][]): TileBase[] {
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        let biggestGroup = [];
+        
+        for(let color = 0; color < this.availableColors.length; color++) {
+            let tiles = [];
+
+            for(let i = 0; i < numRows; i++) {
+                for(let j = 0; j < numCols; j++) {
+                    const tile = field[i][j];
+                    if(tile !== null && tile !== this.node) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.getTileType() === this.availableColors[color]) {
+                            tiles.push(tileComp);
+                        }
+                    }
+                }
+            }
+
+            if(tiles.length > biggestGroup.length) {
+                biggestGroup = [];
+                for(let i = 0; i < tiles.length; i++) {
+                    biggestGroup.push(tiles[i]);
+                }
+            }
+        }
+        
+        return biggestGroup;
     }
 }
 

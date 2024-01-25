@@ -63,6 +63,8 @@ export class Field extends Component {
 
     private rocketPreset: string = "random";
 
+    private isMultiDiscoball = false;
+
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -295,8 +297,14 @@ export class Field extends Component {
 
     spawnRandomDiscoball(row: number, col: number) {
         const colors = this.getAvailableColors();
-        const tileType = Math.floor(Math.random() * colors.length);
-        this.spawnDiscoball(row, col, colors[tileType]);
+        let tileType = Math.floor(Math.random() * colors.length);
+
+        if(this.isMultiDiscoball) {
+            this.spawnDiscoball(row, col, "multi");
+        }
+        else {
+            this.spawnDiscoball(row, col, colors[tileType]);
+        }
     }
 
     spawnDiscoball(row: number, col: number, tileType: string): Node {
@@ -349,7 +357,7 @@ export class Field extends Component {
         else if(bonusId === "rocket_horizontal" || bonusId === "rocket_vertical") {
             spawnedTile = this.rocketPreset === "random" ? this.spawnRocket(row, col, bonusId) : this.spawnRocket(row, col, "rocket_" + this.rocketPreset);
         }
-        else if(this.availableColors.includes(bonusId)) {
+        else if(this.availableColors.includes(bonusId) || bonusId === "multi") {
             spawnedTile = this.spawnDiscoball(row, col, bonusId);
         }
 
@@ -791,7 +799,12 @@ export class Field extends Component {
         this.scheduleOnce(() => {
             if(isCommon) {
                 if(matches.length >= 9) {
-                    this.spawnDiscoball(choosenRow, choosenCol, choosenType);
+                    if(this.isMultiDiscoball) {
+                        this.spawnDiscoball(choosenRow, choosenCol, "multi");
+                    }
+                    else {
+                        this.spawnDiscoball(choosenRow, choosenCol, choosenType);
+                    }
                 }
                 else if(matches.length >= 7) {
                     this.spawnBomb(choosenRow, choosenCol);
@@ -1454,6 +1467,11 @@ export class Field extends Component {
         }
 
         return array;
+    }
+
+
+    setMultiDiscoballMode(isMulti: boolean) {
+        this.isMultiDiscoball = isMulti;
     }
 }
 

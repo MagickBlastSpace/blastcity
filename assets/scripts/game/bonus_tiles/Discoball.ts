@@ -20,6 +20,8 @@ export class Discoball extends BonusTileBase {
     purple: SpriteFrame | null = null;
     @property(SpriteFrame)
     orange: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    multi: SpriteFrame | null = null;
 
     
     init(row: number, col: number, tileType: string) {
@@ -44,6 +46,8 @@ export class Discoball extends BonusTileBase {
             case 'orange':
                 this.icon.spriteFrame = this.orange;
                 break;
+            case 'multi':
+                this.icon.spriteFrame = this.multi;
         }
     }
 
@@ -71,16 +75,22 @@ export class Discoball extends BonusTileBase {
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
-                const tile = field[i][j];
-                if(tile !== null) {
-                    const tileComp = tile.getComponent("TileBase");
-                    if(tileComp.getTileType() === this.getTileType()) {
-                        matches.push(tile);
+        if(this.availableColors.includes(this.tileType)) {
+            for(let i = 0; i < numRows; i++) {
+                for(let j = 0; j < numCols; j++) {
+                    const tile = field[i][j];
+                    if(tile !== null) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.getTileType() === this.getTileType()) {
+                            matches.push(tile);
+                        }
                     }
                 }
             }
+        }
+        else {
+            matches = this.getBiggestCommonTilesGroup(field);
+            matches.push(this);
         }
 
         return matches;
@@ -96,7 +106,7 @@ export class Discoball extends BonusTileBase {
         else if(this.combo === "bomb") {
             matches = this.getBombComboMatches(field);
         }
-        else if(this.availableColors.includes(this.combo)) {
+        else if(this.availableColors.includes(this.combo) || this.combo === "multi") {
             matches = this.getDiscoballComboMatches(field);
         }
 
@@ -112,17 +122,24 @@ export class Discoball extends BonusTileBase {
         const timeBetweenTiles = 0.05;
 
         let tiles = [];
-        for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
-                const tile = field[i][j];
-                if(tile !== null && tile !== this.node) {
-                    const tileComp = tile.getComponent("TileBase");
-                    if(tileComp.getTileType() === this.tileType) {
-                        tiles.push(tileComp);
+
+        if(this.availableColors.includes(this.tileType)) {
+            for(let i = 0; i < numRows; i++) {
+                for(let j = 0; j < numCols; j++) {
+                    const tile = field[i][j];
+                    if(tile !== null && tile !== this.node) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.getTileType() === this.tileType) {
+                            tiles.push(tileComp);
+                        }
                     }
                 }
             }
         }
+        else {
+            tiles = this.getBiggestCommonTilesGroup(field);
+        }
+        
         tiles.push(this);
 
         const totalTime = timeBetweenTiles * tiles.length;
@@ -154,17 +171,24 @@ export class Discoball extends BonusTileBase {
         const timeBetweenTiles = 0.05;
 
         let tiles = [];
-        for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
-                const tile = field[i][j];
-                if(tile !== null && tile !== this.node) {
-                    const tileComp = tile.getComponent("TileBase");
-                    if(tileComp.getTileType() === this.tileType) {
-                        tiles.push(tileComp);
+
+        if(this.availableColors.includes(this.tileType)) {
+            for(let i = 0; i < numRows; i++) {
+                for(let j = 0; j < numCols; j++) {
+                    const tile = field[i][j];
+                    if(tile !== null && tile !== this.node) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.getTileType() === this.tileType) {
+                            tiles.push(tileComp);
+                        }
                     }
                 }
             }
         }
+        else {
+            tiles = this.getBiggestCommonTilesGroup(field);
+        }
+        
         tiles.push(this);
 
         const totalTime = timeBetweenTiles * tiles.length;

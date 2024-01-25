@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('CameraController')
 export class CameraController extends Component {
     @property
-    fixedOrthoHeight: number = 400;
+    fixedOrthoHeight: number = 420;
 
     onLoad() {
         const camera = this.getComponent(cc.Camera);
