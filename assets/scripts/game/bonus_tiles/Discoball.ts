@@ -51,7 +51,7 @@ export class Discoball extends BonusTileBase {
     getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
         this.combo = "";
         if(!isBlockingCombo) {
-            this.combo = this.getCombo(field);
+            this.getCombo(field);
         }
         
         let tilesToDestroy = this.getMatchesByType(field);
@@ -140,6 +140,8 @@ export class Discoball extends BonusTileBase {
 
         this.setRespawnEvent(totalTime + 1);
 
+        this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
+
         return matches;
     }
 
@@ -173,6 +175,8 @@ export class Discoball extends BonusTileBase {
         }
 
         this.setRespawnEvent(totalTime + 1);
+
+        this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
 
         return matches;
     }

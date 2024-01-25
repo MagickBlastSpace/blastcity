@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, tween, Vec3 } from 'cc';
 import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
@@ -22,7 +22,7 @@ export class Rocket extends BonusTileBase {
     getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
         this.combo = "";
         if(!isBlockingCombo) {
-            this.combo = this.getCombo(field);
+            this.getCombo(field);
         }
 
         let matches = this.getMatchesByType(field, statuses);
@@ -129,6 +129,8 @@ export class Rocket extends BonusTileBase {
 
         this.setRespawnEvent(totalTime + 1);
 
+        this.setDicoballComboAnimation();
+
         return matches;
     }
 
@@ -145,6 +147,16 @@ export class Rocket extends BonusTileBase {
 
     setRespawnEvent(timeToRespawn: number) {
         this.node.emit("respawn", timeToRespawn);
+
+        this.scheduleOnce(() => {
+            this.node.emit("extra_hit", this.row, this.col, false);
+        }, timeToRespawn);
+    }
+
+    setDicoballComboAnimation() {
+        tween(this.node)
+            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+            .start();
     }
 }
 

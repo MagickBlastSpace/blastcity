@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec2 } from 'cc';
 import { TileBase } from '../TileBase';
 const { ccclass, property } = _decorator;
 
@@ -6,6 +6,7 @@ const { ccclass, property } = _decorator;
 export class BonusTileBase extends TileBase {
 
     private combo: string = "";
+    private comboPosition: Vec2 = null;
 
     private availableColors: string[] = [];
 
@@ -25,8 +26,9 @@ export class BonusTileBase extends TileBase {
     }
 
 
-    getCombo(field: Node[][]): string {
+    getCombo(field: Node[][]) {
         let possibleCombos = [];
+        let possibleCombosPositions = [];
 
         let adjTiles = this.getAdjacentTiles(field);
         for(let i = 0; i < adjTiles.length; i++) {
@@ -35,39 +37,40 @@ export class BonusTileBase extends TileBase {
                 const tileComponent = tile.getComponent("TileBase");
                 if(tileComponent.isBonusTile()) {
                     possibleCombos.push(tileComponent.getTileType());
+                    possibleCombosPositions.push(new Vec2(tileComponent.getRow(), tileComponent.getCol()));
                 }
             }
         }
 
         if(possibleCombos.includes("blue")) {
-            return "blue";
+            this.combo = "blue";
         }
         else if(possibleCombos.includes("red")) {
-            return "red";
+            this.combo = "red";
         }
         else if(possibleCombos.includes("green")) {
-            return "green";
+            this.combo = "green";
         }
         else if(possibleCombos.includes("yellow")) {
-            return "yellow";
+            this.combo = "yellow";
         }
         else if(possibleCombos.includes("purple")) {
-            return "purple";
+            this.combo = "purple";
         }
         else if(possibleCombos.includes("orange")) {
-            return "orange";
+            this.combo = "orange";
         }
         else if(possibleCombos.includes("bomb")) {
-            return "bomb";
+            this.combo = "bomb";
         }
         else if(possibleCombos.includes("rocket_vertical")) {
-            return "rocket_vertical";
+            this.combo = "rocket_vertical";
         }
         else if(possibleCombos.includes("rocket_horizontal")) {
-            return "rocket_horizontal";
+            this.combo = "rocket_horizontal";
         }
 
-        return "";
+        this.comboPosition = possibleCombosPositions[possibleCombos.indexOf(this.combo)];
     }
 
 

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, tween, Vec3 } from 'cc';
 import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
@@ -13,7 +13,7 @@ export class Bomb extends BonusTileBase {
     getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
         this.combo = "";
         if(!isBlockingCombo) {
-            this.combo = this.getCombo(field);
+            this.getCombo(field);
         }
 
         let tilesToDestroy = this.getMatchesByType(field, statuses);
@@ -109,7 +109,6 @@ export class Bomb extends BonusTileBase {
                     }
                 }
 
-                console.log("extra hit " + i + "-" + j + "-" + isBonusChain);
                 this.node.emit("extra_hit", i, j, isBonusChain);
             }
         }
@@ -149,6 +148,8 @@ export class Bomb extends BonusTileBase {
 
         this.setRespawnEvent(totalTime + 1);
 
+        this.setDicoballComboAnimation();
+
         return matches;
     }
 
@@ -158,6 +159,16 @@ export class Bomb extends BonusTileBase {
 
     setRespawnEvent(timeToRespawn: number) {
         this.node.emit("respawn", timeToRespawn);
+
+        this.scheduleOnce(() => {
+            this.node.emit("extra_hit", this.row, this.col, false);
+        }, timeToRespawn);
+    }
+
+    setDicoballComboAnimation() {
+        tween(this.node)
+            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+            .start();
     }
 }
 
