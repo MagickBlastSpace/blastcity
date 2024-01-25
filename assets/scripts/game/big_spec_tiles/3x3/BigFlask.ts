@@ -41,16 +41,13 @@ export class BigFlask extends Soda {
         if(damageType === "bonus" || damageType === this.availableColors[this.currentColorIndex]) {
             this.strength--;
             this.isBlockingDamage = true;
-            this.node.emit("damage_all", this.tileType);
 
             this.node.emit("goal", "big_flask");
         }
     }
 
     startInActionEffect(field: Node[][]): boolean {
-        if(this.isDamaged) {
-            this.setNextColor();
-        }
+        this.setNextColor();
 
         return false;
     }

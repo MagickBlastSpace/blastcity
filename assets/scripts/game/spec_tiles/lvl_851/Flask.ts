@@ -25,14 +25,11 @@ export class Flask extends Sticker {
     getDamage(damageType: string) {
         if(damageType === "bonus" || damageType === this.availableColors[this.currentColorIndex]) {
             this.strength--;
-            this.node.emit("damage_all", this.tileType);
         }
     }
 
     startInActionEffect(field: Node[][]): boolean {
-        if(this.isDamaged) {
-            this.setNextColor();
-        }
+        this.setNextColor();
 
         return false;
     }
