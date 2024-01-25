@@ -23,7 +23,8 @@ export class Birds extends MagicHat {
                 this.goalCount--;
 
                 if(this.goalCount <= 0) {
-                    this.setInactiveState();
+                    this.node.emit("destroy_tile", this.getRow(), this.getCol());
+                    this.node.emit("respawn", 0.2);
                 }
             }
         };
