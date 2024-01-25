@@ -59,6 +59,10 @@ export class FusionBomb extends Lemonade {
                 this.node.emit("extra_hit", i, j, false);
             }
         }
+    }
+
+    setAsDamaged() {
+        this.isDamaged = true;
 
         this.node.emit("goal", "fusion_bomb");
     }
