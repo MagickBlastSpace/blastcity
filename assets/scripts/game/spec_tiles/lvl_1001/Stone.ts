@@ -64,8 +64,11 @@ export class Stone extends Penguin {
     }
     
     kill() {
+        if(!this.isGoalEventCreated) {
+            this.node.emit("goal", "stone");
+            this.isGoalEventCreated = true;
+        }
         this.strength = 0;
-        this.isGoalEventCreated = true;
     }
 }
 
