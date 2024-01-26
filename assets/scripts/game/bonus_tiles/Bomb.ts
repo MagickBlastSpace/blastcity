@@ -46,7 +46,7 @@ export class Bomb extends BonusTileBase {
             }
         }
 
-        this.setRespawnEvent(0.2);
+        this.setRespawnEvent(this.respawnDelay);
 
         return matches;
     }
@@ -62,8 +62,8 @@ export class Bomb extends BonusTileBase {
         else if(this.combo === "bomb") {
             matches = this.getBombComboMatches(field, statuses);
         }
-        else if(this.availableColors.includes(this.combo) || this.combo === "multi") {
-            matches = this.getDiscoballComboMatches(field, this.combo);
+        else if(this.combo === "multi") {
+            matches = this.getDiscoballComboMatches(field, statuses);
         }
 
         return matches;
@@ -80,7 +80,7 @@ export class Bomb extends BonusTileBase {
         this.colExtraHit(field, this.row, this.col + 1);
         this.colExtraHit(field, this.row, this.col - 1);
 
-        this.setRespawnEvent(0.2);
+        this.setRespawnEvent(this.respawnDelay);
 
         return matches;
     }
@@ -113,50 +113,35 @@ export class Bomb extends BonusTileBase {
             }
         }
 
-        this.setRespawnEvent(0.2);
+        this.setRespawnEvent(this.respawnDelay);
 
         return matches;
     }
 
-    getDiscoballComboMatches(field: Node[][], discoballType: string): Node[] {
+    getDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        const timeBetweenTiles = 0.05;
-
         let tiles = [];
-        if(this.availableColors.includes(this.tileType)) {
-            for(let i = 0; i < numRows; i++) {
-                for(let j = 0; j < numCols; j++) {
-                    const tile = field[i][j];
-                    if(tile !== null) {
-                        const tileComp = tile.getComponent("TileBase");
-                        if(tileComp.getTileType() === discoballType) {
-                            tiles.push(tileComp);
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            tiles = this.getBiggestCommonTilesGroup(field);
-            const multiTile = field[this.comboPosition.x][this.comboPosition.y];
-            if(multiTile !== null && multiTile !== undefined) {
-                const multiTileComp = multiTile.getComponent("TileBase");
-                tiles.push(multiTileComp);
-            }
+        tiles = this.getBiggestCommonTilesGroup(field, statuses);
+        const multiTile = field[this.comboPosition.x][this.comboPosition.y];
+        if(multiTile !== null && multiTile !== undefined) {
+            const multiTileComp = multiTile.getComponent("TileBase");
+            tiles.push(multiTileComp);
         }
 
-        const totalTime = timeBetweenTiles * tiles.length;
+        const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.changeTile(tiles[i], totalTime - timeBetweenTiles * i);
-            }, timeBetweenTiles * i);
+                this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length));
+            }, this.timeBetweenTiles * i);
         }
 
-        this.setRespawnEvent(totalTime + 1);
+        this.scheduleOnce(() => {
+            this.node.emit("extra_hit", this.row, this.col, false);
+        }, totalTime);
 
         this.setDicoballComboAnimation();
 
@@ -169,10 +154,6 @@ export class Bomb extends BonusTileBase {
 
     setRespawnEvent(timeToRespawn: number) {
         this.node.emit("respawn", timeToRespawn);
-
-        this.scheduleOnce(() => {
-            this.node.emit("extra_hit", this.row, this.col, false);
-        }, timeToRespawn);
     }
 
     setDicoballComboAnimation() {

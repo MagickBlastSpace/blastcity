@@ -28,11 +28,6 @@ export class Shell extends SpecTileBase {
     }
 
     isReadyToDestroy(): boolean {
-        if(!this.isDamaged) {
-            this.strength = 2;
-            this.refresh();
-        }
-
         if(this.strength <= 0) {
             return true;
         }
@@ -46,6 +41,13 @@ export class Shell extends SpecTileBase {
 
     startDestroyConsequences() {
         this.node.emit("goal", "shell");
+    }
+
+    startInActionEffect(): boolean {
+        if(!this.isDamaged) {
+            this.strength = 2;
+            this.refresh();
+        }
     }
 }
 

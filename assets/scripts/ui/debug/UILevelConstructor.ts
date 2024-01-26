@@ -12,10 +12,6 @@ export class UILevelConstructor extends Component {
     pasteBtn: Button = null;
     @property(Button)
     playBtn: Button = null;
-    @property(Button)
-    multiModeBtn: Button = null;
-    @property(Button)
-    defaultModeBtn: Button = null;
 
     @property(Field)
     field: Field = null;
@@ -24,9 +20,6 @@ export class UILevelConstructor extends Component {
     start() {
         this.pasteBtn.node.on(Button.EventType.CLICK, this.onPasteBtnClick, this);
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
-
-        this.multiModeBtn.node.on(Button.EventType.CLICK, this.onMultiModeBtnClick, this);
-        this.defaultModeBtn.node.on(Button.EventType.CLICK, this.onDefaultModeBtnClick, this);
     }
 
 
@@ -49,14 +42,6 @@ export class UILevelConstructor extends Component {
         catch (error) {
             this.inputField.string = error;
         }
-    }
-
-    onMultiModeBtnClick() {
-        this.field.setMultiDiscoballMode(true);
-    }
-
-    onDefaultModeBtnClick() {
-        this.field.setMultiDiscoballMode(false);
     }
 }
 

@@ -4,51 +4,9 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Discoball')
 export class Discoball extends BonusTileBase {
-
-    @property(Sprite)
-    icon: Sprite = null;
-
-    @property(SpriteFrame)
-    blue: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    red: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    green: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    yellow: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    purple: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    orange: SpriteFrame | null = null;
-    @property(SpriteFrame)
-    multi: SpriteFrame | null = null;
-
     
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
-
-        switch(this.tileType) {
-            case 'blue':
-                this.icon.spriteFrame = this.blue;
-                break;
-            case 'red':
-                this.icon.spriteFrame = this.red;
-                break;
-            case 'green':
-                this.icon.spriteFrame = this.green;
-                break;
-            case 'yellow':
-                this.icon.spriteFrame = this.yellow;
-                break;
-            case 'purple':
-                this.icon.spriteFrame = this.purple;
-                break;
-            case 'orange':
-                this.icon.spriteFrame = this.orange;
-                break;
-            case 'multi':
-                this.icon.spriteFrame = this.multi;
-        }
     }
 
 
@@ -58,154 +16,97 @@ export class Discoball extends BonusTileBase {
             this.getCombo(field);
         }
         
-        let tilesToDestroy = this.getMatchesByType(field);
+        let tilesToDestroy = this.getMatchesByType(field, statuses);
 
         return tilesToDestroy;
     }
 
 
-    getMatchesByType(field: Node[][]): Node[] {
+    getMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         if(this.isCombo()) {
-            matches = this.getMatchesByCombo(field);
+            matches = this.getMatchesByCombo(field, statuses);
             return matches;
         }
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        if(this.availableColors.includes(this.tileType)) {
-            for(let i = 0; i < numRows; i++) {
-                for(let j = 0; j < numCols; j++) {
-                    const tile = field[i][j];
-                    if(tile !== null) {
-                        const tileComp = tile.getComponent("TileBase");
-                        if(tileComp.getTileType() === this.getTileType()) {
-                            matches.push(tile);
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            matches = this.getBiggestCommonTilesGroup(field);
-            matches.push(this);
-        }
+        matches = this.getBiggestCommonTilesGroup(field, statuses);
+        matches.push(this);
 
         return matches;
     }
 
 
-    getMatchesByCombo(field: Node[][]): Node[] {
+    getMatchesByCombo(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         if(this.combo === "rocket_vertical" || this.combo === "rocket_horizontal") {
-            matches = this.getRocketComboMatches(field);
+            matches = this.getRocketComboMatches(field, statuses);
         }
         else if(this.combo === "bomb") {
-            matches = this.getBombComboMatches(field);
+            matches = this.getBombComboMatches(field, statuses);
         }
         else if(this.availableColors.includes(this.combo) || this.combo === "multi") {
-            matches = this.getDiscoballComboMatches(field);
+            matches = this.getDiscoballComboMatches(field, statuses);
         }
 
         return matches;
     }
 
-    getRocketComboMatches(field: Node[][]): Node[] {
+    getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        const timeBetweenTiles = 0.05;
-
         let tiles = [];
-
-        if(this.availableColors.includes(this.tileType)) {
-            for(let i = 0; i < numRows; i++) {
-                for(let j = 0; j < numCols; j++) {
-                    const tile = field[i][j];
-                    if(tile !== null && tile !== this.node) {
-                        const tileComp = tile.getComponent("TileBase");
-                        if(tileComp.getTileType() === this.tileType) {
-                            tiles.push(tileComp);
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            tiles = this.getBiggestCommonTilesGroup(field);
-        }
-        
+        tiles = this.getBiggestCommonTilesGroup(field, statuses);
         tiles.push(this);
 
-        const totalTime = timeBetweenTiles * tiles.length;
+        const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 const rocketType = Math.floor(Math.random() * 2);
                 if(rocketType === 0) {
-                    this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, "rocket_vertical");
+                    this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length), "rocket_vertical");
                 }
                 else {
-                    this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, "rocket_horizontal");
+                    this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length), "rocket_horizontal");
                 }
-            }, timeBetweenTiles * i);
+            }, this.timeBetweenTiles * i);
         }
-
-        this.setRespawnEvent(totalTime + 1);
 
         this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
 
         return matches;
     }
 
-    getBombComboMatches(field: Node[][]): Node[] {
+    getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        const timeBetweenTiles = 0.05;
-
         let tiles = [];
-
-        if(this.availableColors.includes(this.tileType)) {
-            for(let i = 0; i < numRows; i++) {
-                for(let j = 0; j < numCols; j++) {
-                    const tile = field[i][j];
-                    if(tile !== null && tile !== this.node) {
-                        const tileComp = tile.getComponent("TileBase");
-                        if(tileComp.getTileType() === this.tileType) {
-                            tiles.push(tileComp);
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            tiles = this.getBiggestCommonTilesGroup(field);
-        }
-        
+        tiles = this.getBiggestCommonTilesGroup(field, statuses);
         tiles.push(this);
 
-        const totalTime = timeBetweenTiles * tiles.length;
+        const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.changeTile(tiles[i], totalTime - timeBetweenTiles * i, "bomb");
-            }, timeBetweenTiles * i);
+                this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length), "bomb");
+            }, this.timeBetweenTiles * i);
         }
-
-        this.setRespawnEvent(totalTime + 1);
 
         this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
 
         return matches;
     }
 
-    getDiscoballComboMatches(field: Node[][]): Node[] {
+    getDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         const numRows: number = field.length;
@@ -217,7 +118,7 @@ export class Discoball extends BonusTileBase {
             }
         }
 
-        this.setRespawnEvent(0.2);
+        this.setRespawnEvent(this.respawnDelay);
 
         return matches;
     }
@@ -230,7 +131,6 @@ export class Discoball extends BonusTileBase {
             this.node.emit("change_bonus", tile.getRow(), tile.getCol(), tileType, timeToDestroy);
         }
         catch (error) {
-            //console.error("Произошла ошибка при обработке tile:", error);
             return;
         }
     }

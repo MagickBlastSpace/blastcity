@@ -10,6 +10,9 @@ export class BonusTileBase extends TileBase {
 
     private availableColors: string[] = [];
 
+    private respawnDelay: number = 0.3;
+    private timeBetweenTiles: number = 0.12;
+
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -45,24 +48,6 @@ export class BonusTileBase extends TileBase {
         if(possibleCombos.includes("multi")) {
             this.combo = "multi";
         }
-        else if(possibleCombos.includes("blue")) {
-            this.combo = "blue";
-        }
-        else if(possibleCombos.includes("red")) {
-            this.combo = "red";
-        }
-        else if(possibleCombos.includes("green")) {
-            this.combo = "green";
-        }
-        else if(possibleCombos.includes("yellow")) {
-            this.combo = "yellow";
-        }
-        else if(possibleCombos.includes("purple")) {
-            this.combo = "purple";
-        }
-        else if(possibleCombos.includes("orange")) {
-            this.combo = "orange";
-        }
         else if(possibleCombos.includes("bomb")) {
             this.combo = "bomb";
         }
@@ -90,27 +75,53 @@ export class BonusTileBase extends TileBase {
     rowExtraHit(field: Node[][], row: number, col: number) {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        for(let j = 0; j < numCols; j++) {
+        const totalTime = this.respawnDelay / 1.5;
+
+        for(let j = col; j < numCols; j++) {
             let isBonusChain = j !== col && j !== col + 1 && j !== col - 1;
-            this.node.emit("extra_hit", row, j, isBonusChain);
+            this.scheduleOnce(() => {
+                this.node.emit("extra_hit", row, j, isBonusChain);
+            }, totalTime / numCols * (j - col));
         }
 
-        this.clearTiles();
+        for(let j = col - 1; j >= 0; j--) {
+            let isBonusChain = j !== col && j !== col + 1 && j !== col - 1;
+            this.scheduleOnce(() => {
+                this.node.emit("extra_hit", row, j, isBonusChain);
+            }, totalTime / numCols * (col - j));
+        }
+
+        this.scheduleOnce(() => {
+            this.clearTiles();
+        }, this.respawnDelay);
     }
 
     colExtraHit(field: Node[][], row: number, col: number) {
         const numRows: number = field.length;
 
-        for(let j = 0; j < numRows; j++) {
+        const totalTime = this.respawnDelay / 1.5;
+
+        for(let j = row; j < numRows; j++) {
             let isBonusChain = j !== row && j !== row + 1 && j !== row - 1;
-            this.node.emit("extra_hit", j, col, isBonusChain);
+            this.scheduleOnce(() => {
+                this.node.emit("extra_hit", j, col, isBonusChain);
+            }, totalTime / numRows * (j - row));
         }
 
-        this.clearTiles();
+        for(let j = row - 1; j >= 0; j--) {
+            let isBonusChain = j !== row && j !== row + 1 && j !== row - 1;
+            this.scheduleOnce(() => {
+                this.node.emit("extra_hit", j, col, isBonusChain);
+            }, totalTime / numRows * (row - j));
+        }
+
+        this.scheduleOnce(() => {
+            this.clearTiles();
+        }, this.respawnDelay);
     }
 
 
-    getBiggestCommonTilesGroup(field: Node[][]): TileBase[] {
+    getBiggestCommonTilesGroup(field: Node[][], statuses: Node[][]): TileBase[] {
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
@@ -122,6 +133,14 @@ export class BonusTileBase extends TileBase {
             for(let i = 0; i < numRows; i++) {
                 for(let j = 0; j < numCols; j++) {
                     const tile = field[i][j];
+                    const status = statuses[i][j];
+
+                    if(status !== null && status !== undefined) {
+                        const statusComp = status.getComponent("StatusBase");
+                        if(statusComp.isBlockingInteraction()) {
+                            continue;
+                        }
+                    }
                     if(tile !== null && tile !== this.node) {
                         const tileComp = tile.getComponent("TileBase");
                         if(tileComp.getTileType() === this.availableColors[color]) {
@@ -139,7 +158,7 @@ export class BonusTileBase extends TileBase {
             }
         }
         
-        return biggestGroup;
+        return biggestGroup.reverse();
     }
 }
 

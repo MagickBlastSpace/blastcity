@@ -44,7 +44,7 @@ export class Soda extends BigTileBase {
     setAsDamaged() {
         super.setAsDamaged();
 
-        this.node.emit("goal", "soda");
+        this.node.emit("goal", "lemonade");
     }
 
 

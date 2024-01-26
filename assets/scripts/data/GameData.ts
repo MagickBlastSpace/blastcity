@@ -149,7 +149,7 @@ export class GameData extends Component {
     onLoad() {
         GameData.instance = this;
 
-        this.loadLevelsFromDirectory("levels");
+        //this.loadLevelsFromDirectory("levels");
     }
 
     static parseLevelData(jsonString: string): LevelData {
@@ -171,7 +171,6 @@ export class GameData extends Component {
                 const aName = a.name.toLowerCase();
                 const bName = b.name.toLowerCase();
     
-                // Extract numbers from the filenames
                 const extractNumbers = (fileName: string): number[] => {
                     const numbers: number[] = [];
                     const regex = /\d+/g;
@@ -186,14 +185,12 @@ export class GameData extends Component {
                 const aNumbers = extractNumbers(aName);
                 const bNumbers = extractNumbers(bName);
     
-                // Compare numbers first
                 for (let i = 0; i < Math.min(aNumbers.length, bNumbers.length); i++) {
                     if (aNumbers[i] !== bNumbers[i]) {
                         return aNumbers[i] - bNumbers[i];
                     }
                 }
     
-                // If numbers are equal, compare the remaining alphabet characters
                 return aName.localeCompare(bName);
             });
 

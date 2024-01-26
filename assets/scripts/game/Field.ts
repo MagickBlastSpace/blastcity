@@ -63,8 +63,6 @@ export class Field extends Component {
 
     private rocketPreset: string = "random";
 
-    private isMultiDiscoball = false;
-
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -148,12 +146,8 @@ export class Field extends Component {
             else if(level.specialTiles[i].id === "rocket") {
                 this.spawnRandomRocket(level.specialTiles[i].row, level.specialTiles[i].col);
             }
-            else if(level.specialTiles[i].id === "discoball") {
-                this.spawnRandomDiscoball(level.specialTiles[i].row, level.specialTiles[i].col);
-            }
-            else if(level.specialTiles[i].id.split("_")[0] === "discoball") {
-                const tileType = level.specialTiles[i].id.split("_")[1];
-                this.spawnDiscoball(level.specialTiles[i].row, level.specialTiles[i].col, tileType);
+            else if(level.specialTiles[i].id === "discoball" || level.specialTiles[i].id.split("_")[0] === "discoball") {
+                this.spawnDiscoball(level.specialTiles[i].row, level.specialTiles[i].col);
             }
             else {
                 this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
@@ -251,11 +245,8 @@ export class Field extends Component {
             else if(tileType === "bomb") {
                 this.spawnBomb(row, col);
             }
-            else if(tileType === "discoball") {
-                this.spawnRandomDiscoball(row, col);
-            }
-            else if(tileType.split("_")[0] === "discoball") {
-                this.spawnDiscoball(row, col, tileType.split("_")[1]);
+            else if(tileType === "discoball" || tileType.split("_")[0] === "discoball") {
+                this.spawnDiscoball(row, col);
             }
             return;
         }
@@ -295,23 +286,11 @@ export class Field extends Component {
         }
     }
 
-    spawnRandomDiscoball(row: number, col: number) {
-        const colors = this.getAvailableColors();
-        let tileType = Math.floor(Math.random() * colors.length);
-
-        if(this.isMultiDiscoball) {
-            this.spawnDiscoball(row, col, "multi");
-        }
-        else {
-            this.spawnDiscoball(row, col, colors[tileType]);
-        }
-    }
-
-    spawnDiscoball(row: number, col: number, tileType: string): Node {
+    spawnDiscoball(row: number, col: number): Node {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.discoballPrefab);
         const tileComponent = tileNode.getComponent("Discoball");
-        let spawnedTile = this.initTile(tileComponent, row, col, tileType);
+        let spawnedTile = this.initTile(tileComponent, row, col, "multi");
         return spawnedTile;
     }
 
@@ -358,7 +337,7 @@ export class Field extends Component {
             spawnedTile = this.rocketPreset === "random" ? this.spawnRocket(row, col, bonusId) : this.spawnRocket(row, col, "rocket_" + this.rocketPreset);
         }
         else if(this.availableColors.includes(bonusId) || bonusId === "multi") {
-            spawnedTile = this.spawnDiscoball(row, col, bonusId);
+            spawnedTile = this.spawnDiscoball(row, col);
         }
 
         if(timeToDestroy < 0) {
@@ -366,7 +345,26 @@ export class Field extends Component {
         }
 
         this.scheduleOnce(() => {
-            this.findAndDestroyMatches(spawnedTile, false);
+            try {
+                if (!spawnedTile || cc.isValid(spawnedTile) === false) {
+                    return;
+                }
+        
+                const tileComp = spawnedTile.getComponent("BonusTileBase");
+        
+                if (tileComp) {
+                    if (tileComp.getTileType() === "multi") {
+                        this.findAndDestroyMatches(tile, false);
+                    } else {
+                        tileComp.getMatchesByType(this.tileArray, this.statusArray);
+                    }
+                } else {
+                    console.error("Tile component not found on spawnedTile");
+                }
+            } catch (error) {
+                console.error("Error in scheduleOnce callback:", error);
+            }
+        
         }, timeToDestroy);
     }
 
@@ -657,7 +655,7 @@ export class Field extends Component {
             if(isBonusChain) {
                 const tileComp = tile.getComponent("TileBase");
                 if(tileComp.isBonusTile()) {
-                    if(this.availableColors.includes(tileComp.getTileType())) {
+                    if(tileComp.getTileType() === "multi") {
                         this.findAndDestroyMatches(tile, false);
                     }
                     else {
@@ -799,12 +797,7 @@ export class Field extends Component {
         this.scheduleOnce(() => {
             if(isCommon) {
                 if(matches.length >= 9) {
-                    if(this.isMultiDiscoball) {
-                        this.spawnDiscoball(choosenRow, choosenCol, "multi");
-                    }
-                    else {
-                        this.spawnDiscoball(choosenRow, choosenCol, choosenType);
-                    }
+                    this.spawnDiscoball(choosenRow, choosenCol);
                 }
                 else if(matches.length >= 7) {
                     this.spawnBomb(choosenRow, choosenCol);
@@ -828,8 +821,9 @@ export class Field extends Component {
             if(tileComponent.isEmptyTile()) {
                 return;
             }
+
             let isDestroyAvailable = this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol());
-            if(this.availableColors.includes(choosenType) && isDestroyAvailable) {
+            if( (this.availableColors.includes(choosenType) || choosenType === "multi") && isDestroyAvailable) {
                 tileComponent.giveDamage(this.tileArray, this.statusArray);
             }
 
@@ -838,7 +832,7 @@ export class Field extends Component {
                 tileComponent.destroyTile();
             }
 
-            if(isBonus && !this.availableColors.includes(choosenType)) {
+            if(isBonus && !choosenType !== "multi") {
                 if(tileComponent.isSpecialTile() && isDestroyAvailable) {
                     tileComponent.getDamage("bonus");
                 }
@@ -1209,7 +1203,7 @@ export class Field extends Component {
             this.shuffleTiles();
         }
         else {
-            if(!this.isLevelComplete) {
+            if(!this.isLevelComplete && !this.isSpawnScheduled) {
                 this.isClickAvailable = true;
             }
         }
@@ -1467,11 +1461,6 @@ export class Field extends Component {
         }
 
         return array;
-    }
-
-
-    setMultiDiscoballMode(isMulti: boolean) {
-        this.isMultiDiscoball = isMulti;
     }
 }
 
