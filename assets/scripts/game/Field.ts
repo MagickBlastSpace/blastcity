@@ -1361,6 +1361,31 @@ export class Field extends Component {
 
 
     shuffleTiles(): boolean {
+        let tilesPositions = this.getAllCommonTilesPositions();
+        let swappedTiles = [];
+
+        let swapsCount = 0;
+        let stepTime = 0.05;
+        for(let i = 0; i < tilesPositions.length; i++) {
+            if(!swappedTiles.includes(tilesPositions[i])) {
+                swappedTiles.push(tilesPositions[i]);
+                let tileToSwap = tilesPositions[Math.floor(Math.random() * tilesPositions.length)];
+                if(!swappedTiles.includes(tileToSwap)) {
+                    swappedTiles.push(tileToSwap);
+                    this.scheduleOnce(() => {
+                        this.swapTiles(tilesPositions[i], tileToSwap);
+                    }, this.swapTime + stepTime * swapsCount);
+                    swapsCount++;
+                }
+            }
+        }
+
+        this.scheduleOnce(() => {
+            this.checkForPotentialBonuses();
+        }, this.swapTime + stepTime * (swapsCount + 1));
+    }
+
+    /*shuffleTiles(): boolean {
         this.shuffleSegment(0, 0);
     }
     
@@ -1398,7 +1423,7 @@ export class Field extends Component {
         this.scheduleOnce(() => {
             this.shuffleSegment(colorIndex + 1, allTilesIndex);
         }, this.swapTime + stepTime * swapsCount);
-    }
+    }*/
 
 
     completeLevel(movesRemain: number) {
