@@ -17,7 +17,7 @@ export class SmallSafe extends SpecTileBase {
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
-        this.isShifts = false;
+        this.isShifts = true;
         this.isClosed = false;
         this.strength = 1;
         this.diamonds = 1;
