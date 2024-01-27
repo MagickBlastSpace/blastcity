@@ -149,7 +149,7 @@ export class GameData extends Component {
     onLoad() {
         GameData.instance = this;
 
-        //this.loadLevelsFromDirectory("levels");
+        this.loadLevelsFromDirectory("levels");
     }
 
     static parseLevelData(jsonString: string): LevelData {
