@@ -248,6 +248,9 @@ export class Field extends Component {
             else if(tileType === "discoball" || tileType.split("_")[0] === "discoball") {
                 this.spawnDiscoball(row, col);
             }
+            else {
+                this.spawnSpecialTile(row, col, tileType);
+            }
             return;
         }
 
