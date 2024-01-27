@@ -75,7 +75,7 @@ export class BonusTileBase extends TileBase {
     rowExtraHit(field: Node[][], row: number, col: number) {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        const totalTime = this.respawnDelay / 1.5;
+        const totalTime = this.respawnDelay / 2;
 
         for(let j = col; j < numCols; j++) {
             let isBonusChain = j !== col && j !== col + 1 && j !== col - 1;
@@ -99,7 +99,7 @@ export class BonusTileBase extends TileBase {
     colExtraHit(field: Node[][], row: number, col: number) {
         const numRows: number = field.length;
 
-        const totalTime = this.respawnDelay / 1.5;
+        const totalTime = this.respawnDelay / 2;
 
         for(let j = row; j < numRows; j++) {
             let isBonusChain = j !== row && j !== row + 1 && j !== row - 1;
