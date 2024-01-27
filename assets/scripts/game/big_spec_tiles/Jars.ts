@@ -22,10 +22,12 @@ export class Jars extends BigTileBase {
 
 
     getDamage(damageType: string) {
-        this.strength--;
+        if(this.strength > 0) {
+            this.strength--;
 
-        this.node.emit("goal", "jars");
-
+            this.node.emit("goal", "jars");
+        }
+        
         this.refresh();
     }
 
