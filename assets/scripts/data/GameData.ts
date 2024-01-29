@@ -57,6 +57,9 @@ export class LevelData {
     @property
     rocketPreset = '';
 
+    @property([GoalData])
+    dynamiteGoals: GoalData[] = [];
+
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
         const levelData = new LevelData();
@@ -132,6 +135,18 @@ export class LevelData {
         } else {
             levelData.rocketPreset = "random";
         }
+
+        if (jsonData.dynamiteGoals) {
+            levelData.dynamiteGoals = jsonData.dynamiteGoals.map((goal: any) => {
+                const goalData = new GoalData();
+                goalData.id = (goal.id || '').toLowerCase();
+                goalData.count = goal.count;
+                return goalData;
+            });
+        }
+        else {
+            levelData.dynamiteGoals = [];
+        }
     
         return levelData;
     }
@@ -149,7 +164,7 @@ export class GameData extends Component {
     onLoad() {
         GameData.instance = this;
 
-        this.loadLevelsFromDirectory("levels");
+        //this.loadLevelsFromDirectory("levels");
     }
 
     static parseLevelData(jsonString: string): LevelData {

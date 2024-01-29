@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Sprite, Label } from 'cc';
 import { StatusBase } from './StatusBase';
 import { SpriteTileData } from '../Tile';
+import { GoalData } from '../../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('DynamiteWall')
@@ -31,11 +32,6 @@ export class DynamiteWall extends StatusBase {
         this.isBlockDestroyTile = true;
         this.isMatchHit = false;
 
-        this.strength = Math.floor(Math.random() * 15);
-        if(this.strength < 5) {
-            this.strength += 5;
-        }
-
         this.refresh();
     }
 
@@ -60,11 +56,36 @@ export class DynamiteWall extends StatusBase {
         super.subscribeOnFieldEvents(field);
 
         this.fieldNode = field;
-        let availableColors = field.getComponent("Field").getAvailableColors();
+        const fieldComp = field.getComponent("Field");
+
+        let dynamiteGoals = fieldComp.getDynamiteGoals();
+        let currentGoal = new GoalData();
+        currentGoal.id = "common";
+        currentGoal.count = 0;
+        
+        switch(this.statusType) {
+            case "dynamite_1":
+                currentGoal = dynamiteGoals[0];
+                break;
+            case "dynamite_2":
+                currentGoal = dynamiteGoals[1];
+                break;
+            case "dynamite_3":
+                currentGoal = dynamiteGoals[2];
+                break;
+            case "dynamite_4":
+                currentGoal = dynamiteGoals[3];
+                break;
+        }
+
+        let availableColors = fieldComp.getAvailableColors();
         let colorIndex = Math.floor(Math.random() * availableColors.length);
-        this.damageType = availableColors[colorIndex];
+
+        this.damageType = currentGoal.id === "common" ? availableColors[colorIndex] : currentGoal.id;
 
         this.icon.spriteFrame = this.colorIcons.find(i => i.id === this.damageType)?.icon;
+
+        this.strength = currentGoal.count <= 0 ? Math.floor(Math.random() * 15) + 5 : currentGoal.count;
 
         this.destroyTileCallback = (tileType) => {
             if(tileType === this.damageType) {
@@ -74,8 +95,10 @@ export class DynamiteWall extends StatusBase {
 
         field.on("destroy", this.destroyTileCallback);
 
-        let fieldArray = field.getComponent("Field").getStatusArray();
+        let fieldArray = fieldComp.getStatusArray();
         this.brickWallGroup = this.findAllStatusesByType(fieldArray, "wall_" + this.getStatusType().split("_")[1]);
+
+        this.refresh();
     }
 
     destroyStatus() {

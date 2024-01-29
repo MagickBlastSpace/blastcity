@@ -75,6 +75,8 @@ export class Birds extends MagicHat {
     isReadyToDestroy(): boolean {
         return false;
     }
+
+    setInactiveState() {}
 }
 
 

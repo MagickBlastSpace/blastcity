@@ -65,6 +65,7 @@ export class Field extends Component {
     private isSpawnScheduled: boolean = false;
 
     private rocketPreset: string = "random";
+    private dynamiteGoals: GoalData[] = [];
 
 
     start() {
@@ -124,6 +125,20 @@ export class Field extends Component {
             this.rocketPreset = "random";
         }
 
+        this.dynamiteGoals = [];
+        if(level.dynamiteGoals !== null && level.dynamiteGoals !== undefined) {
+            for(let i = 0; i < level.dynamiteGoals.length; i++) {
+                let newGoal = new GoalData();
+                newGoal.id = level.dynamiteGoals[i].id;
+                newGoal.count = level.dynamiteGoals[i].count;
+
+                this.dynamiteGoals.push(newGoal);
+            }
+        }
+        if(this.dynamiteGoals.length < 4) {
+            this.setDefaultDynamiteGoals();
+        }
+
         this.clearBoard();
 
         for (let row = 0; row < this.numRows; row++) {
@@ -165,10 +180,10 @@ export class Field extends Component {
             this.destroyTile(level.destroyedOnStart[i].y, level.destroyedOnStart[i].x, true);
         }
 
-        this.spawnNewTiles(true);
-
         this.subscribeAll(level.goals);
         this.sortStatuses();
+
+        this.spawnNewTiles(true);
         
         this.node.emit("level_init", level.movesCount, level.goals);
     }
@@ -176,6 +191,16 @@ export class Field extends Component {
     resetSpawnPools() {
         for (let col = 0; col < this.numCols; col++) {
             this.spawnPools[col] = ["blue", "red", "green", "yellow"];
+        }
+    }
+
+    setDefaultDynamiteGoals() {
+        this.dynamiteGoals = [];
+        for(let i = 0; i < 4; i++) {
+            let goal = new GoalData();
+            goal.id = "common";
+            goal.count = 0;
+            this.dynamiteGoals.push(goal);
         }
     }
 
@@ -1462,6 +1487,11 @@ export class Field extends Component {
         }
 
         return array;
+    }
+
+
+    getDynamiteGoals(): GoalData[] {
+        return this.dynamiteGoals;
     }
 }
 
