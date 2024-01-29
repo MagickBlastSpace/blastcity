@@ -44,7 +44,9 @@ export class SurpriseBox extends SpecTileBase {
     }
     
     startDestroyConsequences() {
-        this.node.emit("change_bonus", this.getRow(), this.getCol(), "rocket_vertical", 0.2);
+        this.node.emit("change_bonus", this.getRow(), this.getCol(), "rocket_vertical", true);
+
+        this.node.emit("activate_bonus_pool");
 
         this.node.emit("goal", "surprise_box");
     }

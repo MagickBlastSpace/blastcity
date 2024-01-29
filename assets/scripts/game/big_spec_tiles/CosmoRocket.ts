@@ -42,8 +42,9 @@ export class CosmoRocket extends BigTileBase {
     }
 
 
-    startDestroyConsequences(): void {
-        this.node.emit("change_bonus", this.getRow(), this.getCol(), "rocket_vertical", 0.5);
+    startDestroyConsequences() {
+        this.node.emit("change_bonus", this.getRow(), this.getCol(), "rocket_vertical", true);
+        this.node.emit("activate_bonus_pool");
 
         this.node.emit("goal", "cosmorocket");
     }

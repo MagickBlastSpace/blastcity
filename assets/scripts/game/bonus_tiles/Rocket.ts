@@ -48,8 +48,6 @@ export class Rocket extends BonusTileBase {
                 break;
         }
 
-        this.setRespawnEvent(this.respawnDelay);
-
         return matches;
     }
 
@@ -76,8 +74,6 @@ export class Rocket extends BonusTileBase {
         this.rowExtraHit(field, this.row, this.col);
         this.colExtraHit(field, this.row, this.col);
 
-        this.setRespawnEvent(this.respawnDelay);
-
         return matches;
     }
 
@@ -91,8 +87,6 @@ export class Rocket extends BonusTileBase {
         this.colExtraHit(field, this.row, this.col);
         this.colExtraHit(field, this.row, this.col + 1);
         this.colExtraHit(field, this.row, this.col - 1);
-
-        this.setRespawnEvent(this.respawnDelay);
 
         return matches;
     }
@@ -115,11 +109,12 @@ export class Rocket extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length));
+                this.changeTile(tiles[i]);
             }, this.timeBetweenTiles * i);
         }
 
         this.scheduleOnce(() => {
+            this.node.emit("activate_bonus_pool");
             this.node.emit("extra_hit", this.row, this.col, false);
         }, totalTime);
 
@@ -128,15 +123,10 @@ export class Rocket extends BonusTileBase {
         return matches;
     }
 
-    changeTile(tile: TileBase, timeToDestroy: number) {
+    changeTile(tile: TileBase) {
         const rocketType = Math.floor(Math.random() * 2);
-        if(rocketType === 0) {
-            this.node.emit("change_bonus", tile.getRow(), tile.getCol(), "rocket_vertical", timeToDestroy);
-        }
-        else {
-            this.node.emit("change_bonus", tile.getRow(), tile.getCol(), "rocket_horizontal", timeToDestroy);
-        }
-        
+        const rocketString = rocketType === 0 ? "rocket_vertical" : "rocket_horizontal";
+        this.node.emit("change_bonus", tile.getRow(), tile.getCol(), rocketString, true);
     }
 
     setRespawnEvent(timeToRespawn: number) {

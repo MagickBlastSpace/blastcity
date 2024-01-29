@@ -22,7 +22,7 @@ export class Barrel extends Watermelon {
 
     startDestroyConsequences() {
         let rndBonus = this.pickRandomBonus();
-        this.node.emit("change_bonus", this.row, this.col, rndBonus, -1);
+        this.node.emit("change_bonus", this.row, this.col, rndBonus, false);
         this.node.emit("goal", "barrel");
     }
 

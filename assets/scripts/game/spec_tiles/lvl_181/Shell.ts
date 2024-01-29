@@ -10,6 +10,8 @@ export class Shell extends SpecTileBase {
     @property(Node)
     open: Node = null;
 
+    private extraDamageAvailable: boolean = false;
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -20,7 +22,7 @@ export class Shell extends SpecTileBase {
     }
 
     getDamage(damageType: string) {
-        if(!this.isDamaged) {
+        if(!this.isDamaged || (this.extraDamageAvailable && damageType === "bonus")) {
             this.strength--;
             this.setAsDamaged();
         }
@@ -48,6 +50,10 @@ export class Shell extends SpecTileBase {
             this.strength = 2;
             this.refresh();
         }
+    }
+
+    clearExtra() {
+        this.extraDamageAvailable = true;
     }
 }
 

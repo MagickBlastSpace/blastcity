@@ -46,8 +46,6 @@ export class Bomb extends BonusTileBase {
             }
         }
 
-        this.setRespawnEvent(this.respawnDelay);
-
         return matches;
     }
 
@@ -80,8 +78,6 @@ export class Bomb extends BonusTileBase {
         this.colExtraHit(field, this.row, this.col + 1);
         this.colExtraHit(field, this.row, this.col - 1);
 
-        this.setRespawnEvent(this.respawnDelay);
-
         return matches;
     }
 
@@ -113,8 +109,6 @@ export class Bomb extends BonusTileBase {
             }
         }
 
-        this.setRespawnEvent(this.respawnDelay);
-
         return matches;
     }
 
@@ -135,11 +129,12 @@ export class Bomb extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length));
+                this.changeTile(tiles[i]);
             }, this.timeBetweenTiles * i);
         }
 
         this.scheduleOnce(() => {
+            this.node.emit("activate_bonus_pool");
             this.node.emit("extra_hit", this.row, this.col, false);
         }, totalTime);
 
@@ -148,8 +143,8 @@ export class Bomb extends BonusTileBase {
         return matches;
     }
 
-    changeTile(tile: TileBase, timeToDestroy: number) {
-        this.node.emit("change_bonus", tile.getRow(), tile.getCol(), "bomb", timeToDestroy);
+    changeTile(tile: TileBase) {
+        this.node.emit("change_bonus", tile.getRow(), tile.getCol(), "bomb", true);
     }
 
     setRespawnEvent(timeToRespawn: number) {

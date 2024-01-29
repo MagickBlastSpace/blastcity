@@ -69,15 +69,14 @@ export class Discoball extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                const rocketType = Math.floor(Math.random() * 2);
-                if(rocketType === 0) {
-                    this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length), "rocket_vertical");
-                }
-                else {
-                    this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length), "rocket_horizontal");
-                }
+                const rocketString = Math.floor(Math.random() * 2) === 0 ? "rocket_vertical" : "rocket_horizontal";
+                this.changeTile(tiles[i], rocketString);
             }, this.timeBetweenTiles * i);
         }
+
+        this.scheduleOnce(() => {
+            this.node.emit("activate_bonus_pool");
+        }, totalTime);
 
         this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
 
@@ -97,9 +96,13 @@ export class Discoball extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.changeTile(tiles[i], totalTime - this.timeBetweenTiles * i * (i / tiles.length), "bomb");
+                this.changeTile(tiles[i], "bomb");
             }, this.timeBetweenTiles * i);
         }
+
+        this.scheduleOnce(() => {
+            this.node.emit("activate_bonus_pool");
+        }, totalTime);
 
         this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
 
@@ -123,12 +126,12 @@ export class Discoball extends BonusTileBase {
         return matches;
     }
 
-    changeTile(tile: TileBase, timeToDestroy: number, tileType: string) {
+    changeTile(tile: TileBase, tileType: string) {
         if(tile === null) {
             return;
         }
         try {
-            this.node.emit("change_bonus", tile.getRow(), tile.getCol(), tileType, timeToDestroy);
+            this.node.emit("change_bonus", tile.getRow(), tile.getCol(), tileType, true);
         }
         catch (error) {
             return;
