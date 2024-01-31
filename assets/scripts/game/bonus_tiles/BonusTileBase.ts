@@ -10,8 +10,8 @@ export class BonusTileBase extends TileBase {
 
     private availableColors: string[] = [];
 
-    private respawnDelay: number = 0.3;
-    private timeBetweenTiles: number = 0.12;
+    private respawnDelay: number = 0.35;
+    private timeBetweenTiles: number = 0.1;
 
 
     init(row: number, col: number, tileType: string) {
@@ -66,6 +66,10 @@ export class BonusTileBase extends TileBase {
         return this.combo !== "";
     }
 
+    getComboName(): string {
+        return this.combo;
+    }
+
 
     clear() {
         this.combo = "";
@@ -90,10 +94,6 @@ export class BonusTileBase extends TileBase {
                 this.node.emit("extra_hit", row, j, isBonusChain);
             }, totalTime / numCols * (col - j));
         }
-
-        this.scheduleOnce(() => {
-            this.clearTiles();
-        }, this.respawnDelay);
     }
 
     colExtraHit(field: Node[][], row: number, col: number) {
@@ -114,10 +114,6 @@ export class BonusTileBase extends TileBase {
                 this.node.emit("extra_hit", j, col, isBonusChain);
             }, totalTime / numRows * (row - j));
         }
-
-        this.scheduleOnce(() => {
-            this.clearTiles();
-        }, this.respawnDelay);
     }
 
 

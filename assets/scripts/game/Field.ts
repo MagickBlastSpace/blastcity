@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, instantiate, Prefab, Vec2, Vec3 } from 'cc';
 import { GameData, GoalData, LevelData, SpecialPrefabData } from '../data/GameData';
+import { TileBase } from './TileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -52,14 +53,17 @@ export class Field extends Component {
 
     private isClickAvailable: boolean = false;
     private isLevelComplete: boolean = false;
+    private isBonusPoolActivated: boolean = false;
+    private bonusIndex = 0;
 
     private availableColors: string[] = [];
     private startPool: string[] = [];
     private spawnPools: string[][] = [];
 
-    private fallTime: number = 0.25;
+    private fallTime: number = 0.18;
     private swapTime: number = 0.15;
-    private timeBetweenBonuses: number = 0.32;
+    private timeBetweenBonuses: number = 0.4;
+    private fallDelay: number = 0.18;
 
     private spawnTilesSchedule: Function = null;
     private isSpawnScheduled: boolean = false;
@@ -380,34 +384,6 @@ export class Field extends Component {
         this.bonusPool.push(spawnedTile);
     }
 
-    activateBonusPool() {
-        if (this.bonusPool.length > 0) {
-            this.activateBonusByIndex(0);
-        }
-    }
-
-    activateBonusByIndex(index: number) {
-        if(index >= this.bonusPool.length) {
-            this.bonusPool = [];
-            this.scheduleRespawn(0);
-            return;
-        }
-
-        const bonusTile = this.bonusPool[index];
-
-        let isBonusDestroyed = this.findAndDestroyMatches(bonusTile, false);
-
-        if(isBonusDestroyed) {
-            this.scheduleOnce(() => {
-                this.activateBonusByIndex(index + 1);
-            }, this.timeBetweenBonuses);
-        }
-        else {
-
-            this.activateBonusByIndex(index + 1);
-        }
-    }
-
 
     initTile(tileComponent: any, row: number, col: number, tileType: string): Node {
         tileComponent.init(row, col, tileType);
@@ -687,6 +663,41 @@ export class Field extends Component {
     }
 
 
+    activateBonusPool() {
+        if(this.isBonusPoolActivated) {
+            return;
+        }
+
+        if (this.bonusPool.length > 0) {
+            this.bonusIndex = 0;
+            this.isBonusPoolActivated = true;
+            this.activateBonusByIndex(this.bonusIndex);
+        }
+    }
+
+    activateBonusByIndex(index: number) {
+        if(index >= this.bonusPool.length) {
+            this.scheduleRespawn(this.fallTime);
+            return;
+        }
+
+        const bonusTile = this.bonusPool[index];
+        this.bonusIndex = this.bonusIndex + 1;
+
+        let isBonusDestroyed = this.findAndDestroyMatches(bonusTile, false);
+
+        if(isBonusDestroyed) {
+            /*this.scheduleOnce(() => {
+                this.activateBonusByIndex(index + 1);
+            }, this.timeBetweenBonuses);*/
+            return;
+        }
+        else {
+            this.activateBonusByIndex(this.bonusIndex);
+        }
+    }
+
+
     extraHit(row: number, col: number, isBonusChain: boolean) {
         if(row > this.numRows - 1 || col > this.numCols - 1 || row < 0 || col < 0) {
             return;
@@ -698,7 +709,21 @@ export class Field extends Component {
             if(isBonusChain) {
                 const tileComp = tile.getComponent("TileBase");
                 if(tileComp.isBonusTile()) {
-                    this.findAndDestroyMatches(tile, false);
+                    if(this.bonusPool.includes(tile)) {
+                        const indexToSwap = this.bonusPool.indexOf(tile);
+                        if (indexToSwap > this.bonusIndex) {
+                            this.moveNodeToIndex(tile, this.bonusIndex);
+                        }
+                    }
+                    else {
+                        this.bonusPool.push(tile);
+                        if(!this.isBonusPoolActivated) {
+                            this.scheduleOnce(() => {
+                                this.bonusPool.push(tile);
+                                this.activateBonusPool();
+                            }, this.fallTime);
+                        }
+                    }
                     return;
                 }
             }
@@ -817,6 +842,7 @@ export class Field extends Component {
         }
         
         let matches = choosenTile.getMatches(this.tileArray, this.statusArray, !isRespawn);
+        let isComboBonus = this.isComboBonus(choosenTile);
         
         if(matches.length >= 2 || isBonus) {
             matches.forEach(matchedTile => {
@@ -843,11 +869,30 @@ export class Field extends Component {
             }
 
             if(matches.length > 0 || isBonus) {
+                if(isComboBonus && isRespawn) {
+                    isRespawn = false;
+                }
                 this.spawnNewTiles(isRespawn);
             }
-        }, 0.2);
+        }, this.fallDelay);
 
         return true;
+    }
+
+    isComboBonus(tile: TileBase): boolean {
+        if(tile.isBonusTile()) {
+            if(tile.getTileType() === "bomb" || tile.getTileType() === "rocket_vertical" || tile.getTileType() === "rocket_horizontal") {
+                if(tile.getComboName() === "multi") {
+                    return true;
+                }
+            }
+            else if(tile.getTileType() === "multi") {
+                if(tile.getComboName() === "bomb" || tile.getComboName() === "rocket_vertical" || tile.getComboName() === "rocket_horizontal") {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     giveDamage(tile: Node, choosenType: string, isBonus: boolean) {
@@ -914,7 +959,7 @@ export class Field extends Component {
                     const tile = this.tileArray[row][col];
                     if (tile !== null) {
                         const tileComponent = tile.getComponent("TileBase");
-                        if (!tileComponent.isTileShifts() || tileComponent.getRow() !== row || !this.isFallMovementAvailable(tileComponent.getRow(), tileComponent.getCol())) {
+                        if (!tileComponent.isTileShifts() || tileComponent.getRow() !== row || !this.isFallMovementAvailable(tileComponent.getRow(), tileComponent.getCol()) || this.bonusPool.includes(tile)) {
                             shouldSpawnNewTile = false;
                             break;
                         }
@@ -925,7 +970,12 @@ export class Field extends Component {
                 }
             }
 
-            if(!isRespawn || this.bonusPool.length > 0) {
+            if(this.isBonusPoolActivated) {
+                this.activateBonusByIndex(this.bonusIndex);
+                return;
+            }
+
+            if(!isRespawn || this.isBonusPoolActivated || this.bonusPool > 0) {
                 return;
             }
 
@@ -946,6 +996,8 @@ export class Field extends Component {
         this.isClickAvailable = false;
 
         this.spawnTilesSchedule = () => {
+            this.bonusPool = [];
+            this.isBonusPoolActivated = false;
             this.spawnNewTiles(true);
             this.isSpawnScheduled = false;
         };
@@ -968,7 +1020,7 @@ export class Field extends Component {
                 } else {
                     let tileComponent = tile.getComponent("TileBase");
 
-                    if(!tileComponent.isTileShifts() || tileComponent.getRow() !== row || !this.isFallMovementAvailable(tileComponent.getRow(), tileComponent.getCol())) {
+                    if(!tileComponent.isTileShifts() || tileComponent.getRow() !== row || !this.isFallMovementAvailable(tileComponent.getRow(), tileComponent.getCol()) || this.bonusPool.includes(tile)) {
                         emptySpaces = 0;
                         holes = 0;
                     }
@@ -1257,8 +1309,6 @@ export class Field extends Component {
 
 
     clearAll() {
-        this.bonusPool = [];
-
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
@@ -1492,6 +1542,18 @@ export class Field extends Component {
 
     getDynamiteGoals(): GoalData[] {
         return this.dynamiteGoals;
+    }
+
+
+    moveNodeToIndex(node: cc.Node, newIndex: number): void {
+        const currentIndex: number = this.bonusPool.indexOf(node);
+    
+        if (currentIndex !== -1) {
+            this.bonusPool.splice(currentIndex, 1);
+            this.bonusPool.splice(newIndex, 0, node);
+        } else {
+            console.error("Node not found in the array");
+        }
     }
 }
 
