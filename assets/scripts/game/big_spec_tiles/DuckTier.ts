@@ -17,12 +17,6 @@ export class DuckTier extends Soda {
     }
 
     isReadyToDestroy(): boolean {
-        if(!this.isDamaged && this.strength < 4 && this.isHealAvailable) {
-            this.strength++;
-            this.refresh();
-            this.isHealAvailable = false;
-        }
-
         if(this.strength <= 0) {
             return true;
         }
@@ -44,6 +38,18 @@ export class DuckTier extends Soda {
             this.isHealAvailable = false;
         }
         this.isDamaged = false;
+    }
+
+    startInActionEffect(field: Node[][]): boolean {
+        if(!this.isDamaged && this.strength < 4 && this.isHealAvailable) {
+            this.strength++;
+            this.refresh();
+            this.isHealAvailable = false;
+
+            return true;
+        }
+
+        return false;
     }
 }
 

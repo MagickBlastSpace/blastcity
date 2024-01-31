@@ -116,6 +116,38 @@ export class BonusTileBase extends TileBase {
         }
     }
 
+    fastRowExtraHit(field: Node[][], row: number, col: number) {
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        for(let j = col; j < numCols; j++) {
+            let isBonusChain = this.isCombo() ? j !== col && j !== col + 1 && j !== col - 1 : j !== col;
+            this.node.emit("extra_hit", row, j, isBonusChain);
+        }
+
+        for(let j = col - 1; j >= 0; j--) {
+            let isBonusChain = this.isCombo() ? j !== col && j !== col + 1 && j !== col - 1 : j !== col;
+            this.node.emit("extra_hit", row, j, isBonusChain);
+        }
+
+        this.clearTiles();
+    }
+
+    fastColExtraHit(field: Node[][], row: number, col: number) {
+        const numRows: number = field.length;
+
+        for(let j = row; j < numRows; j++) {
+            let isBonusChain = this.isCombo() ? j !== row && j !== row + 1 && j !== row - 1 : j !== row;
+            this.node.emit("extra_hit", j, col, isBonusChain);
+        }
+
+        for(let j = row - 1; j >= 0; j--) {
+            let isBonusChain = this.isCombo() ? j !== row && j !== row + 1 && j !== row - 1 : j !== row;
+            this.node.emit("extra_hit", j, col, isBonusChain);
+        }
+
+        this.clearTiles();
+    }
+
 
     getBiggestCommonTilesGroup(field: Node[][], statuses: Node[][]): TileBase[] {
         const numRows: number = field.length;
