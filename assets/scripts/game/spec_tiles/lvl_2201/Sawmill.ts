@@ -55,7 +55,7 @@ export class Sawmill extends SpecTileBase {
     }
 
 
-    startInActionEffect(field: Node[][]): boolean {
+    startPreActionEffect(field: Node[][]): boolean {
         let group = this.getGroupedTiles(field);
 
         let isGroupDamaged = this.isDamaged;
@@ -94,8 +94,6 @@ export class Sawmill extends SpecTileBase {
             let tileComp = logToCut.getComponent("TileBase");
             this.node.emit("destroy_tile", tileComp.getRow(), tileComp.getCol());
         }
-        
-        this.node.emit("respawn", 0.05);
 
         return true;
     }

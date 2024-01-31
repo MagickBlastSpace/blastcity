@@ -49,6 +49,10 @@ export class SpecTileBase extends TileBase {
         return false;
     }
 
+    startPreActionEffect(): boolean {
+        return false;
+    }
+
 
     getDamage(damageType: string) {}
 

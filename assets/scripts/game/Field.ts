@@ -944,6 +944,7 @@ export class Field extends Component {
 
     spawnNewTiles(isRespawn: boolean) {
         this.checkStatusesForDestroy();
+        this.checkSpecTilesPreActionEffect();
         this.fallTiles();
     
         this.scheduleOnce(() => {
@@ -1193,6 +1194,27 @@ export class Field extends Component {
 
                     if(tileComponent.isSpecialTile()) {
                         tileComponent.startInActionEffect(this.tileArray);
+                    }
+                }
+            }
+        }
+    }
+
+    checkSpecTilesPreActionEffect() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    let tileComponent = null;
+                    try {
+                        tileComponent = tile.getComponent("TileBase");
+                    } catch (error) {
+                        this.tileArray[i][j] = null;
+                        continue;
+                    }
+
+                    if(tileComponent.isSpecialTile()) {
+                        tileComponent.startPreActionEffect(this.tileArray);
                     }
                 }
             }
