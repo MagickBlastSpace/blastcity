@@ -73,6 +73,8 @@ export class Field extends Component {
     private rocketPreset: string = "random";
     private dynamiteGoals: GoalData[] = [];
 
+    private isSuperDiscoballMode: boolean = false;
+
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -102,6 +104,8 @@ export class Field extends Component {
                 this.shuffleTiles();
             }
         });
+
+        this.isSuperDiscoballMode = false;
     }
 
 
@@ -341,7 +345,8 @@ export class Field extends Component {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.discoballPrefab);
         const tileComponent = tileNode.getComponent("Discoball");
-        let spawnedTile = this.initTile(tileComponent, row, col, "multi");
+        let tileType = this.isSuperDiscoballMode ? "super" : "multi";
+        let spawnedTile = this.initTile(tileComponent, row, col, tileType);
         return spawnedTile;
     }
 
@@ -387,7 +392,7 @@ export class Field extends Component {
         else if(bonusId === "rocket_horizontal" || bonusId === "rocket_vertical") {
             spawnedTile = this.rocketPreset === "random" ? this.spawnRocket(row, col, bonusId) : this.spawnRocket(row, col, "rocket_" + this.rocketPreset);
         }
-        else if(this.availableColors.includes(bonusId) || bonusId === "multi") {
+        else if(this.availableColors.includes(bonusId) || bonusId === "multi" || bonusId === "super") {
             spawnedTile = this.spawnDiscoball(row, col);
         }
 
@@ -426,6 +431,10 @@ export class Field extends Component {
 
         tileNode.on("click", (tile) => {
             this.onTileClick(tile);
+        });
+        tileNode.on("get_matches", (tile) => {
+            console.log("get_matches catch");
+            this.findAndDestroyMatches(tile, true);
         });
         tileNode.on("change", (row, col, tileId) => {
             this.spawnSpecialTile(row, col, tileId);
@@ -851,7 +860,8 @@ export class Field extends Component {
             potentialBonus = choosenTile.getPotentialBonus();
         }
         
-        let matches = choosenTile.getMatches(this.tileArray, this.statusArray, !isRespawn);
+        let isBlockingCombo = !isRespawn || (this.isSuperDiscoballMode && choosenType === "multi");
+        let matches = choosenTile.getMatches(this.tileArray, this.statusArray, isBlockingCombo);
         let isComboBonus = this.isComboBonus(choosenTile);
         
         if(matches.length >= 2 || isBonus) {
@@ -891,7 +901,10 @@ export class Field extends Component {
 
     isComboBonus(tile: TileBase): boolean {
         if(tile.isBonusTile()) {
-            if(tile.getTileType() === "bomb" || tile.getTileType() === "rocket_vertical" || tile.getTileType() === "rocket_horizontal") {
+            if(tile.getTileType() === "super" || tile.getComboName() === "super") {
+                return true;
+            }
+            else if(tile.getTileType() === "bomb" || tile.getTileType() === "rocket_vertical" || tile.getTileType() === "rocket_horizontal") {
                 if(tile.getComboName() === "multi") {
                     return true;
                 }
@@ -913,7 +926,7 @@ export class Field extends Component {
             }
 
             let isDestroyAvailable = this.isDestroyAvailable(tileComponent.getRow(), tileComponent.getCol());
-            if( (this.availableColors.includes(choosenType) || choosenType === "multi") && isDestroyAvailable) {
+            if( (this.availableColors.includes(choosenType) || choosenType === "multi" || choosenType === "super") && isDestroyAvailable) {
                 tileComponent.giveDamage(this.tileArray, this.statusArray);
             }
 
@@ -922,7 +935,7 @@ export class Field extends Component {
                 tileComponent.destroyTile();
             }
 
-            if(isBonus && !choosenType !== "multi") {
+            if(isBonus && choosenType !== "multi" && choosenType !== "super") {
                 if(tileComponent.isSpecialTile() && isDestroyAvailable) {
                     tileComponent.getDamage("bonus");
                 }
@@ -1601,6 +1614,11 @@ export class Field extends Component {
         } else {
             console.error("Node not found in the array");
         }
+    }
+
+
+    setSuperDiscoballMode(isActive: boolean) {
+        this.isSuperDiscoballMode = isActive;
     }
 }
 

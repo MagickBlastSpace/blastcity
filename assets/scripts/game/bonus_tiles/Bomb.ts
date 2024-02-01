@@ -60,7 +60,7 @@ export class Bomb extends BonusTileBase {
         else if(this.combo === "bomb") {
             matches = this.getBombComboMatches(field, statuses);
         }
-        else if(this.combo === "multi") {
+        else if(this.combo === "multi" || this.combo === "super") {
             matches = this.getDiscoballComboMatches(field, statuses);
         }
 
@@ -119,7 +119,7 @@ export class Bomb extends BonusTileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         let tiles = [];
-        tiles = this.getBiggestCommonTilesGroup(field, statuses);
+        tiles = this.combo === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
         const multiTile = field[this.comboPosition.x][this.comboPosition.y];
         if(multiTile !== null && multiTile !== undefined) {
             const multiTileComp = multiTile.getComponent("TileBase");

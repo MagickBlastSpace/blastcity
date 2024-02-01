@@ -4,9 +4,18 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Discoball')
 export class Discoball extends BonusTileBase {
+
+    @property(Node)
+    multi: Node = null;
+    @property(Node)
+    super: Node = null;
+
     
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
+
+        this.multi.active = this.tileType === 'multi';
+        this.super.active = this.tileType === 'super';
     }
 
 
@@ -34,6 +43,17 @@ export class Discoball extends BonusTileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         matches = this.getBiggestCommonTilesGroup(field, statuses);
+
+        if(this.tileType === "super") {
+            this.tileType = "multi";
+
+            this.scheduleOnce(() => {
+                this.node.emit("get_matches", this.node);
+            }, this.respawnDelay);
+
+            return matches;
+        }
+
         matches.push(this);
 
         return matches;
@@ -52,6 +72,9 @@ export class Discoball extends BonusTileBase {
         else if(this.availableColors.includes(this.combo) || this.combo === "multi") {
             matches = this.getDiscoballComboMatches(field, statuses);
         }
+        else if(this.combo === "super") {
+            matches = this.getSuperDiscoballComboMatches(field, statuses);
+        }
 
         return matches;
     }
@@ -63,7 +86,7 @@ export class Discoball extends BonusTileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         let tiles = [];
-        tiles = this.getBiggestCommonTilesGroup(field, statuses);
+        tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
         tiles.push(this);
 
         const totalTime = this.timeBetweenTiles * tiles.length;
@@ -90,7 +113,7 @@ export class Discoball extends BonusTileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         let tiles = [];
-        tiles = this.getBiggestCommonTilesGroup(field, statuses);
+        tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
         tiles.push(this);
 
         const totalTime = this.timeBetweenTiles * tiles.length;
@@ -122,6 +145,33 @@ export class Discoball extends BonusTileBase {
         }
 
         this.setRespawnEvent(this.respawnDelay);
+
+        return matches;
+    }
+
+    getSuperDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                if(i === this.getRow() && j === this.getCol()) {
+                    continue;
+                }
+
+                this.node.emit("extra_hit", i, j, false);
+            }
+        }
+
+        this.clearTiles();
+
+        this.setRespawnEvent(this.respawnDelay * 2);
+
+        this.scheduleOnce(() => {
+            this.getDiscoballComboMatches(field, statuses);
+        }, this.respawnDelay);
 
         return matches;
     }

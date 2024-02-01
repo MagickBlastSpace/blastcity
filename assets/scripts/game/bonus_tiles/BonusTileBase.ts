@@ -45,7 +45,10 @@ export class BonusTileBase extends TileBase {
             }
         }
 
-        if(possibleCombos.includes("multi")) {
+        if(possibleCombos.includes("super")) {
+            this.combo = "super";
+        }
+        else if(possibleCombos.includes("multi")) {
             this.combo = "multi";
         }
         else if(possibleCombos.includes("bomb")) {
@@ -187,6 +190,54 @@ export class BonusTileBase extends TileBase {
         }
         
         return biggestGroup;
+    }
+
+
+    getTwoBiggestCommonTilesGroups(field: Node[][], statuses: Node[][]): TileBase[] {
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        let biggestGroup = [];
+        let secondBiggestGroup = [];
+        
+        for(let color = 0; color < this.availableColors.length; color++) {
+            let tiles = [];
+
+            for(let i = numRows - 1; i >= 0; i--) {
+                for(let j = 0; j < numCols; j++) {
+                    const tile = field[i][j];
+                    const status = statuses[i][j];
+
+                    if(status !== null && status !== undefined) {
+                        const statusComp = status.getComponent("StatusBase");
+                        if(statusComp.isBlockingInteraction()) {
+                            continue;
+                        }
+                    }
+                    if(tile !== null && tile !== this.node) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.getTileType() === this.availableColors[color]) {
+                            tiles.push(tileComp);
+                        }
+                    }
+                }
+            }
+
+            if(tiles.length > biggestGroup.length) {
+                biggestGroup = [];
+                for(let i = 0; i < tiles.length; i++) {
+                    biggestGroup.push(tiles[i]);
+                }
+            }
+            else if(tiles.length > secondBiggestGroup.length) {
+                secondBiggestGroup = [];
+                for(let i = 0; i < tiles.length; i++) {
+                    secondBiggestGroup.push(tiles[i]);
+                }
+            }
+        }
+        
+        return biggestGroup.concat(secondBiggestGroup);
     }
 }
 

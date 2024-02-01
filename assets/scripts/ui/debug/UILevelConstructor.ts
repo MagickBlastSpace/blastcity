@@ -13,6 +13,11 @@ export class UILevelConstructor extends Component {
     @property(Button)
     playBtn: Button = null;
 
+    @property(Button)
+    superDiscoOnBtn: Button = null;
+    @property(Button)
+    superDiscoOffBtn: Button = null;
+
     @property(Field)
     field: Field = null;
 
@@ -20,6 +25,9 @@ export class UILevelConstructor extends Component {
     start() {
         this.pasteBtn.node.on(Button.EventType.CLICK, this.onPasteBtnClick, this);
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+
+        this.superDiscoOnBtn.node.on(Button.EventType.CLICK, this.onSuperDiscoOnBtnClick, this);
+        this.superDiscoOffBtn.node.on(Button.EventType.CLICK, this.onSuperDiscoOffBtnClick, this);
     }
 
 
@@ -42,6 +50,14 @@ export class UILevelConstructor extends Component {
         catch (error) {
             this.inputField.string = error;
         }
+    }
+
+    onSuperDiscoOnBtnClick() {
+        this.field.setSuperDiscoballMode(true);
+    }
+
+    onSuperDiscoOffBtnClick() {
+        this.field.setSuperDiscoballMode(false);
     }
 }
 
