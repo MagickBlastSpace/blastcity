@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, instantiate, Prefab, Vec2, Vec3 } from 'cc';
 import { GameData, GoalData, LevelData, SpecialPrefabData } from '../data/GameData';
 import { TileBase } from './TileBase';
+import { Boosters } from './boosters/Boosters';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -30,6 +31,8 @@ export class Field extends Component {
 
     @property(Node)
     level: Node = null;
+    @property(Boosters)
+    boosters: Boosters = null;
 
     @property
     numRows: number = 8;
@@ -62,7 +65,6 @@ export class Field extends Component {
 
     private fallTime: number = 0.18;
     private swapTime: number = 0.15;
-    private timeBetweenBonuses: number = 0.4;
     private fallDelay: number = 0.18;
 
     private spawnTilesSchedule: Function = null;
@@ -88,6 +90,18 @@ export class Field extends Component {
 
         this.level.on("goal_complete_event", (goalId) => this.setGoalCompleteEvent(goalId));
         this.level.on("all_goals_complete_event", (movesRemain) => this.completeLevel(movesRemain));
+
+        this.boosters.node.on("extra_hit", (row, col, isBonusChain) => {
+            this.extraHit(row, col, isBonusChain);
+        });
+        this.boosters.node.on("respawn", (timeToRespawn) => {
+            this.scheduleRespawn(timeToRespawn, true);
+        });
+        this.boosters.node.on("shuffle", () => {
+            if(this.isClickAvailable) {
+                this.shuffleTiles();
+            }
+        });
     }
 
 
@@ -187,7 +201,7 @@ export class Field extends Component {
         this.subscribeAll(level.goals);
         this.sortStatuses();
 
-        this.spawnNewTiles(true);
+        this.spawnNewTiles(true, false);
         
         this.node.emit("level_init", level.movesCount, level.goals);
     }
@@ -425,7 +439,7 @@ export class Field extends Component {
             this.activateBonusPool();
         });
         tileNode.on("respawn", (timeToRespawn) => {
-            this.scheduleRespawn(timeToRespawn);
+            this.scheduleRespawn(timeToRespawn, false);
         });
         tileNode.on("damage_all", (tileId) => {
             this.setAllDamagedByType(tileId);
@@ -535,7 +549,7 @@ export class Field extends Component {
             this.node.emit("destroy", goalType);
         });
         statusNode.on("respawn", (timeToRespawn) => {
-            this.scheduleRespawn(timeToRespawn);
+            this.scheduleRespawn(timeToRespawn, false);
         });
         statusNode.on("destroy_status", (row, col) => {
             this.destroyStatus(row, col, false);
@@ -677,7 +691,7 @@ export class Field extends Component {
 
     activateBonusByIndex(index: number) {
         if(index >= this.bonusPool.length) {
-            this.scheduleRespawn(this.fallTime);
+            this.scheduleRespawn(this.fallTime, false);
             return;
         }
 
@@ -687,14 +701,10 @@ export class Field extends Component {
         let isBonusDestroyed = this.findAndDestroyMatches(bonusTile, false);
 
         if(isBonusDestroyed) {
-            /*this.scheduleOnce(() => {
-                this.activateBonusByIndex(index + 1);
-            }, this.timeBetweenBonuses);*/
             return;
         }
-        else {
-            this.activateBonusByIndex(this.bonusIndex);
-        }
+
+        this.activateBonusByIndex(this.bonusIndex);
     }
 
 
@@ -872,7 +882,7 @@ export class Field extends Component {
                 if(isComboBonus && isRespawn) {
                     isRespawn = false;
                 }
-                this.spawnNewTiles(isRespawn);
+                this.spawnNewTiles(isRespawn, false);
             }
         }, this.fallDelay);
 
@@ -942,14 +952,14 @@ export class Field extends Component {
     }
 
 
-    spawnNewTiles(isRespawn: boolean) {
+    spawnNewTiles(isRespawn: boolean, isBlockingInactionEffect: boolean) {
         this.checkStatusesForDestroy();
         this.checkSpecTilesPreActionEffect();
         this.fallTiles();
     
         this.scheduleOnce(() => {
             if (this.checkSpecTilesForDestroy()) {
-                this.spawnNewTiles(isRespawn);
+                this.spawnNewTiles(isRespawn, isBlockingInactionEffect);
                 return;
             }
     
@@ -980,7 +990,9 @@ export class Field extends Component {
                 return;
             }
 
-            this.checkSpecTilesInActionEffect();
+            if(!isBlockingInactionEffect) {
+                this.checkSpecTilesInActionEffect();
+            }
             
             this.scheduleOnce(() => {
                 this.checkForPotentialBonuses();
@@ -989,7 +1001,7 @@ export class Field extends Component {
         }, this.fallTime / 2);
     }
 
-    scheduleRespawn(timeToRespawn: number) {
+    scheduleRespawn(timeToRespawn: number, isBlockingInactionEffect: boolean) {
         if(this.isSpawnScheduled) {
             return;
         }
@@ -999,7 +1011,7 @@ export class Field extends Component {
         this.spawnTilesSchedule = () => {
             this.bonusPool = [];
             this.isBonusPoolActivated = false;
-            this.spawnNewTiles(true);
+            this.spawnNewTiles(true, isBlockingInactionEffect);
             this.isSpawnScheduled = false;
         };
         this.scheduleOnce(this.spawnTilesSchedule, timeToRespawn);
@@ -1228,6 +1240,17 @@ export class Field extends Component {
         }
 
         const tileComponent = tile.getComponent("TileBase");
+
+        if(this.boosters.isBoosterActive()) {
+            this.isClickAvailable = false;
+            this.boosters.useActiveBooster(this.tileArray, tileComponent.getRow(), tileComponent.getCol());
+            return;
+        }
+
+        if(tileComponent.isSpecialTile()) {
+            return;
+        }
+
         if(!this.isInteractionAvailable(tileComponent.getRow(), tileComponent.getCol())) {
             return;
         }
@@ -1474,6 +1497,8 @@ export class Field extends Component {
 
 
     shuffleTiles(): boolean {
+        this.isClickAvailable = false;
+
         let tilesPositions = this.getAllCommonTilesPositions();
         let swappedTiles = [];
 
