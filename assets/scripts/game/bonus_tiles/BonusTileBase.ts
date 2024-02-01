@@ -158,7 +158,7 @@ export class BonusTileBase extends TileBase {
         for(let color = 0; color < this.availableColors.length; color++) {
             let tiles = [];
 
-            for(let i = 0; i < numRows; i++) {
+            for(let i = numRows - 1; i >= 0; i--) {
                 for(let j = 0; j < numCols; j++) {
                     const tile = field[i][j];
                     const status = statuses[i][j];
@@ -186,7 +186,7 @@ export class BonusTileBase extends TileBase {
             }
         }
         
-        return biggestGroup.reverse();
+        return biggestGroup;
     }
 }
 
