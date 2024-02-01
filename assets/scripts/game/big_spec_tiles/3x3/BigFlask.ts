@@ -43,6 +43,8 @@ export class BigFlask extends Soda {
             this.isBlockingDamage = true;
 
             this.node.emit("goal", "big_flask");
+
+            this.refresh();
         }
     }
 
@@ -95,7 +97,9 @@ export class BigFlask extends Soda {
         this.isBlockingDamage = false;
     }
 
-    clearExtra() {}
+    clearExtra() {
+        this.isBlockingDamage = false;
+    }
 }
 
 
