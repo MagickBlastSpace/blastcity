@@ -109,16 +109,6 @@ export class Rocket extends BonusTileBase {
             this.fastColExtraHit(field, this.row, this.col - 1);
         }, timeStep * 5);
 
-
-        /*this.fastRowExtraHit(field, this.row, this.col);
-        this.fastRowExtraHit(field, this.row + 1, this.col);
-        this.fastRowExtraHit(field, this.row - 1, this.col);
-
-        this.fastColExtraHit(field, this.row, this.col);
-        this.fastColExtraHit(field, this.row, this.col + 1);
-        this.fastColExtraHit(field, this.row, this.col - 1);*/
-
-
         return matches;
     }
 
@@ -131,11 +121,6 @@ export class Rocket extends BonusTileBase {
 
         let tiles = [];
         tiles = this.combo === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
-        const multiTile = field[this.comboPosition.x][this.comboPosition.y];
-        if(multiTile !== null && multiTile !== undefined) {
-            const multiTileComp = multiTile.getComponent("TileBase");
-            tiles.push(multiTileComp);
-        }
 
         const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
@@ -147,9 +132,10 @@ export class Rocket extends BonusTileBase {
         this.scheduleOnce(() => {
             this.node.emit("activate_bonus_pool");
             this.node.emit("extra_hit", this.row, this.col, false);
+            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
         }, totalTime);
 
-        this.setDicoballComboAnimation();
+        this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y]);
 
         return matches;
     }
@@ -164,8 +150,12 @@ export class Rocket extends BonusTileBase {
         this.node.emit("respawn", timeToRespawn);
     }
 
-    setDicoballComboAnimation() {
+    setDicoballComboAnimation(disco: Node) {
         tween(this.node)
+            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+            .start();
+
+        tween(disco)
             .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
             .start();
     }
