@@ -20,6 +20,12 @@ export class Rocket extends BonusTileBase {
 
 
     getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
+        if(this.isActivated) {
+            return;
+        }
+
+        this.isActivated = true;
+
         this.combo = "";
         if(!isBlockingCombo) {
             this.getCombo(field);
@@ -80,13 +86,38 @@ export class Rocket extends BonusTileBase {
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.fastRowExtraHit(field, this.row, this.col);
+        const totalTime = this.respawnDelay / 2;
+        const timeStep = totalTime / 6;
+
+        this.scheduleOnce(() => {
+            this.fastRowExtraHit(field, this.row, this.col);
+        }, timeStep * 0);
+        this.scheduleOnce(() => {
+            this.fastRowExtraHit(field, this.row + 1, this.col);
+        }, timeStep * 1);
+        this.scheduleOnce(() => {
+            this.fastRowExtraHit(field, this.row - 1, this.col);
+        }, timeStep * 2);
+
+        this.scheduleOnce(() => {
+            this.fastColExtraHit(field, this.row, this.col);
+        }, timeStep * 3);
+        this.scheduleOnce(() => {
+            this.fastColExtraHit(field, this.row, this.col + 1);
+        }, timeStep * 4);
+        this.scheduleOnce(() => {
+            this.fastColExtraHit(field, this.row, this.col - 1);
+        }, timeStep * 5);
+
+
+        /*this.fastRowExtraHit(field, this.row, this.col);
         this.fastRowExtraHit(field, this.row + 1, this.col);
         this.fastRowExtraHit(field, this.row - 1, this.col);
 
         this.fastColExtraHit(field, this.row, this.col);
         this.fastColExtraHit(field, this.row, this.col + 1);
-        this.fastColExtraHit(field, this.row, this.col - 1);
+        this.fastColExtraHit(field, this.row, this.col - 1);*/
+
 
         return matches;
     }

@@ -63,7 +63,7 @@ export class Field extends Component {
     private startPool: string[] = [];
     private spawnPools: string[][] = [];
 
-    private fallTime: number = 0.18;
+    private fallTime: number = 0.3;
     private swapTime: number = 0.15;
     private fallDelay: number = 0.18;
 
@@ -694,26 +694,34 @@ export class Field extends Component {
         if (this.bonusPool.length > 0) {
             this.bonusIndex = 0;
             this.isBonusPoolActivated = true;
-            this.activateBonusByIndex(this.bonusIndex);
+            this.activateBonusByIndex(this.bonusIndex, true);
         }
     }
 
-    activateBonusByIndex(index: number) {
+    activateBonusByIndex(index: number, byOrder: boolean) {
         if(index >= this.bonusPool.length) {
             this.scheduleRespawn(this.fallTime, false);
             return;
         }
 
         const bonusTile = this.bonusPool[index];
-        this.bonusIndex = this.bonusIndex + 1;
 
+        if(byOrder) {
+            this.bonusIndex = this.bonusIndex + 1;
+        }
+        
         let isBonusDestroyed = this.findAndDestroyMatches(bonusTile, false);
+
+        
+        if(!byOrder) {
+            return;
+        }
 
         if(isBonusDestroyed) {
             return;
         }
 
-        this.activateBonusByIndex(this.bonusIndex);
+        this.activateBonusByIndex(this.bonusIndex, true);
     }
 
 
@@ -729,10 +737,26 @@ export class Field extends Component {
                 const tileComp = tile.getComponent("TileBase");
                 if(tileComp.isBonusTile()) {
                     if(this.bonusPool.includes(tile)) {
-                        const indexToSwap = this.bonusPool.indexOf(tile);
-                        if (indexToSwap > this.bonusIndex) {
-                            this.moveNodeToIndex(tile, this.bonusIndex);
-                        }
+                        this.scheduleOnce(() => {
+                            if(!tileComp || !tile) {
+                                return;
+                            }
+
+                            if(tileComp.getTileType() === "multi" || tileComp.getTileType() === "super") {
+                                let matches = tileComp.getMatches(this.tileArray, this.statusArray, true);
+        
+                                if(matches !== null && matches !== undefined) {
+                                    matches.forEach(matchedTile => {
+                                        this.giveDamage(matchedTile, tileComp.getTileType(), false);
+                                    })
+                                }
+
+                                return;
+                            }
+
+                            this.clearExtra();
+                            tileComp.getMatches(this.tileArray, this.statusArray, true);
+                        }, this.fallTime);
                     }
                     else {
                         this.bonusPool.push(tile);
@@ -740,6 +764,28 @@ export class Field extends Component {
                             this.scheduleOnce(() => {
                                 this.bonusPool.push(tile);
                                 this.activateBonusPool();
+                            }, this.fallTime);
+                        }
+                        else {
+                            this.scheduleOnce(() => {
+                                if(!tileComp || !tile) {
+                                    return;
+                                }
+
+                                if(tileComp.getTileType() === "multi" || tileComp.getTileType() === "super") {
+                                    let matches = tileComp.getMatches(this.tileArray, this.statusArray, true);
+            
+                                    if(matches !== null && matches !== undefined) {
+                                        matches.forEach(matchedTile => {
+                                            this.giveDamage(matchedTile, tileComp.getTileType(), false);
+                                        })
+                                    }
+    
+                                    return;
+                                }
+
+                                this.clearExtra();
+                                tileComp.getMatches(this.tileArray, this.statusArray, true);
                             }, this.fallTime);
                         }
                     }
@@ -858,6 +904,12 @@ export class Field extends Component {
         let potentialBonus = "";
         if(isCommon) {
             potentialBonus = choosenTile.getPotentialBonus();
+        }
+
+        if(isBonus) {
+            if(choosenTile.isTileActivated()) {
+                return false;
+            }
         }
         
         let isBlockingCombo = !isRespawn || (this.isSuperDiscoballMode && choosenType === "multi");
@@ -995,7 +1047,7 @@ export class Field extends Component {
             }
 
             if(this.isBonusPoolActivated) {
-                this.activateBonusByIndex(this.bonusIndex);
+                this.activateBonusByIndex(this.bonusIndex, true);
                 return;
             }
 

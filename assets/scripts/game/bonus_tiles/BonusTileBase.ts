@@ -13,6 +13,8 @@ export class BonusTileBase extends TileBase {
     private respawnDelay: number = 0.35;
     private timeBetweenTiles: number = 0.1;
 
+    private isActivated: boolean = false;
+
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -26,6 +28,8 @@ export class BonusTileBase extends TileBase {
 
         this.combo = "";
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
+
+        this.isActivated = false;
     }
 
 
@@ -122,6 +126,54 @@ export class BonusTileBase extends TileBase {
     fastRowExtraHit(field: Node[][], row: number, col: number) {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
+        const totalTime = this.respawnDelay / 12;
+
+        for(let j = col; j < numCols; j++) {
+            let isBonusChain = this.isCombo() ? j !== col && j !== col + 1 && j !== col - 1 : j !== col;
+            this.scheduleOnce(() => {
+                this.node.emit("extra_hit", row, j, isBonusChain);
+            }, totalTime / numCols * (j - col));
+        }
+
+        for(let j = col - 1; j >= 0; j--) {
+            let isBonusChain = this.isCombo() ? j !== col && j !== col + 1 && j !== col - 1 : j !== col;
+            this.scheduleOnce(() => {
+                this.node.emit("extra_hit", row, j, isBonusChain);
+            }, totalTime / numCols * (col - j));
+        }
+
+        this.scheduleOnce(() => {
+            this.clearTiles();
+        }, totalTime);
+    }
+
+    fastColExtraHit(field: Node[][], row: number, col: number) {
+        const numRows: number = field.length;
+
+        const totalTime = this.respawnDelay / 12;
+
+        for(let j = row; j < numRows; j++) {
+            let isBonusChain = this.isCombo() ? j !== row && j !== row + 1 && j !== row - 1 : j !== row;
+            this.scheduleOnce(() => {
+                this.node.emit("extra_hit", j, col, isBonusChain);
+            }, totalTime / numRows * (j - row));
+        }
+
+        for(let j = row - 1; j >= 0; j--) {
+            let isBonusChain = this.isCombo() ? j !== row && j !== row + 1 && j !== row - 1 : j !== row;
+            this.scheduleOnce(() => {
+                this.node.emit("extra_hit", j, col, isBonusChain);
+            }, totalTime / numRows * (row - j));
+        }
+
+        this.scheduleOnce(() => {
+            this.clearTiles();
+        }, totalTime);
+    }
+
+    /*fastRowExtraHit(field: Node[][], row: number, col: number) {
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
         for(let j = col; j < numCols; j++) {
             let isBonusChain = this.isCombo() ? j !== col && j !== col + 1 && j !== col - 1 : j !== col;
             this.node.emit("extra_hit", row, j, isBonusChain);
@@ -149,7 +201,7 @@ export class BonusTileBase extends TileBase {
         }
 
         this.clearTiles();
-    }
+    }*/
 
 
     getBiggestCommonTilesGroup(field: Node[][], statuses: Node[][]): TileBase[] {
@@ -238,6 +290,10 @@ export class BonusTileBase extends TileBase {
         }
         
         return biggestGroup.concat(secondBiggestGroup);
+    }
+
+    isTileActivated(): boolean {
+        return this.isActivated;
     }
 }
 

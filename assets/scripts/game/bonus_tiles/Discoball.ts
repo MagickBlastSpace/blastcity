@@ -20,6 +20,10 @@ export class Discoball extends BonusTileBase {
 
 
     getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
+        if(this.isActivated) {
+            return;
+        }
+
         this.combo = "";
         if(!isBlockingCombo) {
             this.getCombo(field);
@@ -54,6 +58,8 @@ export class Discoball extends BonusTileBase {
             return matches;
         }
 
+        this.isActivated = true;
+
         matches.push(this);
 
         return matches;
@@ -62,6 +68,8 @@ export class Discoball extends BonusTileBase {
 
     getMatchesByCombo(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
+
+        this.isActivated = true;
 
         if(this.combo === "rocket_vertical" || this.combo === "rocket_horizontal") {
             matches = this.getRocketComboMatches(field, statuses);
