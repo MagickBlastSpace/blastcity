@@ -131,8 +131,8 @@ export class Rocket extends BonusTileBase {
 
         this.scheduleOnce(() => {
             this.node.emit("activate_bonus_pool");
-            this.node.emit("extra_hit", this.row, this.col, false);
-            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
+            this.node.emit("extra_hit", this.row, this.col, false, 0);
+            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
         }, totalTime);
 
         this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y]);

@@ -202,8 +202,8 @@ export class Tile extends TileBase {
     }
 
 
-    destroyTile() {
-        super.destroyTile();
+    destroyTile(delay: number) {
+        super.destroyTile(delay);
         
         this.node.emit("goal", this.tileType);
     }

@@ -36,9 +36,9 @@ export class SpecTileBase extends TileBase {
     }
 
 
-    destroyTile() {
+    destroyTile(delay: number) {
         this.startDestroyConsequences();
-        super.destroyTile();
+        super.destroyTile(delay);
     }
 
     onTouchStart(event: cc.Event.EventTouch) {

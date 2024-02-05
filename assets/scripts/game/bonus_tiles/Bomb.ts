@@ -54,9 +54,7 @@ export class Bomb extends BonusTileBase {
             for(let j = this.col - 1; j <= this.col + 1; j++) {
                 let isBonusChain = i !== this.row || j !== this.col; 
                 
-                this.scheduleOnce(() => {
-                    this.node.emit("extra_hit", i, j, isBonusChain);
-                }, timeStep * counter);
+                this.node.emit("extra_hit", i, j, isBonusChain, timeStep * counter);
 
                 counter = counter + 1;
             }
@@ -87,27 +85,14 @@ export class Bomb extends BonusTileBase {
         let matches = [];
 
         const totalTime = this.respawnDelay / 2;
-        const timeStep = totalTime / 6;
 
-        this.scheduleOnce(() => {
-            this.fastRowExtraHit(field, this.row, this.col);
-        }, timeStep * 0);
-        this.scheduleOnce(() => {
-            this.fastRowExtraHit(field, this.row + 1, this.col);
-        }, timeStep * 1);
-        this.scheduleOnce(() => {
-            this.fastRowExtraHit(field, this.row - 1, this.col);
-        }, timeStep * 2);
+        this.fastRowExtraHit(field, this.row, this.col);
+        this.fastRowExtraHit(field, this.row + 1, this.col);
+        this.fastRowExtraHit(field, this.row - 1, this.col);
 
-        this.scheduleOnce(() => {
-            this.fastColExtraHit(field, this.row, this.col);
-        }, timeStep * 3);
-        this.scheduleOnce(() => {
-            this.fastColExtraHit(field, this.row, this.col + 1);
-        }, timeStep * 4);
-        this.scheduleOnce(() => {
-            this.fastColExtraHit(field, this.row, this.col - 1);
-        }, timeStep * 5);
+        this.fastColExtraHit(field, this.row, this.col);
+        this.fastColExtraHit(field, this.row, this.col + 1);
+        this.fastColExtraHit(field, this.row, this.col - 1);
 
         return matches;
     }
@@ -141,9 +126,7 @@ export class Bomb extends BonusTileBase {
                     }
                 }
 
-                this.scheduleOnce(() => {
-                    this.node.emit("extra_hit", i, j, isBonusChain);
-                }, timeStep * counter);
+                this.node.emit("extra_hit", i, j, isBonusChain, timeStep * counter);
 
                 counter = counter + 1;
             }
@@ -170,8 +153,8 @@ export class Bomb extends BonusTileBase {
 
         this.scheduleOnce(() => {
             this.node.emit("activate_bonus_pool");
-            this.node.emit("extra_hit", this.row, this.col, false);
-            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
+            this.node.emit("extra_hit", this.row, this.col, false, 0);
+            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
         }, totalTime);
 
         this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y]);

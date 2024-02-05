@@ -109,7 +109,7 @@ export class Discoball extends BonusTileBase {
             this.node.emit("activate_bonus_pool");
         }, totalTime);
 
-        this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
+        this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
 
         return matches;
     }
@@ -135,7 +135,7 @@ export class Discoball extends BonusTileBase {
             this.node.emit("activate_bonus_pool");
         }, totalTime);
 
-        this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false);
+        this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
 
         return matches;
     }
@@ -148,7 +148,7 @@ export class Discoball extends BonusTileBase {
 
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
-                this.node.emit("extra_hit", i, j, false);
+                this.node.emit("extra_hit", i, j, false, 0);
             }
         }
 
@@ -169,7 +169,7 @@ export class Discoball extends BonusTileBase {
                     continue;
                 }
 
-                this.node.emit("extra_hit", i, j, false);
+                this.node.emit("extra_hit", i, j, false, 0);
             }
         }
 

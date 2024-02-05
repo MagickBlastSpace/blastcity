@@ -85,9 +85,7 @@ export class Boosters extends Component {
         const totalTime = this.respawnDelay / 2;
 
         for(let j = 0; j < numCols; j++) {
-            this.scheduleOnce(() => {
-                this.node.emit("extra_hit", row, j, true);
-            }, totalTime / numCols * j);
+            this.node.emit("extra_hit", row, j, true, totalTime / numCols * j);
         }
 
         this.node.emit("respawn", this.respawnDelay);
@@ -99,9 +97,7 @@ export class Boosters extends Component {
         const totalTime = this.respawnDelay / 2;
 
         for(let j = 0; j < numRows; j++) {
-            this.scheduleOnce(() => {
-                this.node.emit("extra_hit", j, col, true);
-            }, totalTime / numRows * j);
+            this.node.emit("extra_hit", j, col, true, totalTime / numRows * j);
         }
 
         this.node.emit("respawn", this.respawnDelay);

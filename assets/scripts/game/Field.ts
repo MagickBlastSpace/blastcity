@@ -83,8 +83,8 @@ export class Field extends Component {
         this.level.on("goal_complete_event", (goalId) => this.setGoalCompleteEvent(goalId));
         this.level.on("all_goals_complete_event", (movesRemain) => this.completeLevel(movesRemain));
 
-        this.boosters.node.on("extra_hit", (row, col, isBonusChain) => {
-            this.extraHit(row, col, isBonusChain);
+        this.boosters.node.on("extra_hit", (row, col, isBonusChain, delay) => {
+            this.extraHit(row, col, isBonusChain, delay);
         });
         this.boosters.node.on("respawn", (timeToRespawn) => {
             this.scheduleRespawn(timeToRespawn, true);
@@ -409,7 +409,6 @@ export class Field extends Component {
             this.onTileClick(tile);
         });
         tileNode.on("get_matches", (tile) => {
-            console.log("get_matches catch");
             this.findAndDestroyMatches(tile, true);
         });
         tileNode.on("change", (row, col, tileId) => {
@@ -459,8 +458,8 @@ export class Field extends Component {
         tileNode.on("destroy_random_tile", () => {
             this.destroyRandomTile();
         });
-        tileNode.on("extra_hit", (row, col, isBonusChain) => {
-            this.extraHit(row, col, isBonusChain);
+        tileNode.on("extra_hit", (row, col, isBonusChain, delay) => {
+            this.extraHit(row, col, isBonusChain, delay);
         });
         tileNode.on("random_extra_hit", (except, except2) => {
             this.randomExtraHit(except, except2);
@@ -557,7 +556,7 @@ export class Field extends Component {
                 tileComponent.destroyClear();
             }
             else {
-                tileComponent.destroyTile();
+                tileComponent.destroyTile(0);
             }
             this.tileArray[row][col] = null;
         }
@@ -701,11 +700,11 @@ export class Field extends Component {
     }
 
 
-    extraHit(row: number, col: number, isBonusChain: boolean) {
+    extraHit(row: number, col: number, isBonusChain: boolean, delay: number) {
         if(this.isLevelComplete) {
             return;
         }
-        
+
         if(row > this.numRows - 1 || col > this.numCols - 1 || row < 0 || col < 0) {
             return;
         }
@@ -727,7 +726,7 @@ export class Field extends Component {
         
                                 if(matches !== null && matches !== undefined) {
                                     matches.forEach(matchedTile => {
-                                        this.giveDamage(matchedTile, tileComp.getTileType(), false);
+                                        this.giveDamage(matchedTile, tileComp.getTileType(), false, 0);
                                     })
                                 }
 
@@ -757,7 +756,7 @@ export class Field extends Component {
             
                                     if(matches !== null && matches !== undefined) {
                                         matches.forEach(matchedTile => {
-                                            this.giveDamage(matchedTile, tileComp.getTileType(), false);
+                                            this.giveDamage(matchedTile, tileComp.getTileType(), false, 0);
                                         })
                                     }
     
@@ -772,7 +771,8 @@ export class Field extends Component {
                     return;
                 }
             }
-            this.giveDamage(tile, "extra_hit", true);
+
+            this.giveDamage(tile, "extra_hit", true, delay);
         }
         else {
             this.giveStatusDamage(row, col);
@@ -806,11 +806,11 @@ export class Field extends Component {
 
         if(specTiles.length > 0) {
             let randomIndex = Math.floor(Math.random() * specTiles.length);
-            this.giveDamage(specTiles[randomIndex], "extra_hit", true);
+            this.giveDamage(specTiles[randomIndex], "extra_hit", true, 0);
         }
         else {
             let randomIndex = Math.floor(Math.random() * tiles.length);
-            this.giveDamage(tiles[randomIndex], "extra_hit", true);
+            this.giveDamage(tiles[randomIndex], "extra_hit", true, 0);
         }
     }
 
@@ -895,38 +895,38 @@ export class Field extends Component {
         let isBlockingCombo = !isRespawn || (this.isSuperDiscoballMode && choosenType === "multi");
         let matches = choosenTile.getMatches(this.tileArray, this.statusArray, isBlockingCombo);
         let isComboBonus = this.isComboBonus(choosenTile);
+
+        this.isClickAvailable = !isComboBonus;
         
         if(matches.length >= 2 || isBonus) {
             matches.forEach(matchedTile => {
-                this.giveDamage(matchedTile, choosenType, isBonus);
+                this.giveDamage(matchedTile, choosenType, isBonus, 0);
             })
         }
         else {
             return false;
         }
 
-        this.scheduleOnce(() => {
-            this.checkSpecTilesForDestroy();
+        this.checkSpecTilesForDestroy();
 
-            if(isCommon) {
-                if(matches.length >= 9) {
-                    this.spawnDiscoball(choosenRow, choosenCol);
-                }
-                else if(matches.length >= 7) {
-                    this.spawnBomb(choosenRow, choosenCol);
-                }
-                else if(matches.length >= 5) {
-                    this.spawnRocket(choosenRow, choosenCol, potentialBonus);
-                }
+        if(isCommon) {
+            if(matches.length >= 9) {
+                this.spawnDiscoball(choosenRow, choosenCol);
             }
+            else if(matches.length >= 7) {
+                this.spawnBomb(choosenRow, choosenCol);
+            }
+            else if(matches.length >= 5) {
+                this.spawnRocket(choosenRow, choosenCol, potentialBonus);
+            }
+        }
 
-            if(matches.length > 0 || isBonus) {
-                if(isComboBonus && isRespawn) {
-                    isRespawn = false;
-                }
-                this.spawnNewTiles(isRespawn, false);
+        if(matches.length > 0 || isBonus) {
+            if(isComboBonus && isRespawn) {
+                isRespawn = false;
             }
-        }, this.fallDelay);
+            this.spawnNewTiles(isRespawn, false);
+        }
 
         return true;
     }
@@ -950,7 +950,7 @@ export class Field extends Component {
         return false;
     }
 
-    giveDamage(tile: Node, choosenType: string, isBonus: boolean) {
+    giveDamage(tile: Node, choosenType: string, isBonus: boolean, destroyDelay: number) {
         if(tile !== null && tile !== undefined) {
             let tileComponent = tile.getComponent("TileBase");
             if(tileComponent.isEmptyTile()) {
@@ -964,7 +964,7 @@ export class Field extends Component {
 
             if(isDestroyAvailable && !tileComponent.isSpecialTile()) {
                 this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-                tileComponent.destroyTile();
+                tileComponent.destroyTile(destroyDelay);
             }
 
             if(isBonus && choosenType !== "multi" && choosenType !== "super") {
@@ -1025,8 +1025,6 @@ export class Field extends Component {
                     }
                 }
             }
-
-            //this.node.emit("refresh", this.tileArray);
 
             if(this.isBonusPoolActivated) {
                 this.activateBonusByIndex(this.bonusIndex, true);
@@ -1196,14 +1194,14 @@ export class Field extends Component {
                                     this.tileArray[tileComponent.getRow() + 1][tileComponent.getCol() + 2] = null;
                                 }
 
-                                tileComponent.destroyTile();
+                                tileComponent.destroyTile(0);
                                 isDestroyed = true;
                             }
                         }
                         else {
                             if(tileComponent.isGroupReadyToDestroy(this.tileArray)) {
                                 this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-                                tileComponent.destroyTile();
+                                tileComponent.destroyTile(0);
                                 isDestroyed = true;
                             }
                         }
@@ -1274,7 +1272,7 @@ export class Field extends Component {
 
     
     onTileClick(tile: Node) {
-        if(!this.isClickAvailable || tile === null) {
+        if(!this.isClickAvailable || tile === null || this.isLevelComplete) {
             return;
         }
 
@@ -1295,8 +1293,6 @@ export class Field extends Component {
         }
 
         let isMatchesFound = this.findAndDestroyMatches(tile, true);
-        
-        this.isClickAvailable = !isMatchesFound;
 
         if(isMatchesFound) {
             this.node.emit("move");

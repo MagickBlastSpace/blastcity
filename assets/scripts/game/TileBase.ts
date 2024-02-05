@@ -91,13 +91,9 @@ export class TileBase extends Component {
     }
 
 
-    destroyTile() {
-        if (!this.currentTween) {
-            this.currentTween = tween(this.node)
-                .to(0.15, { scale: new Vec3(2.5, 2.5, 2.5) }, { easing: 'linear' })
-                .call(() => this.node.destroy())
-                .start();
-        }
+    destroyTile(delay: number) {
+        let uiComponent = this.node.getComponent("UITile");
+        uiComponent.destroyTile(delay);
     }
 
     destroyClear() {
