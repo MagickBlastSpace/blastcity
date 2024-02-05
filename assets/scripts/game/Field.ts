@@ -675,7 +675,7 @@ export class Field extends Component {
     }
 
     activateBonusByIndex(index: number, byOrder: boolean) {
-        if(index >= this.bonusPool.length) {
+        if(index >= this.bonusPool.length || this.isLevelComplete) {
             this.scheduleRespawn(this.fallTime, false);
             return;
         }
@@ -702,6 +702,10 @@ export class Field extends Component {
 
 
     extraHit(row: number, col: number, isBonusChain: boolean) {
+        if(this.isLevelComplete) {
+            return;
+        }
+        
         if(row > this.numRows - 1 || col > this.numCols - 1 || row < 0 || col < 0) {
             return;
         }
