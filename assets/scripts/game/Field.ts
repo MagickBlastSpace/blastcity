@@ -39,16 +39,6 @@ export class Field extends Component {
     @property
     numCols: number = 8;
 
-    @property
-    tileSpacing: number = 5;
-    @property
-    xOffset: number = -150;
-    @property
-    yOffset: number = -175;
-
-    @property
-    tileSize: number = 40;
-
     private tileArray: Node[][] = [];
     private statusArray: Node[][] = [];
 
@@ -414,20 +404,6 @@ export class Field extends Component {
         let isTripleHeight = tileComponent.isSpecialTile() ? tileComponent.isTripleHeight() : false;
 
         const tileNode = tileComponent.node;
-        let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
-        let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
-
-        posX = isDoubleWidth ? posX + this.tileSize / 2 : posX;
-        posY = isDoubleHeight ? posY + this.tileSize / 2 : posY;
-
-        posX = isTripleWidth ? posX + this.tileSize / 2 : posX;
-        posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
-
-        tileComponent.node.setPosition(posX, posY + tileNode.height);
-
-        cc.tween(tileNode)
-            .to(this.fallTime / 2, { position: new Vec3(posX, posY, 0) })
-            .start();
 
         tileNode.on("click", (tile) => {
             this.onTileClick(tile);
@@ -539,6 +515,8 @@ export class Field extends Component {
 
         this.tilesLayout.addChild(tileNode);
 
+        this.node.emit("init_tile", tileNode);
+
         return tileNode;
     }
 
@@ -546,10 +524,6 @@ export class Field extends Component {
         statusComponent.init(row, col, statusType);
 
         const statusNode = statusComponent.node;
-        let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
-        let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
-
-        statusComponent.node.setPosition(posX, posY);
 
         statusNode.on("change", (row, col, statusId) => {
             this.spawnStatus(row, col, statusId);
@@ -566,6 +540,8 @@ export class Field extends Component {
 
         this.statusArray[row][col] = statusNode;
         this.statusLayout.addChild(statusNode);
+
+        this.node.emit("init_status", statusNode);
 
         return statusNode;
     }
@@ -1046,6 +1022,8 @@ export class Field extends Component {
                 }
             }
 
+            //this.node.emit("refresh", this.tileArray);
+
             if(this.isBonusPoolActivated) {
                 this.activateBonusByIndex(this.bonusIndex, true);
                 return;
@@ -1125,11 +1103,6 @@ export class Field extends Component {
                             let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
                             let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
 
-                            let posX = tileComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
-                            let posY = newRow * (this.tileSize + this.tileSpacing) + this.yOffset;
-                            posX = isDoubleWidth ? posX + this.tileSize / 2 : posX;
-                            posY = isDoubleHeight ? posY + this.tileSize / 2 : posY;
-
                             this.tileArray[newRow][col] = tile;
                             this.tileArray[row][col] = null;
 
@@ -1147,16 +1120,11 @@ export class Field extends Component {
                                 this.tileArray[row + 1][tileComponent.getCol() + 1] = null;
                                 this.tileArray[newRow + 1][tileComponent.getCol() + 1] = tile;
                             }
-                            
-                            cc.tween(tile)
-                                .to(this.fallTime, { position: new cc.Vec3(posX, posY, 0) })
-                                .call(() => {
-                                    if(isDoubleWidth) {
-                                        this.fallTiles();
-                                        return;
-                                    }
-                                })
-                                .start();
+
+                            if(isDoubleWidth) {
+                                this.fallTiles();
+                                return;
+                            }
                         }
                         else {
                             emptySpaces = 0;
@@ -1166,6 +1134,8 @@ export class Field extends Component {
                 }
             }
         }
+
+        this.node.emit("refresh", this.tileArray);
     }
 
 
@@ -1524,21 +1494,7 @@ export class Field extends Component {
         tileComp1.setCol(pos_2.y);
         tileComp2.setCol(pos_1.y);
 
-        let posX_1 = pos_2.y * (this.tileSize + this.tileSpacing) + this.xOffset;
-        let posY_1 = pos_2.x * (this.tileSize + this.tileSpacing) + this.yOffset;
-
-        let posX_2 = pos_1.y * (this.tileSize + this.tileSpacing) + this.xOffset;
-        let posY_2 = pos_1.x * (this.tileSize + this.tileSpacing) + this.yOffset;
-
-        cc.tween(this.tile1).stop();
-        cc.tween(this.tile2).stop();
-
-        cc.tween(tile1)
-            .to(this.swapTime, { position: new cc.Vec3(posX_1, posY_1, 0) })
-            .start();
-        cc.tween(tile2)
-            .to(this.swapTime, { position: new cc.Vec3(posX_2, posY_2, 0) })
-            .start();
+        this.node.emit("refresh", this.tileArray);
     }
 
 
