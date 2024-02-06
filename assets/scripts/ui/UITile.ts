@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('UITile')
 export class UITile extends Component {
 
-    private fallTime: number = 0.3;
+    private fallTime: number = 0.35;
     private destroyTime: number = 0.25;
 
     private isBlocked: boolean = false;
@@ -14,7 +14,7 @@ export class UITile extends Component {
 
 
     init(posX: number, posY: number) {
-        this.node.setPosition(posX, posY + this.node.height * 5);
+        this.node.setPosition(posX, posY + this.node.height * 7);
 
         this.currentX = posX;
         this.currentY = posY;
