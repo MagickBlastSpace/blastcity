@@ -48,7 +48,7 @@ export class BigSafe extends WashingMachine {
         this.open.active = !this.isClosed;
     }
 
-    startInActionEffect(field: Node[][]): boolean {
+    startPreActionEffect(field: Node[][]): boolean {
         if(this.isDamaged && this.isClosed) {
             this.isClosed = false;
         }

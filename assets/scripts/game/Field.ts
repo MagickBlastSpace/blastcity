@@ -721,6 +721,10 @@ export class Field extends Component {
                                 return;
                             }
 
+                            if(tileComp.isTileActivated()) {
+                                return;
+                            }
+
                             if(tileComp.getTileType() === "multi" || tileComp.getTileType() === "super") {
                                 let matches = tileComp.getMatches(this.tileArray, this.statusArray, true);
         
@@ -748,6 +752,10 @@ export class Field extends Component {
                         else {
                             this.scheduleOnce(() => {
                                 if(!tileComp || !tile) {
+                                    return;
+                                }
+
+                                if(tileComp.isTileActivated()) {
                                     return;
                                 }
 

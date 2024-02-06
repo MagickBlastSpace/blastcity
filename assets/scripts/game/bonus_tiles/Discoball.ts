@@ -36,6 +36,10 @@ export class Discoball extends BonusTileBase {
 
 
     getMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
+        if(this.isActivated) {
+            return;
+        }
+        
         let matches = [];
 
         if(this.isCombo()) {
