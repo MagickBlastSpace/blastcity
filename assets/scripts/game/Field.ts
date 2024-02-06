@@ -61,6 +61,7 @@ export class Field extends Component {
 
     private rocketPreset: string = "random";
     private dynamiteGoals: GoalData[] = [];
+    private cosmorocketGoals: GoalData[] = [];
 
     private isSuperDiscoballMode: boolean = false;
 
@@ -150,6 +151,20 @@ export class Field extends Component {
             this.setDefaultDynamiteGoals();
         }
 
+        this.cosmorocketGoals = [];
+        if(level.cosmorocketGoals !== null && level.cosmorocketGoals !== undefined) {
+            for(let i = 0; i < level.cosmorocketGoals.length; i++) {
+                let newGoal = new GoalData();
+                newGoal.id = level.cosmorocketGoals[i].id;
+                newGoal.count = level.cosmorocketGoals[i].count;
+
+                this.cosmorocketGoals.push(newGoal);
+            }
+        }
+        if(this.cosmorocketGoals.length < 5) {
+            this.setDefaultCosmorocketGoals();
+        }
+
         this.clearBoard();
 
         for (let row = 0; row < this.numRows; row++) {
@@ -212,6 +227,17 @@ export class Field extends Component {
             goal.id = "common";
             goal.count = 0;
             this.dynamiteGoals.push(goal);
+        }
+    }
+
+    setDefaultCosmorocketGoals() {
+        this.cosmorocketGoals = [];
+        let cosmoTypes = ["red", "blue", "green", "yellow", "purple"];
+        for(let i = 0; i < 5; i++) {
+            let goal = new GoalData();
+            goal.id = cosmoTypes[i];
+            goal.count = 0;
+            this.cosmorocketGoals.push(goal);
         }
     }
 
@@ -1637,6 +1663,10 @@ export class Field extends Component {
 
     getDynamiteGoals(): GoalData[] {
         return this.dynamiteGoals;
+    }
+
+    getCosmorocketGoals(): GoalData[] {
+        return this.cosmorocketGoals;
     }
 
 

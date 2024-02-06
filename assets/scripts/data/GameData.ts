@@ -59,6 +59,9 @@ export class LevelData {
 
     @property([GoalData])
     dynamiteGoals: GoalData[] = [];
+    @property([GoalData])
+    cosmorocketGoals: GoalData[] = [];
+
 
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
@@ -146,6 +149,18 @@ export class LevelData {
         }
         else {
             levelData.dynamiteGoals = [];
+        }
+
+        if (jsonData.cosmorocketGoals) {
+            levelData.cosmorocketGoals = jsonData.cosmorocketGoals.map((goal: any) => {
+                const goalData = new GoalData();
+                goalData.id = (goal.id || '').toLowerCase();
+                goalData.count = goal.count;
+                return goalData;
+            });
+        }
+        else {
+            levelData.cosmorocketGoals = [];
         }
     
         return levelData;

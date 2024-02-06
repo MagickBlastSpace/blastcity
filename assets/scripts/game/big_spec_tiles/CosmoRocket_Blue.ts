@@ -24,6 +24,15 @@ export class CosmoRocket_Blue extends CosmoRocket {
         };
 
         field.on("destroy", this.destroyTileCallback);
+
+        const fieldComp = field.getComponent("Field");
+
+        let goals = fieldComp.getCosmorocketGoals();
+        let curGoal = goals.find((goal) => goal.id === "blue");
+        
+        this.strength = curGoal.count === 0 ? this.strength : curGoal.count;
+
+        this.refresh();
     }
 
     destroyTile() {
