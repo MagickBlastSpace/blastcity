@@ -24,7 +24,9 @@ export class BigBottle extends BigTileBase {
     }
 
     startDestroyConsequences() {
-        this.node.emit("goal", "big_bottle");
+        this.node.emit("goal", "big_bottle"); //temp for version update
+
+        this.node.emit("goal", "big_duck");
     }
 
 

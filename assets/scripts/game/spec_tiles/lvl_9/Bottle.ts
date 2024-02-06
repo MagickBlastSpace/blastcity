@@ -22,7 +22,9 @@ export class Bottle extends SpecTileBase {
     }
 
     startDestroyConsequences() {
-        this.node.emit("goal", "bottle");
+        this.node.emit("goal", "bottle"); //temp fpr version update
+
+        this.node.emit("goal", "duck");
     }
 
 

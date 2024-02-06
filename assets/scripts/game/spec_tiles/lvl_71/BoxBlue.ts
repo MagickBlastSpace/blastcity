@@ -13,6 +13,12 @@ export class BoxBlue extends Box {
             this.setAsDamaged();
         }
     }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "box"); //temp for version update
+
+        this.node.emit("goal", "colored_box");
+    }
 }
 
 

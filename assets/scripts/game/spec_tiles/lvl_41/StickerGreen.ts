@@ -13,6 +13,12 @@ export class StickerGreen extends Sticker {
             this.setAsDamaged();
         }
     }
+    
+    startDestroyConsequences() {
+        this.node.emit("goal", "sticker"); //temp for version update
+
+        this.node.emit("goal", "colored_balloon");
+    }
 }
 
 
