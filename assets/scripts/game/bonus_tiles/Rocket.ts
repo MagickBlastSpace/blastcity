@@ -86,28 +86,13 @@ export class Rocket extends BonusTileBase {
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        const totalTime = this.respawnDelay / 2;
-        const timeStep = totalTime / 6;
+        this.rowExtraHit(field, this.row, this.col);
+        this.rowExtraHit(field, this.row + 1, this.col);
+        this.rowExtraHit(field, this.row - 1, this.col);
 
-        this.scheduleOnce(() => {
-            this.fastRowExtraHit(field, this.row, this.col);
-        }, timeStep * 0);
-        this.scheduleOnce(() => {
-            this.fastRowExtraHit(field, this.row + 1, this.col);
-        }, timeStep * 1);
-        this.scheduleOnce(() => {
-            this.fastRowExtraHit(field, this.row - 1, this.col);
-        }, timeStep * 2);
-
-        this.scheduleOnce(() => {
-            this.fastColExtraHit(field, this.row, this.col);
-        }, timeStep * 3);
-        this.scheduleOnce(() => {
-            this.fastColExtraHit(field, this.row, this.col + 1);
-        }, timeStep * 4);
-        this.scheduleOnce(() => {
-            this.fastColExtraHit(field, this.row, this.col - 1);
-        }, timeStep * 5);
+        this.colExtraHit(field, this.row, this.col);
+        this.colExtraHit(field, this.row, this.col + 1);
+        this.colExtraHit(field, this.row, this.col - 1);
 
         return matches;
     }

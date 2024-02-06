@@ -5,16 +5,22 @@ const { ccclass, property } = _decorator;
 export class UITile extends Component {
 
     private fallTime: number = 0.3;
-    private destroyTime: number = 0.15;
+    private destroyTime: number = 0.25;
 
     private isBlocked: boolean = false;
 
+    private currentX: number = -1;
+    private currentY: number = -1;
+
 
     init(posX: number, posY: number) {
-        this.node.setPosition(posX, posY + this.node.height);
+        this.node.setPosition(posX, posY + this.node.height * 5);
+
+        this.currentX = posX;
+        this.currentY = posY;
 
         tween(this.node)
-            .to(this.fallTime / 2, { position: new Vec3(posX, posY, 0) })
+            .to(this.fallTime, { position: new Vec3(posX, posY, 0) })
             .start();
 
         this.isBlocked = false;
@@ -25,6 +31,13 @@ export class UITile extends Component {
         if(this.isBlocked) {
             return;
         }
+
+        if(posX === this.currentX && posY === this.currentY) {
+            return;
+        }
+
+        this.currentX = posX;
+        this.currentY = posY;
         
         tween(this.node).stop();
 

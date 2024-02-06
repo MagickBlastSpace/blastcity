@@ -79,6 +79,11 @@ export class UILevelConstructor extends Component {
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
 
+                if(tiles[i][j] === undefined) {
+                    matrixString += "undefined --- ";
+                    continue;
+                }
+
                 if(tiles[i][j] === null) {
                     matrixString += "null --- ";
                     continue;

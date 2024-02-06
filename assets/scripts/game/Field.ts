@@ -55,7 +55,6 @@ export class Field extends Component {
 
     private fallTime: number = 0.3;
     private swapTime: number = 0.15;
-    private fallDelay: number = 0.18;
 
     private spawnTilesSchedule: Function = null;
     private isSpawnScheduled: boolean = false;
@@ -1009,27 +1008,51 @@ export class Field extends Component {
         this.checkStatusesForDestroy();
         this.checkSpecTilesPreActionEffect();
         this.fallTiles();
-    
-        this.scheduleOnce(() => {
-            if (this.checkSpecTilesForDestroy()) {
-                this.spawnNewTiles(isRespawn, isBlockingInactionEffect);
-                return;
+
+        if (this.checkSpecTilesForDestroy()) {
+            this.spawnNewTiles(isRespawn, isBlockingInactionEffect);
+            return;
+        }
+
+        this.node.emit("refresh", this.tileArray);
+
+        for (let col = 0; col < this.numCols; col++) {
+            let shouldSpawnNewTile = true;
+
+            for (let row = this.numRows - 1; row >= 0; row--) {
+                const tile = this.tileArray[row][col];
+                if (tile !== null) {
+                    const tileComponent = tile.getComponent("TileBase");
+
+                    if(tileComponent.getTileType() === "") {
+                        this.spawnCommonTile(row, col, "random");
+                        break;
+                    }
+
+                    if (!tileComponent.isTileShifts() || tileComponent.getRow() !== row || !this.isFallMovementAvailable(tileComponent.getRow(), tileComponent.getCol()) || this.bonusPool.includes(tile)) {
+                        shouldSpawnNewTile = false;
+                        break;
+                    }
+                }
+                if (tile === null && shouldSpawnNewTile) {
+                    this.spawnCommonTile(row, col, "random");
+                }
             }
-    
+        }
+
+        this.scheduleOnce(() => {
+
+            //buggy
             for (let col = 0; col < this.numCols; col++) {
-                let shouldSpawnNewTile = true;
-    
-                for (let row = this.numRows - 1; row >= 0; row--) {
+                for (let row = 0; row < this.numRows; row++) {
                     const tile = this.tileArray[row][col];
                     if (tile !== null) {
                         const tileComponent = tile.getComponent("TileBase");
-                        if (!tileComponent.isTileShifts() || tileComponent.getRow() !== row || !this.isFallMovementAvailable(tileComponent.getRow(), tileComponent.getCol()) || this.bonusPool.includes(tile)) {
-                            shouldSpawnNewTile = false;
+
+                        if(tileComponent.getTileType() === "") {
+                            this.spawnCommonTile(row, col, "random");
                             break;
                         }
-                    }
-                    if (tile === null && shouldSpawnNewTile) {
-                        this.spawnCommonTile(row, col, "random");
                     }
                 }
             }
@@ -1038,7 +1061,7 @@ export class Field extends Component {
                 this.activateBonusByIndex(this.bonusIndex, true);
                 return;
             }
-
+            
             if(!isRespawn || this.isBonusPoolActivated || this.bonusPool > 0) {
                 return;
             }
@@ -1047,11 +1070,9 @@ export class Field extends Component {
                 this.checkSpecTilesInActionEffect();
             }
             
-            this.scheduleOnce(() => {
-                this.checkForPotentialBonuses();
-            }, this.fallTime / 2);
+            this.checkForPotentialBonuses();
 
-        }, this.fallTime / 2);
+        }, this.fallTime);
     }
 
     scheduleRespawn(timeToRespawn: number, isBlockingInactionEffect: boolean) {
@@ -1144,8 +1165,6 @@ export class Field extends Component {
                 }
             }
         }
-
-        this.node.emit("refresh", this.tileArray);
     }
 
 
