@@ -1,5 +1,4 @@
 import { _decorator, Component, Node } from 'cc';
-import { UITile } from './UITile';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIField')
@@ -17,8 +16,6 @@ export class UIField extends Component {
 
     @property
     tileSize: number = 40;
-
-    private tileArray: UITile[][] = [];
 
 
     start() {
