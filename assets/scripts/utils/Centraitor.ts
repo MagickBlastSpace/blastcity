@@ -29,7 +29,7 @@ export class Centraitor extends Component {
         let leftEmptySpaces = this.countLeftEmptySpaces(field);
         let rightEmptySpaces = this.countRightEmptySpaces(field);
 
-        console.log(upperEmptySpaces + "-" + bottomEmptySpaces + "-" + leftEmptySpaces + "-" + rightEmptySpaces);
+        //console.log(upperEmptySpaces + "-" + bottomEmptySpaces + "-" + leftEmptySpaces + "-" + rightEmptySpaces);
 
         let moveY = (upperEmptySpaces - bottomEmptySpaces) * this.tileSize / 2;
         let moveX = (rightEmptySpaces - leftEmptySpaces) * this.tileSize / 2;

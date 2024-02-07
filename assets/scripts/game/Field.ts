@@ -68,6 +68,8 @@ export class Field extends Component {
     private savedVerticalRockets: Node[][] = [];
     private savedHorizontalRockets: Node[][] = [];
 
+    private levelCompletePoints: number = 0;
+
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -84,7 +86,7 @@ export class Field extends Component {
         this.spawnInitialBoard(GameData.instance.levels[0]);
 
         this.level.on("goal_complete_event", (goalId) => this.setGoalCompleteEvent(goalId));
-        this.level.on("all_goals_complete_event", (movesRemain) => this.completeLevel(movesRemain));
+        this.level.on("all_goals_complete_event", (movesRemain) => this.setLevelAsCompleted(movesRemain));
 
         this.boosters.node.on("extra_hit", (row, col, isBonusChain, delay) => {
             this.extraHit(row, col, isBonusChain, delay);
@@ -703,7 +705,7 @@ export class Field extends Component {
     }
 
     activateBonusByIndex(index: number, byOrder: boolean) {
-        if(index >= this.bonusPool.length || this.isLevelComplete) {
+        if(index >= this.bonusPool.length) {
             this.scheduleRespawn(this.fallTime, false);
             return;
         }
@@ -730,10 +732,6 @@ export class Field extends Component {
 
 
     extraHit(row: number, col: number, isBonusChain: boolean, delay: number) {
-        if(this.isLevelComplete) {
-            return;
-        }
-
         if(row > this.numRows - 1 || col > this.numCols - 1 || row < 0 || col < 0) {
             return;
         }
@@ -1353,6 +1351,10 @@ export class Field extends Component {
 
         if(isMatchesFound) {
             this.node.emit("move");
+
+            if(this.levelCompletePoints > 0) {
+                this.levelCompletePoints = this.levelCompletePoints - 1;
+            }
         }
     }
 
@@ -1448,6 +1450,9 @@ export class Field extends Component {
         else {
             if(!this.isLevelComplete && !this.isSpawnScheduled) {
                 this.isClickAvailable = true;
+            }
+            else if(this.isLevelComplete) {
+                this.completeLevel();
             }
         }
     }
@@ -1617,13 +1622,17 @@ export class Field extends Component {
     }
 
 
-    completeLevel(movesRemain: number) {
+    setLevelAsCompleted(moves: number) {
         this.isLevelComplete = true;
 
+        this.levelCompletePoints = moves;
+    }
+    
+    completeLevel() {
         const timeBetweenTiles = 0.2;
 
         const availableTiles = this.shuffleArray(this.getAllCommonTilesPositions());
-        const totalSpawns = availableTiles.length >= movesRemain ? movesRemain : availableTiles.length;
+        const totalSpawns = availableTiles.length >= this.levelCompletePoints ? this.levelCompletePoints : availableTiles.length;
         const totalTime =  timeBetweenTiles * totalSpawns + 0.2;
 
         for(let i = 0; i < totalSpawns; i++) {

@@ -234,7 +234,7 @@ export class GameData extends Component {
     
                 const levelData = GameData.parseLevelData(fileData);
                 this.levels.push(levelData);
-                console.log('Level data loaded:', fileName);
+                //console.log('Level data loaded:', fileName);
 
                 UserData.instance.setLevelsCount(this.levels.length);
             });
