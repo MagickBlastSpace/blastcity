@@ -34,11 +34,11 @@
         "__id__": 12
       },
       {
-        "__id__": 38
+        "__id__": 44
       }
     ],
     "_prefab": {
-      "__id__": 40
+      "__id__": 46
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -310,7 +310,7 @@
         "__id__": 19
       }
     ],
-    "rocketIcons": [
+    "verticalRocketIcons": [
       {
         "__id__": 20
       },
@@ -330,7 +330,7 @@
         "__id__": 25
       }
     ],
-    "bombIcons": [
+    "horizontalRocketIcons": [
       {
         "__id__": 26
       },
@@ -350,7 +350,7 @@
         "__id__": 31
       }
     ],
-    "discoballIcons": [
+    "bombIcons": [
       {
         "__id__": 32
       },
@@ -368,6 +368,26 @@
       },
       {
         "__id__": 37
+      }
+    ],
+    "discoballIcons": [
+      {
+        "__id__": 38
+      },
+      {
+        "__id__": 39
+      },
+      {
+        "__id__": 40
+      },
+      {
+        "__id__": 41
+      },
+      {
+        "__id__": 42
+      },
+      {
+        "__id__": 43
       }
     ],
     "potentialBonusIcon": {
@@ -431,7 +451,7 @@
     "__type__": "SpriteTileData",
     "id": "blue",
     "icon": {
-      "__uuid__": "3075ca17-33c4-41de-92bb-53770a96cd59@f9941",
+      "__uuid__": "8629e7b0-193a-4bd8-95b8-a45368ae6da5@f9941",
       "__expectedType__": "cc.SpriteFrame"
     }
   },
@@ -439,7 +459,7 @@
     "__type__": "SpriteTileData",
     "id": "red",
     "icon": {
-      "__uuid__": "65cccc08-c63e-416a-8bfc-e2cebf105c73@f9941",
+      "__uuid__": "4a8fd18e-be71-438b-b377-6f7134a226b2@f9941",
       "__expectedType__": "cc.SpriteFrame"
     }
   },
@@ -447,7 +467,7 @@
     "__type__": "SpriteTileData",
     "id": "green",
     "icon": {
-      "__uuid__": "a3c66b73-c71d-4cb7-9f6a-b1f7dfd830a8@f9941",
+      "__uuid__": "d2837064-8f7e-4572-ab5a-79404526b7f3@f9941",
       "__expectedType__": "cc.SpriteFrame"
     }
   },
@@ -455,7 +475,7 @@
     "__type__": "SpriteTileData",
     "id": "yellow",
     "icon": {
-      "__uuid__": "b67a1bf8-0a7e-4b30-9286-f0bfe20cf7c0@f9941",
+      "__uuid__": "6e603425-d500-4b47-b753-7b5bbc924f6c@f9941",
       "__expectedType__": "cc.SpriteFrame"
     }
   },
@@ -463,7 +483,7 @@
     "__type__": "SpriteTileData",
     "id": "purple",
     "icon": {
-      "__uuid__": "92b8f23e-b31c-483c-8ea3-830b9d793b9a@f9941",
+      "__uuid__": "5e77333c-947c-438a-a2a3-d7ea4321b1aa@f9941",
       "__expectedType__": "cc.SpriteFrame"
     }
   },
@@ -471,7 +491,55 @@
     "__type__": "SpriteTileData",
     "id": "orange",
     "icon": {
-      "__uuid__": "59656947-0b96-40e8-8aba-34dabc971b87@f9941",
+      "__uuid__": "2f6b73e9-48ef-4853-a3ff-e0c82f05d02e@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    }
+  },
+  {
+    "__type__": "SpriteTileData",
+    "id": "blue",
+    "icon": {
+      "__uuid__": "d9728968-fd85-4b38-8949-8220567817e8@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    }
+  },
+  {
+    "__type__": "SpriteTileData",
+    "id": "red",
+    "icon": {
+      "__uuid__": "b0cb7d4b-d525-42aa-a0bf-593b239bd05b@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    }
+  },
+  {
+    "__type__": "SpriteTileData",
+    "id": "green",
+    "icon": {
+      "__uuid__": "648287bc-1944-49c6-80dd-d9dbe9bd2f5e@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    }
+  },
+  {
+    "__type__": "SpriteTileData",
+    "id": "yellow",
+    "icon": {
+      "__uuid__": "a738655f-f3c6-4aff-a36d-668f29617a20@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    }
+  },
+  {
+    "__type__": "SpriteTileData",
+    "id": "purple",
+    "icon": {
+      "__uuid__": "320dbf34-6421-4093-b174-210fd83c1391@f9941",
+      "__expectedType__": "cc.SpriteFrame"
+    }
+  },
+  {
+    "__type__": "SpriteTileData",
+    "id": "orange",
+    "icon": {
+      "__uuid__": "f3706574-6fad-4205-a7d6-cda81556400a@f9941",
       "__expectedType__": "cc.SpriteFrame"
     }
   },
@@ -581,7 +649,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 39
+      "__id__": 45
     },
     "_id": ""
   },

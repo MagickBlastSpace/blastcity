@@ -22,7 +22,10 @@ export class Tile extends TileBase {
     commonIcons: SpriteTileData[] = [];
 
     @property([SpriteTileData])
-    rocketIcons: SpriteTileData[] = [];
+    verticalRocketIcons: SpriteTileData[] = [];
+
+    @property([SpriteTileData])
+    horizontalRocketIcons: SpriteTileData[] = [];
 
     @property([SpriteTileData])
     bombIcons: SpriteTileData[] = [];
@@ -147,8 +150,10 @@ export class Tile extends TileBase {
                 this.potentialBonusIcon.spriteFrame = this.bombIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
             case 'rocket_vertical':
+                this.potentialBonusIcon.spriteFrame = this.verticalRocketIcons.find(i => i.id === this.getTileType())?.icon;
+                break;
             case 'rocket_horizontal':
-                this.potentialBonusIcon.spriteFrame = this.rocketIcons.find(i => i.id === this.getTileType())?.icon;
+                this.potentialBonusIcon.spriteFrame = this.horizontalRocketIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
         }
     }

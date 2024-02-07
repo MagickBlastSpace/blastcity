@@ -65,6 +65,9 @@ export class Field extends Component {
 
     private isSuperDiscoballMode: boolean = false;
 
+    private savedVerticalRockets: Node[][] = [];
+    private savedHorizontalRockets: Node[][] = [];
+
 
     start() {
         for (let row = 0; row < this.numRows; row++) {
@@ -1371,6 +1374,9 @@ export class Field extends Component {
         let checkedTiles = [];
         let isMoveAvailable = false;
 
+        let updatedVerticalRockets: Node[][] = [];
+        let updatedHorizontalRockets: Node[][] = [];
+
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
@@ -1401,12 +1407,21 @@ export class Field extends Component {
                         }
                         else if(matches.length >= 5) {
                             if(this.rocketPreset === "random") {
-                                const tileType = Math.floor(Math.random() * 2);
+                                let tileType = Math.floor(Math.random() * 2);
+
+                                if (matches.every(tile => this.savedVerticalRockets.flat().includes(tile))) {
+                                    tileType = 0;
+                                } else if (matches.every(tile => this.savedHorizontalRockets.flat().includes(tile))) {
+                                    tileType = 1;
+                                }
+    
                                 if(tileType === 0) {
                                     this.setPotentialBonus(matches, "rocket_vertical");
+                                    updatedVerticalRockets.push(matches);
                                 }
                                 else {
                                     this.setPotentialBonus(matches, "rocket_horizontal");
+                                    updatedHorizontalRockets.push(matches);
                                 }
                             }
                             else {
@@ -1414,7 +1429,7 @@ export class Field extends Component {
                             }
                         }
 
-                        checkedTiles.concat(matches);
+                        checkedTiles = checkedTiles.concat(matches);
                     }
                     else {
                         checkedTiles.push(tile);
@@ -1422,6 +1437,9 @@ export class Field extends Component {
                 }
             }
         }
+
+        this.savedVerticalRockets = updatedVerticalRockets;
+        this.savedHorizontalRockets = updatedHorizontalRockets;
 
         if(!isMoveAvailable) {
             this.shuffleTiles();
