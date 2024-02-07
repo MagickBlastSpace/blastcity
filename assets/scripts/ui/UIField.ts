@@ -86,11 +86,15 @@ export class UIField extends Component {
 
                 let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
                 let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
+                let isTripleWidth = tileComponent.isSpecialTile() ? tileComponent.isTripleWidth() : false;
+                let isTripleHeight = tileComponent.isSpecialTile() ? tileComponent.isTripleHeight() : false;
 
                 let posX = tileComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
                 let posY = tileComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
                 posX = isDoubleWidth ? posX + this.tileSize / 2 : posX;
                 posY = isDoubleHeight ? posY + this.tileSize / 2 : posY;
+                posX = isTripleWidth ? posX + this.tileSize / 2 : posX;
+                posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
                 let tileUiComponent = tile.getComponent("UITile");
                 tileUiComponent.moveTo(posX, posY);
