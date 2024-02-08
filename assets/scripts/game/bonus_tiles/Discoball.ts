@@ -5,17 +5,19 @@ const { ccclass, property } = _decorator;
 @ccclass('Discoball')
 export class Discoball extends BonusTileBase {
 
-    @property(Node)
-    multi: Node = null;
-    @property(Node)
-    super: Node = null;
+    @property(SpriteFrame)
+    multi: SpriteFrame = null;
+    @property(SpriteFrame)
+    super: SpriteFrame = null;s
+
+    @property(Sprite)
+    icon: Sprite = null;
 
     
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
-        this.multi.active = this.tileType === 'multi';
-        this.super.active = this.tileType === 'super';
+        this.icon.spriteFrame = this.tileType === 'multi' ? this.multi : this.super;
     }
 
 
@@ -39,7 +41,7 @@ export class Discoball extends BonusTileBase {
         if(this.isActivated) {
             return;
         }
-        
+
         let matches = [];
 
         if(this.isCombo()) {
@@ -89,7 +91,7 @@ export class Discoball extends BonusTileBase {
         }
 
         return matches;
-    }
+    }s
 
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];

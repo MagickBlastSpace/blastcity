@@ -1,21 +1,23 @@
-import { _decorator, Component, Node, tween, Vec3 } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, SpriteFrame, Sprite } from 'cc';
 import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Rocket')
 export class Rocket extends BonusTileBase {
 
-    @property(Node)
-    rocketVertical: Node | null = null;
-    @property(Node)
-    rocketHorizontal: Node | Node = null;
+    @property(SpriteFrame)
+    rocketVertical: SpriteFrame = null;
+    @property(SpriteFrame)
+    rocketHorizontal: SpriteFrame = null;
+
+    @property(Sprite)
+    icon: Sprite = null;
 
     
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
-        this.rocketVertical.active = this.tileType === 'rocket_vertical';
-        this.rocketHorizontal.active = this.tileType === 'rocket_horizontal';
+        this.icon.spriteFrame = this.tileType === 'rocket_vertical' ? this.rocketVertical : this.rocketHorizontal;
     }
 
 

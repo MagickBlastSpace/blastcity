@@ -28,7 +28,7 @@ export class UILevel extends UIFrameBase {
     }
 
     refresh(movesCount: number) {
-        this.movesCount.string = "Moves: " + movesCount;
+        this.movesCount.string = movesCount;
     }
 
     refreshGoals(goals: GoalData[]) {

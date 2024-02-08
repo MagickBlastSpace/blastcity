@@ -1,12 +1,17 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Pump')
 export class Pump extends SpecTileBase {
 
-    @property(Node)
-    inactiveState: Node = null;
+    @property(SpriteFrame)
+    active: SpriteFrame = null;
+    @property(SpriteFrame)
+    inactive: SpriteFrame = null;
+
+    @property(Sprite)
+    icon: Sprite = null;
 
     private isInactive: boolean = false;
 
@@ -58,6 +63,8 @@ export class Pump extends SpecTileBase {
 
         this.isShifts = false;
         this.isGrouped = false;
+
+        this.icon.spriteFrame = this.active;
     }
 
     getDamage(damageType: string) {
@@ -95,7 +102,8 @@ export class Pump extends SpecTileBase {
 
     setInactiveState() {
         this.isInactive = true;
-        this.inactiveState.active = true;
+        
+        this.icon.spriteFrame = this.inactive;
     }
 }
 

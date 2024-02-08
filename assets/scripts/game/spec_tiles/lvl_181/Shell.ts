@@ -1,14 +1,17 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Shell')
 export class Shell extends SpecTileBase {
 
-    @property(Node)
-    closed: Node = null;
-    @property(Node)
-    open: Node = null;
+    @property(SpriteFrame)
+    open: SpriteFrame = null;
+    @property(SpriteFrame)
+    closed: SpriteFrame = null;
+
+    @property(Sprite)
+    icon: Sprite = null;
 
     private extraDamageAvailable: boolean = false;
 
@@ -37,8 +40,7 @@ export class Shell extends SpecTileBase {
     }
 
     refresh() {
-        this.closed.active = this.strength === 2;
-        this.open.active = this.strength < 2;
+        this.icon.spriteFrame = this.strength === 1 ? this.open : this.closed;
     }
 
     startDestroyConsequences() {

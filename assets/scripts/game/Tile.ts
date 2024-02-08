@@ -33,8 +33,8 @@ export class Tile extends TileBase {
     @property([SpriteTileData])
     discoballIcons: SpriteTileData[] = [];
 
-    @property(Sprite)
-    potentialBonusIcon: Sprite = null;
+    /*@property(Sprite)
+    potentialBonusIcon: Sprite = null;*/
 
     private potentialBonus: string = "";
 
@@ -144,16 +144,16 @@ export class Tile extends TileBase {
         this.potentialBonus = bonus;
         switch(bonus) {
             case 'discoball':
-                this.potentialBonusIcon.spriteFrame = this.discoballIcons.find(i => i.id === this.getTileType())?.icon;
+                this.icon.spriteFrame = this.discoballIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
             case 'bomb':
-                this.potentialBonusIcon.spriteFrame = this.bombIcons.find(i => i.id === this.getTileType())?.icon;
+                this.icon.spriteFrame = this.bombIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
             case 'rocket_vertical':
-                this.potentialBonusIcon.spriteFrame = this.verticalRocketIcons.find(i => i.id === this.getTileType())?.icon;
+                this.icon.spriteFrame = this.verticalRocketIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
             case 'rocket_horizontal':
-                this.potentialBonusIcon.spriteFrame = this.horizontalRocketIcons.find(i => i.id === this.getTileType())?.icon;
+                this.icon.spriteFrame = this.horizontalRocketIcons.find(i => i.id === this.getTileType())?.icon;
                 break;
         }
     }
@@ -164,7 +164,7 @@ export class Tile extends TileBase {
 
     clear() {
         this.potentialBonus = "";
-        this.potentialBonusIcon.spriteFrame = null;
+        this.icon.spriteFrame = this.commonIcons.find(i => i.id === this.getTileType())?.icon;
     }
 
 

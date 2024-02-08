@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec2 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIField')
@@ -48,7 +48,13 @@ export class UIField extends Component {
         posX = isTripleWidth ? posX + this.tileSize / 2 : posX;
         posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
-        tileUi.init(posX, posY);
+        let sizeX = isDoubleWidth ? this.tileSize * 2 : this.tileSize;
+        sizeX = isTripleWidth ? this.tileSize * 3 : sizeX;
+
+        let sizeY = isDoubleHeight ? this.tileSize * 2 : this.tileSize;
+        sizeY = isTripleHeight ? this.tileSize * 3 : sizeY;
+
+        tileUi.init(posX, posY, new Vec2(sizeX, sizeY));
     }
 
     initStatus(status: Node) {
@@ -62,7 +68,7 @@ export class UIField extends Component {
         let posX = statusComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        tileUi.init(posX, posY);
+        tileUi.init(posX, posY, new Vec2(this.tileSize, this.tileSize));
     }
 
     

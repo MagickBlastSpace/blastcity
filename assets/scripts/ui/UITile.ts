@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3 } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, Vec2 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('UITile')
@@ -13,7 +13,17 @@ export class UITile extends Component {
     private currentY: number = -1;
 
 
-    init(posX: number, posY: number) {
+    init(posX: number, posY: number, size: Vec2) {
+        let scaleFactorX = size.x / this.node.width;
+        let scaleFactorY = size.y / this.node.height;
+
+        this.node.width = size.x;
+        this.node.height = size.y;
+
+        if(scaleFactorX !== 1 && scaleFactorY !== 1) {
+            this.changeChildNodeSizesProportionally(scaleFactorX, scaleFactorY);
+        }
+
         this.node.setPosition(posX, posY + this.node.height * 7);
 
         this.currentX = posX;
@@ -58,6 +68,16 @@ export class UITile extends Component {
                 .call(() => this.node.destroy())
                 .start();
         }, delay);
+    }
+
+
+    changeChildNodeSizesProportionally(scaleFactorX: number, scaleFactorY: number) {
+        if (this.node) {
+            this.node.children.forEach(childNode => {
+                childNode.width *= scaleFactorX;
+                childNode.height *= scaleFactorY;
+            });
+        }
     }
 }
 

@@ -1,14 +1,19 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, SpriteFrame } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Lamp')
 export class Lamp extends SpecTileBase {
 
-    @property(Node)
-    hp: Node = null;
+    @property(SpriteFrame)
+    hp1: SpriteFrame = null;
+    @property(SpriteFrame)
+    hp2: SpriteFrame = null;
 
+    @property(Sprite)
+    icon: Sprite = null;
 
+    
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
@@ -35,7 +40,7 @@ export class Lamp extends SpecTileBase {
 
 
     refresh() {
-        this.hp.active = this.strength === 1;
+        this.icon.spriteFrame = this.strength === 1 ? this.hp1 : this.hp2;
     }
 
     startDestroyConsequences() {
