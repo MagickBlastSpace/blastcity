@@ -10,9 +10,9 @@ export class Tomb extends Coconut {
         this.isShifts = false;
     }
 
-    refresh() {
+    /*refresh() {
         this.hp.active = this.strength === 2;
-    }
+    }*/
 
     startDestroyConsequences() {
         this.node.emit("goal", "tomb");

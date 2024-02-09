@@ -10,14 +10,28 @@ export class BigFlask extends Soda {
     icons: Sprite[] = [];
 
     @property([SpriteTileData])
-    colorIcons: SpriteTileData[] = [];
+    colorIcons_1: SpriteTileData[] = [];
+    @property([SpriteTileData])
+    colorIcons_2: SpriteTileData[] = [];
+    @property([SpriteTileData])
+    colorIcons_3: SpriteTileData[] = [];
+    @property([SpriteTileData])
+    colorIcons_4: SpriteTileData[] = [];
+    @property([SpriteTileData])
+    colorIcons_5: SpriteTileData[] = [];
+    @property([SpriteTileData])
+    colorIcons_6: SpriteTileData[] = [];
+    @property([SpriteTileData])
+    colorIcons_7: SpriteTileData[] = [];
+    @property([SpriteTileData])
+    colorIcons_8: SpriteTileData[] = [];
 
     private availableColors: string[] = [];
     private currentColorIndex = 0;
 
     private isBlockingDamage: boolean = false;
 
-
+    
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
@@ -85,9 +99,14 @@ export class BigFlask extends Soda {
     refresh() {
         super.refresh();
 
-        for(let i = 0; i < this.icons.length; i++) {
-            this.icons[i].spriteFrame = this.colorIcons.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
-        }
+        this.icons[0].spriteFrame = this.colorIcons_1.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        this.icons[1].spriteFrame = this.colorIcons_2.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        this.icons[2].spriteFrame = this.colorIcons_3.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        this.icons[3].spriteFrame = this.colorIcons_4.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        this.icons[4].spriteFrame = this.colorIcons_5.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        this.icons[5].spriteFrame = this.colorIcons_6.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        this.icons[6].spriteFrame = this.colorIcons_7.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
+        this.icons[7].spriteFrame = this.colorIcons_8.find(i => i.id === this.availableColors[this.currentColorIndex])?.icon;
     }
 
 

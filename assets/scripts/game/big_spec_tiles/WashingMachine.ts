@@ -1,9 +1,25 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
 import { Jars } from './Jars';
 const { ccclass, property } = _decorator;
 
 @ccclass('WashingMachine')
 export class WashingMachine extends Jars {
+
+    @property(Sprite)
+    picture: Sprite = null;
+
+    @property(SpriteFrame)
+    hp5: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    hp4: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    hp3: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    hp2: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    hp1: SpriteFrame | null = null;
+
+
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
@@ -47,6 +63,26 @@ export class WashingMachine extends Jars {
 
     clearExtra() {
         this.isDamaged = false;
+    }
+
+    refresh() {
+        switch(this.strength) {
+            case 1:
+                this.picture.spriteFrame = this.hp1;
+                break;
+            case 2:
+                this.picture.spriteFrame = this.hp2;
+                break;
+            case 3:
+                this.picture.spriteFrame = this.hp3;
+                break;
+            case 4:
+                this.picture.spriteFrame = this.hp4;
+                break;
+            case 5:
+                this.picture.spriteFrame = this.hp5;
+                break;
+        }
     }
 }
 

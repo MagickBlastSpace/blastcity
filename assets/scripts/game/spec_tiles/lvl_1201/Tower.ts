@@ -1,12 +1,21 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Tower')
 export class Tower extends SpecTileBase {
 
-    @property([Node])
-    hpNodes: Node[] = [];
+    @property(Sprite)
+    picture: Sprite = null;
+
+    @property(SpriteFrame)
+    hp4: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    hp3: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    hp2: SpriteFrame | null = null;
+    @property(SpriteFrame)
+    hp1: SpriteFrame | null = null;
 
 
     init(row: number, col: number, tileType: string) {
@@ -35,8 +44,19 @@ export class Tower extends SpecTileBase {
 
 
     refresh() {
-        for(let i = 0; i < this.hpNodes.length; i++) {
-            this.hpNodes[i].active = this.strength > i;
+        switch(this.strength) {
+            case 1:
+                this.picture.spriteFrame = this.hp1;
+                break;
+            case 2:
+                this.picture.spriteFrame = this.hp2;
+                break;
+            case 3:
+                this.picture.spriteFrame = this.hp3;
+                break;
+            case 4:
+                this.picture.spriteFrame = this.hp4;
+                break;
         }
     }
 

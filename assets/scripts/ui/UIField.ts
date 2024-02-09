@@ -48,13 +48,7 @@ export class UIField extends Component {
         posX = isTripleWidth ? posX + this.tileSize / 2 : posX;
         posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
-        let sizeX = isDoubleWidth ? this.tileSize * 2 : this.tileSize;
-        sizeX = isTripleWidth ? this.tileSize * 3 : sizeX;
-
-        let sizeY = isDoubleHeight ? this.tileSize * 2 : this.tileSize;
-        sizeY = isTripleHeight ? this.tileSize * 3 : sizeY;
-
-        tileUi.init(posX, posY, new Vec2(sizeX, sizeY));
+        tileUi.init(posX, posY);
     }
 
     initStatus(status: Node) {
@@ -68,7 +62,7 @@ export class UIField extends Component {
         let posX = statusComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        tileUi.init(posX, posY, new Vec2(this.tileSize, this.tileSize));
+        tileUi.init(posX, posY);
     }
 
     

@@ -13,17 +13,7 @@ export class UITile extends Component {
     private currentY: number = -1;
 
 
-    init(posX: number, posY: number, size: Vec2) {
-        let scaleFactorX = size.x / this.node.width;
-        let scaleFactorY = size.y / this.node.height;
-
-        this.node.width = size.x;
-        this.node.height = size.y;
-
-        if(scaleFactorX !== 1 && scaleFactorY !== 1) {
-            this.changeChildNodeSizesProportionally(scaleFactorX, scaleFactorY);
-        }
-
+    init(posX: number, posY: number) {
         this.node.setPosition(posX, posY + this.node.height * 7);
 
         this.currentX = posX;

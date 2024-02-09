@@ -42,7 +42,13 @@ export class BigSafe extends WashingMachine {
     }
 
     refresh() {
-        super.refresh();
+        for(let i = 0; i < this.hps.length; i++) {
+            this.hps[i].active = false;
+        }
+
+        for(let i = 0; i < this.strength && i < this.hps.length; i++) {
+            this.hps[i].active = true;
+        }
 
         this.closed.active = this.isClosed;
         this.open.active = !this.isClosed;
