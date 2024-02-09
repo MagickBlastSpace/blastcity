@@ -700,7 +700,8 @@ export class Field extends Component {
         if (this.bonusPool.length > 0) {
             this.bonusIndex = 0;
             this.isBonusPoolActivated = true;
-            this.activateBonusByIndex(this.bonusIndex, true);
+
+            this.spawnNewTiles(false, true);
         }
     }
 
@@ -930,6 +931,10 @@ export class Field extends Component {
         let isBlockingCombo = !isRespawn || (this.isSuperDiscoballMode && choosenType === "multi");
         let matches = choosenTile.getMatches(this.tileArray, this.statusArray, isBlockingCombo);
         let isComboBonus = this.isComboBonus(choosenTile);
+
+        if(isComboBonus && (choosenType === "multi" || choosenType === "super")) {
+            this.bonusPool.push(tile);
+        }
 
         this.isClickAvailable = !isComboBonus;
         
