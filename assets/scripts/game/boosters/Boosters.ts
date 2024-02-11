@@ -18,7 +18,6 @@ export class Boosters extends Component {
     private availableBoosters = ["hammer", "cannon", "arrow"];
 
     private respawnDelay: number = 0.35;
-    private singleRespawnDelay: number = 0.1;
 
 
     start() {
@@ -76,7 +75,7 @@ export class Boosters extends Component {
 
     singleExtraHit(row: number, col: number) {
         this.node.emit("extra_hit", row, col, false);
-        this.node.emit("respawn", this.singleRespawnDelay);
+        this.node.emit("respawn", 0);
     }
     
     rowExtraHit(field: Node[][], row: number, col: number) {
@@ -88,7 +87,7 @@ export class Boosters extends Component {
             this.node.emit("extra_hit", row, j, true, totalTime / numCols * j);
         }
 
-        this.node.emit("respawn", this.respawnDelay);
+        this.node.emit("respawn", 0);
     }
 
     colExtraHit(field: Node[][], row: number, col: number) {
@@ -100,7 +99,7 @@ export class Boosters extends Component {
             this.node.emit("extra_hit", j, col, true, totalTime / numRows * j);
         }
 
-        this.node.emit("respawn", this.respawnDelay);
+        this.node.emit("respawn", 0);
     }
 }
 

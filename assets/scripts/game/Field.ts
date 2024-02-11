@@ -95,7 +95,7 @@ export class Field extends Component {
             this.scheduleRespawn(timeToRespawn, true);
         });
         this.boosters.node.on("shuffle", () => {
-            if(this.isClickAvailable) {
+            if(this.isClickAvailable && !this.isLevelComplete) {
                 this.shuffleTiles();
             }
         });
@@ -947,8 +947,6 @@ export class Field extends Component {
             return false;
         }
 
-        this.checkSpecTilesForDestroy();
-
         if(isCommon) {
             if(matches.length >= 9) {
                 this.spawnDiscoball(choosenRow, choosenCol);
@@ -1039,6 +1037,7 @@ export class Field extends Component {
 
     spawnNewTiles(isRespawn: boolean, isBlockingInactionEffect: boolean) {
         this.checkStatusesForDestroy();
+        this.checkSpecTilesForDestroy();
         this.checkSpecTilesPreActionEffect();
         this.fallTiles();
 

@@ -9,7 +9,7 @@ export class Frog extends Fish {
     }
 
 
-    startInActionEffect(field: Node[][]): boolean {
+    startPreActionEffect(field: Node[][]): boolean {
         if(this.isGenerate) {
             if(this.goalCount > 1) {
                 this.node.emit("status", "bubble");
