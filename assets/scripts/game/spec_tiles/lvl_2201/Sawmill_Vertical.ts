@@ -85,6 +85,13 @@ export class Sawmill_Vertical extends Sawmill {
 
         return tile;
     }
+
+
+    renderBorders(field: Node[][]) {}
+
+    renderRightBorder() {}
+
+    renderLeftBorder() {}
 }
 
 

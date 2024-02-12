@@ -13,6 +13,13 @@ export class Sawmill extends SpecTileBase {
     @property(SpriteFrame)
     log: SpriteFrame | null = null;
 
+    @property(Node)
+    leftBorder: Node = null;
+    @property(Node)
+    rightBorder: Node = null;
+
+    private isBorderRendered: boolean = false;
+
     private isGoalEventCreated: boolean = false;
 
 
@@ -45,6 +52,8 @@ export class Sawmill extends SpecTileBase {
         else {
             this.icon.spriteFrame = this.saw;
         }
+
+        this.renderBorders(fieldComp.getTilesArray());
     }
 
 
@@ -91,8 +100,13 @@ export class Sawmill extends SpecTileBase {
         }
         else {
             let logToCut = this.findRightLog(group);
+
             let tileComp = logToCut.getComponent("TileBase");
+            let logToUpdate = field[this.row][tileComp.getCol() - 1];
             this.node.emit("destroy_tile", tileComp.getRow(), tileComp.getCol());
+
+            let updateComp = logToUpdate.getComponent("Sawmill");
+            updateComp.renderRightBorder();
         }
 
         return true;
@@ -119,6 +133,71 @@ export class Sawmill extends SpecTileBase {
         }
 
         return tile;
+    }
+
+    findLeftLog(tiles: Node[]): Node {
+        let tile = tiles[0];
+        let colIndex = tile.getComponent("TileBase").getCol();
+        let previousColIndex = colIndex;
+
+        for(let i = 0; i < tiles.length; i++) {
+            let tileComp = tiles[i].getComponent("TileBase");
+            let newIndex = tileComp.getCol();
+            if(newIndex < colIndex) {
+                previousColIndex = colIndex;
+                colIndex = newIndex;
+            }
+        }
+
+        tile = tiles[colIndex];
+
+        return tile;
+    }
+
+
+    renderBorders(field: Node[][]) {
+        if(this.isBorderRendered) {
+            return;
+        }
+
+        let tiles = this.getGroupedTiles(field);
+
+        let rightBorder = this.findRightLog(tiles);
+        let leftBorder = this.findLeftLog(tiles);
+
+        if(rightBorder !== null) {
+            let comp = rightBorder.getComponent("Sawmill");
+            comp.renderRightBorder();
+        }
+
+        if(leftBorder !== null) {
+            let comp = leftBorder.getComponent("Sawmill");
+            comp.renderLeftBorder();
+        }
+
+        for(let i = 0; i < tiles.length; i++) {
+            if(tiles[i] !== null) {
+                let comp = tiles[i].getComponent("Sawmill");
+                comp.setAsRendered();
+            }
+        }
+    }
+
+    renderRightBorder() {
+        this.rightBorder.active = true;
+    }
+
+    renderLeftBorder() {
+        this.leftBorder.active = true;
+    }
+
+    setAsRendered() {
+        this.isBorderRendered = true;
+    }
+
+
+    refresh(field: Node[][]) {
+
     }
 }
 
