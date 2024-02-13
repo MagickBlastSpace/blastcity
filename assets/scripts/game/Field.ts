@@ -208,8 +208,6 @@ export class Field extends Component {
 
         this.subscribeAll(level.goals);
 
-        this.node.emit("sort_statuses", this.statusArray);
-
         this.spawnNewTiles(true, false);
         
         this.node.emit("level_init", level.movesCount, level.goals);

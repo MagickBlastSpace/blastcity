@@ -19,6 +19,8 @@ export class UIField extends Component {
 
     @property([Node])
     tilesLayouts: Node[] = [];
+    @property([Node])
+    statusLayouts: Node[] = [];
     @property(Node)
     tilesLayout: Node = null;
     @property(Node)
@@ -31,7 +33,6 @@ export class UIField extends Component {
         this.field.on("refresh", (tiles) => this.refresh(tiles));
         this.field.on("init_tile", (tile) => this.init(tile));
         this.field.on("init_status", (status) => this.initStatus(status));
-        this.field.on("sort_statuses", (statuses) => this.sortStatuses(statuses));
     }
 
 
@@ -74,10 +75,12 @@ export class UIField extends Component {
         const statusComponent = status.getComponent("StatusBase");
         const tileUi = status.getComponent("UITile");
 
+        let layout = statusComponent.getStatusType().split("_")[0] === "dynamite" ? this.statusLayout : this.statusLayouts[statusComponent.getRow()];
+
         let posX = statusComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        tileUi.init(posX, posY, this.statusLayout);
+        tileUi.init(posX, posY, layout);
     }
 
     
@@ -115,24 +118,6 @@ export class UIField extends Component {
 
                 let tileUiComponent = tile.getComponent("UITile");
                 tileUiComponent.moveTo(posX, posY, newLayout);
-            }
-        }
-    }
-
-
-    sortStatuses(statuses: Node[][]) {
-        const numRows: number = statuses.length;
-        const numCols: number = statuses.length > 0 ? statuses[0].length : 0;
-
-        for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
-                let status = statuses[i][j];
-                if(status !== null) {
-                    let statusComp = status.getComponent("StatusBase");
-                    if(statusComp.getStatusType().split("_")[0] === "dynamite") {
-                        status.setSiblingIndex(this.statusLayout.childrenCount - 1);
-                    }
-                }
             }
         }
     }
