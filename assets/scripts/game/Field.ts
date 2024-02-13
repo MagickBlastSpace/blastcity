@@ -25,11 +25,6 @@ export class Field extends Component {
     statusPrefabs: SpecialPrefabData[] = [];
 
     @property(Node)
-    tilesLayout: Node = null;
-    @property(Node)
-    statusLayout: Node = null;
-
-    @property(Node)
     level: Node = null;
     @property(Boosters)
     boosters: Boosters = null;
@@ -212,7 +207,8 @@ export class Field extends Component {
         }
 
         this.subscribeAll(level.goals);
-        this.sortStatuses();
+
+        this.node.emit("sort_statuses", this.statusArray);
 
         this.spawnNewTiles(true, false);
         
@@ -280,20 +276,6 @@ export class Field extends Component {
                 if(status !== null) {
                     let statusComp = status.getComponent("StatusBase");
                     statusComp.subscribeOnFieldEvents(this.node);
-                }
-            }
-        }
-    }
-
-    sortStatuses() {
-        for(let i = 0; i < this.numRows; i++) {
-            for(let j = 0; j < this.numCols; j++) {
-                let status = this.statusArray[i][j];
-                if(status !== null) {
-                    let statusComp = status.getComponent("StatusBase");
-                    if(statusComp.getStatusType().split("_")[0] === "dynamite") {
-                        status.setSiblingIndex(this.statusLayout.childrenCount - 1);
-                    }
                 }
             }
         }
@@ -543,8 +525,6 @@ export class Field extends Component {
             this.tileArray[row + 1][col + 2] = tileNode;
         }
 
-        this.tilesLayout.addChild(tileNode);
-
         this.node.emit("init_tile", tileNode);
 
         return tileNode;
@@ -569,7 +549,6 @@ export class Field extends Component {
         });
 
         this.statusArray[row][col] = statusNode;
-        this.statusLayout.addChild(statusNode);
 
         this.node.emit("init_status", statusNode);
 

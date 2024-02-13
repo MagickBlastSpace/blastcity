@@ -17,11 +17,21 @@ export class UIField extends Component {
     @property
     tileSize: number = 40;
 
+    @property([Node])
+    tilesLayouts: Node[] = [];
+    @property(Node)
+    tilesLayout: Node = null;
+    @property(Node)
+    emptyTilesLayout: Node = null;
+    @property(Node)
+    statusLayout: Node = null;
+
 
     start() {
         this.field.on("refresh", (tiles) => this.refresh(tiles));
         this.field.on("init_tile", (tile) => this.init(tile));
         this.field.on("init_status", (status) => this.initStatus(status));
+        this.field.on("sort_statuses", (statuses) => this.sortStatuses(statuses));
     }
 
 
@@ -32,6 +42,9 @@ export class UIField extends Component {
 
         const tileComponent = tile.getComponent("TileBase");
         const tileUi = tile.getComponent("UITile");
+
+        this.tilesLayout.addChild(tile);
+        let layout = tileComponent.isEmptyTile() ? this.emptyTilesLayout : this.tilesLayouts[tileComponent.getRow()];
 
         let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
         let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
@@ -48,7 +61,7 @@ export class UIField extends Component {
         posX = isTripleWidth ? posX + this.tileSize / 2 : posX;
         posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
-        tileUi.init(posX, posY);
+        tileUi.init(posX, posY, layout);
     }
 
     initStatus(status: Node) {
@@ -56,13 +69,15 @@ export class UIField extends Component {
             return;
         }
 
+        this.statusLayout.addChild(status);
+
         const statusComponent = status.getComponent("StatusBase");
         const tileUi = status.getComponent("UITile");
 
         let posX = statusComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        tileUi.init(posX, posY);
+        tileUi.init(posX, posY, this.statusLayout);
     }
 
     
@@ -79,6 +94,8 @@ export class UIField extends Component {
 
                 const tile = tiles[i][j];
                 let tileComponent = tile.getComponent("TileBase");
+
+                let newLayout = this.tilesLayouts[tileComponent.getRow()];
 
                 if(tileComponent.isEmptyTile()) {
                     continue;
@@ -97,7 +114,25 @@ export class UIField extends Component {
                 posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
                 let tileUiComponent = tile.getComponent("UITile");
-                tileUiComponent.moveTo(posX, posY);
+                tileUiComponent.moveTo(posX, posY, newLayout);
+            }
+        }
+    }
+
+
+    sortStatuses(statuses: Node[][]) {
+        const numRows: number = statuses.length;
+        const numCols: number = statuses.length > 0 ? statuses[0].length : 0;
+
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                let status = statuses[i][j];
+                if(status !== null) {
+                    let statusComp = status.getComponent("StatusBase");
+                    if(statusComp.getStatusType().split("_")[0] === "dynamite") {
+                        status.setSiblingIndex(this.statusLayout.childrenCount - 1);
+                    }
+                }
             }
         }
     }

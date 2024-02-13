@@ -35,6 +35,8 @@ export class Centraitor extends Component {
         let moveX = (rightEmptySpaces - leftEmptySpaces) * this.tileSize / 2;
 
         this.move(this.startPosition.x + moveX, this.startPosition.y + moveY);
+
+        this.node.emit("render_borders", field, upperEmptySpaces, rightEmptySpaces, bottomEmptySpaces, leftEmptySpaces);
     }
 
 

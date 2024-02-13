@@ -13,7 +13,7 @@ export class UITile extends Component {
     private currentY: number = -1;
 
 
-    init(posX: number, posY: number) {
+    init(posX: number, posY: number, layout: Node) {
         this.node.setPosition(posX, posY + this.node.height * 7);
 
         this.currentX = posX;
@@ -21,13 +21,14 @@ export class UITile extends Component {
 
         tween(this.node)
             .to(this.fallTime, { position: new Vec3(posX, posY, 0) })
+            .call(() => layout.addChild(this.node))
             .start();
 
         this.isBlocked = false;
     }
 
 
-    moveTo(posX: number, posY: number) {
+    moveTo(posX: number, posY: number, layout: Node) {
         if(this.isBlocked) {
             return;
         }
@@ -43,6 +44,7 @@ export class UITile extends Component {
 
         tween(this.node)
             .to(this.fallTime, { position: new Vec3(posX, posY, 0) })
+            .call(() => layout.addChild(this.node))
             .start();
     }
 
