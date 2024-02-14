@@ -627,18 +627,35 @@ export class Field extends Component {
 
         for (let row = 0; row < this.numRows; row++) {
             for (let col = 0; col < this.numCols; col++) {
-
-                let actualCol = row % 2 === 0 ? col : this.numCols - col - 1;
-
-                if(this.checkPositionForStatus(row, actualCol)) {
-                    let tile = this.tileArray[row][actualCol];
+                if(this.checkPositionForStatus(row, col)) {
+                    let tile = this.tileArray[row][col];
                     if(tile === null) {
-                        tiles.push(new Vec2(row, actualCol));
+                        tiles.push(new Vec2(row, col));
                     }
                     else {
                         const tileComp = tile.getComponent("TileBase");
                         if(tileComp.isCommonTile()) {
-                            tiles.push(new Vec2(row, actualCol));
+                            tiles.push(new Vec2(row, col));
+                        }
+                    }
+                }
+            }
+        }
+
+        return tiles;
+    }
+
+    getAllBonusTilesPositions(): Vec2[] {
+        let tiles = [];
+
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                if(this.checkPositionForStatus(row, col)) {
+                    let tile = this.tileArray[row][col];
+                    if(tile !== null) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.isBonusTile()) {
+                            tiles.push(new Vec2(row, col));
                         }
                     }
                 }
@@ -1579,7 +1596,7 @@ export class Field extends Component {
     shuffleTiles(): boolean {
         this.isClickAvailable = false;
 
-        let tilesPositions = this.getAllCommonTilesPositions();
+        let tilesPositions = this.shuffleArray(this.getAllCommonTilesPositions().concat(this.getAllBonusTilesPositions()));
         let swappedTiles = [];
 
         let swapsCount = 0;
