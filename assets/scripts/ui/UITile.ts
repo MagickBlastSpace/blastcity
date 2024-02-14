@@ -13,8 +13,9 @@ export class UITile extends Component {
     private currentY: number = -1;
 
 
-    init(posX: number, posY: number, layout: Node) {
-        this.node.setPosition(posX, posY + this.node.height * 7);
+    init(posX: number, posY: number, layout: Node, isStatus: boolean) {
+        let fallMultiplier = isStatus ? 1 : 7;
+        this.node.setPosition(posX, posY + this.node.height * fallMultiplier);
 
         this.currentX = posX;
         this.currentY = posY;

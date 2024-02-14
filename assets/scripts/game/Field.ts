@@ -523,7 +523,8 @@ export class Field extends Component {
             this.tileArray[row + 1][col + 2] = tileNode;
         }
 
-        this.node.emit("init_tile", tileNode);
+        let isStatusNode = this.statusArray[row][col] !== null;
+        this.node.emit("init_tile", tileNode, isStatusNode);
 
         return tileNode;
     }
@@ -1023,7 +1024,7 @@ export class Field extends Component {
             return;
         }
 
-        this.node.emit("refresh", this.tileArray);
+        this.node.emit("refresh", this.tileArray, this.statusArray);
 
         for (let col = 0; col < this.numCols; col++) {
             let shouldSpawnNewTile = true;
@@ -1552,7 +1553,7 @@ export class Field extends Component {
         tileComp1.setCol(pos_2.y);
         tileComp2.setCol(pos_1.y);
 
-        this.node.emit("refresh", this.tileArray);
+        this.node.emit("refresh", this.tileArray, this.statusArray);
     }
 
 

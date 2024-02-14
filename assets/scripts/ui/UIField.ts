@@ -30,13 +30,13 @@ export class UIField extends Component {
 
 
     start() {
-        this.field.on("refresh", (tiles) => this.refresh(tiles));
-        this.field.on("init_tile", (tile) => this.init(tile));
+        this.field.on("refresh", (tiles, statuses) => this.refresh(tiles, statuses));
+        this.field.on("init_tile", (tile, isStatus) => this.init(tile, isStatus));
         this.field.on("init_status", (status) => this.initStatus(status));
     }
 
 
-    init(tile: Node) {
+    init(tile: Node, isStatus: boolean) {
         if(tile === null) {
             return;
         }
@@ -46,6 +46,10 @@ export class UIField extends Component {
 
         this.tilesLayout.addChild(tile);
         let layout = tileComponent.isEmptyTile() ? this.emptyTilesLayout : this.tilesLayouts[tileComponent.getRow()];
+
+        if(isStatus) {
+            layout.addChild(tile);
+        }
 
         let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
         let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
@@ -62,7 +66,7 @@ export class UIField extends Component {
         posX = isTripleWidth ? posX + this.tileSize / 2 : posX;
         posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
-        tileUi.init(posX, posY, layout);
+        tileUi.init(posX, posY, layout, false);
     }
 
     initStatus(status: Node) {
@@ -80,11 +84,11 @@ export class UIField extends Component {
         let posX = statusComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        tileUi.init(posX, posY, layout);
+        tileUi.init(posX, posY, layout, true);
     }
 
     
-    refresh(tiles: Node[][]) {
+    refresh(tiles: Node[][], statuses: Node[][]) {
         const numRows: number = tiles.length;
         const numCols: number = tiles.length > 0 ? tiles[0].length : 0;
 
@@ -102,6 +106,10 @@ export class UIField extends Component {
 
                 if(tileComponent.isEmptyTile()) {
                     continue;
+                }
+
+                if(statuses[i][j] !== null) {
+                    newLayout.addChild(tile);
                 }
 
                 let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
