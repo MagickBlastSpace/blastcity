@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button } from 'cc';
+import { _decorator, Component, Node, Button, Label } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
@@ -14,9 +14,16 @@ export class UIStartFrame extends UIFrameBase {
     @property(Field)
     field: Field = null;
 
+    @property(Label)
+    levelLabel: Label = null;
+    @property(Label)
+    difficultyLabel: Label = null;
+
 
     start() {
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+
+        this.refresh();
     }
 
     onPlayBtnClick() {
@@ -28,6 +35,22 @@ export class UIStartFrame extends UIFrameBase {
         catch (error) {
             console.log(error);
         }
+    }
+
+
+    refresh() {
+        let levelData = GameData.instance.levels[UserData.instance.getProgress()];
+
+        let currentLevelNumber = UserData.instance.getProgress() + 1;
+        this.levelLabel.string = "Level " + currentLevelNumber;
+
+        this.difficultyLabel.string = "Difficulty\n" + levelData.difficulty;
+    }
+
+    show() {
+        super.show();
+
+        this.refresh();
     }
 }
 
