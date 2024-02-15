@@ -62,6 +62,9 @@ export class LevelData {
     @property([GoalData])
     cosmorocketGoals: GoalData[] = [];
 
+    @property
+    difficulty = '';
+
 
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
@@ -161,6 +164,12 @@ export class LevelData {
         }
         else {
             levelData.cosmorocketGoals = [];
+        }
+
+        if (jsonData.difficulty !== cc.undefined && jsonData.difficulty !== null) {
+            levelData.difficulty = jsonData.difficulty.toLowerCase();
+        } else {
+            levelData.difficulty = "common";
         }
     
         return levelData;
