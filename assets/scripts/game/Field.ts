@@ -1637,6 +1637,7 @@ export class Field extends Component {
         for(let i = 0; i < totalSpawns; i++) {
             this.scheduleOnce(() => {
                 this.spawnRandomRocket(availableTiles[i].x, availableTiles[i].y);
+                this.node.emit("move");
             }, timeBetweenTiles * i);
         }
 

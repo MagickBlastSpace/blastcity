@@ -19,6 +19,7 @@ export class Level extends Component {
     private coinsCollected: number = 0;
 
     private isInited: boolean = false;
+    private isComplete: boolean = false;
 
 
     start() {
@@ -79,6 +80,7 @@ export class Level extends Component {
         this.node.emit("refresh_goals", this.goals);
 
         this.isInited = true;
+        this.isComplete = false;
     }
 
 
@@ -133,6 +135,10 @@ export class Level extends Component {
 
 
     checkLevelStatus() {
+        if(this.isComplete) {
+            return;
+        }
+
         let isGoalsComplete = true;
 
         if(!this.isBonusLevel()) {
@@ -150,6 +156,8 @@ export class Level extends Component {
             UserData.instance.addProgress();
             let bonusesToSpawn = this.isBonusGoldAvailable() ? this.moves : 0;
             this.node.emit("all_goals_complete_event", bonusesToSpawn);
+
+            this.isComplete = true;
 
             return;
         }
