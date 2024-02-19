@@ -2,6 +2,7 @@ import { _decorator, Component, Node, instantiate, Prefab, Vec2, Vec3 } from 'cc
 import { GameData, GoalData, LevelData, SpecialPrefabData } from '../data/GameData';
 import { TileBase } from './TileBase';
 import { Boosters } from './boosters/Boosters';
+import { StartBonuses } from './boosters/StartBonuses';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -28,6 +29,8 @@ export class Field extends Component {
     level: Node = null;
     @property(Boosters)
     boosters: Boosters = null;
+    @property(StartBonuses)
+    startBonuses: StartBonuses = null;
 
     @property
     numRows: number = 8;
@@ -62,6 +65,8 @@ export class Field extends Component {
 
     private savedVerticalRockets: Node[][] = [];
     private savedHorizontalRockets: Node[][] = [];
+
+    private presetedNodes: Node[] = [];
 
     private levelCompletePoints: number = 0;
 
@@ -179,7 +184,7 @@ export class Field extends Component {
 
         for(let i = 0; i < level.specialTiles.length; i++) {
             if(this.availableColors.includes(level.specialTiles[i].id)) {
-                this.spawnCommonTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
+                this.presetedNodes.push(this.spawnCommonTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id));
             }
             else if(level.specialTiles[i].id === "rocket_horizontal" || level.specialTiles[i].id === "rocket_vertical") {
                 this.spawnRocket(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
@@ -257,6 +262,8 @@ export class Field extends Component {
                 }
             }
         }
+
+        this.presetedNodes = [];
     }
 
     subscribeAll(goals: GoalData[]) {
@@ -665,6 +672,21 @@ export class Field extends Component {
         return tiles;
     }
 
+    getUnpresetedCommonTilesPositions(): Vec2[] {
+        let commonTiles = this.getAllCommonTilesPositions();
+        let unpresetedCommonTiles = [];
+
+        for(let i = 0; i < commonTiles.length; i++) {
+            if(!this.presetedNodes.includes(this.tileArray[commonTiles[i].x][commonTiles[i].y])) {
+                if(this.tileArray[commonTiles[i].x][commonTiles[i].y] !== null) {
+                    unpresetedCommonTiles.push(commonTiles[i]);
+                }
+            }
+        }
+
+        return unpresetedCommonTiles;
+    }
+
 
     getAllTilesPositionsByType(tileType: string): Vec2[] {
         let tiles = [];
@@ -1067,6 +1089,10 @@ export class Field extends Component {
             }
         }
 
+        if(this.startBonuses.isStartBonusesAvailable()) {
+            this.tryToSpawnStartBonuses();
+        }
+
         this.scheduleOnce(() => {
 
             //buggy
@@ -1322,6 +1348,37 @@ export class Field extends Component {
                 }
             }
         }
+    }
+
+    tryToSpawnStartBonuses() {
+        let bonuses = this.startBonuses.getStartBonusPool();
+
+        if(bonuses.length <= 0) {
+            return;
+        }
+
+        let availablePositions = this.getUnpresetedCommonTilesPositions();
+        if(availablePositions.length < bonuses.length) {
+            return;
+        }
+
+        availablePositions = this.shuffleArray(availablePositions);
+
+        for(let i = 0; i < bonuses.length; i++) {
+            switch(bonuses[i]) {
+                case "rocket":
+                    this.spawnRandomRocket(availablePositions[i].x, availablePositions[i].y);
+                    break;
+                case "bomb":
+                    this.spawnBomb(availablePositions[i].x, availablePositions[i].y);
+                    break;
+                case "discoball":
+                    this.spawnDiscoball(availablePositions[i].x, availablePositions[i].y);
+                    break;
+            }
+        }
+
+        this.startBonuses.clear();
     }
 
     

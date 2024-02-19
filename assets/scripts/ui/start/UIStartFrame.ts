@@ -3,6 +3,7 @@ import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { Field } from '../../game/Field';
+import { StartBonuses } from '../../game/boosters/StartBonuses';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
