@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, EditBox, Button } from 'cc';
 import { Field } from '../../game/Field';
 import { LevelData } from '../../data/GameData';
+import { UIStartFrame } from '../start/UIStartFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelConstructor')
@@ -23,6 +24,9 @@ export class UILevelConstructor extends Component {
 
     @property(Field)
     field: Field = null;
+
+    @property(UIStartFrame)
+    startFrame: UIStartFrame = null;
 
 
     start() {
@@ -51,6 +55,8 @@ export class UILevelConstructor extends Component {
         try {
             const levelData = LevelData.fromJSON(this.inputField.string);
             this.field.spawnInitialBoard(levelData);
+
+            this.startFrame.hide();
         }
         catch (error) {
             this.inputField.string = error;
