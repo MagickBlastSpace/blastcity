@@ -3,6 +3,7 @@ import { GameData, GoalData, LevelData, SpecialPrefabData } from '../data/GameDa
 import { TileBase } from './TileBase';
 import { Boosters } from './boosters/Boosters';
 import { StartBonuses } from './boosters/StartBonuses';
+import { ButlersGift } from './boosters/ButlersGift';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -31,6 +32,8 @@ export class Field extends Component {
     boosters: Boosters = null;
     @property(StartBonuses)
     startBonuses: StartBonuses = null;
+    @property(ButlersGift)
+    butlersGift: ButlersGift = null;
 
     @property
     numRows: number = 8;
@@ -1089,9 +1092,8 @@ export class Field extends Component {
             }
         }
 
-        if(this.startBonuses.isStartBonusesAvailable()) {
-            this.tryToSpawnStartBonuses();
-        }
+        this.tryToSpawnStartBonuses();
+        this.tryToSpawnButlerBonuses();
 
         this.scheduleOnce(() => {
 
@@ -1351,6 +1353,10 @@ export class Field extends Component {
     }
 
     tryToSpawnStartBonuses() {
+        if(!this.startBonuses.isStartBonusesAvailable()) {
+            return;
+        }
+
         let bonuses = this.startBonuses.getStartBonusPool();
 
         if(bonuses.length <= 0) {
@@ -1379,6 +1385,41 @@ export class Field extends Component {
         }
 
         this.startBonuses.clear();
+    }
+
+    tryToSpawnButlerBonuses() {
+        if(!this.butlersGift.isGiftAvailable()) {
+            return;
+        }
+
+        let bonuses = this.butlersGift.getBonusPool();
+
+        if(bonuses.length <= 0) {
+            return;
+        }
+
+        let availablePositions = this.getUnpresetedCommonTilesPositions();
+        if(availablePositions.length < bonuses.length) {
+            return;
+        }
+
+        availablePositions = this.shuffleArray(availablePositions);
+
+        for(let i = 0; i < bonuses.length; i++) {
+            switch(bonuses[i]) {
+                case "rocket":
+                    this.spawnRandomRocket(availablePositions[i].x, availablePositions[i].y);
+                    break;
+                case "bomb":
+                    this.spawnBomb(availablePositions[i].x, availablePositions[i].y);
+                    break;
+                case "discoball":
+                    this.spawnDiscoball(availablePositions[i].x, availablePositions[i].y);
+                    break;
+            }
+        }
+
+        this.butlersGift.clear();
     }
 
     
