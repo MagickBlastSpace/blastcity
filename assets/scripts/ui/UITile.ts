@@ -57,7 +57,7 @@ export class UITile extends Component {
             tween(this.node).stop();
 
             tween(this.node)
-                .to(this.destroyTime, { scale: new Vec3(2.5, 2.5, 2.5) }, { easing: 'linear' })
+                .to(this.destroyTime, { scale: new Vec3(1.8, 1.8, 1.8) }, { easing: 'linear' })
                 .call(() => this.node.destroy())
                 .start();
         }, delay);
