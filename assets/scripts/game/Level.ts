@@ -8,6 +8,8 @@ export class Level extends Component {
     
     @property(Node)
     field: Node = null;
+    @property(Node)
+    movesShop: Node = null;
 
     private moves: number = 0;
     private maxGoals: number = 5;
@@ -28,6 +30,8 @@ export class Level extends Component {
         this.field.on("destroy", (tileType) => this.updateGoals(tileType));
         this.field.on("goal_inc", (tileType) => this.incrementGoal(tileType));
         this.field.on("complete", (goldEarned) => this.setLevelCompleteEvent(goldEarned));
+
+        this.movesShop.on("extra_moves", (movesCount) => this.addExtraMoves(movesCount));
     }
 
 
@@ -98,6 +102,13 @@ export class Level extends Component {
         }
 
         this.node.emit("refresh", this.moves);
+    }
+
+    addExtraMoves(movesCount: number) {
+        this.moves += movesCount;
+
+        this.node.emit("refresh", this.moves);
+        this.node.emit("extra");
     }
 
 

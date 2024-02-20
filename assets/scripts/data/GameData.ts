@@ -33,6 +33,23 @@ export class GoalData {
 }
 
 
+@ccclass('MovesShopStageData')
+export class MovesShopStageData {
+    @property
+    moves = 0;
+
+    @property
+    rockets = 0;
+    @property
+    bombs = 0;
+    @property
+    discoballs = 0;
+
+    @property
+    price = 0;
+}
+
+
 @ccclass('LevelData')
 export class LevelData {
     @property
