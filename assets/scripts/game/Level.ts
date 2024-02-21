@@ -22,6 +22,7 @@ export class Level extends Component {
 
     private isInited: boolean = false;
     private isComplete: boolean = false;
+    private isFailed: boolean = false;
 
 
     start() {
@@ -30,6 +31,7 @@ export class Level extends Component {
         this.field.on("destroy", (tileType) => this.updateGoals(tileType));
         this.field.on("goal_inc", (tileType) => this.incrementGoal(tileType));
         this.field.on("complete", (goldEarned) => this.setLevelCompleteEvent(goldEarned));
+        this.field.on("move_end", () => this.moveEndCallback());
 
         this.movesShop.on("extra_moves", (movesCount) => this.addExtraMoves(movesCount));
     }
@@ -85,6 +87,7 @@ export class Level extends Component {
 
         this.isInited = true;
         this.isComplete = false;
+        this.isFailed = false;
     }
 
 
@@ -104,7 +107,17 @@ export class Level extends Component {
         this.node.emit("refresh", this.moves);
     }
 
+    moveEndCallback() {
+        if(!this.isFailed) {
+            return;
+        }
+
+        this.node.emit("complete", false, 0);
+    }
+
     addExtraMoves(movesCount: number) {
+        this.isFailed = false;
+        
         this.moves += movesCount;
 
         this.node.emit("refresh", this.moves);
@@ -180,7 +193,8 @@ export class Level extends Component {
 
                 return;
             }
-            this.node.emit("complete", false, 0);
+
+            this.isFailed = true;
         }
     }
 

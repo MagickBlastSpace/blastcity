@@ -1555,6 +1555,8 @@ export class Field extends Component {
                 this.completeLevel();
             }
         }
+
+        this.node.emit("move_end");
     }
 
     setPotentialBonus(tiles: Node[], bonus: string) {
