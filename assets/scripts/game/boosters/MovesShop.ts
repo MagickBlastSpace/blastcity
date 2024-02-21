@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { MovesShopStageData } from '../../data/GameData';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('MovesShop')
@@ -47,7 +48,7 @@ export class MovesShop extends Component {
     buyStage(): boolean {
         let curData = this.getStageData();
 
-        //UserData.instance buy curData.price ret false
+        UserData.instance.subResource("gold", curData.price);
 
         for(let i = 0; i < curData.rockets; i++) {
             this.node.emit("activate", "rocket");

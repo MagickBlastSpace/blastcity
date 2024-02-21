@@ -8,6 +8,8 @@ export class UserData extends Component {
     private currentProgress: number = 0;
     private levelsCount: number = 0;
 
+    private Gold: number = 0;
+
     public static instance: UserData = null;
 
 
@@ -17,6 +19,9 @@ export class UserData extends Component {
     
     start() {
         this.currentProgress = 0;
+
+        this.Gold = 5000;
+        this.node.emit("resources_update", this.Gold);
     }
 
 
@@ -32,6 +37,27 @@ export class UserData extends Component {
 
     setLevelsCount(levelsCount: number) {
         this.levelsCount = levelsCount;
+    }
+
+
+    addResource(resourceType: string, value: number) {
+        switch(resourceType) {
+            case "gold":
+                this.Gold += value;
+                break;
+        }
+
+        this.node.emit("resources_update", this.Gold);
+    }
+
+    subResource(resourceType: string, value: number) {
+        switch(resourceType) {
+            case "gold":
+                this.Gold -= value;
+                break;
+        }
+
+        this.node.emit("resources_update", this.Gold);
     }
 }
 

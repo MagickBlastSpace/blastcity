@@ -117,7 +117,7 @@ export class Level extends Component {
 
     addExtraMoves(movesCount: number) {
         this.isFailed = false;
-        
+
         this.moves += movesCount;
 
         this.node.emit("refresh", this.moves);
@@ -202,6 +202,8 @@ export class Level extends Component {
     setLevelCompleteEvent(goldEarned: number) {
         let totalReward = this.isBonusGoldAvailable() ? (goldEarned * this.difficultyMultiplier + this.completionReward) : this.completionReward;
         totalReward = this.isBonusLevel() ? this.coinsCollected * this.difficultyMultiplier : totalReward;
+
+        UserData.instance.addResource("gold", totalReward);
 
         this.node.emit("complete", true, totalReward);
     }
