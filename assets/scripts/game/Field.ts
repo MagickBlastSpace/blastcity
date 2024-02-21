@@ -1376,10 +1376,18 @@ export class Field extends Component {
         for(let i = 0; i < bonuses.length; i++) {
             switch(bonuses[i]) {
                 case "rocket":
-                    this.spawnRandomRocket(availablePositions[i].x, availablePositions[i].y);
+                    let filteredRocketPositions = this.filterPositionsByRocketPattern(availablePositions);
+                    let rocketRow = filteredRocketPositions.length > i ? filteredRocketPositions[i].x : availablePositions[i].x;
+                    let rocketCol = filteredRocketPositions.length > i ? filteredRocketPositions[i].y : availablePositions[i].y;
+
+                    this.spawnRandomRocket(rocketRow, rocketCol);
                     break;
                 case "bomb":
-                    this.spawnBomb(availablePositions[i].x, availablePositions[i].y);
+                    let filteredBombPositions = this.filterPositionsByBombPattern(availablePositions);
+                    let bombRow = filteredBombPositions.length > i ? filteredBombPositions[i].x : availablePositions[i].x;
+                    let bombCol = filteredBombPositions.length > i ? filteredBombPositions[i].y : availablePositions[i].y;
+
+                    this.spawnBomb(bombRow, bombCol);
                     break;
                 case "discoball":
                     this.spawnDiscoball(availablePositions[i].x, availablePositions[i].y);
@@ -1423,6 +1431,74 @@ export class Field extends Component {
         }
 
         this.butlersGift.clear();
+    }
+
+    filterPositionsByRocketPattern(positions: Vec2[]): Vec2[] {
+        let filteredPositions = [];
+
+        for(let i = 0; i < positions.length; i++) {
+            let row = positions[i].x;
+            let col = positions[i].y;
+
+            let isVerticalPatternFound = false;
+            let isHorizontalPatternFound = false;
+
+            for(let j = 0; j < this.numCols; j++) {
+                if(this.tileArray[row][j] !== null) {
+                    let tileComp = this.tileArray[row][j].getComponent("TileBase");
+                    if(tileComp.isSpecialTile()) {
+                        isVerticalPatternFound = true;
+                    }
+                }
+            }
+
+            for(let j = 0; j < this.numRows; j++) {
+                if(this.tileArray[j][col] !== null) {
+                    let tileComp = this.tileArray[j][col].getComponent("TileBase");
+                    if(tileComp.isSpecialTile()) {
+                        isHorizontalPatternFound = true;
+                    }
+                }
+            }
+
+            if(isVerticalPatternFound && isHorizontalPatternFound) {
+                filteredPositions.push(positions[i]);
+            }
+        }
+
+        return filteredPositions;
+    }
+
+    filterPositionsByBombPattern(positions: Vec2[]): Vec2[] {
+        let filteredPositions = [];
+
+        for(let i = 0; i < positions.length; i++) {
+            let row = positions[i].x;
+            let col = positions[i].y;
+
+            let isBombPatternFound = false;
+
+            for(let i = row - 1; i <= row + 1; i++) {
+                for(let j = col - 1; j <= col + 1; j++) {
+                    if(isBombPatternFound || i < 0 || i >= this.numRows || j < 0 || j >= this.numCols) {
+                        continue;
+                    }
+
+                    if(this.tileArray[i][j] !== null) {
+                        let tileComp = this.tileArray[i][j].getComponent("TileBase");
+                        if(tileComp.isSpecialTile()) {
+                            isBombPatternFound = true;
+                        }
+                    }
+                }
+            }
+
+            if(isBombPatternFound) {
+                filteredPositions.push(positions[i]);
+            }
+        }
+
+        return filteredPositions;
     }
 
     
