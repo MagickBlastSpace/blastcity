@@ -24,7 +24,7 @@ export class MovesShop extends Component {
     }
 
     addStageProgress() {
-        if(!this.isMovesShopAvailable()) {
+        if(this.currentStage >= this.stages.length - 1) {
             return;
         }
 

@@ -88,6 +88,8 @@ export class Level extends Component {
         this.isInited = true;
         this.isComplete = false;
         this.isFailed = false;
+
+        this.checkLevelStatus();
     }
 
 
