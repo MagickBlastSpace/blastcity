@@ -14,6 +14,16 @@ export class SpecialTileData {
     col = 0;
 }
 
+@ccclass('SpecialTileStateData')
+export class SpecialTileStateData {
+    @property
+    row = 0;
+    @property
+    col = 0;
+    @property
+    strength = 0;
+}
+
 
 @ccclass('SpecialPrefabData')
 export class SpecialPrefabData {
@@ -191,6 +201,59 @@ export class LevelData {
     
         return levelData;
     }
+
+
+    toJSON(): string {
+        const json = {
+            id: this.id,
+            emptyTiles: this.emptyTiles.map(coord => ({ x: coord.x, y: coord.y })),
+            specialTiles: this.specialTiles.map(tile => ({
+                id: tile.id,
+                row: tile.row,
+                col: tile.col
+            })),
+            statuses: this.statuses.map(tile => ({
+                id: tile.id,
+                row: tile.row,
+                col: tile.col
+            })),
+            destroyedOnStart: this.destroyedOnStart.map(coord => ({ x: coord.x, y: coord.y })),
+            startPool: this.startPool.map(item => item.toLowerCase()),
+            spawnPools: this.spawnPools.map(pool => pool.map(color => color.toLowerCase())),
+            goals: this.goals.map(goal => ({
+                id: goal.id,
+                count: goal.count
+            })),
+            movesCount: this.movesCount,
+            rocketPreset: this.rocketPreset.toLowerCase(),
+            dynamiteGoals: this.dynamiteGoals.map(goal => ({
+                id: goal.id,
+                count: goal.count
+            })),
+            cosmorocketGoals: this.cosmorocketGoals.map(goal => ({
+                id: goal.id,
+                count: goal.count
+            })),
+            difficulty: this.difficulty.toLowerCase()
+        };
+
+        return JSON.stringify(json);
+    }
+}
+
+
+@ccclass('LevelProgressData')
+export class LevelProgressData {
+    @property
+    levelId = 0;
+
+    @property
+    moves = 0;
+
+    @property(LevelData)
+    levelState: LevelData = null;
+    @property([SpecialTileStateData])
+    specsState: SpecialTileStateData[] = [];
 }
 
 
@@ -250,13 +313,13 @@ export class GameData extends Component {
                 return aName.localeCompare(bName);
             });
 
-            console.log(assets.length);
+            //console.log(assets.length);
     
             assets.forEach((asset: cc.TextAsset) => {
                 const fileData = asset.text;
                 const fileName = asset.name;
 
-                console.log(fileData);
+                //console.log(fileData);
     
                 const levelData = GameData.parseLevelData(fileData);
                 this.levels.push(levelData);

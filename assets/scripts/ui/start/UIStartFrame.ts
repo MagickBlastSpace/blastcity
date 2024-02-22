@@ -3,7 +3,7 @@ import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { Field } from '../../game/Field';
-import { StartBonuses } from '../../game/boosters/StartBonuses';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -22,6 +22,8 @@ export class UIStartFrame extends UIFrameBase {
 
 
     start() {
+        SaveData.instance.node.on("user_data", () => this.refresh());
+
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
         this.refresh();
@@ -40,12 +42,13 @@ export class UIStartFrame extends UIFrameBase {
 
 
     refresh() {
+        console.log("user data refresh");
         let levelData = GameData.instance.levels[UserData.instance.getProgress()];
 
         let currentLevelNumber = UserData.instance.getProgress() + 1;
         this.levelLabel.string = "Level " + currentLevelNumber;
 
-        this.difficultyLabel.string = "Difficulty\n" + levelData.difficulty;
+        this.difficultyLabel.string = levelData ? "Difficulty\n" + levelData.difficulty : "Difficulty\nCommon";
     }
 
     show() {

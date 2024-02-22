@@ -51,8 +51,13 @@ export class StartBonuses extends Component {
         return this.startBonusPool.length > 0;
     }
 
+
     getStartBonusPool(): string[] {
         return this.startBonusPool;
+    }
+
+    setStartBonusPool(pool: string[]) {
+        this.startBonusPool = pool;
     }
 }
 

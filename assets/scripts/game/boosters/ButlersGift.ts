@@ -59,6 +59,18 @@ export class ButlersGift extends Component {
         return this.streak;
     }
 
+    setStreak(streak: number) {
+        this.streak = streak;
+    }
+
+    getIsGifted(): boolean {
+        return this.isGifted;
+    }
+
+    setIsGifted(isGifted: boolean) {
+        this.isGifted = isGifted;
+    }
+
     getMaxStreak(): number {
         return this.maxStreak;
     }
