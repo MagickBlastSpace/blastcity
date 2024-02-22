@@ -60,6 +60,20 @@ export class SmallSafe extends SpecTileBase {
     startDestroyConsequences() {
         this.node.emit("goal", "small_safe");
     }
+
+
+    getStrength(): number {
+        if(this.isClosed) {
+            return 1;
+        }
+        return 0;
+    }
+
+    setStrength(strength: number) {
+        this.isClosed = strength === 1;
+
+        this.refresh();
+    }
 }
 
 

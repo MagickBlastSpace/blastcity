@@ -68,6 +68,17 @@ export class Flask extends Sticker {
     startDestroyConsequences() {
         this.node.emit("goal", "flask");
     }
+
+
+    getStrength(): number {
+        return this.currentColorIndex;
+    }
+
+    setStrength(strength: number) {
+        this.currentColorIndex = strength;
+
+        this.refresh();
+    }
 }
 
 

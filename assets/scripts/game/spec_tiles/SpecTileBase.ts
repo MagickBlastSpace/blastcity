@@ -212,6 +212,19 @@ export class SpecTileBase extends TileBase {
 
         return tiles;
     }
+
+
+    getStrength(): number {
+        return this.strength;
+    }
+
+    setStrength(strength: number) {
+        this.strength = strength;
+
+        this.refresh();
+    }
+
+    refresh() {}
 }
 
 
