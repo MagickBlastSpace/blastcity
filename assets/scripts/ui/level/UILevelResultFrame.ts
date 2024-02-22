@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Label, Button } from 'cc';
 import { UIStartFrame } from '../start/UIStartFrame';
 import { UIFrameBase } from '../UIFrameBase';
 import { UILevelMovesShop } from './UILevelMovesShop';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -42,6 +43,8 @@ export class UILevelResultFrame extends UIFrameBase {
     }
 
     onPlayBtnClick() {
+        SaveData.instance.clearLevelProgress();
+        
         this.startFrame.show();
 
         this.hide();

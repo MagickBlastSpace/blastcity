@@ -4,6 +4,7 @@ import { TileBase } from './TileBase';
 import { Boosters } from './boosters/Boosters';
 import { StartBonuses } from './boosters/StartBonuses';
 import { ButlersGift } from './boosters/ButlersGift';
+import { SaveData } from '../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -86,7 +87,7 @@ export class Field extends Component {
 
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
 
-        this.spawnInitialBoard(GameData.instance.levels[0]);
+        //this.spawnInitialBoard(GameData.instance.levels[0]);
 
         this.level.on("goal_complete_event", (goalId) => this.setGoalCompleteEvent(goalId));
         this.level.on("all_goals_complete_event", (movesRemain) => this.setLevelAsCompleted(movesRemain));
@@ -107,6 +108,8 @@ export class Field extends Component {
         });
 
         this.isSuperDiscoballMode = false;
+
+        SaveData.instance.node.on("level_progress_loaded", (level) => this.spawnInitialBoard(level));
     }
 
 
@@ -126,9 +129,14 @@ export class Field extends Component {
         }
 
         this.resetSpawnPools();
-        this.spawnPools = level.spawnPools;
-        if(this.spawnPools.length < this.numCols - 1) {
-            this.resetSpawnPools();
+        this.spawnPools = [];
+        if(level.spawnPools) {
+            if(level.spawnPools.length < this.numCols - 1) {
+                this.resetSpawnPools();
+            }
+            else {
+                this.spawnPools = level.spawnPools;
+            }
         }
         else {
             for(let i = 0; i < this.spawnPools.length; i++) {
@@ -184,40 +192,55 @@ export class Field extends Component {
             }
         }
 
-        for(let i = 0; i < level.emptyTiles.length; i++) {
-            this.spawnEmptyTile(level.emptyTiles[i].y, level.emptyTiles[i].x);
-        }
-
-        for(let i = 0; i < level.specialTiles.length; i++) {
-            if(this.availableColors.includes(level.specialTiles[i].id)) {
-                this.presetedNodes.push(this.spawnCommonTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id));
-            }
-            else if(level.specialTiles[i].id === "rocket_horizontal" || level.specialTiles[i].id === "rocket_vertical") {
-                this.spawnRocket(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
-            }
-            else if(level.specialTiles[i].id === "bomb") {
-                this.spawnBomb(level.specialTiles[i].row, level.specialTiles[i].col);
-            }
-            else if(level.specialTiles[i].id === "rocket") {
-                this.spawnRandomRocket(level.specialTiles[i].row, level.specialTiles[i].col);
-            }
-            else if(level.specialTiles[i].id === "discoball" || level.specialTiles[i].id.split("_")[0] === "discoball") {
-                this.spawnDiscoball(level.specialTiles[i].row, level.specialTiles[i].col);
-            }
-            else {
-                this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
+        if(level.emptyTiles) {
+            for(let i = 0; i < level.emptyTiles.length; i++) {
+                this.spawnEmptyTile(level.emptyTiles[i].y, level.emptyTiles[i].x);
             }
         }
-
-        for(let i = 0; i < level.statuses.length; i++) {
-            this.spawnStatus(level.statuses[i].row, level.statuses[i].col, level.statuses[i].id);
+        
+        if(level.specialTiles) {
+            for(let i = 0; i < level.specialTiles.length; i++) {
+                if(this.availableColors.includes(level.specialTiles[i].id)) {
+                    this.presetedNodes.push(this.spawnCommonTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id));
+                }
+                else if(level.specialTiles[i].id === "rocket_horizontal" || level.specialTiles[i].id === "rocket_vertical") {
+                    this.spawnRocket(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
+                }
+                else if(level.specialTiles[i].id === "bomb") {
+                    this.spawnBomb(level.specialTiles[i].row, level.specialTiles[i].col);
+                }
+                else if(level.specialTiles[i].id === "rocket") {
+                    this.spawnRandomRocket(level.specialTiles[i].row, level.specialTiles[i].col);
+                }
+                else if(level.specialTiles[i].id === "discoball" || level.specialTiles[i].id.split("_")[0] === "discoball") {
+                    this.spawnDiscoball(level.specialTiles[i].row, level.specialTiles[i].col);
+                }
+                else {
+                    this.spawnSpecialTile(level.specialTiles[i].row, level.specialTiles[i].col, level.specialTiles[i].id);
+                }
+            }
         }
-
-        for(let i = 0; i < level.destroyedOnStart.length; i++) {
-            this.destroyTile(level.destroyedOnStart[i].y, level.destroyedOnStart[i].x, true);
+        
+        if(level.statuses) {
+            for(let i = 0; i < level.statuses.length; i++) {
+                this.spawnStatus(level.statuses[i].row, level.statuses[i].col, level.statuses[i].id);
+            }
         }
-
+        
         this.subscribeAll(level.goals);
+
+        if(level.destroyedOnStart) {
+            for(let i = 0; i < level.destroyedOnStart.length; i++) {
+                let row = level.destroyedOnStart[i].y;
+                let col = level.destroyedOnStart[i].x;
+                if(this.tileArray[row][col]) {
+                    let tileComp = this.tileArray[row][col].getComponent("TileBase");
+                    if(tileComp.isCommonTile()) {
+                        this.destroyTile(row, col, true);
+                    }
+                }
+            }
+        }
 
         this.spawnNewTiles(true, false);
         
@@ -1130,6 +1153,8 @@ export class Field extends Component {
             
             this.checkForPotentialBonuses();
 
+            SaveData.instance.saveLevelProgressData();
+
         }, this.fallTime);
     }
 
@@ -1874,6 +1899,18 @@ export class Field extends Component {
 
     getCosmorocketGoals(): GoalData[] {
         return this.cosmorocketGoals;
+    }
+
+    getStartSpawnPool(): string[] {
+        return this.startPool;
+    }
+
+    getSpawnPools(): string[][] {
+        return this.spawnPools;
+    }
+
+    getRocketPreset(): string {
+        return this.rocketPreset;
     }
 
 

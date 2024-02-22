@@ -1,5 +1,4 @@
 import { _decorator, Component, Node, Vec2, Prefab } from 'cc';
-import { Field } from '../game/Field';
 import { UserData } from './UserData';
 const { ccclass, property } = _decorator;
 
@@ -245,15 +244,9 @@ export class LevelData {
 @ccclass('LevelProgressData')
 export class LevelProgressData {
     @property
-    levelId = 0;
-
-    @property
-    moves = 0;
-
-    @property(LevelData)
-    levelState: LevelData = null;
-    @property([SpecialTileStateData])
-    specsState: SpecialTileStateData[] = [];
+    levelStateJson = '';
+    /*@property([SpecialTileStateData])
+    specsState: SpecialTileStateData[] = [];*/
 }
 
 

@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Label } from 'cc';
 import { GoalData } from '../../data/GameData';
 import { UILevelGoal } from './UILevelGoal';
 import { UIFrameBase } from '../UIFrameBase';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevel')
@@ -21,10 +22,11 @@ export class UILevel extends UIFrameBase {
 
 
     start() {
-        this.level.on("refresh", (movesCount: number) => this.refresh(movesCount));
-        this.level.on("refresh_goals", (goals: GoalData[]) => this.refreshGoals(goals));
+        this.level.on("refresh", () => this.refreshAll());
 
         this.level.on("complete", (isSuccess: boolean, goldEarned: number) => this.showResult(isSuccess, goldEarned));
+
+        SaveData.instance.node.on("level_progress_loaded", () => this.refreshAll());
     }
 
     refresh(movesCount: number) {
@@ -42,6 +44,13 @@ export class UILevel extends UIFrameBase {
                 this.goalItems[i].refresh(goalData);
             }
         }
+    }
+
+    refreshAll() {
+        let levelComp = this.level.getComponent("Level");
+
+        this.refresh(levelComp.getMoves());
+        this.refreshGoals(levelComp.getGoals());
     }
 
     showResult(isSuccess: boolean, goldEarned: number) {

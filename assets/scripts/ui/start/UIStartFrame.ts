@@ -23,10 +23,13 @@ export class UIStartFrame extends UIFrameBase {
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
+        SaveData.instance.node.on("level_progress_loaded", () => this.hide());
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
         this.refresh();
+
+        SaveData.instance.loadLevelProgressData();
     }
 
     onPlayBtnClick() {
@@ -42,7 +45,6 @@ export class UIStartFrame extends UIFrameBase {
 
 
     refresh() {
-        console.log("user data refresh");
         let levelData = GameData.instance.levels[UserData.instance.getProgress()];
 
         let currentLevelNumber = UserData.instance.getProgress() + 1;

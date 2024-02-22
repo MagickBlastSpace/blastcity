@@ -15,10 +15,6 @@ export class UILevelGoal extends Component {
     @property([SpriteTileData])
     icons: SpriteTileData[] = [];
 
-
-    onLoad() {
-        this.node.active = false;
-    }
     
     refresh(goal: GoalData) {
         if(goal.id === "common") {

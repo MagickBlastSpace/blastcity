@@ -2,6 +2,7 @@ import { _decorator, Component, Node, EditBox, Button } from 'cc';
 import { Field } from '../../game/Field';
 import { LevelData } from '../../data/GameData';
 import { UIStartFrame } from '../start/UIStartFrame';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelConstructor')
@@ -20,6 +21,9 @@ export class UILevelConstructor extends Component {
     superDiscoOffBtn: Button = null;
 
     @property(Button)
+    clearLevelSaveBtn: Button = null;
+
+    @property(Button)
     showMatrixBtn: Button = null;
 
     @property(Field)
@@ -35,6 +39,8 @@ export class UILevelConstructor extends Component {
 
         this.superDiscoOnBtn.node.on(Button.EventType.CLICK, this.onSuperDiscoOnBtnClick, this);
         this.superDiscoOffBtn.node.on(Button.EventType.CLICK, this.onSuperDiscoOffBtnClick, this);
+
+        this.clearLevelSaveBtn.node.on(Button.EventType.CLICK, this.clearLevelSave, this);
 
         this.showMatrixBtn.node.on(Button.EventType.CLICK, this.onShowMatrixBtnClick, this);
     }
@@ -73,6 +79,10 @@ export class UILevelConstructor extends Component {
 
     onShowMatrixBtnClick() {
         this.inputField.string = this.readMatrix(this.field.getTilesArray());
+    }
+
+    clearLevelSave() {
+        SaveData.instance.clearLevelProgress();
     }
 
 

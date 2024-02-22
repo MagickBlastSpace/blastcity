@@ -1,6 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
 import { GoalData, LevelData } from '../data/GameData';
 import { UserData } from '../data/UserData';
+import { SaveData } from '../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Level')
@@ -82,8 +83,7 @@ export class Level extends Component {
             this.goals.push(newGoal);
         }
 
-        this.node.emit("refresh", this.moves);
-        this.node.emit("refresh_goals", this.goals);
+        this.node.emit("refresh");
 
         this.isInited = true;
         this.isComplete = false;
@@ -130,7 +130,7 @@ export class Level extends Component {
         if(goal !== null && goal !== undefined) {
             if(goal.count > 0) {
                 goal.count--;
-                this.node.emit("refresh_goals", this.goals);
+                this.node.emit("refresh");
 
                 if(goal.count === 0) {
                     this.setGoalCompleteEvent(goal.id);
@@ -149,7 +149,7 @@ export class Level extends Component {
         const goal = this.goals.find(g => g.id === tileType);
         if(goal !== null && goal !== undefined) {
             goal.count++;
-            this.node.emit("refresh_goals", this.goals);
+            this.node.emit("refresh");
         }
     }
 
@@ -205,6 +205,8 @@ export class Level extends Component {
 
         UserData.instance.addResource("gold", totalReward);
 
+        SaveData.instance.clearLevelProgress();
+
         this.node.emit("complete", true, totalReward);
     }
 
@@ -215,6 +217,19 @@ export class Level extends Component {
 
     isBonusLevel(): boolean {
         return this.difficulty === "bonus";
+    }
+
+
+    getGoals(): GoalData[] {
+        return this.goals;
+    }
+
+    getMoves(): number {
+        return this.moves;
+    }
+
+    getDifficulty(): string {
+        return this.difficulty;
     }
 }
 
