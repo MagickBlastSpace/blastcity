@@ -56,6 +56,7 @@ export class SaveData extends Component {
 
         let fieldComp = this.field.getComponent("Field");
         let levelComp = this.level.getComponent("Level");
+        let movesShopComp = this.movesShop.getComponent("MovesShop");
 
         levelState.emptyTiles = this.getEmptyTilesData(fieldComp.getTilesArray());
         levelState.specialTiles = this.getTilesData(fieldComp.getTilesArray());
@@ -71,6 +72,7 @@ export class SaveData extends Component {
         levelState.goals = levelComp.getGoals();
         levelState.movesCount = levelComp.getMoves();
         levelState.difficulty = levelComp.getDifficulty();
+        levelState.movesShopStage = movesShopComp.getCurrentStage();
 
         levelProgressData.levelId = UserData.instance.getProgress();
         levelProgressData.levelState = levelState.toJSON();
@@ -189,9 +191,53 @@ export class SaveData extends Component {
 
 
     //Start Bonuses
+    saveStartBonusesData() {
+        let startBonusesComp = this.startBonuses.getComponent("StartBonuses");
+
+        let startBonusesData = {
+            bonuses: startBonusesComp.getStartBonusPool()
+        };
+        
+        cc.sys.localStorage.setItem('startBonuses', JSON.stringify(startBonusesData));
+    }
+
+
+    loadStartBonusesData() {
+        var startBonusesData = JSON.parse(cc.sys.localStorage.getItem('startBonuses'));
+
+        if (startBonusesData) {
+            let startBonusesComp = this.startBonuses.getComponent("StartBonuses");
+            startBonusesComp.setStartBonusPool(startBonusesData.bonuses);
+        } else {
+            console.log("No saved start bonuses data found");
+        }
+    }
 
 
     //Butler's Gift
+    saveButlersGiftData() {
+        let butlersGiftComp = this.butlersGift.getComponent("ButlersGift");
+
+        let butlersGiftData = {
+            streak: butlersGiftComp.getStreak(),
+            isGifted: butlersGiftComp.getIsGifted()
+        };
+        
+        cc.sys.localStorage.setItem('butlersGift', JSON.stringify(butlersGiftData));
+    }
+
+
+    loadButlersGiftData() {
+        var butlersGiftData = JSON.parse(cc.sys.localStorage.getItem('butlersGift'));
+
+        if (butlersGiftData) {
+            let butlersGiftComp = this.butlersGift.getComponent("ButlersGift");
+            butlersGiftComp.setStreak(butlersGiftData.streak);
+            butlersGiftComp.setIsGifted(butlersGiftData.isGifted);
+        } else {
+            console.log("No saved butlers gift data found");
+        }
+    }
 
 
     //Statistics Data

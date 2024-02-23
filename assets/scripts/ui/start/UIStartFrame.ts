@@ -30,6 +30,8 @@ export class UIStartFrame extends UIFrameBase {
         this.refresh();
 
         SaveData.instance.loadLevelProgressData();
+        SaveData.instance.loadStartBonusesData();
+        SaveData.instance.loadButlersGiftData();
     }
 
     onPlayBtnClick() {

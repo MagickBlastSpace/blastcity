@@ -1,4 +1,5 @@
 import { _decorator, Component, Node } from 'cc';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('ButlersGift')
@@ -12,10 +13,9 @@ export class ButlersGift extends Component {
 
     private isGifted: boolean = false;
 
-
+    
     start() {
         this.level.on("complete", (isWin) => this.updateProgress(isWin));
-        this.isGifted = false;
     }
 
 
@@ -30,6 +30,8 @@ export class ButlersGift extends Component {
         this.isGifted = false;
 
         this.node.emit("refresh", this.streak);
+
+        SaveData.instance.saveButlersGiftData();
     }
 
     getBonusPool(): string[] {
@@ -61,6 +63,8 @@ export class ButlersGift extends Component {
 
     setStreak(streak: number) {
         this.streak = streak;
+
+        this.node.emit("refresh", this.streak);
     }
 
     getIsGifted(): boolean {
@@ -78,6 +82,8 @@ export class ButlersGift extends Component {
 
     clear() {
         this.isGifted = true;
+
+        SaveData.instance.saveButlersGiftData();
     }
 }
 

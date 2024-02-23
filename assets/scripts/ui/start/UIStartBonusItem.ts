@@ -24,7 +24,7 @@ export class UIStartBonusItem extends Component {
     onLoad() {
         this.node.on(cc.Node.EventType.TOUCH_END, this.onClick, this);
 
-        this.startBonuses.on("refresh", (activeBonuses) => this.refresh(activeBonuses))
+        this.startBonuses.on("refresh", (activeBonuses) => this.refresh(activeBonuses));
     }
 
     start() {

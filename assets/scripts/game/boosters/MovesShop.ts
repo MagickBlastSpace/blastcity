@@ -1,6 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
-import { MovesShopStageData } from '../../data/GameData';
+import { LevelData, MovesShopStageData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('MovesShop')
@@ -16,11 +17,11 @@ export class MovesShop extends Component {
 
 
     start() {
-        this.field.on("level_init", (level) => this.init());
+        this.field.on("level_init", (level) => this.init(level));
     }
 
-    init() {
-        this.currentStage = 0;
+    init(level: LevelData) {
+        this.currentStage = level.movesShopStage;
     }
 
     addStageProgress() {
@@ -65,6 +66,15 @@ export class MovesShop extends Component {
         this.addStageProgress();
 
         return true;
+    }
+
+
+    getCurrentStage(): number {
+        return this.currentStage;
+    }
+
+    setCurrentStage(stage: number) {
+        this.currentStage = stage;
     }
 }
 

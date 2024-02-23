@@ -1,4 +1,5 @@
 import { _decorator, Component, Node } from 'cc';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('StartBonuses')
@@ -13,14 +14,16 @@ export class StartBonuses extends Component {
     private startBonusPool: string[] = [];
 
 
+    onLoad() {
+        this.startBonusPool = [];
+    }
+
     start() {
         for(let i = 0; i < this.bonuses.length; i++) {
             this.bonuses[i].on("activate", (bonusName) => this.activateBonus(bonusName));
         }
 
         this.movesShop.on("activate", (bonusName) => this.activateBonusFromShop(bonusName));
-
-        this.clear();
     }
 
 
@@ -33,10 +36,14 @@ export class StartBonuses extends Component {
         }
 
         this.node.emit("refresh", this.startBonusPool);
+
+        SaveData.instance.saveStartBonusesData();
     }
 
     activateBonusFromShop(bonusName: string) {
         this.startBonusPool.push(bonusName);
+
+        SaveData.instance.saveStartBonusesData();
     }
 
 
@@ -44,6 +51,8 @@ export class StartBonuses extends Component {
         this.startBonusPool = [];
 
         this.node.emit("refresh", this.startBonusPool);
+
+        SaveData.instance.saveStartBonusesData();
     }
 
 
@@ -58,6 +67,8 @@ export class StartBonuses extends Component {
 
     setStartBonusPool(pool: string[]) {
         this.startBonusPool = pool;
+
+        this.node.emit("refresh", this.startBonusPool);
     }
 }
 

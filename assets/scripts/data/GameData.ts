@@ -91,6 +91,9 @@ export class LevelData {
     @property
     difficulty = '';
 
+    @property
+    movesShopStage = 0;
+
 
     static fromJSON(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
@@ -197,6 +200,12 @@ export class LevelData {
         } else {
             levelData.difficulty = "common";
         }
+
+        if (jsonData.movesShopStage !== cc.undefined && jsonData.movesShopStage !== null) {
+            levelData.movesShopStage = Number(jsonData.movesShopStage);
+        } else {
+            levelData.movesShopStage = 0;
+        }
     
         return levelData;
     }
@@ -233,7 +242,8 @@ export class LevelData {
                 id: goal.id,
                 count: goal.count
             })),
-            difficulty: this.difficulty.toLowerCase()
+            difficulty: this.difficulty.toLowerCase(),
+            movesShopStage: this.movesShopStage
         };
 
         return JSON.stringify(json);
