@@ -139,6 +139,17 @@ export class DynamiteWall extends StatusBase {
     setRespawnEvent(timeToRespawn: number) {
         this.node.emit("respawn", timeToRespawn);
     }
+
+
+    setCustomParameter(index: number) {
+        this.strength = index;
+
+        this.refresh();
+    }
+
+    getCustomParameter(): number {
+        return this.strength;
+    }
 }
 
 

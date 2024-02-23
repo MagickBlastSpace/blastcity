@@ -68,6 +68,7 @@ export class SaveData extends Component {
         levelState.statuses = this.getStatusData(fieldComp.getStatusArray());
         levelState.destroyedOnStart = this.getDestroyedTilesData(fieldComp.getTilesArray());
         levelState.specsState = this.getSpecTilesStateData(fieldComp.getTilesArray());
+        levelState.statusesState = this.getStatusesStateData(fieldComp.getStatusArray());
 
         levelState.startPool = fieldComp.getStartSpawnPool();
         levelState.spawnPools = fieldComp.getSpawnPools();
@@ -223,6 +224,31 @@ export class SaveData extends Component {
 
                         tilesData.push(specData);
                     }
+                }
+            }
+        }
+
+        return tilesData;
+    }
+
+    getStatusesStateData(statuses: Node[][]): SpecialTileStateData[] {
+        let tilesData = [];
+
+        const numRows: number = statuses.length;
+        const numCols: number = statuses.length > 0 ? statuses[0].length : 0;
+
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                if(statuses[i][j] !== null) {
+                    let statusComp = statuses[i][j].getComponent("StatusBase");
+
+                    let specData = new SpecialTileStateData();
+                    specData.row = statusComp.getRow();
+                    specData.col = statusComp.getCol();
+
+                    specData.customParameter = statusComp.getCustomParameter();
+
+                    tilesData.push(specData);
                 }
             }
         }

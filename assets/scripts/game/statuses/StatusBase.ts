@@ -111,6 +111,13 @@ export class StatusBase extends Component {
 
         return statuses;
     }
+
+
+    setCustomParameter(index: number) {}
+
+    getCustomParameter(): number {
+        return 0;
+    }
 }
 
 

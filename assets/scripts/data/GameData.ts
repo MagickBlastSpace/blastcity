@@ -110,6 +110,8 @@ export class LevelData {
     movesShopStage = 0;
     @property([SpecialTileStateData])
     specsState: SpecialTileStateData[] = [];
+    @property([SpecialTileStateData])
+    statusesState: SpecialTileStateData[] = [];
 
 
 
@@ -243,6 +245,19 @@ export class LevelData {
         else {
             levelData.specsState = [];
         }
+
+        if (jsonData.statusesState) {
+            levelData.statusesState = jsonData.statusesState.map((specialTile: any) => {
+                const tileData = new SpecialTileStateData();
+                tileData.row = specialTile.row;
+                tileData.col = specialTile.col;
+                tileData.customParameter = specialTile.customParameter;
+                return tileData;
+            });
+        }
+        else {
+            levelData.statusesState = [];
+        }
     
         return levelData;
     }
@@ -292,6 +307,11 @@ export class LevelData {
                 strengthPurple: tile.strengthPurple,
                 customParameter: tile.customParameter
             })),
+            statusesState: this.statusesState.map(tile => ({
+                row: tile.row,
+                col: tile.col,
+                customParameter: tile.customParameter
+            }))
         };
 
         return JSON.stringify(json);

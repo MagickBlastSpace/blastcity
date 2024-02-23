@@ -87,8 +87,6 @@ export class Field extends Component {
 
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
 
-        //this.spawnInitialBoard(GameData.instance.levels[0]);
-
         this.level.on("goal_complete_event", (goalId) => this.setGoalCompleteEvent(goalId));
         this.level.on("all_goals_complete_event", (movesRemain) => this.setLevelAsCompleted(movesRemain));
         this.level.on("extra", () => {
@@ -251,6 +249,12 @@ export class Field extends Component {
                 this.restoreSpecTilesState(level.specsState);
             }, this.fallTime);
         }
+
+        if(level.statusesState) {
+            this.scheduleOnce(() => {
+                this.restoreStatusesState(level.statusesState);
+            }, this.fallTime);
+        }
         
         this.node.emit("level_init", level);
         this.node.emit("centrate", this.tileArray);
@@ -272,6 +276,16 @@ export class Field extends Component {
 
                     tileComp.setCustomParameter(specs[i].customParameter);
                 }
+            }
+        }
+    }
+
+    restoreStatusesState(statuses: SpecialTileStateData[]) {
+        for(let i = 0; i < statuses.length; i++) {
+            let status = this.statusArray[statuses[i].row][statuses[i].col];
+            if(status) {
+                let statusComp = status.getComponent("StatusBase");
+                statusComp.setCustomParameter(statuses[i].customParameter);
             }
         }
     }
