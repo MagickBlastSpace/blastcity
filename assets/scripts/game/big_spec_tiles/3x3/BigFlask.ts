@@ -119,6 +119,17 @@ export class BigFlask extends Soda {
     clearExtra() {
         this.isBlockingDamage = false;
     }
+
+
+    getCustomParameter(): number {
+        return this.currentColorIndex;
+    }
+
+    setCustomParameter(index: number) {
+        this.currentColorIndex = index;
+
+        this.refresh();
+    }
 }
 
 

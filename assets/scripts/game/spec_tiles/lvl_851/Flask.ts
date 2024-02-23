@@ -70,12 +70,12 @@ export class Flask extends Sticker {
     }
 
 
-    getStrength(): number {
+    getCustomParameter(): number {
         return this.currentColorIndex;
     }
 
-    setStrength(strength: number) {
-        this.currentColorIndex = strength;
+    setCustomParameter(index: number) {
+        this.currentColorIndex = index;
 
         this.refresh();
     }

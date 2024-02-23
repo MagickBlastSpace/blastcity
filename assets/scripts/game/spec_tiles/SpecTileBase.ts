@@ -224,6 +224,42 @@ export class SpecTileBase extends TileBase {
         this.refresh();
     }
 
+    getStrengthRed(): number {
+        return 0;
+    }
+
+    getStrengthBlue(): number {
+        return 0;
+    }
+
+    getStrengthGreen(): number {
+        return 0;
+    }
+
+    getStrengthYellow(): number {
+        return 0;
+    }
+
+    getStrengthPurple(): number {
+        return 0;
+    }
+
+    getCustomParameter(): number {
+        return 0;
+    }
+
+    setStrengthRed(strength: number) {}
+
+    setStrengthBlue(strength: number) {}
+
+    setStrengthGreen(strength: number) {}
+
+    setStrengthYellow(strength: number) {}
+
+    setStrengthPurple(strength: number) {}
+
+    setCustomParameter(index: number) {}
+
     refresh() {}
 }
 

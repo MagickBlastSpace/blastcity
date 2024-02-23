@@ -71,6 +71,20 @@ export class BigSafe extends WashingMachine {
             this.isDamaged = false;
         }
     }
+
+
+    getCustomParameter(): number {
+        if(this.isClosed) {
+            return 1;
+        }
+        return 0;
+    }
+
+    setCustomParameter(index: number) {
+        this.isClosed = index === 1;
+
+        this.refresh();
+    }
 }
 
 

@@ -92,6 +92,48 @@ export class Vent extends SpecTileBase {
     clearExtra() {
         this.isDamaged = false;
     }
+
+
+    getStrengthRed(): number {
+        return this.strengthRed;
+    }
+
+    getStrengthBlue(): number {
+        return this.strengthBlue;
+    }
+
+    getStrengthGreen(): number {
+        return this.strengthGreen;
+    }
+
+    getStrengthYellow(): number {
+        return this.strengthYellow;
+    }
+
+
+    setStrengthRed(strength: number) {
+        this.strengthRed = strength;
+
+        this.refresh();
+    }
+
+    setStrengthBlue(strength: number) {
+        this.strengthBlue = strength;
+
+        this.refresh();
+    }
+
+    setStrengthGreen(strength: number) {
+        this.strengthGreen = strength;
+
+        this.refresh();
+    }
+
+    setStrengthYellow(strength: number) {
+        this.strengthYellow = strength;
+
+        this.refresh();
+    }
 }
 
 

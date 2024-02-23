@@ -62,15 +62,15 @@ export class SmallSafe extends SpecTileBase {
     }
 
 
-    getStrength(): number {
+    getCustomParameter(): number {
         if(this.isClosed) {
             return 1;
         }
         return 0;
     }
 
-    setStrength(strength: number) {
-        this.isClosed = strength === 1;
+    setCustomParameter(index: number) {
+        this.isClosed = index === 1;
 
         this.refresh();
     }

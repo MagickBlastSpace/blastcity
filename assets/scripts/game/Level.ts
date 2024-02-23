@@ -188,6 +188,10 @@ export class Level extends Component {
     }
 
     updateStats(tileType: string) {
+        if(!this.stats) {
+            return;
+        }
+        
         switch(tileType) {
             case "red":
                 this.stats.redDestroyed++;

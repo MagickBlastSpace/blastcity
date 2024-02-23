@@ -36,13 +36,17 @@ export class CosmoRocket_Green extends CosmoRocket {
     }
 
     destroyTile() {
-        this.fieldNode.off("destroy", this.destroyTileCallback);
+        if(this.fieldNode) {
+            this.fieldNode.off("destroy", this.destroyTileCallback);
+        }
 
         super.destroyTile();
     }
 
     destroyClear() {
-        this.fieldNode.off("destroy", this.destroyTileCallback);
+        if(this.fieldNode) {
+            this.fieldNode.off("destroy", this.destroyTileCallback);
+        }
 
         super.destroyClear();
     }

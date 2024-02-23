@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, instantiate, Prefab, Vec2, Vec3 } from 'cc';
-import { GameData, GoalData, LevelData, SpecialPrefabData } from '../data/GameData';
+import { GameData, GoalData, LevelData, SpecialPrefabData, SpecialTileStateData } from '../data/GameData';
 import { TileBase } from './TileBase';
 import { Boosters } from './boosters/Boosters';
 import { StartBonuses } from './boosters/StartBonuses';
@@ -109,7 +109,9 @@ export class Field extends Component {
 
         this.isSuperDiscoballMode = false;
 
-        SaveData.instance.node.on("level_progress_loaded", (level) => this.spawnInitialBoard(level));
+        SaveData.instance.node.on("level_progress_loaded", (level) => {
+            this.spawnInitialBoard(level);
+        });
     }
 
 
@@ -243,9 +245,35 @@ export class Field extends Component {
         }
 
         this.spawnNewTiles(true, false);
+
+        if(level.specsState) {
+            this.scheduleOnce(() => {
+                this.restoreSpecTilesState(level.specsState);
+            }, this.fallTime);
+        }
         
         this.node.emit("level_init", level);
         this.node.emit("centrate", this.tileArray);
+    }
+
+    restoreSpecTilesState(specs: SpecialTileStateData[]) {
+        for(let i = 0; i < specs.length; i++) {
+            let tile = this.tileArray[specs[i].row][specs[i].col];
+            if(tile) {
+                let tileComp = tile.getComponent("TileBase");
+                if(tileComp.isSpecialTile()) {
+                    tileComp.setStrength(specs[i].strength);
+
+                    tileComp.setStrengthRed(specs[i].strengthRed);
+                    tileComp.setStrengthBlue(specs[i].strengthBlue);
+                    tileComp.setStrengthGreen(specs[i].strengthGreen);
+                    tileComp.setStrengthYellow(specs[i].strengthYellow);
+                    tileComp.setStrengthPurple(specs[i].strengthPurple);
+
+                    tileComp.setCustomParameter(specs[i].customParameter);
+                }
+            }
+        }
     }
 
     resetSpawnPools() {

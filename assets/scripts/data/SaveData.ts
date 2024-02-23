@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Vec2 } from 'cc';
 import { UserData } from './UserData';
-import { GameData, LevelData, LevelProgressData, SpecialTileData } from './GameData';
+import { GameData, LevelData, LevelProgressData, SpecialTileData, SpecialTileStateData } from './GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('SaveData')
@@ -67,6 +67,7 @@ export class SaveData extends Component {
         levelState.specialTiles = this.getTilesData(fieldComp.getTilesArray());
         levelState.statuses = this.getStatusData(fieldComp.getStatusArray());
         levelState.destroyedOnStart = this.getDestroyedTilesData(fieldComp.getTilesArray());
+        levelState.specsState = this.getSpecTilesStateData(fieldComp.getTilesArray());
 
         levelState.startPool = fieldComp.getStartSpawnPool();
         levelState.spawnPools = fieldComp.getSpawnPools();
@@ -79,7 +80,6 @@ export class SaveData extends Component {
         levelState.difficulty = levelComp.getDifficulty();
         levelState.movesShopStage = movesShopComp.getCurrentStage();
 
-        levelProgressData.levelId = UserData.instance.getProgress();
         levelProgressData.levelState = levelState.toJSON();
 
         cc.sys.localStorage.setItem('levelProgress', JSON.stringify(levelProgressData));
@@ -187,6 +187,40 @@ export class SaveData extends Component {
                     specData.col = statusComp.getCol();
 
                     if(!tilesData.includes(specData)) {
+                        tilesData.push(specData);
+                    }
+                }
+            }
+        }
+
+        return tilesData;
+    }
+
+
+    getSpecTilesStateData(tiles: Node[][]): SpecialTileStateData[] {
+        let tilesData = [];
+
+        const numRows: number = tiles.length;
+        const numCols: number = tiles.length > 0 ? tiles[0].length : 0;
+
+        for(let i = 0; i < numRows; i++) {
+            for(let j = 0; j < numCols; j++) {
+                if(tiles[i][j] !== null) {
+                    let tileComp = tiles[i][j].getComponent("TileBase");
+                    if(tileComp.isSpecialTile()) {
+                        let specData = new SpecialTileStateData();
+                        specData.row = tileComp.getRow();
+                        specData.col = tileComp.getCol();
+                        specData.strength = tileComp.getStrength();
+
+                        specData.strengthRed = tileComp.getStrengthRed();
+                        specData.strengthBlue = tileComp.getStrengthBlue();
+                        specData.strengthGreen = tileComp.getStrengthGreen();
+                        specData.strengthYellow = tileComp.getStrengthYellow();
+                        specData.strengthPurple = tileComp.getStrengthPurple();
+
+                        specData.customParameter = tileComp.getCustomParameter();
+
                         tilesData.push(specData);
                     }
                 }

@@ -22,6 +22,20 @@ export class SpecialTileStateData {
     col = 0;
     @property
     strength = 0;
+
+    @property
+    strengthRed = 0;
+    @property
+    strengthBlue = 0;
+    @property
+    strengthGreen = 0;
+    @property
+    strengthYellow = 0;
+    @property
+    strengthPurple = 0;
+
+    @property
+    customParameter = 0;
 }
 
 
@@ -94,6 +108,9 @@ export class LevelData {
 
     @property
     movesShopStage = 0;
+    @property([SpecialTileStateData])
+    specsState: SpecialTileStateData[] = [];
+
 
 
     static fromJSON(jsonString: string): LevelData {
@@ -207,6 +224,25 @@ export class LevelData {
         } else {
             levelData.movesShopStage = 0;
         }
+
+        if (jsonData.specsState) {
+            levelData.specsState = jsonData.specsState.map((specialTile: any) => {
+                const tileData = new SpecialTileStateData();
+                tileData.strength = specialTile.strength;
+                tileData.row = specialTile.row;
+                tileData.col = specialTile.col;
+                tileData.strengthRed = specialTile.strengthRed;
+                tileData.strengthBlue = specialTile.strengthBlue;
+                tileData.strengthGreen = specialTile.strengthGreen;
+                tileData.strengthYellow = specialTile.strengthYellow;
+                tileData.strengthPurple = specialTile.strengthPurple;
+                tileData.customParameter = specialTile.customParameter;
+                return tileData;
+            });
+        }
+        else {
+            levelData.specsState = [];
+        }
     
         return levelData;
     }
@@ -244,7 +280,18 @@ export class LevelData {
                 count: goal.count
             })),
             difficulty: this.difficulty.toLowerCase(),
-            movesShopStage: this.movesShopStage
+            movesShopStage: this.movesShopStage,
+            specsState: this.specsState.map(tile => ({
+                strength: tile.strength,
+                row: tile.row,
+                col: tile.col,
+                strengthRed: tile.strengthRed,
+                strengthBlue: tile.strengthBlue,
+                strengthGreen: tile.strengthGreen,
+                strengthYellow: tile.strengthYellow,
+                strengthPurple: tile.strengthPurple,
+                customParameter: tile.customParameter
+            })),
         };
 
         return JSON.stringify(json);
@@ -256,8 +303,6 @@ export class LevelData {
 export class LevelProgressData {
     @property
     levelStateJson = '';
-    /*@property([SpecialTileStateData])
-    specsState: SpecialTileStateData[] = [];*/
 }
 
 
