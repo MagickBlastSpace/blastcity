@@ -2,6 +2,7 @@ import { _decorator, Component, Node } from 'cc';
 import { GoalData, LevelData } from '../data/GameData';
 import { UserData } from '../data/UserData';
 import { SaveData } from '../data/SaveData';
+import { LevelProgressStatisticsData, Statistics } from '../data/Statistics';
 const { ccclass, property } = _decorator;
 
 @ccclass('Level')
@@ -25,6 +26,8 @@ export class Level extends Component {
     private isComplete: boolean = false;
     private isFailed: boolean = false;
 
+    private stats: LevelProgressStatisticsData = null;
+
 
     start() {
         this.field.on("move", () => this.moveCallback());
@@ -37,12 +40,35 @@ export class Level extends Component {
         this.movesShop.on("extra_moves", (movesCount) => this.addExtraMoves(movesCount));
     }
 
+    resetStats() {
+        this.stats = new LevelProgressStatisticsData();
+        this.stats.levelId = UserData.instance.getProgress();
+        this.stats.redDestroyed = 0;
+        this.stats.rocketsDestroyed = 0;
+        this.stats.destroyedByDiscoball = 0;
+        this.stats.fails = 0;
+    }
+
 
     init(level: LevelData) {
         this.goals = [];
         this.moves = level.movesCount;
         this.difficulty = level.difficulty;
         this.coinsCollected = 0;
+
+        this.resetStats();
+
+        let loadedStats = Statistics.instance.loadLevelStat(UserData.instance.getProgress());
+        if(loadedStats) {
+            this.stats.levelId = loadedStats.levelId;
+            this.stats.redDestroyed = loadedStats.redDestroyed;
+            this.stats.rocketsDestroyed = loadedStats.rocketsDestroyed;
+            this.stats.destroyedByDiscoball = loadedStats.destroyedByDiscoball;
+            this.stats.fails = loadedStats.fails;
+        }
+        else {
+            Statistics.instance.updateLevelStat(this.stats);
+        }
 
         switch(this.difficulty) {
             case "common":
@@ -114,7 +140,11 @@ export class Level extends Component {
             return;
         }
 
+        this.stats.fails++;
         this.node.emit("complete", false, 0);
+
+        Statistics.instance.updateLevelStat(this.stats);
+        SaveData.instance.saveStatistics();
     }
 
     addExtraMoves(movesCount: number) {
@@ -141,6 +171,8 @@ export class Level extends Component {
                 }
             }
         }
+
+        this.updateStats(tileType);
     }
 
     incrementGoal(tileType: string) {
@@ -153,6 +185,24 @@ export class Level extends Component {
             goal.count++;
             this.node.emit("refresh");
         }
+    }
+
+    updateStats(tileType: string) {
+        switch(tileType) {
+            case "red":
+                this.stats.redDestroyed++;
+                break;
+            case "rocket_horizontal":
+            case "rocket_vertical":
+                this.stats.rocketsDestroyed++;
+                break;
+            case "discoball":
+                this.stats.destroyedByDiscoball++;
+                break;
+        }
+
+        Statistics.instance.updateLevelStat(this.stats);
+        SaveData.instance.saveStatistics();
     }
 
     setGoalCompleteEvent(goalId: string) {

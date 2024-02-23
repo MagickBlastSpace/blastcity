@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Vec2, Prefab } from 'cc';
 import { UserData } from './UserData';
+import { Statistics } from './Statistics';
 const { ccclass, property } = _decorator;
 
 
@@ -271,6 +272,10 @@ export class GameData extends Component {
     onLoad() {
         GameData.instance = this;
 
+        //this.loadLevelsFromDirectory("levels");
+    }
+
+    start() {
         this.loadLevelsFromDirectory("levels");
     }
 
@@ -329,6 +334,7 @@ export class GameData extends Component {
                 //console.log('Level data loaded:', fileName);
 
                 UserData.instance.setLevelsCount(this.levels.length);
+                Statistics.instance.init(this.levels);
             });
         });
     }

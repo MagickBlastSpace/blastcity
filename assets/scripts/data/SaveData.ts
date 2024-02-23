@@ -16,6 +16,8 @@ export class SaveData extends Component {
     butlersGift: Node = null;
     @property(Node)
     movesShop: Node = null;
+    @property(Node)
+    statistics: Node = null;
 
     public static instance: SaveData = null;
 
@@ -34,7 +36,6 @@ export class SaveData extends Component {
         cc.sys.localStorage.setItem('userData', JSON.stringify(userData));
     }
 
-
     loadUserData() {
         var userData = JSON.parse(cc.sys.localStorage.getItem('userData'));
 
@@ -46,6 +47,10 @@ export class SaveData extends Component {
         }
 
         this.node.emit("user_data");
+    }
+
+    clearUserData() {
+        cc.sys.localStorage.removeItem('userData');
     }
 
 
@@ -95,6 +100,9 @@ export class SaveData extends Component {
 
     clearLevelProgress() {
         cc.sys.localStorage.removeItem('levelProgress');
+        cc.sys.localStorage.removeItem('statistics');
+        cc.sys.localStorage.removeItem('startBonuses');
+        cc.sys.localStorage.removeItem('butlersGift');
     }
 
 
@@ -241,6 +249,38 @@ export class SaveData extends Component {
 
 
     //Statistics Data
+    saveStatistics() {
+        let statisticsComp = this.statistics.getComponent("Statistics");
+    
+        let statistics = {
+            levelsStats: statisticsComp.getLevelsStats()
+        };
+    
+        try {
+            cc.sys.localStorage.setItem('statistics', JSON.stringify(statistics));
+        } catch (error) {
+            console.error("Error saving statistics:", error);
+        }
+    }
+    
+    loadStatistics() {
+        try {
+            var statistics = JSON.parse(cc.sys.localStorage.getItem('statistics'));
+    
+            if (statistics && statistics.levelsStats) {
+                let statisticsComp = this.statistics.getComponent("Statistics");
+    
+                for (let i = 0; i < statistics.levelsStats.length; i++) {
+                    statisticsComp.updateLevelStat(statistics.levelsStats[i]);
+                }
+            } else {
+                console.log("No stats data found");
+            }
+        } catch (error) {
+            console.error("Error loading statistics:", error);
+        }
+    }
+    
 }
 
 

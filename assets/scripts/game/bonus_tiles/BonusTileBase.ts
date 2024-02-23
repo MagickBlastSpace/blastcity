@@ -218,6 +218,13 @@ export class BonusTileBase extends TileBase {
     isTileActivated(): boolean {
         return this.isActivated;
     }
+
+
+    destroyTile(delay: number) {
+        super.destroyTile(delay);
+        
+        this.node.emit("goal", this.tileType);
+    }
 }
 
 

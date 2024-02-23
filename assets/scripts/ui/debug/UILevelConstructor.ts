@@ -3,6 +3,8 @@ import { Field } from '../../game/Field';
 import { LevelData } from '../../data/GameData';
 import { UIStartFrame } from '../start/UIStartFrame';
 import { SaveData } from '../../data/SaveData';
+import { Statistics } from '../../data/Statistics';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelConstructor')
@@ -22,6 +24,10 @@ export class UILevelConstructor extends Component {
 
     @property(Button)
     clearLevelSaveBtn: Button = null;
+    @property(Button)
+    clearGlobalSaveBtn: Button = null;
+    @property(Button)
+    showLevelStatsBtn: Button = null;
 
     @property(Button)
     showMatrixBtn: Button = null;
@@ -41,6 +47,8 @@ export class UILevelConstructor extends Component {
         this.superDiscoOffBtn.node.on(Button.EventType.CLICK, this.onSuperDiscoOffBtnClick, this);
 
         this.clearLevelSaveBtn.node.on(Button.EventType.CLICK, this.clearLevelSave, this);
+        this.clearGlobalSaveBtn.node.on(Button.EventType.CLICK, this.clearGlobalSave, this);
+        this.showLevelStatsBtn.node.on(Button.EventType.CLICK, this.showLevelStats, this);
 
         this.showMatrixBtn.node.on(Button.EventType.CLICK, this.onShowMatrixBtnClick, this);
     }
@@ -83,6 +91,25 @@ export class UILevelConstructor extends Component {
 
     clearLevelSave() {
         SaveData.instance.clearLevelProgress();
+    }
+
+    clearGlobalSave() {
+        SaveData.instance.clearUserData();
+    }
+
+    showLevelStats() {
+        let stats = Statistics.instance.loadLevelStat(UserData.instance.getProgress());
+
+        if(!stats) {
+            this.inputField.string = "No stats found";
+            return;
+        }
+
+        this.inputField.string = "Level " + stats.levelId + " Statistics: \n";
+        this.inputField.string += "Red tiles destroyed: " + stats.redDestroyed + "\n";
+        this.inputField.string += "Rockets destroyed: " + stats.rocketsDestroyed + "\n";
+        this.inputField.string += "Destroyed by discoball: " + stats.destroyedByDiscoball + "\n";
+        this.inputField.string += "Fails: " + stats.fails + "\n";
     }
 
 

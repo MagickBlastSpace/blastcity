@@ -61,10 +61,18 @@ export class Discoball extends BonusTileBase {
                 this.node.emit("get_matches", this.node);
             }, this.respawnDelay);
 
+            for(let i = 0; i < matches.length; i++) {
+                this.node.emit("goal", "discoball");
+            }
+
             return matches;
         }
 
         this.isActivated = true;
+
+        for(let i = 0; i < matches.length; i++) {
+            this.node.emit("goal", "discoball");
+        }
 
         matches.push(this);
 
@@ -101,6 +109,11 @@ export class Discoball extends BonusTileBase {
 
         let tiles = [];
         tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
+
+        for(let i = 0; i < tiles.length; i++) {
+            this.node.emit("goal", "discoball");
+        }
+
         tiles.push(this);
 
         const totalTime = this.timeBetweenTiles * tiles.length;
@@ -128,6 +141,11 @@ export class Discoball extends BonusTileBase {
 
         let tiles = [];
         tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
+
+        for(let i = 0; i < tiles.length; i++) {
+            this.node.emit("goal", "discoball");
+        }
+
         tiles.push(this);
 
         const totalTime = this.timeBetweenTiles * tiles.length;
@@ -155,6 +173,8 @@ export class Discoball extends BonusTileBase {
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
                 this.node.emit("extra_hit", i, j, false, 0);
+
+                this.node.emit("goal", "discoball");
             }
         }
 
@@ -176,6 +196,8 @@ export class Discoball extends BonusTileBase {
                 }
 
                 this.node.emit("extra_hit", i, j, false, 0);
+
+                this.node.emit("goal", "discoball");
             }
         }
 

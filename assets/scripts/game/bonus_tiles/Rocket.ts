@@ -108,7 +108,10 @@ export class Rocket extends BonusTileBase {
 
         let tiles = [];
         tiles = this.combo === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
-
+        for(let i = 0; i < tiles.length; i++) {
+            this.node.emit("goal", "discoball");
+        }
+        
         const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
