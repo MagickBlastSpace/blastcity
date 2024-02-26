@@ -3,6 +3,7 @@ import { UIStartFrame } from '../start/UIStartFrame';
 import { UIFrameBase } from '../UIFrameBase';
 import { UILevelMovesShop } from './UILevelMovesShop';
 import { SaveData } from '../../data/SaveData';
+import { ButlersGift } from '../../game/boosters/ButlersGift';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -26,6 +27,11 @@ export class UILevelResultFrame extends UIFrameBase {
     @property(UILevelMovesShop)
     movesShop: UILevelMovesShop = null;
 
+    @property(ButlersGift)
+    butlersGift: ButlersGift = null;
+
+    private isSuccess: boolean = false;
+
 
     start() {
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
@@ -34,6 +40,8 @@ export class UILevelResultFrame extends UIFrameBase {
     }
     
     refresh(isSuccess: boolean, goldEarned: number) {
+        this.isSuccess = isSuccess;
+
         this.resultLabel.string = isSuccess ? "Level Complete" : "Level Failed";
         this.buttonLabel.string = isSuccess ? "Next" : "Replay";
         this.goldLabel.string = goldEarned > 0 ? "Gold earned: " + goldEarned : "";
@@ -44,7 +52,11 @@ export class UILevelResultFrame extends UIFrameBase {
 
     onPlayBtnClick() {
         SaveData.instance.clearLevelProgress();
-        
+
+        if(!this.isSuccess) {
+            this.butlersGift.clearStreak();
+        }
+
         this.startFrame.show();
 
         this.hide();

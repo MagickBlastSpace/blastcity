@@ -51,6 +51,11 @@ export class SaveData extends Component {
 
     clearUserData() {
         cc.sys.localStorage.removeItem('userData');
+
+        cc.sys.localStorage.removeItem('levelProgress');
+        cc.sys.localStorage.removeItem('statistics');
+        cc.sys.localStorage.removeItem('startBonuses');
+        cc.sys.localStorage.removeItem('butlersGift');
     }
 
 
@@ -102,8 +107,6 @@ export class SaveData extends Component {
     clearLevelProgress() {
         cc.sys.localStorage.removeItem('levelProgress');
         cc.sys.localStorage.removeItem('statistics');
-        cc.sys.localStorage.removeItem('startBonuses');
-        cc.sys.localStorage.removeItem('butlersGift');
     }
 
 

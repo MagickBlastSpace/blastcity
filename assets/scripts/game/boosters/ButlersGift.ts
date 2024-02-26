@@ -23,13 +23,16 @@ export class ButlersGift extends Component {
         if(isWin && this.streak < this.maxStreak) {
             this.streak++;
         }
-        else if(!isWin) {
-            this.streak = 0;
-        }
 
         this.isGifted = false;
 
         this.node.emit("refresh", this.streak);
+
+        SaveData.instance.saveButlersGiftData();
+    }
+
+    clearStreak() {
+        this.streak = 0;
 
         SaveData.instance.saveButlersGiftData();
     }
