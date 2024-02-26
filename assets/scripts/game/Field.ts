@@ -624,9 +624,6 @@ export class Field extends Component {
         statusNode.on("destroy_status", (row, col) => {
             this.destroyStatus(row, col, false);
         });
-        statusNode.on("click", (status) => {
-            this.onStatusClick(status);
-        });
 
         this.statusArray[row][col] = statusNode;
 
@@ -1601,26 +1598,6 @@ export class Field extends Component {
             if(this.levelCompletePoints > 0) {
                 this.levelCompletePoints = this.levelCompletePoints - 1;
             }
-        }
-    }
-
-    onStatusClick(status: Node) {
-        if(!this.isClickAvailable || status === null || this.isLevelComplete) {
-            return;
-        }
-
-        const statusComponent = status.getComponent("StatusBase");
-
-        let row = statusComponent.getRow();
-        let col = statusComponent.getCol();
-
-        if(this.tileArray[row][col] !== null) {
-            return;
-        }
-
-        if(this.boosters.isBoosterActive()) {
-            this.isClickAvailable = false;
-            this.boosters.useActiveBooster(this.tileArray, row, col);
         }
     }
 

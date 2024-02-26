@@ -19,15 +19,6 @@ export class StatusBase extends Component {
     private currentTween: any = null;
 
     private isSubscribed: boolean = false;
-
-
-    onLoad() {
-        this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
-    }
-
-    onDestroy() {
-        this.node.off(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
-    }
     
     
     init(row: number, col: number, statusType: string) {
@@ -126,11 +117,6 @@ export class StatusBase extends Component {
 
     getCustomParameter(): number {
         return 0;
-    }
-
-
-    onTouchStart(event: cc.Event.EventTouch) {
-        this.node.emit("click", this.node);
     }
 }
 
