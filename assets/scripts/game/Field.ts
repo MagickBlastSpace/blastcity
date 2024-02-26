@@ -212,7 +212,7 @@ export class Field extends Component {
                 else if(level.specialTiles[i].id === "rocket") {
                     this.spawnRandomRocket(level.specialTiles[i].row, level.specialTiles[i].col);
                 }
-                else if(level.specialTiles[i].id === "discoball" || level.specialTiles[i].id.split("_")[0] === "discoball") {
+                else if(level.specialTiles[i].id === "discoball" || level.specialTiles[i].id.split("_")[0] === "discoball" || level.specialTiles[i].id === "super" || level.specialTiles[i].id === "multi") {
                     this.spawnDiscoball(level.specialTiles[i].row, level.specialTiles[i].col);
                 }
                 else {

@@ -8,7 +8,7 @@ export class Discoball extends BonusTileBase {
     @property(SpriteFrame)
     multi: SpriteFrame = null;
     @property(SpriteFrame)
-    super: SpriteFrame = null;s
+    super: SpriteFrame = null;
 
     @property(Sprite)
     icon: Sprite = null;
@@ -99,7 +99,7 @@ export class Discoball extends BonusTileBase {
         }
 
         return matches;
-    }s
+    }
 
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
