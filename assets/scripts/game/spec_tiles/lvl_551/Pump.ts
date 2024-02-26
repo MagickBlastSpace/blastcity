@@ -105,6 +105,19 @@ export class Pump extends SpecTileBase {
 
         this.icon.spriteFrame = this.inactive;
     }
+
+
+    getCustomParameter(): number {
+        return this.goalCount;
+    }
+
+    setCustomParameter(index: number) {
+        this.goalCount = index;
+
+        if(this.goalCount <= 0) {
+            this.setInactiveState();
+        }
+    }
 }
 
 

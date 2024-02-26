@@ -96,6 +96,19 @@ export class MagicHat extends SpecTileBase {
     clearExtra() {
         this.isDamaged = false;
     }
+
+
+    getCustomParameter(): number {
+        return this.goalCount;
+    }
+
+    setCustomParameter(index: number) {
+        this.goalCount = index;
+
+        if(this.goalCount <= 0) {
+            this.setInactiveState();
+        }
+    }
 }
 
 

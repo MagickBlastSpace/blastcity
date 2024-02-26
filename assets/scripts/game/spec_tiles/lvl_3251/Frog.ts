@@ -46,6 +46,15 @@ export class Frog extends Fish {
 
         field.on("spawn", this.destroyTileCallback);
     }
+
+
+    getCustomParameter(): number {
+        return this.goalCount;
+    }
+
+    setCustomParameter(index: number) {
+        this.goalCount = index;
+    }
 }
 
 

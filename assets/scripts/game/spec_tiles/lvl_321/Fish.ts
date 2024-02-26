@@ -116,6 +116,19 @@ export class Fish extends SpecTileBase {
 
         this.isGenerate = false;
     }
+
+
+    getCustomParameter(): number {
+        return this.goalCount;
+    }
+
+    setCustomParameter(index: number) {
+        this.goalCount = index;
+
+        if(this.goalCount <= 0) {
+            this.setInactiveState();
+        }
+    }
 }
 
 
