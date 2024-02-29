@@ -12,6 +12,11 @@ export class UIStartFrame extends UIFrameBase {
     @property(Button)
     playBtn: Button = null;
 
+    @property([Button])
+    eventBtns: Button[] = [];
+    @property([UIFrameBase])
+    eventPopups: UIFrameBase[] = [];
+
     @property(Field)
     field: Field = null;
 
@@ -32,6 +37,10 @@ export class UIStartFrame extends UIFrameBase {
         SaveData.instance.loadLevelProgressData();
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
+
+        for(let i = 0; i < this.eventBtns.length && i < this.eventPopups.length; i++) {
+            this.eventBtns[i].node.on(Button.EventType.CLICK, () => this.onEventBtnClick(i), this);
+        }
     }
 
     onPlayBtnClick() {
@@ -59,6 +68,11 @@ export class UIStartFrame extends UIFrameBase {
         super.show();
 
         this.refresh();
+    }
+
+
+    onEventBtnClick(index: number) {
+        this.eventPopups[index].show();
     }
 }
 

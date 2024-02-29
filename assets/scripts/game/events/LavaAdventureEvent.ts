@@ -1,0 +1,120 @@
+import { _decorator, Component, Node } from 'cc';
+import { EventBase } from './EventBase';
+import { UserData } from '../../data/UserData';
+const { ccclass, property } = _decorator;
+
+@ccclass('LavaAdventureEvent')
+export class LavaAdventureEvent extends EventBase {
+
+    @property(Node)
+    level: Node = null;
+    
+    private TOTAL_LEVELS: number = 7;
+    private REWARD_COINS: number = 10000;
+    private RETRY_COOLDOWN_MINUTES: number = 2; //30
+    private MIN_LEVEL_REQUIRED: number = 66;
+
+    private lastAttemptTimestamp: number = 0;
+    private currentStep: number = 0;
+
+
+    start() {
+        this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
+    }
+    
+    init(startHourUTC: number, durationHours: number) {
+        super.init(startHourUTC, durationHours);
+
+        this.currentStep = 0;
+    }
+
+
+    canParticipate(): boolean {
+        return this.lastAttemptTimestamp === 0 || this.isCooldownOver();
+    }
+
+    activateEvent() {
+        super.activateEvent();
+
+        if(!this.isEventAvailable()) {
+            console.log("Unable to start Lava Adventure");
+            return;
+        }
+
+        this.currentStep = 0;
+
+        console.log("Lava Adventure started for player at level: ", UserData.instance.getProgress());
+    }
+
+
+    private isCooldownOver(): boolean {
+        const cooldownEndTime = this.lastAttemptTimestamp + this.RETRY_COOLDOWN_MINUTES * 60 * 1000;
+        return Date.now() >= cooldownEndTime;
+    }
+
+    getRemainingCooldownString(): string {
+        if (this.isCooldownOver()) {
+            return "";
+        }
+    
+        const now = Date.now();
+        const cooldownEndTime = this.lastAttemptTimestamp + this.RETRY_COOLDOWN_MINUTES * 60 * 1000;
+    
+        if (now >= cooldownEndTime) {
+            this.lastAttemptTimestamp = now;
+            return "";
+        }
+    
+        const timeDiff = cooldownEndTime - now;
+        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+    
+        return "Cooldown: " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+
+    private handleEventCompletion() {
+        this.lastAttemptTimestamp = Date.now();
+
+        this.isStarted = false;
+        this.currentStep = 0;
+    }
+
+
+    private handleLevelCompletion(isComplete: boolean) {
+        this.currentStep = isComplete ? this.currentStep + 1 : 0;
+
+        if(!isComplete) {
+            this.handleEventCompletion();
+
+            console.log("Lava Adventure failed!");
+
+            return;
+        }
+
+        if(this.currentStep >= this.TOTAL_LEVELS) {
+            this.handleEventCompletion();
+
+            UserData.instance.addResource("gold", this.REWARD_COINS);
+
+            console.log("Lava Adventure completed! Player rewarded:", this.REWARD_COINS, "coins");
+        }
+    }
+
+
+
+    getCurrentStep(): number {
+        return this.currentStep;
+    }
+
+    setCurrentStep(step: number) {
+        this.currentStep = step;
+    }
+
+    getTotalSteps(): number {
+        return this.TOTAL_LEVELS;
+    }
+}   
+
+
