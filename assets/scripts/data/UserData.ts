@@ -30,9 +30,9 @@ export class UserData extends Component {
 
 
     addProgress() {
-        if(this.currentProgress < this.levelsCount - 1) {
-            this.currentProgress++;
-        }
+        //if(this.currentProgress < this.levelsCount - 1) {
+        this.currentProgress++;
+        //}
 
         SaveData.instance.saveUserData();
     }

@@ -45,7 +45,8 @@ export class UIStartFrame extends UIFrameBase {
 
     onPlayBtnClick() {
         try {
-            this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress()]);
+            let levelsCount = GameData.instance.levels.length;
+            this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
 
             this.hide();
         }
