@@ -48,7 +48,7 @@ export class UIEventLavaAdventure extends UIFrameBase {
             this.progressLabel.string = "Not Started";
         }
         
-        this.startBtn.node.active = this.eventController.canParticipate();
+        this.startBtn.node.active = this.eventController.canParticipate() && !this.isEventStarted;
     }
 
 
