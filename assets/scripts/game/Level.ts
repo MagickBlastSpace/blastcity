@@ -267,6 +267,11 @@ export class Level extends Component {
     }
 
 
+    fail() {
+        this.node.emit("fail");
+    }
+
+
     isBonusGoldAvailable(): boolean {
         return this.difficulty !== "nightmare" && this.difficulty !== "bonus";
     }

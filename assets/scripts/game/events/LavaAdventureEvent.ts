@@ -20,6 +20,7 @@ export class LavaAdventureEvent extends EventBase {
 
     start() {
         this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
+        this.level.on("fail", () => this.handleLevelFail());
     }
     
     init(startHourUTC: number, durationHours: number) {
@@ -83,15 +84,11 @@ export class LavaAdventureEvent extends EventBase {
 
 
     private handleLevelCompletion(isComplete: boolean) {
-        this.currentStep = isComplete ? this.currentStep + 1 : 0;
-
         if(!isComplete) {
-            this.handleEventCompletion();
-
-            console.log("Lava Adventure failed!");
-
             return;
         }
+
+        this.currentStep = this.currentStep + 1;
 
         if(this.currentStep >= this.TOTAL_LEVELS) {
             this.handleEventCompletion();
@@ -100,6 +97,12 @@ export class LavaAdventureEvent extends EventBase {
 
             console.log("Lava Adventure completed! Player rewarded:", this.REWARD_COINS, "coins");
         }
+    }
+
+    private handleLevelFail() {
+        this.handleEventCompletion();
+
+        console.log("Lava Adventure failed!");
     }
 
 

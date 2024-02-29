@@ -16,6 +16,7 @@ export class ButlersGift extends Component {
     
     start() {
         this.level.on("complete", (isWin) => this.updateProgress(isWin));
+        this.level.on("fail", () => this.clearStreak());
     }
 
 
@@ -35,6 +36,8 @@ export class ButlersGift extends Component {
         this.streak = 0;
 
         SaveData.instance.saveButlersGiftData();
+
+        this.node.emit("refresh", this.streak);
     }
 
     getBonusPool(): string[] {

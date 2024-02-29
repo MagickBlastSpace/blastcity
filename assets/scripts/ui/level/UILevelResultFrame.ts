@@ -4,6 +4,7 @@ import { UIFrameBase } from '../UIFrameBase';
 import { UILevelMovesShop } from './UILevelMovesShop';
 import { SaveData } from '../../data/SaveData';
 import { ButlersGift } from '../../game/boosters/ButlersGift';
+import { Level } from '../../game/Level';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -30,6 +31,9 @@ export class UILevelResultFrame extends UIFrameBase {
     @property(ButlersGift)
     butlersGift: ButlersGift = null;
 
+    @property(Level)
+    level: Level = null;
+
     private isSuccess: boolean = false;
 
 
@@ -55,6 +59,7 @@ export class UILevelResultFrame extends UIFrameBase {
 
         if(!this.isSuccess) {
             this.butlersGift.clearStreak();
+            this.level.fail();
         }
 
         this.startFrame.show();
