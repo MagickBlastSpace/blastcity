@@ -74,15 +74,6 @@ export class MovesShopStageData {
 }
 
 
-@ccclass('DailyEventData')
-export class DailyEventData {
-    @property
-    startHour = 0;
-    @property
-    durationHours = 0;
-}
-
-
 @ccclass('LevelData')
 export class LevelData {
     @property

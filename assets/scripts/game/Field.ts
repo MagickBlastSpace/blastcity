@@ -1904,6 +1904,8 @@ export class Field extends Component {
                         const tileType = tileComp.getTileType();
                         if(tileType === "rocket_horizontal" || tileType === "rocket_vertical") {
                             bonusGold += 2;
+
+                            this.node.emit("destroy", tileType);
                         }
                         else if(tileType === "bomb") {
                             bonusGold += 3;

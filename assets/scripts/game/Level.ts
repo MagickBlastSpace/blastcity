@@ -261,13 +261,20 @@ export class Level extends Component {
 
         UserData.instance.addResource("gold", totalReward);
 
-        SaveData.instance.clearLevelProgress();
-
         this.node.emit("complete", true, totalReward);
+        this.node.emit("complete_statistics", this.stats);
+
+        SaveData.instance.clearLevelProgress();
     }
 
 
     fail() {
+        this.stats.redDestroyed = 0;
+        this.stats.rocketsDestroyed = 0;
+        this.stats.destroyedByDiscoball = 0;
+
+        SaveData.instance.saveStatistics();
+
         this.node.emit("fail");
     }
 

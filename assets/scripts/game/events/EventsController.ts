@@ -8,6 +8,8 @@ export class EventsController extends Component {
     
     @property(EventBase)
     lavaAdventureEvent: EventBase;
+    @property(EventBase)
+    rocketFeverEvent: EventBase;
 
     /*@property(DailyEventData)
     lavaAdventureEventData: DailyEventData;*/
@@ -18,6 +20,7 @@ export class EventsController extends Component {
 
     init() {
         this.lavaAdventureEvent.init(8, 24);
+        this.rocketFeverEvent.initWeekly(5, 8, 4);
     }
 }
 
