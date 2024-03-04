@@ -1,4 +1,5 @@
 import { _decorator, Component, Node } from 'cc';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventBase')
@@ -10,6 +11,9 @@ export class EventBase extends Component {
     private isStarted: boolean = false;
 
     private eventId: string = "base";
+
+    @property
+    MIN_LEVEL_REQUIRED = 0;
 
 
     init(startHourUTC: number, durationHours: number) {
@@ -69,7 +73,7 @@ export class EventBase extends Component {
 
 
     canParticipate(): boolean {
-        return true;
+        return this.isRequiredLevelReached();
     }
 
 
@@ -118,6 +122,15 @@ export class EventBase extends Component {
 
     isWeekly(): boolean {
         return false;
+    }
+
+
+    getLevelRequired(): number {
+        return this.MIN_LEVEL_REQUIRED;
+    }
+
+    isRequiredLevelReached(): boolean {
+        return (UserData.instance.getProgress() + 1) >= this.MIN_LEVEL_REQUIRED;
     }
 }
 

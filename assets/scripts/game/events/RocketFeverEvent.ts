@@ -14,8 +14,6 @@ export class RocketFeverEvent extends WeeklyEventBase {
 
     @property([RocketFeverEventData])
     eventData: RocketFeverEventData[] = [];
-    
-    private MIN_LEVEL_REQUIRED: number = 27;
 
     private collectedRockets: number = 0;
     private currentStage: number = 0;
@@ -40,7 +38,7 @@ export class RocketFeverEvent extends WeeklyEventBase {
 
 
     handleLevelCompletion(statistics: LevelProgressStatisticsData) {
-        if(!this.isStarted || this.isComplete) {
+        if(this.isComplete || !this.canParticipate() || !this.isStarted || !this.isEventAvailable()) {
             return;
         }
 

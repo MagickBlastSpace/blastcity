@@ -12,8 +12,7 @@ export class LavaAdventureEvent extends EventBase {
     
     private TOTAL_LEVELS: number = 7;
     private REWARD_COINS: number = 10000;
-    private RETRY_COOLDOWN_MINUTES: number = 2; //30
-    private MIN_LEVEL_REQUIRED: number = 66;
+    private RETRY_COOLDOWN_MINUTES: number = 30;
 
     private lastAttemptTimestamp: number = 0;
     private currentStep: number = 0;
@@ -34,7 +33,7 @@ export class LavaAdventureEvent extends EventBase {
 
 
     canParticipate(): boolean {
-        return this.lastAttemptTimestamp === 0 || this.isCooldownOver();
+        return (this.lastAttemptTimestamp === 0 || this.isCooldownOver()) && super.canParticipate();
     }
 
     activateEvent() {
@@ -89,7 +88,7 @@ export class LavaAdventureEvent extends EventBase {
 
 
     private handleLevelCompletion(isComplete: boolean) {
-        if(!isComplete) {
+        if(!isComplete || !this.canParticipate() || !this.isStarted || !this.isEventAvailable()) {
             return;
         }
 

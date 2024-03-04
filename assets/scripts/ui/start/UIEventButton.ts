@@ -14,6 +14,8 @@ export class UIEventButton extends Component {
 
     update(deltaTime: number) {
         this.timeLabel.string = this.eventController.getRemainingTimeString();
+
+        this.node.active = this.eventController.isEventAvailable();
     }
 }
 

@@ -34,6 +34,15 @@ export class WeeklyEventBase extends EventBase {
             this.endTime = new Date(this.startTime.getTime() + durationDays * 24 * 60 * 60 * 1000);
         }
 
+        let timeDiff = this.endTime.getTime() - now.getTime();
+
+        while(timeDiff < 0) {
+            this.startTime.setUTCDate(this.startTime.getUTCDate() + 7);
+            this.endTime = new Date(this.startTime.getTime() + durationDays * 24 * 60 * 60 * 1000);
+
+            timeDiff = this.endTime.getTime() - now.getTime();
+        }
+
         console.log("Start time: " + this.startTime);
         console.log("End time: " + this.endTime);
     }

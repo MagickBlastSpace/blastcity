@@ -44,6 +44,9 @@ export class UIEventLavaAdventure extends UIFrameBase {
         if(this.isEventStarted) {
             this.progressLabel.string = "Level " + this.eventController.getCurrentStage() + "/" + this.eventController.getTotalSteps();
         }
+        else if(!this.eventController.isRequiredLevelReached()) {
+            this.progressLabel.string = "Required Level " + this.eventController.getLevelRequired();
+        }
         else {
             this.progressLabel.string = "Not Started";
         }

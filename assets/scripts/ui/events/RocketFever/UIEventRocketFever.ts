@@ -76,6 +76,9 @@ export class UIEventRocketFever extends UIFrameBase {
         else if(this.isEventComplete) {
             this.progressLabel.string = "Event Complete";
         }
+        else if(!this.eventController.isRequiredLevelReached()) {
+            this.progressLabel.string = "Required Level " + this.eventController.getLevelRequired();
+        }
         else {
             this.progressLabel.string = "Not Started";
         }
