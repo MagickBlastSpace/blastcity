@@ -9,6 +9,8 @@ export class EventBase extends Component {
 
     private isStarted: boolean = false;
 
+    private eventId: string = "base";
+
 
     init(startHourUTC: number, durationHours: number) {
         const now = new Date();
@@ -78,6 +80,44 @@ export class EventBase extends Component {
 
     setIsStarted(isStarted: boolean) {
         this.isStarted = isStarted;
+    }
+
+
+    getCurrentStage(): number {
+        return 0;
+    }
+
+    setCurrentStage(stage: number) {}
+
+
+    getLastTimestamp(): number {
+        return 0;
+    }
+
+    setLastTimestamp(stamp: number) {}
+
+
+    getIsComplete(): boolean {
+        return true;
+    }
+
+    setIsComplete(isComplete: boolean) {}
+
+
+    getCollectable(): number {
+        return 0;
+    }
+
+    setCollectable(value: number) {}
+
+
+    getEventId(): string {
+        return this.eventId;
+    }
+
+
+    isWeekly(): boolean {
+        return false;
     }
 }
 

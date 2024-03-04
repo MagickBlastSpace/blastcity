@@ -18,6 +18,9 @@ export class SaveData extends Component {
     movesShop: Node = null;
     @property(Node)
     statistics: Node = null;
+    
+    @property([Node])
+    events: Node[] = [];
 
     public static instance: SaveData = null;
 
@@ -344,6 +347,56 @@ export class SaveData extends Component {
         }
     }
     
+
+
+    //Events
+    saveEvent(eventId: string) {
+
+        for(let i = 0; i < this.events.length; i++) {
+            let eventComp = this.events[i].getComponent("EventBase");
+
+            if(eventComp.getEventId() === eventId) {
+                let eventData = {
+                    isStarted: eventComp.getIsStarted(),
+                    lastAttemptTimestamp: eventComp.getLastTimestamp(),
+                    currentStage: eventComp.getCurrentStage(),
+                    isComplete: eventComp.getIsComplete(),
+                    collectable: eventComp.getCollectable()
+                };
+        
+                try {
+                    cc.sys.localStorage.setItem('event_' + eventComp.getEventId(), JSON.stringify(eventData));
+                } catch (error) {
+                    console.error("Error saving event " + eventComp.getEventId() + ": ", error);
+                }
+            }
+        }
+        
+    }
+    
+    loadEvent(eventId: string) {
+        for(let i = 0; i < this.events.length; i++) {
+            let eventComp = this.events[i].getComponent("EventBase");
+
+            if(eventComp.getEventId() === eventId) {
+                try {
+                    var eventData = JSON.parse(cc.sys.localStorage.getItem('event_' + eventComp.getEventId()));
+            
+                    if (eventData) {
+                        eventComp.setIsStarted(eventData.isStarted);
+                        eventComp.setLastTimestamp(eventData.lastAttemptTimestamp);
+                        eventComp.setCurrentStage(eventData.currentStage);
+                        eventComp.setIsComplete(eventData.isComplete);
+                        eventComp.setCollectable(eventData.collectable);
+                    } else {
+                        console.log("No event " + eventComp.getEventId() + " data found");
+                    }
+                } catch (error) {
+                    console.error("Error loading event " + eventComp.getEventId() + ": ", error);
+                }
+            }
+        }
+    }
 }
 
 

@@ -60,6 +60,10 @@ export class WeeklyEventBase extends EventBase {
     restartEvent() {
         this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
     }
+
+    isWeekly(): boolean {
+        return true;
+    }
 }
 
 

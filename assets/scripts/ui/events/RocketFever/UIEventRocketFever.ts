@@ -67,10 +67,10 @@ export class UIEventRocketFever extends UIFrameBase {
         this.progressBar.node.active = this.isEventStarted && !this.isEventComplete;
 
         if(this.isEventStarted && !this.isEventComplete) {
-            this.progressLabel.string = this.eventController.getCollectedRockets() + "/" + this.eventController.getCurrentStageStep();
+            this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
 
             tween(this.progressBar)
-                .to(0.8, { progress: this.eventController.getCollectedRockets() / this.eventController.getCurrentStageStep() })
+                .to(0.8, { progress: this.eventController.getCollectable() / this.eventController.getCurrentStageStep() })
                 .start();
         }
         else if(this.isEventComplete) {

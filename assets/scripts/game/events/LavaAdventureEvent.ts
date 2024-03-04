@@ -1,6 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
 import { EventBase } from './EventBase';
 import { UserData } from '../../data/UserData';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('LavaAdventureEvent')
@@ -27,6 +28,8 @@ export class LavaAdventureEvent extends EventBase {
         super.init(startHourUTC, durationHours);
 
         this.currentStep = 0;
+
+        this.eventId = "lava_adventure";
     }
 
 
@@ -80,6 +83,8 @@ export class LavaAdventureEvent extends EventBase {
 
         this.isStarted = false;
         this.currentStep = 0;
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 
 
@@ -97,6 +102,9 @@ export class LavaAdventureEvent extends EventBase {
 
             console.log("Lava Adventure completed! Player rewarded:", this.REWARD_COINS, "coins");
         }
+        else {
+            SaveData.instance.saveEvent(this.eventId);
+        }
     }
 
     private handleLevelFail() {
@@ -107,16 +115,24 @@ export class LavaAdventureEvent extends EventBase {
 
 
 
-    getCurrentStep(): number {
+    getCurrentStage(): number {
         return this.currentStep;
     }
 
-    setCurrentStep(step: number) {
-        this.currentStep = step;
+    setCurrentStage(stage: number) {
+        this.currentStep = stage;
     }
 
     getTotalSteps(): number {
         return this.TOTAL_LEVELS;
+    }
+
+    getLastTimestamp(): number {
+        return this.lastAttemptTimestamp;
+    }
+
+    setLastTimestamp(stamp: number) {
+        this.lastAttemptTimestamp = stamp;
     }
 }   
 

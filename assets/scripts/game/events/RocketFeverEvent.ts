@@ -3,6 +3,7 @@ import { WeeklyEventBase } from './WeeklyEventBase';
 import { EventRewardData, RocketFeverEventData } from '../../data/EventData';
 import { LevelProgressStatisticsData } from '../../data/Statistics';
 import { UserData } from '../../data/UserData';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('RocketFeverEvent')
@@ -33,6 +34,8 @@ export class RocketFeverEvent extends WeeklyEventBase {
 
         this.isStarted = false;
         this.isComplete = false;
+
+        this.eventId = "rocket_fever";
     }
 
 
@@ -61,11 +64,16 @@ export class RocketFeverEvent extends WeeklyEventBase {
 
             this.checkStageCompletion();
         }
+        else {
+            SaveData.instance.saveEvent(this.eventId);
+        }
     }
 
 
     handleEventCompletion() {
         this.isComplete = true;
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 
 
@@ -73,17 +81,18 @@ export class RocketFeverEvent extends WeeklyEventBase {
         return this.currentStage;
     }
 
-    getCollectedRockets(): number {
-        return this.collectedRockets;
-    }
-
 
     setCurrentStage(stage: number) {
         this.currentStage = stage;
     }
 
-    setCollectedRockets(rockets: number) {
-        this.collectedRockets = rockets;
+
+    getCollectable(): number {
+        return this.collectedRockets;
+    }
+
+    setCollectable(value: number) {
+        this.collectedRockets = value;
     }
 
 

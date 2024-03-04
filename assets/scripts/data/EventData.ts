@@ -9,12 +9,16 @@ export class EventRewardData {
 }
 
 
-@ccclass('DailyEventData')
-export class DailyEventData {
+@ccclass('InitEventData')
+export class InitEventData {
     @property
     startHour = 0;
     @property
     durationHours = 0;
+    @property
+    startDayOfWeek = 0;
+    @property
+    durationDays = 0;
 }
 
 

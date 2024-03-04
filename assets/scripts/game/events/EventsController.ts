@@ -1,26 +1,34 @@
 import { _decorator, Component, Node } from 'cc';
 import { EventBase } from './EventBase';
-import { DailyEventData } from '../../data/GameData';
+import { InitEventData } from '../../data/EventData';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventsController')
 export class EventsController extends Component {
     
-    @property(EventBase)
-    lavaAdventureEvent: EventBase;
-    @property(EventBase)
-    rocketFeverEvent: EventBase;
+    @property(Node)
+    events: [Node] = [];
 
-    /*@property(DailyEventData)
-    lavaAdventureEventData: DailyEventData;*/
+    @property([InitEventData])
+    eventsData: InitEventData[] = [];
 
     start() {
         this.init();
     }
 
     init() {
-        this.lavaAdventureEvent.init(8, 24);
-        this.rocketFeverEvent.initWeekly(5, 8, 4);
+        for(let i = 0; i < this.events.length && i < this.eventsData.length; i++) {
+            let eventComp = this.events[i].getComponent("EventBase");
+            if(eventComp.isWeekly()) {
+                eventComp.initWeekly(this.eventsData[i].startDayOfWeek, this.eventsData[i].startHour, this.eventsData[i].durationDays);
+            }
+            else {
+                eventComp.init(this.eventsData[i].startHour, this.eventsData[i].durationHours);
+            }
+
+            SaveData.instance.loadEvent(eventComp.getEventId());
+        }
     }
 }
 
