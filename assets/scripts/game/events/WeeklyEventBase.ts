@@ -54,7 +54,7 @@ export class WeeklyEventBase extends EventBase {
         const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
-        return `${this.formatTimeUnits(days)} days ${this.formatTimeUnits(hours)} hours`;
+        return `${this.formatTimeUnits(days)} d ${this.formatTimeUnits(hours)} h`;
     }
 
     restartEvent() {
