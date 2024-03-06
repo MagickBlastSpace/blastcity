@@ -31,6 +31,16 @@ export class RocketFeverEventData {
     rewardGold = 0;
 }
 
+@ccclass('SpaceMissionEventData')
+export class SpaceMissionEventData {
+    @property
+    levelsCount = 0;
+    @property
+    playersCount = 0;
+    @property
+    rewardGold = 0;
+}
+
 
 @ccclass('PlayerEventData')
 export class PlayerEventData {
@@ -40,3 +50,4 @@ export class PlayerEventData {
     @property
     progressValue = 0;
 }
+

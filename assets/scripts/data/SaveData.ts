@@ -361,7 +361,8 @@ export class SaveData extends Component {
                     lastAttemptTimestamp: eventComp.getLastTimestamp(),
                     currentStage: eventComp.getCurrentStage(),
                     isComplete: eventComp.getIsComplete(),
-                    collectable: eventComp.getCollectable()
+                    collectable: eventComp.getCollectable(),
+                    currentLevel: eventComp.getCurrentLevel()
                 };
         
                 try {
@@ -388,6 +389,7 @@ export class SaveData extends Component {
                         eventComp.setCurrentStage(eventData.currentStage);
                         eventComp.setIsComplete(eventData.isComplete);
                         eventComp.setCollectable(eventData.collectable);
+                        eventComp.setCurrentLevel(eventData.currentLevel);
                     } else {
                         console.log("No event " + eventComp.getEventId() + " data found");
                     }

@@ -1,34 +1,32 @@
 import { _decorator, Component, Node, Button, Label } from 'cc';
-import { SkyRaceEvent } from '../../../game/events/competitive/SkyRaceEvent';
-import { UIEventSkyRacePlayerItem } from './UIEventSkyRacePlayerItem';
 import { UIFrameBase } from '../../UIFrameBase';
+import { UIEventSpaceMissionPlayerItem } from './UIEventSpaceMissionPlayerItem';
+import { SpaceMissionEvent } from '../../../game/events/competitive/SpaceMissionEvent';
 const { ccclass, property } = _decorator;
 
-@ccclass('UIEventSkyRace')
-export class UIEventSkyRace extends UIFrameBase {
+@ccclass('UIEventSpaceMission')
+export class UIEventSpaceMission extends UIFrameBase {
 
     @property(Button)
     startBtn: Button = null;
     @property(Button)
     closeBtn: Button = null;
-    @property(Button)
-    takeRewardBtn: Button = null;
 
-    @property(SkyRaceEvent)
-    eventController: SkyRaceEvent = null;
+    @property(SpaceMissionEvent)
+    eventController: SpaceMissionEvent = null;
 
     @property(Label)
     timeLabel: Label = null;
     @property(Label)
     levelRequired: Label = null;
+    @property(Label)
+    missionLabel: Label = null;
 
     @property(Node)
     playersLayout: Node = null;
-    @property(Node)
-    rewardLayout: Node = null;
 
-    @property([UIEventSkyRacePlayerItem])
-    items: UIEventSkyRacePlayerItem[] = [];
+    @property([UIEventSpaceMissionPlayerItem])
+    items: UIEventSpaceMissionPlayerItem[] = [];
 
     private isEventStarted = false;
     private isEventComplete = false;
@@ -37,7 +35,6 @@ export class UIEventSkyRace extends UIFrameBase {
     start() {
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
-        this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
     }
 
     update(deltaTime: number) {
@@ -50,17 +47,25 @@ export class UIEventSkyRace extends UIFrameBase {
         this.isEventComplete = this.eventController.getIsComplete();
 
         this.playersLayout.active = this.isEventStarted && !this.isEventComplete;
-        this.rewardLayout.active = this.isEventComplete;
    
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
 
         let data = this.eventController.sortPlayersByProgress();
+        let playersCount = this.eventController.getPlayersCount();
 
-        for(let i = 0; i < data.length && i < this.items.length; i++) {
-            this.items[i].refresh(data[i]);
+        for(let i = 0; i < this.items.length; i++) {
+            if(i < playersCount) {
+                this.items[i].node.active = true;
+                this.items[i].refresh(data[i], this.eventController.getTotalStepsOnCurrentLevel());
+            }
+            else {
+                this.items[i].node.active = false;
+            }
         }
 
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
+        let missionNumber = this.eventController.getCurrentLevel() + 1;
+        this.missionLabel.string = "Misson " + missionNumber;
     }
 
 
@@ -79,12 +84,6 @@ export class UIEventSkyRace extends UIFrameBase {
 
     onCloseBtnClick() {
         this.hide();
-    }
-
-    onTakeRewardBtnClick() {
-        this.eventController.takeReward();
-
-        this.refresh();
     }
 }
 

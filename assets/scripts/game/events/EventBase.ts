@@ -144,6 +144,13 @@ export class EventBase extends Component {
     isRequiredLevelReached(): boolean {
         return (UserData.instance.getProgress() + 1) >= this.MIN_LEVEL_REQUIRED;
     }
+
+
+    getCurrentLevel(): number {
+        return 0;
+    }
+
+    setCurrentLevel(level: number) {}
 }
 
 
