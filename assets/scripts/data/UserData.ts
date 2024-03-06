@@ -6,6 +6,8 @@ const { ccclass, property } = _decorator;
 @ccclass('UserData')
 export class UserData extends Component {
 
+    private playerName: string = "";
+
     private currentProgress: number = 0;
     private levelsCount: number = 0;
 
@@ -19,6 +21,8 @@ export class UserData extends Component {
     }
     
     start() {
+        this.playerName = "Player";
+
         this.currentProgress = 0;
 
         this.Gold = 5000;
@@ -92,6 +96,11 @@ export class UserData extends Component {
         }
 
         this.node.emit("resources_update", this.Gold);
+    }
+
+
+    getPlayerName(): string {
+        return this.playerName;
     }
 }
 

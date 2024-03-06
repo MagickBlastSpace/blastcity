@@ -43,8 +43,8 @@ export class WeeklyEventBase extends EventBase {
             timeDiff = this.endTime.getTime() - now.getTime();
         }
 
-        console.log("Start time: " + this.startTime);
-        console.log("End time: " + this.endTime);
+        /*console.log("Start time: " + this.startTime);
+        console.log("End time: " + this.endTime);*/
     }
 
     private formatTimeUnits(value: number): string {

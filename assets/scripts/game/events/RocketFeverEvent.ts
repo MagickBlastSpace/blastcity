@@ -129,6 +129,8 @@ export class RocketFeverEvent extends WeeklyEventBase {
         this.currentStage = 0;
 
         console.log("Rocket Fever started");
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 }
 

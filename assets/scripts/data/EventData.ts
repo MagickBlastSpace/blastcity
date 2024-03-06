@@ -30,3 +30,13 @@ export class RocketFeverEventData {
     @property
     rewardGold = 0;
 }
+
+
+@ccclass('PlayerEventData')
+export class PlayerEventData {
+    @property
+    playerName = "Bot";
+
+    @property
+    progressValue = 0;
+}

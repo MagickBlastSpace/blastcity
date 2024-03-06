@@ -23,7 +23,19 @@ export class EventBase extends Component {
 
         this.endTime = new Date(this.startTime.getTime() + durationHours * 60 * 60 * 1000);
 
+        let timeDiff = this.startTime.getTime() - now.getTime();
+
+        while(timeDiff > 0) {
+            this.startTime.setUTCDate(this.startTime.getUTCDate() - 1);
+            this.endTime = new Date(this.startTime.getTime() + durationHours * 60 * 60 * 1000);
+
+            timeDiff = this.startTime.getTime() - now.getTime();
+        }
+
         this.isStarted = false;
+
+        /*console.log("Start time: " + this.startTime);
+        console.log("End time: " + this.endTime);*/
     }
 
     isEventAvailable(): boolean {
