@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Button, Label } from 'cc';
 import { SkyRaceEvent } from '../../../game/events/competitive/SkyRaceEvent';
 import { UIEventSkyRacePlayerItem } from './UIEventSkyRacePlayerItem';
 import { UIFrameBase } from '../../UIFrameBase';
+import { EventBase } from '../../../game/events/EventBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventSkyRace')
@@ -14,8 +15,8 @@ export class UIEventSkyRace extends UIFrameBase {
     @property(Button)
     takeRewardBtn: Button = null;
 
-    @property(SkyRaceEvent)
-    eventController: SkyRaceEvent = null;
+    @property(EventBase)
+    eventController: EventBase = null;
 
     @property(Label)
     timeLabel: Label = null;
