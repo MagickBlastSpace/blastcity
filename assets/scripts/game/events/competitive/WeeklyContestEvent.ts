@@ -16,7 +16,6 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
         this.currentStep = 0;
 
-        this.isComplete = false;
         this.isStarted = true;
 
         this.eventId = "weekly_contest";
@@ -57,6 +56,8 @@ export class WeeklyContestEvent extends SkyRaceEvent {
         UserData.instance.addResource("gold", this.REWARD_COINS);
 
         this.isComplete = false;
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 
     isRewardAvailable(): boolean {
