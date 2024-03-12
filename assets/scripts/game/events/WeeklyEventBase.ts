@@ -31,7 +31,7 @@ export class WeeklyEventBase extends EventBase {
 
         if (currentDay + durationDays > this.endTime.getUTCDay()) {
             this.startTime.setUTCDate(this.startTime.getUTCDate() - 7);
-            this.endTime = new Date(this.startTime.getTime() + durationDays * 24 * 60 * 60 * 1000);
+            this.endTime = new Date(this.startTime.getTime() + durationDays * 24 * 60 * 60 * 1000 + this.END_TIME_OFFSET * 60 * 60 * 1000);
         }
 
         let timeDiff = this.endTime.getTime() - now.getTime();

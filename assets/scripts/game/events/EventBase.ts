@@ -14,6 +14,8 @@ export class EventBase extends Component {
 
     @property
     MIN_LEVEL_REQUIRED = 0;
+    @property
+    END_TIME_OFFSET = 0;
 
 
     init(startHourUTC: number, durationHours: number) {
