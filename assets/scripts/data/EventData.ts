@@ -6,6 +6,9 @@ const { ccclass, property } = _decorator;
 export class EventRewardData {
     @property
     gold = 0;
+    
+    @property
+    progress = 0;
 }
 
 
