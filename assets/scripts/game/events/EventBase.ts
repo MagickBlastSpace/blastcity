@@ -153,6 +153,12 @@ export class EventBase extends Component {
     }
 
     setCurrentLevel(level: number) {}
+
+    getHp(): number {
+        return 0;
+    }
+
+    setHp(newHp: number) {}
 }
 
 
