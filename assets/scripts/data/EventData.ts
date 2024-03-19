@@ -6,7 +6,7 @@ const { ccclass, property } = _decorator;
 export class EventRewardData {
     @property
     gold = 0;
-    
+
     @property
     progress = 0;
 }
@@ -32,6 +32,12 @@ export class RocketFeverEventData {
 
     @property
     rewardGold = 0;
+}
+
+@ccclass('MagicCauldronEventData')
+export class MagicCauldronEventData {
+    @property([cc.String])
+    pool: string[] = [];
 }
 
 @ccclass('SpaceMissionEventData')

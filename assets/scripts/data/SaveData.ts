@@ -363,7 +363,9 @@ export class SaveData extends Component {
                     isComplete: eventComp.getIsComplete(),
                     collectable: eventComp.getCollectable(),
                     currentLevel: eventComp.getCurrentLevel(),
-                    hp: eventComp.getHp()
+                    hp: eventComp.getHp(),
+                    specialPool: eventComp.getSpecialPool(),
+                    specialPredictions: eventComp.getSpecialPredictions()
                 };
         
                 try {
@@ -392,6 +394,8 @@ export class SaveData extends Component {
                         eventComp.setCollectable(eventData.collectable);
                         eventComp.setCurrentLevel(eventData.currentLevel);
                         eventComp.setHp(eventData.hp);
+                        eventComp.setSpecialPool(eventData.specialPool);
+                        eventComp.setSpecialPredictions(eventData.specialPredictions);
                     } else {
                         console.log("No event " + eventComp.getEventId() + " data found");
                     }
