@@ -25,6 +25,10 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
 
     getCurrentPool(): string[] {
+        if(this.currentStage >= this.eventData.length) {
+            let pool = [];
+            return pool;
+        }
         return this.eventData[this.currentStage].pool;
     }
 
