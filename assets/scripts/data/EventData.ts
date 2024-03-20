@@ -40,6 +40,13 @@ export class MagicCauldronEventData {
     pool: string[] = [];
 }
 
+@ccclass('HiddenTempleEventData')
+export class HiddenTempleEventData {
+    @property([cc.String])
+    connectedTiles: string[] = [];
+}
+
+
 @ccclass('SpaceMissionEventData')
 export class SpaceMissionEventData {
     @property
