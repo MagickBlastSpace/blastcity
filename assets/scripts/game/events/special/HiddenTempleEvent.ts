@@ -16,7 +16,7 @@ export class HiddenTempleEvent extends SpecialEventBase {
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
-        this.eventId = "hidden_temple_1";
+        this.eventId = "hidden_temple_3";
 
         this.totalLevels = this.eventData.length;
         this.predictions = [];
