@@ -178,7 +178,7 @@ export class Discoball extends BonusTileBase {
             }
         }
 
-        this.setRespawnEvent(this.respawnDelay);
+        //this.setRespawnEvent(this.respawnDelay);
 
         return matches;
     }
