@@ -29,6 +29,7 @@ export class RocketFeverEvent extends WeeklyEventBase {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
         this.currentStage = 0;
+        this.collectedRockets = 0;
 
         this.isStarted = false;
         this.isComplete = false;

@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { UserData } from '../../data/UserData';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventBase')
@@ -11,6 +12,8 @@ export class EventBase extends Component {
     private isStarted: boolean = false;
 
     private eventId: string = "base";
+
+    private lastAttemptTimestamp: number = 0;
 
     @property
     MIN_LEVEL_REQUIRED = 0;
@@ -47,6 +50,8 @@ export class EventBase extends Component {
 
     restartEvent(): void {
         this.init(this.startTime.getUTCHours(), this.getEventDuration());
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 
     getRemainingTimeString(): string {
@@ -72,6 +77,8 @@ export class EventBase extends Component {
     activateEvent() {
         if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
             this.isStarted = true;
+
+            this.lastAttemptTimestamp = Date.now();
         }
     }
 
@@ -106,13 +113,6 @@ export class EventBase extends Component {
     }
 
     setCurrentStage(stage: number) {}
-
-
-    getLastTimestamp(): number {
-        return 0;
-    }
-
-    setLastTimestamp(stamp: number) {}
 
 
     getIsComplete(): boolean {
@@ -174,6 +174,19 @@ export class EventBase extends Component {
     }
 
     setSpecialPredictions(predictions: string[]) {}
+
+
+    getLastTimestamp(): number {
+        return this.lastAttemptTimestamp;
+    }
+
+    setLastTimestamp(stamp: number) {
+        this.lastAttemptTimestamp = stamp;
+
+        if(this.startTime > this.lastAttemptTimestamp) {
+            this.restartEvent();
+        }
+    }
 }
 
 

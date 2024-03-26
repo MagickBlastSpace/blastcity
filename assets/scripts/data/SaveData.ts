@@ -43,10 +43,12 @@ export class SaveData extends Component {
         var userData = JSON.parse(cc.sys.localStorage.getItem('userData'));
 
         if (userData) {
-            UserData.instance.setProgress(userData.progress);
+            let progress = userData.progress >= 55 ? userData.progress : 55;
+            UserData.instance.setProgress(progress);
             UserData.instance.setResource("gold", userData.gold);
         } else {
             console.log("No saved user data found");
+            UserData.instance.setProgress(55);
         }
 
         this.node.emit("user_data");
@@ -388,7 +390,6 @@ export class SaveData extends Component {
             
                     if (eventData) {
                         eventComp.setIsStarted(eventData.isStarted);
-                        eventComp.setLastTimestamp(eventData.lastAttemptTimestamp);
                         eventComp.setCurrentStage(eventData.currentStage);
                         eventComp.setIsComplete(eventData.isComplete);
                         eventComp.setCollectable(eventData.collectable);
@@ -396,6 +397,8 @@ export class SaveData extends Component {
                         eventComp.setHp(eventData.hp);
                         eventComp.setSpecialPool(eventData.specialPool);
                         eventComp.setSpecialPredictions(eventData.specialPredictions);
+
+                        eventComp.setLastTimestamp(eventData.lastAttemptTimestamp);
                     } else {
                         console.log("No event " + eventComp.getEventId() + " data found");
                     }

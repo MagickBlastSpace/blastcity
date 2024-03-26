@@ -14,7 +14,6 @@ export class LavaAdventureEvent extends EventBase {
     private REWARD_COINS: number = 10000;
     private RETRY_COOLDOWN_MINUTES: number = 30;
 
-    private lastAttemptTimestamp: number = 0;
     private currentStep: number = 0;
 
 
@@ -37,7 +36,9 @@ export class LavaAdventureEvent extends EventBase {
     }
 
     activateEvent() {
-        super.activateEvent();
+        if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
+            this.isStarted = true;
+        }
 
         if(!this.isEventAvailable()) {
             console.log("Unable to start Lava Adventure");
@@ -126,9 +127,6 @@ export class LavaAdventureEvent extends EventBase {
         return this.TOTAL_LEVELS;
     }
 
-    getLastTimestamp(): number {
-        return this.lastAttemptTimestamp;
-    }
 
     setLastTimestamp(stamp: number) {
         this.lastAttemptTimestamp = stamp;
