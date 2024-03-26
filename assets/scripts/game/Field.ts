@@ -1098,6 +1098,13 @@ export class Field extends Component {
                     tileComponent.getDamage("bonus");
                 }
                 this.giveStatusDamage(tileComponent.getRow(), tileComponent.getCol());
+
+                if(tileComponent.isBonusTile()) {
+                    if(tileComponent.isTileActivated()) {
+                        this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
+                        tileComponent.destroyTile(destroyDelay);
+                    }
+                }
             }
         }
     }
