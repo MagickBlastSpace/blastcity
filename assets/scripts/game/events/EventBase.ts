@@ -1,6 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
+import { EventRewardData } from '../../data/EventData';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventBase')
@@ -185,6 +186,14 @@ export class EventBase extends Component {
 
         if(this.startTime > this.lastAttemptTimestamp) {
             this.restartEvent();
+        }
+    }
+
+
+    private applyRewards(rewards: EventRewardData[]) {
+        for(let i = 0; i < rewards.length; i++) {
+            UserData.instance.addResource("gold", rewards[i].gold);
+            //remain rewards TBD
         }
     }
 }

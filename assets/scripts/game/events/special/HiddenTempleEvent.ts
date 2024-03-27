@@ -1,7 +1,8 @@
 import { _decorator, Component, Node } from 'cc';
 import { SpecialEventBase } from './SpecialEventBase';
-import { HiddenTempleEventData } from '../../../data/EventData';
+import { EventRewardData, HiddenTempleEventData } from '../../../data/EventData';
 import { SaveData } from '../../../data/SaveData';
+import { UserData } from '../../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('HiddenTempleEvent')
@@ -16,7 +17,7 @@ export class HiddenTempleEvent extends SpecialEventBase {
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
-        this.eventId = "hidden_temple_3";
+        this.eventId = "hidden_temple";
 
         this.totalLevels = this.eventData.length;
         this.predictions = [];
@@ -43,8 +44,9 @@ export class HiddenTempleEvent extends SpecialEventBase {
 
     private checkStageCompletion() {
         if(this.isPredicted()) {
+            this.applyRewards(this.eventData[this.currentStage].rewards);
+
             this.currentStage = this.currentStage + 1;
-            //give rewards
 
             this.scheduleOnce(() => {
                 this.startStage();

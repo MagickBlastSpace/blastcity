@@ -63,8 +63,9 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
     private checkStageCompletion() {
         if(this.isPredicted()) {
+            this.applyRewards(this.eventData[this.currentStage].rewards);
+            
             this.currentStage = this.currentStage + 1;
-            //give rewards
         }
         
         this.startStage();

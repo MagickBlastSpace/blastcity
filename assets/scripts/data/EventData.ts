@@ -9,6 +9,34 @@ export class EventRewardData {
 
     @property
     progress = 0;
+
+    @property
+    startBonus_Bomb = 0;
+    @property
+    startBonus_Rocket = 0;
+    @property
+    startBonus_Discoball = 0;
+
+    @property
+    booster_Hammer = 0;
+    @property
+    booster_Bow = 0;
+    @property
+    booster_Cannon = 0;
+    @property
+    booster_Jester = 0;
+
+    @property
+    endlessLives_Minutes = 0;
+    @property
+    modifierX2_Minutes = 0;
+
+    @property
+    bomb_Minutes = 0;
+    @property
+    rocket_Minutes = 0;
+    @property
+    discoball_Minutes = 0;
 }
 
 
@@ -30,20 +58,26 @@ export class RocketFeverEventData {
     @property
     stageStep = 0;
 
-    @property
-    rewardGold = 0;
+    @property([EventRewardData])
+    rewards: EventRewardData[] = [];
 }
 
 @ccclass('MagicCauldronEventData')
 export class MagicCauldronEventData {
     @property([cc.String])
     pool: string[] = [];
+
+    @property([EventRewardData])
+    rewards: EventRewardData[] = [];
 }
 
 @ccclass('HiddenTempleEventData')
 export class HiddenTempleEventData {
     @property([cc.String])
     connectedTiles: string[] = [];
+
+    @property([EventRewardData])
+    rewards: EventRewardData[] = [];
 }
 
 

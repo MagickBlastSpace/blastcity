@@ -57,7 +57,7 @@ export class RocketFeverEvent extends WeeklyEventBase {
         if(this.collectedRockets >= this.eventData[this.currentStage].stageStep) {
             this.collectedRockets = this.collectedRockets - this.eventData[this.currentStage].stageStep;
 
-            UserData.instance.addResource("gold", this.eventData[this.currentStage].rewardGold);
+            this.applyRewards(this.eventData[this.currentStage].rewards);
 
             this.currentStage = this.currentStage + 1;
 

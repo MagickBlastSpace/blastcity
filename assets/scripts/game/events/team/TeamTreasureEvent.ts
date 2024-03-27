@@ -48,6 +48,7 @@ export class TeamTreasureEvent extends KingsCupEvent {
 
     pickReward(rewardIndex: number) {
         UserData.instance.addResource("gold", this.rewards[rewardIndex].gold);
+        //all rewards TBD
 
         this.isRewardPicked[rewardIndex] = true;
     }
