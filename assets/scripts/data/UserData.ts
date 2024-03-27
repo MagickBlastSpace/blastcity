@@ -13,6 +13,22 @@ export class UserData extends Component {
 
     private Gold: number = 0;
 
+    private StartBombs: number = 0;
+    private StartRockets: number = 0;
+    private StartDiscoballs: number = 0;
+
+    private Hammers: number = 0;
+    private Bows: number = 0;
+    private Cannons: number = 0;
+    private Jesters: number = 0;
+
+    private Bombs_EndTime: Date;
+    private Rockets_EndTime: Date;
+    private Discoballs_EndTime: Date;
+
+    private EndlessLives_EndTime: Date;
+    private Modifier_x2_EndTime: Date;
+
     public static instance: UserData = null;
 
 
@@ -26,6 +42,13 @@ export class UserData extends Component {
         this.currentProgress = 0;
 
         this.Gold = 5000;
+
+        const now = new Date();
+        this.Bombs_EndTime = new Date(now);
+        this.Rockets_EndTime = new Date(now);
+        this.Discoballs_EndTime = new Date(now);
+        this.EndlessLives_EndTime = new Date(now);
+        this.Modifier_x2_EndTime = new Date(now);
 
         SaveData.instance.loadUserData();
 
@@ -55,9 +78,61 @@ export class UserData extends Component {
 
 
     addResource(resourceType: string, value: number) {
+        let now = new Date();
+        let timeDiff = 0;
+
         switch(resourceType) {
             case "gold":
                 this.Gold += value;
+                break;
+
+            case "bomb":
+                this.StartBombs += value;
+                break;
+            case "rocket":
+                this.StartRockets += value;
+                break;
+            case "discoball":
+                this.StartDiscoballs += value;
+                break;
+
+            case "hammer":
+                this.Hammers += value;
+                break;
+            case "bow":
+                this.Bows += value;
+                break;
+            case "cannon":
+                this.Cannons += value;
+                break;
+            case "jester":
+                this.Jesters += value;
+                break;
+
+            case "bomb_minutes":   
+                timeDiff = this.Bombs_EndTime.getTime() - now.getTime();
+
+                this.Bombs_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.Bombs_EndTime + value * 60 * 1000;
+                break;
+            case "rocket_minutes":
+                timeDiff = this.Rockets_EndTime.getTime() - now.getTime();
+
+                this.Rockets_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.Rockets_EndTime + value * 60 * 1000;
+                break;
+            case "discoball_minutes":
+                timeDiff = this.Discoballs_EndTime.getTime() - now.getTime();
+
+                this.Discoballs_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.Discoballs_EndTime + value * 60 * 1000;
+                break;
+            case "endless_lives_minutes":
+                timeDiff = this.EndlessLives_EndTime.getTime() - now.getTime();
+
+                this.EndlessLives_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.EndlessLives_EndTime + value * 60 * 1000;
+                break;
+            case "modifier_x2_minutes":
+                timeDiff = this.Modifier_x2_EndTime.getTime() - now.getTime();
+
+                this.Modifier_x2_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.Modifier_x2_EndTime + value * 60 * 1000;
                 break;
         }
 
@@ -71,6 +146,37 @@ export class UserData extends Component {
             case "gold":
                 this.Gold -= value;
                 break;
+
+            case "bomb":
+                if(this.StartBombs >= value) {
+                    this.StartBombs -= value;
+                }
+
+                break;
+            case "rocket":
+                if(this.StartRockets >= value) {
+                    this.StartRockets -= value;
+                }
+
+                break;
+            case "discoball":
+                if(this.StartDiscoballs >= value) {
+                    this.StartDiscoballs -= value;
+                }
+                break;
+    
+            case "hammer":
+                this.Hammers -= value;
+                break;
+            case "bow":
+                this.Bows -= value;
+                break;
+            case "cannon":
+                this.Cannons -= value;
+                break;
+            case "jester":
+                this.Jesters -= value;
+                break;
         }
 
         this.node.emit("resources_update", this.Gold);
@@ -83,15 +189,58 @@ export class UserData extends Component {
         switch(resourceType) {
             case "gold":
                 return this.Gold;
+
+            case "bomb":
+                return this.StartBombs;
+            case "rocket":
+                return this.StartRockets;
+            case "discoball":
+                return this.StartDiscoballs;
+    
+            case "hammer":
+                return this.Hammers;
+            case "bow":
+                return this.Bows;
+            case "cannon":
+                return this.Cannons;
+            case "jester":
+                return this.Jesters;
         }
 
         return 0;
     }
 
     setResource(resourceType: string, value: number) {
+        if(!value) {
+            return;
+        }
+        
         switch(resourceType) {
             case "gold":
                 this.Gold = value;
+                break;
+
+            case "bomb":
+                this.StartBombs = value;
+                break;
+            case "rocket":
+                this.StartRockets = value;
+                break;
+            case "discoball":
+                this.StartDiscoballs = value;
+                break;
+    
+            case "hammer":
+                this.Hammers = value;
+                break;
+            case "bow":
+                this.Bows = value;
+                break;
+            case "cannon":
+                this.Cannons = value;
+                break;
+            case "jester":
+                this.Jesters = value;
                 break;
         }
 
@@ -102,6 +251,23 @@ export class UserData extends Component {
     getPlayerName(): string {
         return this.playerName;
     }
+
+
+    /*getRemainingTimeString(): string {
+        const now = new Date();
+        const timeDiff = this.endTime.getTime() - now.getTime();
+
+        if (timeDiff < 0) {
+            this.restartEvent();
+            return "Event ended. Restarting...";
+        }
+
+        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }*/
 }
 
 

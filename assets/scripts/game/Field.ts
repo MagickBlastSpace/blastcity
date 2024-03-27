@@ -5,6 +5,7 @@ import { Boosters } from './boosters/Boosters';
 import { StartBonuses } from './boosters/StartBonuses';
 import { ButlersGift } from './boosters/ButlersGift';
 import { SaveData } from '../data/SaveData';
+import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -1455,6 +1456,9 @@ export class Field extends Component {
                     let rocketCol = filteredRocketPositions.length > i ? filteredRocketPositions[i].y : availablePositions[i].y;
 
                     this.spawnRandomRocket(rocketRow, rocketCol);
+
+                    UserData.instance.subResource("rocket", 1);
+
                     break;
                 case "bomb":
                     let filteredBombPositions = this.filterPositionsByBombPattern(availablePositions);
@@ -1462,9 +1466,15 @@ export class Field extends Component {
                     let bombCol = filteredBombPositions.length > i ? filteredBombPositions[i].y : availablePositions[i].y;
 
                     this.spawnBomb(bombRow, bombCol);
+
+                    UserData.instance.subResource("bomb", 1);
+
                     break;
                 case "discoball":
                     this.spawnDiscoball(availablePositions[i].x, availablePositions[i].y);
+
+                    UserData.instance.subResource("discoball", 1);
+
                     break;
             }
         }

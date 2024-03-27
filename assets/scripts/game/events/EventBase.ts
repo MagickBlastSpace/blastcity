@@ -193,7 +193,21 @@ export class EventBase extends Component {
     private applyRewards(rewards: EventRewardData[]) {
         for(let i = 0; i < rewards.length; i++) {
             UserData.instance.addResource("gold", rewards[i].gold);
-            //remain rewards TBD
+
+            UserData.instance.addResource("bomb", rewards[i].startBonus_Bomb);
+            UserData.instance.addResource("rocket", rewards[i].startBonus_Rocket);
+            UserData.instance.addResource("discoball", rewards[i].startBonus_Discoball);
+
+            UserData.instance.addResource("hammer", rewards[i].booster_Hammer);
+            UserData.instance.addResource("bow", rewards[i].booster_Bow);
+            UserData.instance.addResource("cannon", rewards[i].booster_Cannon);
+            UserData.instance.addResource("jester", rewards[i].booster_Jester);
+
+            UserData.instance.addResource("bomb_minutes", rewards[i].bomb_Minutes);
+            UserData.instance.addResource("rocket_minutes", rewards[i].rocket_Minutes);
+            UserData.instance.addResource("discoball_minutes", rewards[i].discoball_Minutes);
+            UserData.instance.addResource("endless_lives_minutes", rewards[i].endlessLives_Minutes);
+            UserData.instance.addResource("modifier_x2_minutes", rewards[i].modifierX2_Minutes);
         }
     }
 }

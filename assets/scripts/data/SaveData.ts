@@ -33,7 +33,16 @@ export class SaveData extends Component {
     saveUserData() {
         let userData = {
             progress: UserData.instance.getProgress(),
-            gold: UserData.instance.getResource("gold")
+            gold: UserData.instance.getResource("gold"),
+
+            bomb: UserData.instance.getResource("bomb"),
+            rocket: UserData.instance.getResource("rocket"),
+            discoball: UserData.instance.getResource("discoball"),
+
+            hammer: UserData.instance.getResource("hammer"),
+            bow: UserData.instance.getResource("bow"),
+            cannon: UserData.instance.getResource("cannon"),
+            jester: UserData.instance.getResource("jester")
         };
         
         cc.sys.localStorage.setItem('userData', JSON.stringify(userData));
@@ -46,6 +55,15 @@ export class SaveData extends Component {
             let progress = userData.progress >= 55 ? userData.progress : 55;
             UserData.instance.setProgress(progress);
             UserData.instance.setResource("gold", userData.gold);
+
+            UserData.instance.setResource("bomb", userData.bomb);
+            UserData.instance.setResource("rocket", userData.rocket);
+            UserData.instance.setResource("discoball", userData.discoball);
+
+            UserData.instance.setResource("hammer", userData.hammer);
+            UserData.instance.setResource("bow", userData.bow);
+            UserData.instance.setResource("cannon", userData.cannon);
+            UserData.instance.setResource("jester", userData.jester);
         } else {
             console.log("No saved user data found");
             UserData.instance.setProgress(55);

@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, Sprite } from 'cc';
+import { _decorator, Component, Node, Sprite, Label } from 'cc';
 import { SpriteTileData } from '../../game/Tile';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartBonusItem')
@@ -20,6 +21,9 @@ export class UIStartBonusItem extends Component {
     @property(Node)
     startBonuses: Node = null;
 
+    @property(Label)
+    countLabel: Label = null;
+
 
     onLoad() {
         this.node.on(cc.Node.EventType.TOUCH_END, this.onClick, this);
@@ -29,6 +33,10 @@ export class UIStartBonusItem extends Component {
 
     start() {
         this.icon.spriteFrame = this.commonIcons.find(i => i.id === this.bonusName)?.icon;
+
+        this.updateCount();
+
+        UserData.instance.node.on("resources_update", (gold) => this.updateCount());
     }
 
     onClick(event: cc.Event.EventTouch): void {
@@ -42,6 +50,11 @@ export class UIStartBonusItem extends Component {
     
     setActiveState(isActive: boolean) {
         this.activeState.active = isActive;
+    }
+
+
+    updateCount() {
+        this.countLabel.string = UserData.instance.getResource(this.bonusName);
     }
 }
 
