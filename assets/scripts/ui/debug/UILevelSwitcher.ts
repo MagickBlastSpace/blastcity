@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, Prefab, instantiate, Button } from 'cc';
 import { Field } from '../../game/Field';
-import { GameData } from '../../data/GameData';
+import { GameData, LevelData } from '../../data/GameData';
 import { UILevelSwitcherItem } from './UILevelSwitcherItem';
 const { ccclass, property } = _decorator;
 
@@ -17,8 +17,16 @@ export class UILevelSwitcher extends Component {
 
     private items: [UILevelSwitcherItem] = [];
 
+    private itemsCounter: number = 0;
+
 
     start() {
+        this.itemsCounter = 1;
+
+        GameData.instance.node.on("level_data", (level) => this.spawnItem(level));
+    }
+    
+    spawnItems() {
         for(let i = 0; i < GameData.instance.levels.length; i++) {
             const data = GameData.instance.levels[i];
             const item = instantiate(this.levelItemPrefab);
@@ -31,6 +39,22 @@ export class UILevelSwitcher extends Component {
                 this.field.spawnInitialBoard(levelData);
             });
         }
+    }
+
+    spawnItem(levelData: LevelData) {
+        const item = instantiate(this.levelItemPrefab);
+        this.levelItemsContainer.addChild(item);
+        const level = item.getComponent('UILevelSwitcherItem');
+
+        levelData.id = this.itemsCounter;
+        level.init(levelData);
+        this.items.push(level);
+
+        item.on("click", (levelData) => {
+            this.field.spawnInitialBoard(levelData);
+        });
+
+        this.itemsCounter++;
     }
 }
 

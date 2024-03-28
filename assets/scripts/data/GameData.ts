@@ -400,6 +400,8 @@ export class GameData extends Component {
 
                 UserData.instance.setLevelsCount(this.levels.length);
                 Statistics.instance.init(this.levels);
+
+                this.node.emit("level_data", levelData);
             });
         });
     }
