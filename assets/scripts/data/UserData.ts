@@ -110,29 +110,29 @@ export class UserData extends Component {
                 break;
 
             case "bomb_minutes":   
-                timeDiff = this.Bombs_EndTime.getTime() - now.getTime();
+                timeDiff = this.Bombs_EndTime instanceof Date ? this.Bombs_EndTime.getTime() - now.getTime() : -1;
 
-                this.Bombs_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.Bombs_EndTime + value * 60 * 1000;
+                this.Bombs_EndTime = timeDiff < 0 ? new Date(now.getTime() + value * 60 * 1000) : new Date(this.Bombs_EndTime.getTime() + value * 60 * 1000);
                 break;
             case "rocket_minutes":
-                timeDiff = this.Rockets_EndTime.getTime() - now.getTime();
+                timeDiff = this.Rockets_EndTime instanceof Date ? this.Rockets_EndTime.getTime() - now.getTime() : -1;
 
-                this.Rockets_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.Rockets_EndTime + value * 60 * 1000;
+                this.Rockets_EndTime = timeDiff < 0 ? new Date(now.getTime() + value * 60 * 1000) : new Date(this.Rockets_EndTime.getTime() + value * 60 * 1000);
                 break;
             case "discoball_minutes":
-                timeDiff = this.Discoballs_EndTime.getTime() - now.getTime();
+                timeDiff = this.Discoballs_EndTime instanceof Date ? this.Discoballs_EndTime.getTime() - now.getTime() : -1;
 
-                this.Discoballs_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.Discoballs_EndTime + value * 60 * 1000;
+                this.Discoballs_EndTime = timeDiff < 0 ? new Date(now.getTime() + value * 60 * 1000) : new Date(this.Discoballs_EndTime.getTime() + value * 60 * 1000);
                 break;
             case "endless_lives_minutes":
-                timeDiff = this.EndlessLives_EndTime.getTime() - now.getTime();
+                timeDiff = this.EndlessLives_EndTime instanceof Date ? this.EndlessLives_EndTime.getTime() - now.getTime() : -1;
 
-                this.EndlessLives_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.EndlessLives_EndTime + value * 60 * 1000;
+                this.EndlessLives_EndTime = timeDiff < 0 ? new Date(now.getTime() + value * 60 * 1000) : new Date(this.EndlessLives_EndTime.getTime() + value * 60 * 1000);
                 break;
             case "modifier_x2_minutes":
-                timeDiff = this.Modifier_x2_EndTime.getTime() - now.getTime();
+                timeDiff = this.Modifier_x2_EndTime instanceof Date ? this.Modifier_x2_EndTime.getTime() - now.getTime() : -1;
 
-                this.Modifier_x2_EndTime = timeDiff < 0 ? now + value * 60 * 1000 : this.Modifier_x2_EndTime + value * 60 * 1000;
+                this.Modifier_x2_EndTime = timeDiff < 0 ? new Date(now.getTime() + value * 60 * 1000) : new Date(this.Modifier_x2_EndTime.getTime() + value * 60 * 1000);
                 break;
         }
 
@@ -253,13 +253,32 @@ export class UserData extends Component {
     }
 
 
-    /*getRemainingTimeString(): string {
+    getRemainingTimeString(timerType: string): string {
         const now = new Date();
-        const timeDiff = this.endTime.getTime() - now.getTime();
+
+        let timer = new Date();
+        switch(timerType) {
+            case "bomb":
+                timer = this.Bombs_EndTime;
+                break;
+            case "rocket":
+                timer = this.Rockets_EndTime;
+                break;
+            case "discoball":
+                timer = this.Discoballs_EndTime;
+                break;
+            case "endless_lives":
+                timer = this.EndlessLives_EndTime;
+                break;
+            case "modifier_x2":
+                timer = this.Modifier_x2_EndTime;
+                break;
+        }
+
+        const timeDiff = timer.getTime() - now.getTime();
 
         if (timeDiff < 0) {
-            this.restartEvent();
-            return "Event ended. Restarting...";
+            return "";
         }
 
         const hours = Math.floor(timeDiff / (1000 * 60 * 60));
@@ -267,7 +286,7 @@ export class UserData extends Component {
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }*/
+    }
 }
 
 

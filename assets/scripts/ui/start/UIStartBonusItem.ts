@@ -23,6 +23,8 @@ export class UIStartBonusItem extends Component {
 
     @property(Label)
     countLabel: Label = null;
+    @property(Label)
+    timeLabel: Label = null;
 
 
     onLoad() {
@@ -37,6 +39,10 @@ export class UIStartBonusItem extends Component {
         this.updateCount();
 
         UserData.instance.node.on("resources_update", (gold) => this.updateCount());
+    }
+
+    update(deltaTime: number) {
+        this.timeLabel.string = UserData.instance.getRemainingTimeString(this.bonusName);
     }
 
     onClick(event: cc.Event.EventTouch): void {
