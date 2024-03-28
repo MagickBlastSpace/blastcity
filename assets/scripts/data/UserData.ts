@@ -166,16 +166,24 @@ export class UserData extends Component {
                 break;
     
             case "hammer":
-                this.Hammers -= value;
+                if(this.Hammers >= value) {
+                    this.Hammers -= value;
+                }
                 break;
             case "bow":
-                this.Bows -= value;
+                if(this.Bows >= value) {
+                    this.Bows -= value;
+                }
                 break;
             case "cannon":
-                this.Cannons -= value;
+                if(this.Cannons >= value) {
+                    this.Cannons -= value;
+                }
                 break;
             case "jester":
-                this.Jesters -= value;
+                if(this.Jesters >= value) {
+                    this.Jesters -= value;
+                }
                 break;
         }
 

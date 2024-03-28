@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { Booster } from './Booster';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Boosters')
@@ -45,6 +46,8 @@ export class Boosters extends Component {
 
     setShuffleEvent() {
         this.node.emit("shuffle");
+
+        UserData.instance.subResource("jester", 1);
     }
 
 
@@ -59,12 +62,21 @@ export class Boosters extends Component {
         switch(this.activeBooster) {
             case "hammer":
                 this.singleExtraHit(row, col);
+
+                UserData.instance.subResource("hammer", 1);
+
                 break;
             case "arrow":
                 this.rowExtraHit(field, row, col);
+
+                UserData.instance.subResource("bow", 1);
+
                 break;
             case "cannon":
                 this.colExtraHit(field, row, col);
+
+                UserData.instance.subResource("cannon", 1);
+
                 break;
         }
 
