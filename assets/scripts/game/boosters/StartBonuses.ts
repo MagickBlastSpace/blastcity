@@ -5,9 +5,6 @@ const { ccclass, property } = _decorator;
 @ccclass('StartBonuses')
 export class StartBonuses extends Component {
 
-    @property(Node)
-    movesShop: Node = null;
-
     @property([Node])
     bonuses: Node[] = [];
 
@@ -22,8 +19,6 @@ export class StartBonuses extends Component {
         for(let i = 0; i < this.bonuses.length; i++) {
             this.bonuses[i].on("activate", (bonusName) => this.activateBonus(bonusName));
         }
-
-        this.movesShop.on("activate", (bonusName) => this.activateBonusFromShop(bonusName));
     }
 
 

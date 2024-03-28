@@ -91,7 +91,7 @@ export class Field extends Component {
         this.level.on("goal_complete_event", (goalId) => this.setGoalCompleteEvent(goalId));
         this.level.on("all_goals_complete_event", (movesRemain) => this.setLevelAsCompleted(movesRemain));
         this.level.on("extra", () => {
-            this.scheduleRespawn(0, true);
+            this.scheduleRespawn(0.2, true);
         });
 
         this.boosters.node.on("extra_hit", (row, col, isBonusChain, delay) => {

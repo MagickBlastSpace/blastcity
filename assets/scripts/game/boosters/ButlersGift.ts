@@ -25,7 +25,7 @@ export class ButlersGift extends Component {
             this.streak++;
         }
 
-        this.isGifted = false;
+        this.isGifted = !isWin;
 
         this.node.emit("refresh", this.streak);
 

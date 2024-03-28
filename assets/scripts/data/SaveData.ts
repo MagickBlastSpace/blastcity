@@ -79,6 +79,12 @@ export class SaveData extends Component {
         cc.sys.localStorage.removeItem('statistics');
         cc.sys.localStorage.removeItem('startBonuses');
         cc.sys.localStorage.removeItem('butlersGift');
+
+        for(let i = 0; i < this.events.length; i++) {
+            let eventComp = this.events[i].getComponent("EventBase");
+
+            cc.sys.localStorage.removeItem('event_' + eventComp.getEventId());
+        }
     }
 
 

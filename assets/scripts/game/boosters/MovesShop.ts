@@ -2,6 +2,7 @@ import { _decorator, Component, Node } from 'cc';
 import { LevelData, MovesShopStageData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
+import { StartBonuses } from './StartBonuses';
 const { ccclass, property } = _decorator;
 
 @ccclass('MovesShop')
@@ -12,6 +13,9 @@ export class MovesShop extends Component {
 
     @property([MovesShopStageData])
     stages: MovesShopStageData[] = [];
+
+    @property(StartBonuses)
+    startBonuses: StartBonuses = null;
 
     private currentStage: number = 0;
 
@@ -49,16 +53,18 @@ export class MovesShop extends Component {
     buyStage(): boolean {
         let curData = this.getStageData();
 
+        this.startBonuses.clear();
+
         UserData.instance.subResource("gold", curData.price);
 
         for(let i = 0; i < curData.rockets; i++) {
-            this.node.emit("activate", "rocket");
+            this.startBonuses.activateBonusFromShop("rocket");
         }
         for(let i = 0; i < curData.bombs; i++) {
-            this.node.emit("activate", "bomb");
+            this.startBonuses.activateBonusFromShop("bomb");
         }
         for(let i = 0; i < curData.discoballs; i++) {
-            this.node.emit("activate", "discoball");
+            this.startBonuses.activateBonusFromShop("discoball");
         }
 
         this.node.emit("extra_moves", curData.moves);
