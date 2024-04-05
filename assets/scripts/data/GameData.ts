@@ -113,6 +113,9 @@ export class LevelData {
     @property([SpecialTileStateData])
     statusesState: SpecialTileStateData[] = [];
 
+    @property
+    tutorial = '';
+
 
 
     static fromJSON(jsonString: string): LevelData {
@@ -258,6 +261,12 @@ export class LevelData {
         else {
             levelData.statusesState = [];
         }
+
+        if (jsonData.tutorial !== cc.undefined && jsonData.tutorial !== null) {
+            levelData.tutorial = jsonData.tutorial.toLowerCase();
+        } else {
+            levelData.tutorial = "";
+        }
     
         return levelData;
     }
@@ -311,7 +320,8 @@ export class LevelData {
                 row: tile.row,
                 col: tile.col,
                 customParameter: tile.customParameter
-            }))
+            })),
+            tutorial: this.tutorial
         };
 
         return JSON.stringify(json);

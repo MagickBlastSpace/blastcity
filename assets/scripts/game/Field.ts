@@ -259,6 +259,10 @@ export class Field extends Component {
         
         this.node.emit("level_init", level);
         this.node.emit("centrate", this.tileArray);
+
+        if(level.tutorial) {
+            this.node.emit("tutorial", level.tutorial);
+        }
     }
 
     restoreSpecTilesState(specs: SpecialTileStateData[]) {

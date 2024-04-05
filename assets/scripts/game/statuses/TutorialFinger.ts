@@ -4,7 +4,9 @@ const { ccclass, property } = _decorator;
 
 @ccclass('TutorialFinger')
 export class TutorialFinger extends Bubble {
-    startDestroyConsequences() {}
+    startDestroyConsequences() {
+        this.node.emit("goal", "tutorial");
+    }
 }
 
 
