@@ -299,6 +299,11 @@ export class Level extends Component {
     getDifficulty(): string {
         return this.difficulty;
     }
+
+
+    getFailsCount(): number {
+        return this.stats.fails;
+    }
 }
 
 

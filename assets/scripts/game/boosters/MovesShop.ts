@@ -3,6 +3,7 @@ import { LevelData, MovesShopStageData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { StartBonuses } from './StartBonuses';
+import { Level } from '../Level';
 const { ccclass, property } = _decorator;
 
 @ccclass('MovesShop')
@@ -10,6 +11,9 @@ export class MovesShop extends Component {
 
     @property(Node)
     field: Node = null;
+
+    @property(Level)
+    level: Level = null;
 
     @property([MovesShopStageData])
     stages: MovesShopStageData[] = [];
@@ -67,7 +71,7 @@ export class MovesShop extends Component {
             this.startBonuses.activateBonusFromShop("discoball");
         }
 
-        this.node.emit("extra_moves", curData.moves);
+        this.node.emit("extra_moves", this.getTotalMovesCount());
 
         this.addStageProgress();
 
@@ -81,6 +85,17 @@ export class MovesShop extends Component {
 
     setCurrentStage(stage: number) {
         this.currentStage = stage;
+    }
+
+
+    getTotalMovesCount(): number {
+        const failsCount = this.level.getFailsCount();
+
+        let curData = this.getStageData();
+        const moves = curData.moves;
+        const additionalMoves = failsCount >= 5 && this.currentStage === 0 ? 5 * (failsCount - 4) : 0;
+
+        return moves + additionalMoves;
     }
 }
 

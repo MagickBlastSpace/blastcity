@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Label, Button } from 'cc';
 import { MovesShopStageData } from '../../data/GameData';
 import { MovesShop } from '../../game/boosters/MovesShop';
+import { Level } from '../../game/Level';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelMovesShop')
@@ -32,7 +33,9 @@ export class UILevelMovesShop extends Component {
 
             this.data = this.movesShop.getStageData();
 
-            this.stageDataLabel.string = "Buy " + this.data.moves + " Moves"; 
+            const totalMoves = this.movesShop.getTotalMovesCount();
+
+            this.stageDataLabel.string = "Buy " + totalMoves + " Moves"; 
 
             this.additinalStageDataLabel.string = "";
             if(this.isAdditionalDataAvailable(this.data)) {
