@@ -30,9 +30,9 @@ export class UITutorialPopup extends Component {
 
 
     checkTutorialCompletion(id: string) {
-        if(id === "tutorial") {
+        //if(id === "tutorial") {
             this.show(false);
-        }
+        //}
     }
 
     show(isActive: boolean) {
