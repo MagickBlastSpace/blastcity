@@ -68,6 +68,9 @@ export class Statistics extends Component {
             this.levelsStats[index].destroyedByDiscoball = newStat.destroyedByDiscoball;
             this.levelsStats[index].fails = newStat.fails;
         }
+        else {
+            this.levelsStats.push(newStat);
+        }
     }
 
     loadLevelStat(id: number): LevelProgressStatisticsData {

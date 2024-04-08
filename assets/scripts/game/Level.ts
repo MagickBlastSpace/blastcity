@@ -68,6 +68,7 @@ export class Level extends Component {
         }
         else {
             Statistics.instance.updateLevelStat(this.stats);
+            SaveData.instance.saveStatistics();
         }
 
         switch(this.difficulty) {
