@@ -390,24 +390,70 @@ export class GameData extends Component {
     loadLevelsFromGamePush() {
         this.levels = [];
 
-        let urls = [];
+        //let urls = [];
 
-        const levelsCount = gamepush.variables.get("levelsCount");
+        //const levelsCount = gamepush.variables.get("levelsCount");
 
         let difficulty = "A";
         if (gamepush.experiments.has('LDT', 'B')) {
             difficulty = 'B';
         }
         
-        for(let i = 0; i < levelsCount; i++) {
+        /*for(let i = 0; i < levelsCount; i++) {
             const url = gamepush.variables.get("lvl_" + i.toString() + "_" + difficulty);  
             urls.push(url);
-        }
+        }*/
 
-        this.loadLevelsFromURLs(urls);
+        //this.loadLevelsFromURLs(urls);
+        this.loadLevelsFromURL(gamepush.variables.get("levels_" + difficulty));
     }
 
 
+    loadLevelsFromURL(url: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
+                if (err) {
+                    console.error('Error loading file:', url, err);
+                    reject(err);
+                    return;
+                }
+    
+                // Parse JSON string to extract LevelData objects
+                try {
+                    const jsonData = JSON.parse(file);
+                    const levelDataArray: LevelData[] = [];
+    
+                    // Iterate over each LevelData object in the JSON data
+                    for (const levelJson of jsonData.levels) {
+                        const levelData = GameData.parseLevelData(JSON.stringify(levelJson));
+                        levelDataArray.push(levelData);
+                    }
+    
+                    // Set loaded levels
+                    this.levels = levelDataArray;
+    
+                    // Emit events for each loaded level data
+                    levelDataArray.forEach(levelData => {
+                        this.node.emit("level_data", levelData);
+                    });
+    
+                    // Set levels count and initialize statistics
+                    UserData.instance.setLevelsCount(this.levels.length);
+                    Statistics.instance.init(this.levels);
+    
+                    // Emit event indicating levels are loaded
+                    this.node.emit("levels_loaded");
+    
+                    resolve();
+                } catch (error) {
+                    console.error('Error parsing JSON:', error);
+                    reject(error);
+                }
+            });
+        });
+    }
+    
+    
     loadLevelsFromURLs(urls: string[]): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             let loadedLevels: LevelData[] = [];
@@ -511,6 +557,22 @@ export class GameData extends Component {
     static parseLevelData(jsonString: string): LevelData {
         const jsonData = JSON.parse(jsonString);
         return LevelData.fromJSON(JSON.stringify(jsonData));
+    }
+
+
+    static parseLevelsData(jsonString: string): LevelData[] {
+        try {
+            const jsonData = JSON.parse(jsonString);
+            if (Array.isArray(jsonData.levels)) {
+                return jsonData.levels.map((levelObj: any) => LevelData.fromJSON(JSON.stringify(levelObj)));
+            } else {
+                console.error('Invalid JSON format: levels property is not an array');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+            return [];
+        }
     }
 }
 
