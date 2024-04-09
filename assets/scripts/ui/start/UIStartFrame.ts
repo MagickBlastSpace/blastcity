@@ -41,6 +41,10 @@ export class UIStartFrame extends UIFrameBase {
         for(let i = 0; i < this.eventBtns.length && i < this.eventPopups.length; i++) {
             this.eventBtns[i].node.on(Button.EventType.CLICK, () => this.onEventBtnClick(i), this);
         }
+
+        GameData.instance.node.on("levels_loaded", () => this.unlockPlay());
+
+        this.playBtn.node.active = false;
     }
 
     onPlayBtnClick() {
@@ -74,6 +78,13 @@ export class UIStartFrame extends UIFrameBase {
 
     onEventBtnClick(index: number) {
         this.eventPopups[index].show();
+    }
+
+
+    unlockPlay() {
+        this.refresh();
+
+        this.playBtn.node.active = true;
     }
 }
 

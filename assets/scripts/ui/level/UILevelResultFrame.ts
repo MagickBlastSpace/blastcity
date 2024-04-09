@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Label, Button } from 'cc';
 import { UIStartFrame } from '../start/UIStartFrame';
 import { UIFrameBase } from '../UIFrameBase';
@@ -65,6 +67,8 @@ export class UILevelResultFrame extends UIFrameBase {
         this.startFrame.show();
 
         this.hide();
+
+        //gamepush.ads.showFullscreen();
     }
 }
 

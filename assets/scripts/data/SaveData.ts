@@ -65,7 +65,7 @@ export class SaveData extends Component {
             UserData.instance.setResource("cannon", userData.cannon);
             UserData.instance.setResource("jester", userData.jester);
         } else {
-            console.log("No saved user data found");
+            //console.log("No saved user data found");
             UserData.instance.setProgress(55);
         }
 
@@ -129,7 +129,7 @@ export class SaveData extends Component {
             }
         }
         else {
-            console.log("No saved level progress data found");
+            //console.log("No saved level progress data found");
         }
     }
 
@@ -309,7 +309,7 @@ export class SaveData extends Component {
             let startBonusesComp = this.startBonuses.getComponent("StartBonuses");
             startBonusesComp.setStartBonusPool(startBonusesData.bonuses);
         } else {
-            console.log("No saved start bonuses data found");
+            //console.log("No saved start bonuses data found");
         }
     }
 
@@ -335,7 +335,7 @@ export class SaveData extends Component {
             butlersGiftComp.setStreak(butlersGiftData.streak);
             butlersGiftComp.setIsGifted(butlersGiftData.isGifted);
         } else {
-            console.log("No saved butlers gift data found");
+            //console.log("No saved butlers gift data found");
         }
     }
 
@@ -366,7 +366,7 @@ export class SaveData extends Component {
                     statisticsComp.updateLevelStat(statistics.levelsStats[i]);
                 }
             } else {
-                console.log("No stats data found");
+                //console.log("No stats data found");
             }
         } catch (error) {
             console.error("Error loading statistics:", error);
@@ -424,7 +424,7 @@ export class SaveData extends Component {
 
                         eventComp.setLastTimestamp(eventData.lastAttemptTimestamp);
                     } else {
-                        console.log("No event " + eventComp.getEventId() + " data found");
+                        //console.log("No event " + eventComp.getEventId() + " data found");
                     }
                 } catch (error) {
                     console.error("Error loading event " + eventComp.getEventId() + ": ", error);

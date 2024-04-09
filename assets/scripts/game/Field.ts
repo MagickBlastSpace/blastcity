@@ -1846,7 +1846,7 @@ export class Field extends Component {
 
         for(let j = 0; j < this.spawnPools.length; j++) {
             if(this.spawnPools[j].includes(goalId) && !this.availableColors.includes(goalId)) {
-                this.removeStringFromArray(this.spawnPool[j], goalId);
+                this.removeStringFromArray(this.spawnPools[j], goalId);
             }
         }
     }

@@ -43,14 +43,14 @@ export class SpaceMissionEvent extends CompetitiveEventBase {
         super.activateEvent();
 
         if(!this.isEventAvailable()) {
-            console.log("Unable to start Space Mission");
+            //console.log("Unable to start Space Mission");
             return;
         }
 
         this.currentStep = 0;
         this.currentLevel = 0;
 
-        console.log("Space Mission started for player at level: ", UserData.instance.getProgress());
+        //console.log("Space Mission started for player at level: ", UserData.instance.getProgress());
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -75,7 +75,7 @@ export class SpaceMissionEvent extends CompetitiveEventBase {
         if(this.currentStep >= this.eventData[this.currentLevel].levelsCount) {
             this.handleEventCompletion();
 
-            console.log("Sky Race level completed!");
+            //console.log("Sky Race level completed!");
         }
         else {
             SaveData.instance.saveEvent(this.eventId);
@@ -87,7 +87,7 @@ export class SpaceMissionEvent extends CompetitiveEventBase {
 
         SaveData.instance.saveEvent(this.eventId);
 
-        console.log("Sky Race level failed!");
+        //console.log("Sky Race level failed!");
     }
 
 

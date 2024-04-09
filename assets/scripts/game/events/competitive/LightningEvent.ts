@@ -65,7 +65,7 @@ export class LightningEvent extends KingsCupEvent {
         super.activateEvent();
 
         if(!this.isEventAvailable()) {
-            console.log("Unable to start Faster Than Lightning event");
+            //console.log("Unable to start Faster Than Lightning event");
             return;
         }
 

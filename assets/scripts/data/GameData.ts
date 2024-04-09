@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Vec2, Prefab } from 'cc';
 import { UserData } from './UserData';
 import { Statistics } from './Statistics';
@@ -346,18 +348,153 @@ export class GameData extends Component {
 
     onLoad() {
         GameData.instance = this;
-
-        //this.loadLevelsFromDirectory("levels");
     }
 
     start() {
-        this.loadLevelsFromDirectory("levels");
+        //this.loadLevelsFromDirectory("levels");
+        //this.loadLevelsFromGamePush();
+
+        this.loadLevels();
     }
 
-    static parseLevelData(jsonString: string): LevelData {
-        const jsonData = JSON.parse(jsonString);
-        return LevelData.fromJSON(JSON.stringify(jsonData));
+
+    loadLevels() {
+        this.waitForGamePushVariables().then(() => {
+            this.loadLevelsFromGamePush();
+        }).catch((error) => {
+            console.error('Error wait for Game Push variables:', error);
+
+            this.loadLevels();
+        });
     }
+    
+    waitForGamePushVariables(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (gamepush.variables) {
+                resolve();
+            } else {
+                const checkReady = () => {
+                    if (gamepush.variables) {
+                        resolve();
+                    } else {
+                        setTimeout(checkReady, 100);
+                    }
+                };
+    
+                checkReady();
+            }
+        });
+    }
+
+
+    loadLevelsFromGamePush() {
+        this.levels = [];
+
+        let urls = [];
+
+        const levelsCount = gamepush.variables.get("levelsCount");
+        
+        for(let i = 0; i < levelsCount; i++) {
+            const url = gamepush.variables.get("level_" + i.toString());  
+            urls.push(url);
+        }
+
+        this.loadLevelsFromURLs(urls);
+    }
+
+
+    /*loadLevelsFromURLs(urls: string[]): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const loadedLevels: LevelData[] = [];
+
+            //let counter = 0;
+    
+            const promises = urls.map((url: string) => {
+                return new Promise<void>((resolveFile, rejectFile) => {
+                    cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
+                        if (err) {
+                            console.error('Error loading file:', url, err);
+                            rejectFile(err);
+                            return;
+                        }
+    
+                        let levelData = GameData.parseLevelData(file);
+                        //levelData.id = counter;
+                        loadedLevels.push(levelData);
+
+                        //counter++;
+    
+                        this.node.emit("level_data", levelData);
+    
+                        resolveFile();
+                    });
+                });
+            });
+    
+            Promise.all(promises)
+                .then(() => {
+                    loadedLevels.sort((a, b) => {
+                        const idA = parseInt(a.id);
+                        const idB = parseInt(b.id);
+                    
+                        return idA - idB;
+                    });
+
+                    this.levels = loadedLevels;
+    
+                    UserData.instance.setLevelsCount(this.levels.length);
+                    Statistics.instance.init(this.levels);
+    
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    }*/
+
+
+    loadLevelsFromURLs(urls: string[]): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            let loadedLevels: LevelData[] = [];
+            let currentIndex = 0;
+    
+            const loadNextFile = () => {
+                if (currentIndex >= urls.length) {
+                    this.levels = loadedLevels;
+
+                    UserData.instance.setLevelsCount(this.levels.length);
+                    Statistics.instance.init(this.levels);
+
+                    this.node.emit("levels_loaded");
+
+                    resolve();
+                    return;
+                }
+    
+                const url = urls[currentIndex];
+                cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
+                    if (err) {
+                        console.error('Error loading file:', url, err);
+                        reject(err);
+                        return;
+                    }
+    
+                    let levelData = GameData.parseLevelData(file);
+                    loadedLevels.push(levelData);
+    
+                    this.node.emit("level_data", levelData);
+    
+                    currentIndex++; // Move to the next URL
+                    loadNextFile(); // Load the next file
+                });
+            };
+    
+            // Start loading the first file
+            loadNextFile();
+        });
+    }
+    
 
 
     loadLevelsFromDirectory(directoryPath: string) {
@@ -414,6 +551,12 @@ export class GameData extends Component {
                 this.node.emit("level_data", levelData);
             });
         });
+    }
+
+
+    static parseLevelData(jsonString: string): LevelData {
+        const jsonData = JSON.parse(jsonString);
+        return LevelData.fromJSON(JSON.stringify(jsonData));
     }
 }
 

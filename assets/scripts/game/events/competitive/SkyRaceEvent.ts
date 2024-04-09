@@ -34,7 +34,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         const timeDiffInMillis = this.endTime.getTime() - now.getTime();
         const hoursDiff = timeDiffInMillis / (1000 * 60 * 60);
 
-        console.log("can participate hours diff: " + hoursDiff);
+        //console.log("can participate hours diff: " + hoursDiff);
 
         return  super.canParticipate() && hoursDiff > 1;
     }
@@ -43,13 +43,13 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         super.activateEvent();
 
         if(!this.isEventAvailable()) {
-            console.log("Unable to start Sky Race");
+            //console.log("Unable to start Sky Race");
             return;
         }
 
         this.currentStep = 0;
 
-        console.log("Sky Race started for player at level: ", UserData.instance.getProgress());
+        //console.log("Sky Race started for player at level: ", UserData.instance.getProgress());
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -72,7 +72,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         if(this.currentStep >= this.TOTAL_LEVELS) {
             this.handleEventCompletion();
 
-            console.log("Sky Race completed!");
+            //console.log("Sky Race completed!");
         }
         else {
             SaveData.instance.saveEvent(this.eventId);

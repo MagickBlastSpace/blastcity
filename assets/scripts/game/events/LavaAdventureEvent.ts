@@ -41,13 +41,13 @@ export class LavaAdventureEvent extends EventBase {
         }
 
         if(!this.isEventAvailable()) {
-            console.log("Unable to start Lava Adventure");
+            //console.log("Unable to start Lava Adventure");
             return;
         }
 
         this.currentStep = 0;
 
-        console.log("Lava Adventure started for player at level: ", UserData.instance.getProgress());
+        //console.log("Lava Adventure started for player at level: ", UserData.instance.getProgress());
     }
 
 
@@ -100,7 +100,7 @@ export class LavaAdventureEvent extends EventBase {
 
             UserData.instance.addResource("gold", this.REWARD_COINS);
 
-            console.log("Lava Adventure completed! Player rewarded:", this.REWARD_COINS, "coins");
+            //console.log("Lava Adventure completed! Player rewarded:", this.REWARD_COINS, "coins");
         }
         else {
             SaveData.instance.saveEvent(this.eventId);
@@ -110,7 +110,7 @@ export class LavaAdventureEvent extends EventBase {
     private handleLevelFail() {
         this.handleEventCompletion();
 
-        console.log("Lava Adventure failed!");
+        //console.log("Lava Adventure failed!");
     }
 
 

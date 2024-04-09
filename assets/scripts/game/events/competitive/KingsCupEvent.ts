@@ -24,14 +24,14 @@ export class KingsCupEvent extends WeeklyContestEvent {
         }
 
         if(!this.isEventAvailable()) {
-            console.log("Unable to start King's Cup");
+            //console.log("Unable to start King's Cup");
             return;
         }
 
         this.currentStep = 0;
         this.isComplete = false;
 
-        console.log("King's Cup started for player at level: ", UserData.instance.getProgress());
+        //console.log("King's Cup started for player at level: ", UserData.instance.getProgress());
 
         SaveData.instance.saveEvent(this.eventId);
     }

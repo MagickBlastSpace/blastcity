@@ -123,13 +123,13 @@ export class RocketFeverEvent extends WeeklyEventBase {
         super.activateEvent();
 
         if(!this.isEventAvailable()) {
-            console.log("Unable to start Rocket Fever");
+            //console.log("Unable to start Rocket Fever");
             return;
         }
 
         this.currentStage = 0;
 
-        console.log("Rocket Fever started");
+        //console.log("Rocket Fever started");
 
         SaveData.instance.saveEvent(this.eventId);
     }
