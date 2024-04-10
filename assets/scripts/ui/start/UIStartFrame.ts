@@ -1,8 +1,7 @@
-import { _decorator, Component, Node, Button, Label } from 'cc';
+import { _decorator, Component, Node, Button, Label, Sprite, SpriteFrame } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
-import { Field } from '../../game/Field';
 import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
@@ -20,8 +19,17 @@ export class UIStartFrame extends UIFrameBase {
     @property(UIFrameBase)
     briefingPopup: UIFrameBase = null;
 
-    /*@property(Field)
-    field: Field = null;*/
+    @property(Sprite)
+    sidePanel_Left: Sprite = null;
+    @property(Sprite)
+    sidePanel_Right: Sprite = null;
+
+    @property(SpriteFrame)
+    common: SpriteFrame = null;
+    @property(SpriteFrame)
+    hard: SpriteFrame = null;
+    @property(SpriteFrame)
+    superHard: SpriteFrame = null;
 
     @property(Label)
     levelLabel: Label = null;
@@ -32,6 +40,7 @@ export class UIStartFrame extends UIFrameBase {
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
         SaveData.instance.node.on("level_progress_loaded", () => this.hide());
+        this.briefingPopup.node.on("play", () => this.hide());
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
@@ -51,26 +60,29 @@ export class UIStartFrame extends UIFrameBase {
     }
 
     onPlayBtnClick() {
-        /*try {
-            let levelsCount = GameData.instance.levels.length;
-            this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
-
-            this.hide();
-        }
-        catch (error) {
-            console.log(error);
-        }*/
         this.briefingPopup.show();
     }
 
 
     refresh() {
-        //let levelData = GameData.instance.levels[UserData.instance.getProgress()];
+        let levelsCount = GameData.instance.levels.length;
+        let levelData = GameData.instance.levels[UserData.instance.getProgress() % levelsCount];
 
         let currentLevelNumber = UserData.instance.getProgress() + 1;
         this.levelLabel.string = "Level " + currentLevelNumber;
 
-        //this.difficultyLabel.string = levelData ? "Difficulty\n" + levelData.difficulty : "Difficulty\nCommon";
+        if(levelData.difficulty === "Hard") {
+            this.sidePanel_Left.spriteFrame = this.hard;
+            this.sidePanel_Right.spriteFrame = this.hard;
+        }
+        else if(levelData.difficulty === "SuperHard") {
+            this.sidePanel_Left.spriteFrame = this.superHard;
+            this.sidePanel_Right.spriteFrame = this.superHard;
+        }
+        else {
+            this.sidePanel_Left.spriteFrame = this.common;
+            this.sidePanel_Right.spriteFrame = this.common;
+        }
     }
 
     show() {

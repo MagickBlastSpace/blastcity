@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Button } from 'cc';
+import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { Field } from '../../game/Field';
 import { GameData } from '../../data/GameData';
@@ -13,6 +13,24 @@ export class UIStartBriefingPopup extends UIFrameBase {
     levelLabel: Label = null;
     @property(Label)
     difficultyLabel: Label = null;
+
+    @property(Sprite)
+    frame: Sprite = null;
+    @property(SpriteFrame)
+    common: SpriteFrame = null;
+    @property(SpriteFrame)
+    hard: SpriteFrame = null;
+    @property(SpriteFrame)
+    superHard: SpriteFrame = null;
+
+    @property(Sprite)
+    header: Sprite = null;
+    @property(SpriteFrame)
+    header_common: SpriteFrame = null;
+    @property(SpriteFrame)
+    header_hard: SpriteFrame = null;
+    @property(SpriteFrame)
+    header_superHard: SpriteFrame = null;
 
     @property(Button)
     playBtn: Button = null;
@@ -33,12 +51,26 @@ export class UIStartBriefingPopup extends UIFrameBase {
     }
 
     refresh() {
-        let levelData = GameData.instance.levels[UserData.instance.getProgress()];
+        let levelsCount = GameData.instance.levels.length;
+        let levelData = GameData.instance.levels[UserData.instance.getProgress() % levelsCount];
 
         let currentLevelNumber = UserData.instance.getProgress() + 1;
         this.levelLabel.string = "Level " + currentLevelNumber;
 
         this.difficultyLabel.string = levelData ? levelData.difficulty + " Difficulty" : "Common Difficulty";
+
+        if(levelData.difficulty === "Hard") {
+            this.frame.spriteFrame = this.hard;
+            this.header.spriteFrame = this.header_hard;
+        }
+        else if(levelData.difficulty === "SuperHard") {
+            this.frame.spriteFrame = this.superHard;
+            this.header.spriteFrame = this.header_superHard;
+        }
+        else {
+            this.frame.spriteFrame = this.common;
+            this.header.spriteFrame = this.header_common;
+        }
     }
 
     show() {
@@ -54,6 +86,8 @@ export class UIStartBriefingPopup extends UIFrameBase {
             this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
 
             this.hide();
+
+            this.node.emit("play");
         }
         catch (error) {
             console.log(error);
