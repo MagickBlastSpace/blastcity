@@ -17,8 +17,11 @@ export class UIStartFrame extends UIFrameBase {
     @property([UIFrameBase])
     eventPopups: UIFrameBase[] = [];
 
-    @property(Field)
-    field: Field = null;
+    @property(UIFrameBase)
+    briefingPopup: UIFrameBase = null;
+
+    /*@property(Field)
+    field: Field = null;*/
 
     @property(Label)
     levelLabel: Label = null;
@@ -48,7 +51,7 @@ export class UIStartFrame extends UIFrameBase {
     }
 
     onPlayBtnClick() {
-        try {
+        /*try {
             let levelsCount = GameData.instance.levels.length;
             this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
 
@@ -56,17 +59,18 @@ export class UIStartFrame extends UIFrameBase {
         }
         catch (error) {
             console.log(error);
-        }
+        }*/
+        this.briefingPopup.show();
     }
 
 
     refresh() {
-        let levelData = GameData.instance.levels[UserData.instance.getProgress()];
+        //let levelData = GameData.instance.levels[UserData.instance.getProgress()];
 
         let currentLevelNumber = UserData.instance.getProgress() + 1;
         this.levelLabel.string = "Level " + currentLevelNumber;
 
-        this.difficultyLabel.string = levelData ? "Difficulty\n" + levelData.difficulty : "Difficulty\nCommon";
+        //this.difficultyLabel.string = levelData ? "Difficulty\n" + levelData.difficulty : "Difficulty\nCommon";
     }
 
     show() {

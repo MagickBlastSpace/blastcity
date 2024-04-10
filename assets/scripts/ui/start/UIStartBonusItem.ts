@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Sprite, Label } from 'cc';
+import { _decorator, Component, Node, Sprite, Label, SpriteFrame } from 'cc';
 import { SpriteTileData } from '../../game/Tile';
 import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
@@ -9,6 +9,13 @@ export class UIStartBonusItem extends Component {
     @property(Sprite)
     icon: Sprite = null;
 
+    @property(Sprite)
+    frame: Sprite = null;
+    @property(SpriteFrame)
+    active: SpriteFrame = null;
+    @property(SpriteFrame)
+    inactive: SpriteFrame = null;
+
     @property([SpriteTileData])
     commonIcons: SpriteTileData[] = [];
 
@@ -16,7 +23,7 @@ export class UIStartBonusItem extends Component {
     bonusName: string = "";
 
     @property(Node)
-    activeState: Node = null;
+    timePanel: Node = null;
 
     @property(Node)
     startBonuses: Node = null;
@@ -43,6 +50,8 @@ export class UIStartBonusItem extends Component {
 
     update(deltaTime: number) {
         this.timeLabel.string = UserData.instance.getRemainingTimeString(this.bonusName);
+
+        this.timePanel.active = this.timeLabel.string !== "";
     }
 
     onClick(event: cc.Event.EventTouch): void {
@@ -55,7 +64,7 @@ export class UIStartBonusItem extends Component {
     }
     
     setActiveState(isActive: boolean) {
-        this.activeState.active = isActive;
+        this.frame.spriteFrame = isActive ? this.active : this.inactive;
     }
 
 
