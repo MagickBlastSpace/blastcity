@@ -36,16 +36,24 @@ export class UIStartBriefingPopup extends UIFrameBase {
     playBtn: Button = null;
     @property(Button)
     closeBtn: Button = null;
+    @property(Button)
+    butlersGiftInfoBtn: Button = null;
+
+    @property(UIFrameBase)
+    butlersGiftInfoPopup: UIFrameBase = null;
 
     @property(Field)
     field: Field = null;
 
+
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
         SaveData.instance.node.on("level_progress_loaded", () => this.hide());
+        this.butlersGiftInfoPopup.node.on("play", () => this.onPlayBtnClick());
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.hide, this);
+        this.butlersGiftInfoBtn.node.on(Button.EventType.CLICK, this.showButlerGiftInfo, this);
 
         this.refresh();
     }
@@ -92,6 +100,10 @@ export class UIStartBriefingPopup extends UIFrameBase {
         catch (error) {
             console.log(error);
         }
+    }
+
+    showButlerGiftInfo() {
+        this.butlersGiftInfoPopup.show();
     }
 }
 
