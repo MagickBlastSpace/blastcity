@@ -15,8 +15,6 @@ export class BoxRed extends Box {
     }
 
     startDestroyConsequences() {
-        this.node.emit("goal", "box"); //temp for version update
-
         this.node.emit("goal", "colored_box");
     }
 }

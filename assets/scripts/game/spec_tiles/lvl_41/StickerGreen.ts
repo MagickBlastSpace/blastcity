@@ -15,8 +15,6 @@ export class StickerGreen extends Sticker {
     }
     
     startDestroyConsequences() {
-        this.node.emit("goal", "sticker"); //temp for version update
-
         this.node.emit("goal", "colored_balloon");
     }
 }

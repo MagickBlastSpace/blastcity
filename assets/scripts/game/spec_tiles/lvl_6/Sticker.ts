@@ -30,8 +30,6 @@ export class Sticker extends SpecTileBase {
 
 
     startDestroyConsequences() {
-        this.node.emit("goal", "sticker"); //temp for version update
-
         this.node.emit("goal", "balloon");
     }
 }

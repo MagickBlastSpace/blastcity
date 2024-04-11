@@ -443,6 +443,14 @@ export class Field extends Component {
     }
 
     spawnSpecialTile(row: number, col: number, tileId: string): Node {
+        if(tileId.split("_")[1] === "random") {
+            let availableColors = this.getAvailableColors();
+            let colorIndex = Math.floor(Math.random() * availableColors.length);
+            let color = availableColors[colorIndex];
+
+            tileId = tileId.split("_")[0] + "_" + color;
+        }
+        
         const prefab = this.specialPrefabs.find(p => p.id === tileId)?.prefab;
         if(prefab === null) {
             return;

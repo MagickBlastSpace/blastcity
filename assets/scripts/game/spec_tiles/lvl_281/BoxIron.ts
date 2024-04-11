@@ -9,6 +9,12 @@ export class BoxIron extends Box {
             this.strength--;
         }
     }
+
+    startDestroyConsequences() {
+        //this.node.emit("goal", "box"); //temp for version update
+
+        this.node.emit("goal", "iron_box");
+    }
 }
 
 
