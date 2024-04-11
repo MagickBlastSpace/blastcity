@@ -93,7 +93,7 @@ export class MovesShop extends Component {
 
         let curData = this.getStageData();
         const moves = curData.moves;
-        const additionalMoves = failsCount >= 5 && this.currentStage === 0 ? 5 * (failsCount - 4) : 0;
+        const additionalMoves = failsCount >= 5 ? 5 * (failsCount - 4) : 0;
 
         return moves + additionalMoves;
     }
