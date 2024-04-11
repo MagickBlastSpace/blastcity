@@ -1,12 +1,14 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label, Button } from 'cc';
+import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame } from 'cc';
 import { UIStartFrame } from '../start/UIStartFrame';
 import { UIFrameBase } from '../UIFrameBase';
 import { UILevelMovesShop } from './UILevelMovesShop';
 import { SaveData } from '../../data/SaveData';
 import { ButlersGift } from '../../game/boosters/ButlersGift';
 import { Level } from '../../game/Level';
+import { UserData } from '../../data/UserData';
+import { GameData } from '../../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -14,15 +16,29 @@ export class UILevelResultFrame extends UIFrameBase {
 
     @property(Label)
     resultLabel: Label = null;
-
     @property(Label)
     buttonLabel: Label = null;
-
     @property(Label)
     goldLabel: Label = null;
+    @property(Label)
+    levelLabel: Label = null;
+
+    @property(Sprite)
+    frame: Sprite = null;
+    @property(SpriteFrame)
+    common: SpriteFrame = null;
+    @property(SpriteFrame)
+    hard: SpriteFrame = null;
+    @property(SpriteFrame)
+    superHard: SpriteFrame = null;
 
     @property(Button)
     playBtn: Button = null;
+
+    @property(Node)
+    progressLose: Node = null;
+    @property(Node)
+    commonMovesShopPanel: Node = null;
 
     @property(UIStartFrame)
     startFrame: UIStartFrame = null;
@@ -43,17 +59,38 @@ export class UILevelResultFrame extends UIFrameBase {
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
         this.movesShop.node.on("buy", () => this.hide());
+        this.movesShop.node.on("close", () => this.onPlayBtnClick());
     }
     
     refresh(isSuccess: boolean, goldEarned: number) {
         this.isSuccess = isSuccess;
+
+        let currentLevelNumber = UserData.instance.getProgress() + 1;
+
+        this.levelLabel.string = isSuccess ? "Level " + currentLevelNumber : "Continue?";
 
         this.resultLabel.string = isSuccess ? "Level Complete" : "Level Failed";
         this.buttonLabel.string = isSuccess ? "Next" : "Replay";
         this.goldLabel.string = goldEarned > 0 ? "Gold earned: " + goldEarned : "";
 
         this.movesShop.node.active = !isSuccess;
+        this.progressLose.active = !isSuccess && this.butlersGift.getStreak() > 0;
+        this.commonMovesShopPanel.active = !isSuccess && this.butlersGift.getStreak() === 0;
+
         this.movesShop.refresh();
+
+        let levelsCount = GameData.instance.levels.length;
+        let levelData = GameData.instance.levels[UserData.instance.getProgress() % levelsCount];
+
+        if(levelData.difficulty === "Hard") {
+            this.frame.spriteFrame = this.hard;
+        }
+        else if(levelData.difficulty === "SuperHard") {
+            this.frame.spriteFrame = this.superHard;
+        }
+        else {
+            this.frame.spriteFrame = this.common;
+        }
     }
 
     onPlayBtnClick() {

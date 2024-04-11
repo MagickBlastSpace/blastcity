@@ -12,6 +12,8 @@ export class UILevelMovesShop extends Component {
 
     @property(Button)
     buyBtn: Button = null;
+    @property(Button)
+    closeBtn: Button = null;
 
     @property(Label)
     stageDataLabel: Label = null;
@@ -25,6 +27,7 @@ export class UILevelMovesShop extends Component {
 
     start() {
         this.buyBtn.node.on(Button.EventType.CLICK, this.onBuyBtnClick, this);
+        this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
     }
 
     refresh() {
@@ -71,6 +74,10 @@ export class UILevelMovesShop extends Component {
         this.movesShop.buyStage();
 
         this.node.emit("buy");
+    }
+
+    onCloseBtnClick() {
+        this.node.emit("close");
     }
 }
 
