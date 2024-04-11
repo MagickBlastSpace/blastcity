@@ -450,7 +450,7 @@ export class Field extends Component {
 
             tileId = tileId.split("_")[0] + "_" + color;
         }
-        
+
         const prefab = this.specialPrefabs.find(p => p.id === tileId)?.prefab;
         if(prefab === null) {
             return;
@@ -1705,6 +1705,9 @@ export class Field extends Component {
                         }
 
                         checkedTiles = checkedTiles.concat(matches);
+                    }
+                    else if(tileComponent.isBonusTile() && !isStatusBlock) {
+                        isMoveAvailable = true;
                     }
                     else {
                         checkedTiles.push(tile);
