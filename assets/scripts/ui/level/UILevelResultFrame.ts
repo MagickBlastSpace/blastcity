@@ -65,7 +65,7 @@ export class UILevelResultFrame extends UIFrameBase {
     refresh(isSuccess: boolean, goldEarned: number) {
         this.isSuccess = isSuccess;
 
-        let currentLevelNumber = UserData.instance.getProgress() + 1;
+        let currentLevelNumber = UserData.instance.getProgress();
 
         this.levelLabel.string = isSuccess ? "Level " + currentLevelNumber : "Continue?";
 
@@ -80,7 +80,8 @@ export class UILevelResultFrame extends UIFrameBase {
         this.movesShop.refresh();
 
         let levelsCount = GameData.instance.levels.length;
-        let levelData = GameData.instance.levels[UserData.instance.getProgress() % levelsCount];
+        let completedLevelIndex = UserData.instance.getProgress() - 1;
+        let levelData = GameData.instance.levels[completedLevelIndex % levelsCount];
 
         if(levelData.difficulty === "Hard") {
             this.frame.spriteFrame = this.hard;
