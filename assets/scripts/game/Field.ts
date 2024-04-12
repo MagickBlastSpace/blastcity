@@ -89,6 +89,7 @@ export class Field extends Component {
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
 
         this.level.on("goal_complete_event", (goalId) => this.setGoalCompleteEvent(goalId));
+        this.level.on("goal_possible_event", (goalId) => this.setGoalPossible(goalId));
         this.level.on("all_goals_complete_event", (movesRemain) => this.setLevelAsCompleted(movesRemain));
         this.level.on("extra", () => {
             this.scheduleRespawn(0.2, true);
@@ -386,6 +387,8 @@ export class Field extends Component {
             }
             else {
                 this.spawnSpecialTile(row, col, tileType);
+
+                this.node.emit("goal_check", tileType, this.countAllTilesByType(tileType));
             }
             return;
         }
@@ -838,7 +841,7 @@ export class Field extends Component {
 
     activateBonusByIndex(index: number, byOrder: boolean) {
         if(index >= this.bonusPool.length) {
-            this.scheduleRespawn(this.fallTime, false);
+            this.scheduleRespawn(0, false);
             return;
         }
 
@@ -1892,7 +1895,9 @@ export class Field extends Component {
 
     setGoalCompleteEvent(goalId: string) {
         this.node.emit("goal_complete", goalId);
+    }
 
+    setGoalPossible(goalId: string) {
         for(let j = 0; j < this.spawnPools.length; j++) {
             if(this.spawnPools[j].includes(goalId) && !this.availableColors.includes(goalId)) {
                 this.removeStringFromArray(this.spawnPools[j], goalId);
@@ -2042,6 +2047,25 @@ export class Field extends Component {
 
     setSuperDiscoballMode(isActive: boolean) {
         this.isSuperDiscoballMode = isActive;
+    }
+
+
+    countAllTilesByType(typeToSearch: string) {
+        let count = 0;
+
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                const tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.getTileType() === typeToSearch) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 }
 

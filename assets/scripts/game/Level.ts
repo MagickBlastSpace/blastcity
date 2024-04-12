@@ -36,6 +36,7 @@ export class Level extends Component {
         this.field.on("goal_inc", (tileType) => this.incrementGoal(tileType));
         this.field.on("complete", (goldEarned) => this.setLevelCompleteEvent(goldEarned));
         this.field.on("move_end", () => this.moveEndCallback());
+        this.field.on("goal_check", (goalType, count) => this.checkGoalPossibility(goalType, count));
 
         this.movesShop.on("extra_moves", (movesCount) => this.addExtraMoves(movesCount));
     }
@@ -212,6 +213,15 @@ export class Level extends Component {
 
     setGoalCompleteEvent(goalId: string) {
         this.node.emit("goal_complete_event", goalId);
+    }
+
+    checkGoalPossibility(goalType: string, count: number) {
+        const goal = this.goals.find(g => g.id === goalType);
+        if(goal !== null && goal !== undefined) {
+            if(goal.count <= count) {
+                this.node.emit("goal_possible_event", goalType);
+            }
+        }
     }
 
 
