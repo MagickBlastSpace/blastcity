@@ -27,7 +27,7 @@ export class Jelly extends SpecTileBase {
     }
 
 
-    startInActionEffect(field: Node[][]): boolean {
+    startInActionEffect(field: Node[][], statuses: Node[][]): boolean {
         if(this.isDamaged) {
             return false;
         }
@@ -38,7 +38,17 @@ export class Jelly extends SpecTileBase {
 
         jellies.forEach(jelly => {
             let tileComponent = jelly.getComponent("TileBase");
-            matches = matches.concat(tileComponent.getNextJellyCandidates(field));
+            let status = statuses[tileComponent.getRow()][tileComponent.getCol()];
+
+            let isStatusBlock = false;
+            if(status !== null) {
+                let statusComp = status.getComponent("StatusBase");
+                isStatusBlock = statusComp.isBlockingDestroyTile();
+            }
+
+            if(!isStatusBlock) {
+                matches = matches.concat(tileComponent.getNextJellyCandidates(field));
+            }
         })
 
         if (matches.length === 0) {

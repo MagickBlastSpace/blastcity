@@ -1404,6 +1404,14 @@ export class Field extends Component {
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
+                let status = this.statusArray[i][j];
+
+                let isStatusBlock = false;
+                if(status !== null) {
+                    let statusComp = status.getComponent("StatusBase");
+                    isStatusBlock = statusComp.isBlockingDestroyTile();
+                }
+
                 if(tile !== null) {
                     let tileComponent = null;
                     try {
@@ -1413,8 +1421,8 @@ export class Field extends Component {
                         continue;
                     }
 
-                    if(tileComponent.isSpecialTile()) {
-                        tileComponent.startInActionEffect(this.tileArray);
+                    if(tileComponent.isSpecialTile() && !isStatusBlock) {
+                        tileComponent.startInActionEffect(this.tileArray, this.statusArray);
                     }
                 }
             }

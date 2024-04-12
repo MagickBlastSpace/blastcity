@@ -19,6 +19,8 @@ export class UFO extends Bottle {
 
 
     startInActionEffect(field: Node[][]): boolean {
+        super.startInActionEffect(field);
+
         if(this.previousRow === this.row) {
             if(!this.isSwapped) {
                 this.moveUpwards(field);

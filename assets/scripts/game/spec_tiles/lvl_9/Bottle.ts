@@ -15,9 +15,6 @@ export class Bottle extends SpecTileBase {
 
 
     isReadyToDestroy(): boolean {
-        if(this.row === this.lowestRow) {
-            return true;
-        }
         return false;
     }
 
@@ -25,6 +22,16 @@ export class Bottle extends SpecTileBase {
         this.node.emit("goal", "bottle"); //temp fpr version update
 
         this.node.emit("goal", "duck");
+    }
+
+    startInActionEffect(): boolean {
+        if(this.row === this.lowestRow) {
+            this.node.emit("destroy_tile", this.row, this.col);
+
+            this.node.emit("respawn", 0.2);
+        }
+        
+        return true;
     }
 
 
