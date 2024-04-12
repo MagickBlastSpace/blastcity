@@ -17,10 +17,17 @@ export class BigBottle extends BigTileBase {
 
 
     isReadyToDestroy(): boolean {
-        if(this.row === this.lowestRow) {
-            return true;
-        }
         return false;
+    }
+
+    startInActionEffect(): boolean {
+        if(this.row === this.lowestRow) {
+            this.node.emit("destroy_tile", this.row, this.col);
+
+            this.node.emit("respawn", 0.2);
+        }
+        
+        return true;
     }
 
     startDestroyConsequences() {

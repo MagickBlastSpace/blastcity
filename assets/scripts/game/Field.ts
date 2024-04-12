@@ -652,13 +652,43 @@ export class Field extends Component {
             if(tileComponent.isEmptyTile() && !isClear) {
                 return;
             }
+
+            let isDoubleWidth = tileComponent.isSpecialTile() ? tileComponent.isDoubleWidth() : false;
+            let isDoubleHeight = tileComponent.isSpecialTile() ? tileComponent.isDoubleHeight() : false;
+
+            let isTripleWidth = tileComponent.isSpecialTile() ? tileComponent.isTripleWidth() : false;
+            let isTripleHeight = tileComponent.isSpecialTile() ? tileComponent.isTripleHeight() : false;
+
             if(isClear) {
                 tileComponent.destroyClear();
             }
             else {
                 tileComponent.destroyTile(0);
             }
+
             this.tileArray[row][col] = null;
+
+            if(isDoubleWidth || isTripleWidth) {
+                this.tileArray[row][col + 1] = null;
+            }
+            if(isDoubleHeight || isTripleHeight) {
+                this.tileArray[row + 1][col] = null;
+            }
+            if( (isDoubleWidth && isDoubleHeight) || (isTripleWidth && isTripleHeight)) {
+                this.tileArray[row + 1][col + 1] = null;
+            }
+    
+            if(isTripleWidth) {
+                this.tileArray[row][col + 2] = null;
+            }
+            if(isTripleHeight) {
+                this.tileArray[row + 2][col] = null;
+            }
+            if(isTripleWidth && isTripleHeight) {
+                this.tileArray[row + 2][col + 2] = null;
+                this.tileArray[row + 2][col + 1] = null;
+                this.tileArray[row + 1][col + 2] = null;
+            }
         }
     }
 
