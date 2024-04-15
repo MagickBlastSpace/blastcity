@@ -45,51 +45,51 @@ export class UIEventRocketFeverItem extends Component {
 
         if(data.rewards.length > 0) {
             if(data.rewards[0].gold > 0) {
-                this.rewardIcon.frame = this.gold;
+                this.rewardIcon.spriteFrame = this.gold;
             }
 
             if(data.rewards[0].startBonus_Bomb > 0) {
-                this.rewardIcon.frame = this.bomb;
+                this.rewardIcon.spriteFrame = this.bomb;
             }
             if(data.rewards[0].startBonus_Rocket > 0) {
-                this.rewardIcon.frame = this.rocket;
+                this.rewardIcon.spriteFrame = this.rocket;
             }
             if(data.rewards[0].startBonus_Discoball > 0) {
-                this.rewardIcon.frame = this.discoball;
+                this.rewardIcon.spriteFrame = this.discoball;
             }
 
             if(data.rewards[0].booster_Hammer > 0) {
-                this.rewardIcon.frame = this.hammer;
+                this.rewardIcon.spriteFrame = this.hammer;
             }
             if(data.rewards[0].booster_Bow > 0) {
-                this.rewardIcon.frame = this.bow;
+                this.rewardIcon.spriteFrame = this.bow;
             }
             if(data.rewards[0].booster_Cannon > 0) {
-                this.rewardIcon.frame = this.cannon;
+                this.rewardIcon.spriteFrame = this.cannon;
             }
             if(data.rewards[0].booster_Jester > 0) {
-                this.rewardIcon.frame = this.jester;
+                this.rewardIcon.spriteFrame = this.jester;
             }
 
             if(data.rewards[0].bomb_Minutes > 0) {
-                this.rewardIcon.frame = this.bomb;
+                this.rewardIcon.spriteFrame = this.bomb;
                 this.rewardLabel.string = data.rewards[0].bomb_Minutes + " Min";
             }
             if(data.rewards[0].rocket_Minutes > 0) {
-                this.rewardIcon.frame = this.rocket;
+                this.rewardIcon.spriteFrame = this.rocket;
                 this.rewardLabel.string = data.rewards[0].rocket_Minutes + " Min";
             }
             if(data.rewards[0].discoball_Minutes > 0) {
-                this.rewardIcon.frame = this.discoball;
+                this.rewardIcon.spriteFrame = this.discoball;
                 this.rewardLabel.string = data.rewards[0].discoball_Minutes + " Min";
             }
 
             if(data.rewards[0].endlessLives_Minutes > 0) {
-                this.rewardIcon.frame = this.lives;
+                this.rewardIcon.spriteFrame = this.lives;
                 this.rewardLabel.string = data.rewards[0].endlessLives_Minutes + " Min";
             }
             if(data.rewards[0].modifierX2_Minutes > 0) {
-                this.rewardIcon.frame = this.x2;
+                this.rewardIcon.spriteFrame = this.x2;
                 this.rewardLabel.string = data.rewards[0].modifierX2_Minutes + " Min";
             }
         }
