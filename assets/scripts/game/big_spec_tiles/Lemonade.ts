@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec2 } from 'cc';
 import { BigTileBase } from './BigTileBase';
 const { ccclass, property } = _decorator;
 
@@ -15,6 +15,15 @@ export class Lemonade extends BigTileBase {
     yellowHp: Node = null;
     @property(Node)
     purpleHp: Node = null;
+
+    @property(Vec2)
+    red_Position_b: Vec2 = null;
+    @property(Vec2)
+    blue_Position_b: Vec2 = null;
+    @property(Vec2)
+    green_Position_b: Vec2 = null;
+    @property(Vec2)
+    yellow_Position_b: Vec2 = null;
 
     private strengthRed: number;
     private strengthBlue: number;
@@ -35,6 +44,45 @@ export class Lemonade extends BigTileBase {
         this.strengthGreen = 1;
         this.strengthYellow = 1;
         this.strengthPurple = 1;
+
+        this.refresh();
+    }
+
+
+    subscribeOnFieldEvents(field: Node) {
+        if(this.isSubscribed) {
+            return;
+        }
+        
+        super.subscribeOnFieldEvents(field);
+
+        let fieldComp = field.getComponent("Field");
+        let availableColors = fieldComp.getAvailableColors();
+
+        if(!availableColors.includes("purple")) {
+            this.strengthPurple = 0;
+
+            this.redHp.setPosition(this.red_Position_b.x, this.red_Position_b.y);
+            this.blueHp.setPosition(this.blue_Position_b.x, this.blue_Position_b.y);
+            this.greenHp.setPosition(this.green_Position_b.x, this.green_Position_b.y);
+            this.yellowHp.setPosition(this.yellow_Position_b.x, this.yellow_Position_b.y);
+        }
+
+        if(!availableColors.includes("red")) {
+            this.strengthRed = 0;
+        }
+
+        if(!availableColors.includes("blue")) {
+            this.strengthBlue = 0;
+        }
+
+        if(!availableColors.includes("green")) {
+            this.strengthGreen = 0;
+        }
+
+        if(!availableColors.includes("yellow")) {
+            this.strengthYellow = 0;
+        }
 
         this.refresh();
     }
