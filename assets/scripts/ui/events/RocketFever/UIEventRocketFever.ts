@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, ProgressBar, tween, instantiate, Prefab } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, tween, instantiate, Prefab, Vec3 } from 'cc';
 import { UIFrameBase } from '../../UIFrameBase';
 import { RocketFeverEvent } from '../../../game/events/RocketFeverEvent';
 import { UIEventRocketFeverItem } from './UIEventRocketFeverItem';
@@ -19,6 +19,8 @@ export class UIEventRocketFever extends UIFrameBase {
     progressLabel: Label = null;
     @property(Label)
     timeLabel: Label = null;
+    @property(Label)
+    infoLabel: Label = null;
 
     @property(ProgressBar)
     progressBar: ProgressBar = null;
@@ -27,6 +29,25 @@ export class UIEventRocketFever extends UIFrameBase {
     itemPrefab: Prefab = null;
     @property(Node)
     itemsLayout: Node = null;
+
+    @property(Node)
+    rewardsContainer: Node = null;
+    @property(Node)
+    timerContainer: Node = null;
+    @property(Node)
+    progressContainer: Node = null;
+    @property(Node)
+    infoContainer: Node = null;
+
+    @property(Vec3)
+    positionTimer_Start: Vec3 = null;
+    @property(Vec3)
+    positionTimer_Active: Vec3 = null;
+
+    @property(Vec3)
+    positionProgress_Start: Vec3 = null;
+    @property(Vec3)
+    positionProgress_Active: Vec3 = null;
 
     private items: [UIEventRocketFeverItem] = [];
 
@@ -64,23 +85,87 @@ export class UIEventRocketFever extends UIFrameBase {
         this.isEventStarted = this.eventController.getIsStarted();
         this.isEventComplete = this.eventController.getIsComplete();
 
-        this.progressBar.node.active = this.isEventStarted && !this.isEventComplete;
+        //this.progressBar.node.active = this.isEventStarted && !this.isEventComplete;
 
         if(this.isEventStarted && !this.isEventComplete) {
+            this.infoContainer.active = false;
+            this.rewardsContainer.active = true;
+
             this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
+
+            this.infoLabel.string = "";
 
             tween(this.progressBar)
                 .to(0.8, { progress: this.eventController.getCollectable() / this.eventController.getCurrentStageStep() })
                 .start();
+
+            tween(this.timerContainer)
+                .to(0.2, { position: this.positionTimer_Active })
+                .start();
+
+            tween(this.progressContainer)
+                .to(0.2, { position: this.positionProgress_Active })
+                .start();
         }
         else if(this.isEventComplete) {
-            this.progressLabel.string = "Event Complete";
+            this.infoContainer.active = true;
+            this.rewardsContainer.active = false;
+
+            this.progressLabel.string = "0/0";
+
+            this.infoLabel.string = "Event Complete";
+
+            tween(this.progressBar)
+                .to(0.8, { progress: 0 })
+                .start();
+
+            tween(this.timerContainer)
+                .to(0.2, { position: this.positionTimer_Start })
+                .start();
+
+            tween(this.progressContainer)
+                .to(0.2, { position: this.positionProgress_Start })
+                .start();
         }
         else if(!this.eventController.isRequiredLevelReached()) {
-            this.progressLabel.string = "Required Level " + this.eventController.getLevelRequired();
+            this.infoContainer.active = true;
+            this.rewardsContainer.active = false;
+
+            this.progressLabel.string = "0/0";
+
+            this.infoLabel.string = "Required Level " + this.eventController.getLevelRequired();
+
+            tween(this.progressBar)
+                .to(0.8, { progress: 0 })
+                .start();
+
+            tween(this.timerContainer)
+                .to(0.2, { position: this.positionTimer_Start })
+                .start();
+
+            tween(this.progressContainer)
+                .to(0.2, { position: this.positionProgress_Start })
+                .start();
         }
         else {
-            this.progressLabel.string = "Not Started";
+            this.infoContainer.active = true;
+            this.rewardsContainer.active = false;
+
+            this.progressLabel.string = "0/0";
+
+            this.infoLabel.string = "Collect rockets to win rewards";
+
+            tween(this.progressBar)
+                .to(0.8, { progress: 0 })
+                .start();
+            
+            tween(this.timerContainer)
+                .to(0.2, { position: this.positionTimer_Start })
+                .start();
+
+            tween(this.progressContainer)
+                .to(0.2, { position: this.positionProgress_Start })
+                .start();
         }
         
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
