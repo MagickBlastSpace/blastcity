@@ -47,7 +47,11 @@ export class Shell extends SpecTileBase {
         this.node.emit("goal", "shell");
     }
 
-    startInActionEffect(): boolean {
+    startInActionEffect(field: Node[][], statuses: Node[][], isBlockingAction: boolean): boolean {
+        if(isBlockingAction) {
+            return;
+        }
+        
         if(!this.isDamaged) {
             this.strength = 2;
             this.refresh();

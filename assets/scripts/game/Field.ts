@@ -528,7 +528,7 @@ export class Field extends Component {
             this.activateBonusPool();
         });
         tileNode.on("respawn", (timeToRespawn) => {
-            this.scheduleRespawn(timeToRespawn, false);
+            this.scheduleRespawn(timeToRespawn, true);
         });
         tileNode.on("damage_all", (tileId) => {
             this.setAllDamagedByType(tileId);
@@ -1242,9 +1242,7 @@ export class Field extends Component {
                 return;
             }
 
-            if(!isBlockingInactionEffect) {
-                this.checkSpecTilesInActionEffect();
-            }
+            this.checkSpecTilesInActionEffect(isBlockingInactionEffect);
             
             this.checkForPotentialBonuses();
 
@@ -1433,7 +1431,7 @@ export class Field extends Component {
     }
 
 
-    checkSpecTilesInActionEffect() {
+    checkSpecTilesInActionEffect(isBlockingAction: boolean) {
         for(let i = 0; i < this.numRows; i++) {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
@@ -1455,7 +1453,7 @@ export class Field extends Component {
                     }
 
                     if(tileComponent.isSpecialTile() && !isStatusBlock) {
-                        tileComponent.startInActionEffect(this.tileArray, this.statusArray);
+                        tileComponent.startInActionEffect(this.tileArray, this.statusArray, isBlockingAction);
                     }
                 }
             }

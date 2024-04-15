@@ -27,8 +27,8 @@ export class Jelly extends SpecTileBase {
     }
 
 
-    startInActionEffect(field: Node[][], statuses: Node[][]): boolean {
-        if(this.isDamaged) {
+    startInActionEffect(field: Node[][], statuses: Node[][], isBlockingAction: boolean): boolean {
+        if(this.isDamaged || isBlockingAction) {
             return false;
         }
 

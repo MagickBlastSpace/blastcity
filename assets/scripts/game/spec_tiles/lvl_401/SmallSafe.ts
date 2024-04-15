@@ -48,9 +48,11 @@ export class SmallSafe extends SpecTileBase {
         this.icon.spriteFrame = this.isClosed ? this.closed : this.open;
     }
 
-    startInActionEffect(field: Node[][]): boolean {
-        this.isClosed = !this.isClosed;
-
+    startInActionEffect(field: Node[][], statuses: Node[][], isBlockingAction: boolean): boolean {
+        if(!isBlockingAction) {
+            this.isClosed = !this.isClosed;
+        }
+        
         this.refresh();
 
         return false;

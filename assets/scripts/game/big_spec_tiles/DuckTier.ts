@@ -40,7 +40,11 @@ export class DuckTier extends Soda {
         this.isDamaged = false;
     }
 
-    startInActionEffect(field: Node[][]): boolean {
+    startInActionEffect(field: Node[][], statuses: Node[][], isBlockingAction: boolean): boolean {
+        if(isBlockingAction) {
+            return false;
+        }
+        
         if(!this.isDamaged && this.strength < 4 && this.isHealAvailable) {
             this.strength++;
             this.refresh();

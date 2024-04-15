@@ -18,12 +18,14 @@ export class UFO extends Bottle {
     }
 
 
-    startInActionEffect(field: Node[][]): boolean {
+    startInActionEffect(field: Node[][], statuses: Node[][], isBlockingAction: boolean): boolean {
         super.startInActionEffect(field);
 
-        if(this.previousRow === this.row) {
-            if(!this.isSwapped) {
-                this.moveUpwards(field);
+        if(!isBlockingAction) {
+            if(this.previousRow === this.row) {
+                if(!this.isSwapped) {
+                    this.moveUpwards(field);
+                }
             }
         }
 

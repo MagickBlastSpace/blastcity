@@ -62,9 +62,11 @@ export class BigFlask extends Soda {
         }
     }
 
-    startInActionEffect(field: Node[][]): boolean {
-        this.setNextColor();
-
+    startInActionEffect(field: Node[][], statuses: Node[][], isBlockingAction: boolean): boolean {
+        if(!isBlockingAction) {
+            this.setNextColor();
+        }
+        
         return false;
     }
 
