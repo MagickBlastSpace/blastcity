@@ -9,10 +9,11 @@ import { ButlersGift } from '../../game/boosters/ButlersGift';
 import { Level } from '../../game/Level';
 import { UserData } from '../../data/UserData';
 import { GameData } from '../../data/GameData';
+import { UIPopupFrameBase } from '../UIPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
-export class UILevelResultFrame extends UIFrameBase {
+export class UILevelResultFrame extends UIPopupFrameBase {
 
     @property(Label)
     resultLabel: Label = null;

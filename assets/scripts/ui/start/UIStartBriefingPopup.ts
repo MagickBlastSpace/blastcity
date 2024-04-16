@@ -4,10 +4,11 @@ import { Field } from '../../game/Field';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
+import { UIPopupFrameBase } from '../UIPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartBriefingPopup')
-export class UIStartBriefingPopup extends UIFrameBase {
+export class UIStartBriefingPopup extends UIPopupFrameBase {
 
     @property(Label)
     levelLabel: Label = null;

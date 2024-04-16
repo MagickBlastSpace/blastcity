@@ -1,9 +1,10 @@
 import { _decorator, Component, Node, Button } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
+import { UIPopupFrameBase } from '../UIPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIButlersGiftInfoPopup')
-export class UIButlersGiftInfoPopup extends UIFrameBase {
+export class UIButlersGiftInfoPopup extends UIPopupFrameBase {
 
     @property(Button)
     playBtn: Button = null;

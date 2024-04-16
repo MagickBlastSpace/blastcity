@@ -60,6 +60,8 @@ export class UIStartFrame extends UIFrameBase {
     }
 
     onPlayBtnClick() {
+        this.hideAllPopups();
+
         this.briefingPopup.show();
     }
 
@@ -93,6 +95,8 @@ export class UIStartFrame extends UIFrameBase {
 
 
     onEventBtnClick(index: number) {
+        this.hideAllPopups();
+
         this.eventPopups[index].show();
     }
 
@@ -101,6 +105,15 @@ export class UIStartFrame extends UIFrameBase {
         this.refresh();
 
         this.playBtn.node.active = true;
+    }
+
+
+    hideAllPopups() {
+        for(let i = 0; i < this.eventPopups.length; i++) {
+            this.eventPopups[i].hideClean();
+        }
+
+        this.briefingPopup.hideClean();
     }
 }
 

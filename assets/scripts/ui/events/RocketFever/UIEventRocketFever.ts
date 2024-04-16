@@ -2,10 +2,11 @@ import { _decorator, Component, Node, Button, Label, ProgressBar, tween, instant
 import { UIFrameBase } from '../../UIFrameBase';
 import { RocketFeverEvent } from '../../../game/events/RocketFeverEvent';
 import { UIEventRocketFeverItem } from './UIEventRocketFeverItem';
+import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventRocketFever')
-export class UIEventRocketFever extends UIFrameBase {
+export class UIEventRocketFever extends UIPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;

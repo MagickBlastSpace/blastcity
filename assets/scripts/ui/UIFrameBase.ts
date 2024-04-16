@@ -10,6 +10,10 @@ export class UIFrameBase extends Component {
     hide() {
         this.node.active = false;
     }
+
+    hideClean() {
+        this.hide();
+    }
 }
 
 
