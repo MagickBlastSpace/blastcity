@@ -33,9 +33,6 @@ export class Tile extends TileBase {
     @property([SpriteTileData])
     discoballIcons: SpriteTileData[] = [];
 
-    /*@property(Sprite)
-    potentialBonusIcon: Sprite = null;*/
-
     private potentialBonus: string = "";
 
 
