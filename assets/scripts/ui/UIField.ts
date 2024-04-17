@@ -31,12 +31,12 @@ export class UIField extends Component {
 
     start() {
         this.field.on("refresh", (tiles, statuses) => this.refresh(tiles, statuses));
-        this.field.on("init_tile", (tile, isStatus) => this.init(tile, isStatus));
-        this.field.on("init_status", (status) => this.initStatus(status));
+        this.field.on("init_tile", (tile, isStatus, tileType) => this.init(tile, isStatus, tileType));
+        this.field.on("init_status", (status, tileType) => this.initStatus(status, tileType));
     }
 
 
-    init(tile: Node, isStatus: boolean) {
+    init(tile: Node, isStatus: boolean, tileType: string) {
         if(tile === null) {
             return;
         }
@@ -66,10 +66,10 @@ export class UIField extends Component {
         posX = isTripleWidth ? posX + this.tileSize / 2 : posX;
         posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
-        tileUi.init(posX, posY, layout, false);
+        tileUi.init(posX, posY, layout, false, tileType);
     }
 
-    initStatus(status: Node) {
+    initStatus(status: Node, tileType: string) {
         if(status === null) {
             return;
         }
@@ -84,7 +84,7 @@ export class UIField extends Component {
         let posX = statusComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        tileUi.init(posX, posY, layout, true);
+        tileUi.init(posX, posY, layout, true, tileType);
     }
 
     

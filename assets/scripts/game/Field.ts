@@ -618,7 +618,7 @@ export class Field extends Component {
         }
 
         let isStatusNode = this.statusArray[row][col] !== null;
-        this.node.emit("init_tile", tileNode, isStatusNode);
+        this.node.emit("init_tile", tileNode, isStatusNode, tileType);
 
         return tileNode;
     }
@@ -643,7 +643,7 @@ export class Field extends Component {
 
         this.statusArray[row][col] = statusNode;
 
-        this.node.emit("init_status", statusNode);
+        this.node.emit("init_status", statusNode, statusType);
 
         return statusNode;
     }
@@ -945,7 +945,7 @@ export class Field extends Component {
             this.giveDamage(tile, "extra_hit", true, delay);
         }
         else {
-            this.giveStatusDamage(row, col);
+            this.giveStatusDamage(row, col, false);
         }
     }
 
@@ -1140,10 +1140,12 @@ export class Field extends Component {
             }
 
             if(isBonus && choosenType !== "multi" && choosenType !== "super") {
-                if(tileComponent.isSpecialTile() && isDestroyAvailable) {
+                let isSpec = tileComponent.isSpecialTile();
+                if(isSpec && isDestroyAvailable) {
                     tileComponent.getDamage("bonus");
                 }
-                this.giveStatusDamage(tileComponent.getRow(), tileComponent.getCol());
+
+                this.giveStatusDamage(tileComponent.getRow(), tileComponent.getCol(), isSpec);
 
                 if(tileComponent.isBonusTile()) {
                     if(tileComponent.isTileActivated()) {
@@ -1166,12 +1168,19 @@ export class Field extends Component {
         return !statusComponent.isBlockingDestroyTile();
     }
 
-    giveStatusDamage(row: number, col: number) {
+    giveStatusDamage(row: number, col: number, isSpec: boolean) {
         if(this.statusArray[row][col] === null) {
             return;
         }
 
         const statusComp = this.statusArray[row][col].getComponent("StatusBase");
+
+        let isBlockInteraction = statusComp.isBlockingInteraction();
+
+        if(isSpec && !isBlockInteraction) {
+            return;
+        }
+
         statusComp.getDamage();
     }
 
