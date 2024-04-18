@@ -388,7 +388,12 @@ export class Field extends Component {
             else {
                 this.spawnSpecialTile(row, col, tileType);
 
-                this.node.emit("goal_check", tileType, this.countAllTilesByType(tileType));
+                let goalType = tileType;
+                if(this.isColoredType(tileType)) {
+                    goalType = "colored_" + tileType.split("_")[0];
+                }
+
+                this.node.emit("goal_check", goalType, this.countAllTilesByType(tileType));
             }
             return;
         }
@@ -1905,11 +1910,27 @@ export class Field extends Component {
     }
 
     setGoalPossible(goalId: string) {
-        for(let j = 0; j < this.spawnPools.length; j++) {
-            if(this.spawnPools[j].includes(goalId) && !this.availableColors.includes(goalId)) {
-                this.removeStringFromArray(this.spawnPools[j], goalId);
+        let tilesToRemove = [];
+        
+        if(goalId.includes("colored")) {
+            let tileBaseName = goalId.split("_")[1];
+
+            for(let i = 0; i < this.availableColors.length; i++) {
+                tilesToRemove.push(tileBaseName + "_" + this.availableColors[i]);
             }
         }
+        else {
+            tilesToRemove.push(goalId);
+        }
+
+        for(let i = 0; i < tilesToRemove.length; i++) {
+            for(let j = 0; j < this.spawnPools.length; j++) {
+                if(this.spawnPools[j].includes(tilesToRemove[i]) && !this.availableColors.includes(tilesToRemove[i])) {
+                    this.removeStringFromArray(this.spawnPools[j], tilesToRemove[i]);
+                }
+            }
+        }
+        
     }
 
 
@@ -2060,19 +2081,49 @@ export class Field extends Component {
     countAllTilesByType(typeToSearch: string) {
         let count = 0;
 
-        for(let i = 0; i < this.numRows; i++) {
-            for(let j = 0; j < this.numCols; j++) {
-                const tile = this.tileArray[i][j];
-                if(tile !== null) {
-                    const tileComp = tile.getComponent("TileBase");
-                    if(tileComp.getTileType() === typeToSearch) {
-                        count++;
+        let typesToSearch = [];
+        
+
+        if(this.isColoredType(typeToSearch) || typeToSearch === "easteregg") {
+            let baseType = typeToSearch.split("_")[0];
+
+            for(let i = 0; i < this.availableColors.length; i++) {
+                typesToSearch.push(baseType + "_" + this.availableColors[i]);
+            }
+
+            if(typeToSearch === "easteregg") {
+                typesToSearch.push(typeToSearch);
+            }
+        }
+        else {
+            typesToSearch.push(typeToSearch);
+        }
+
+        for(let k = 0; k < typesToSearch.length; k++) {
+            for(let i = 0; i < this.numRows; i++) {
+                for(let j = 0; j < this.numCols; j++) {
+                    const tile = this.tileArray[i][j];
+                    if(tile !== null) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.getTileType() === typesToSearch[k]) {
+                            count++;
+                        }
                     }
                 }
             }
         }
 
         return count;
+    }
+
+    isColoredType(typeToSearch: string): boolean {
+        for(let i = 0; i < this.availableColors.length; i++) {
+            if(typeToSearch.includes(this.availableColors[i])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
