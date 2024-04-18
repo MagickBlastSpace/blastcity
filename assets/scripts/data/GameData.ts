@@ -550,6 +550,8 @@ export class GameData extends Component {
 
                 this.node.emit("level_data", levelData);
             });
+
+            this.node.emit("levels_loaded");
         });
     }
 

@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp } from 'cc';
 import { SpriteTileData } from '../game/Tile';
+import { Skeleton } from 'sp';
 const { ccclass, property } = _decorator;
 
 
@@ -39,6 +40,9 @@ export class UITile extends Component {
 
     @property(Node)
     content: Node = null;
+
+    @property(sp.Skeleton)
+    spine: sp.Skeleton = null;
 
     private fallTime: number = 0.35;
     private destroyTime: number = 0.25;
@@ -124,6 +128,8 @@ export class UITile extends Component {
         if (this.particles_5) {
             this.particles_5.resetSystem();
         }
+
+        this.spine?.setAnimation(0, 'animation', false);
 
         this.scheduleOnce(() => {
             tween(this.node).stop();
