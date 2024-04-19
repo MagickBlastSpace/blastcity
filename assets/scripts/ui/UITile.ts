@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, Color } from 'cc';
 import { SpriteTileData } from '../game/Tile';
 import { Skeleton } from 'sp';
 const { ccclass, property } = _decorator;
@@ -45,7 +45,7 @@ export class UITile extends Component {
     spine: sp.Skeleton = null;
 
     private fallTime: number = 0.35;
-    private destroyTime: number = 0.25;
+    private destroyTime: number = 1;
 
     private isBlocked: boolean = false;
 
@@ -135,7 +135,9 @@ export class UITile extends Component {
             tween(this.node).stop();
 
             tween(this.content)
-                .to(this.destroyTime, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+                .to(this.destroyTime / 4, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+                //.to(, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+                .to(this.destroyTime / 4 * 3, { color: new Color(255,255,255,0)})
                 .call(() => this.node.destroy())
                 .start();
         }, delay);
