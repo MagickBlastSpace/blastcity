@@ -52,8 +52,7 @@ export class SaveData extends Component {
         var userData = JSON.parse(cc.sys.localStorage.getItem('userData'));
 
         if (userData) {
-            let progress = userData.progress >= 55 ? userData.progress : 55;
-            UserData.instance.setProgress(progress);
+            UserData.instance.setProgress(userData.progress);
             UserData.instance.setResource("gold", userData.gold);
 
             UserData.instance.setResource("bomb", userData.bomb);
@@ -66,7 +65,7 @@ export class SaveData extends Component {
             UserData.instance.setResource("jester", userData.jester);
         } else {
             //console.log("No saved user data found");
-            UserData.instance.setProgress(55);
+            UserData.instance.setProgress(0);
         }
 
         this.node.emit("user_data");
