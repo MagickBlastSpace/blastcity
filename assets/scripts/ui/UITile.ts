@@ -55,7 +55,15 @@ export class UITile extends Component {
     private destroyLayout: Node = null;
 
 
+    start() {
+        this.isBlocked = false;
+    }
+    
     init(posX: number, posY: number, layout: Node, isStatus: boolean, tileType: string) {
+        if(this.isBlocked) {
+            return;
+        }
+
         let fallMultiplier = isStatus ? 1 : 7;
         this.node.setPosition(posX, posY + this.node.height * fallMultiplier);
 
@@ -64,7 +72,7 @@ export class UITile extends Component {
 
         this.destroyLayout = this.node.parent;
 
-        if(this.content === null) {
+        if(this.content === null || this.content === undefined) {
             this.content = this.node;
         }
 
@@ -76,8 +84,6 @@ export class UITile extends Component {
             .to(0.07, { scale: new Vec3(0.97, 1.03, 1) }, { easing: 'elasticInOut' })
             .to(0.07, { scale: new Vec3(1, 1, 1) }, { easing: 'elasticInOut' })
             .start();
-
-        this.isBlocked = false;
 
         this.setParticlesIcons(tileType);
     }
@@ -109,6 +115,10 @@ export class UITile extends Component {
 
 
     destroyTile(delay: number) {
+        if(this.isBlocked) {
+            return;
+        }
+
         this.isBlocked = true;
 
         this.destroyLayout.addChild(this.node);
@@ -132,6 +142,7 @@ export class UITile extends Component {
         this.spine?.setAnimation(0, 'animation', false);
 
         this.scheduleOnce(() => {
+            tween(this.content).stop();
             tween(this.node).stop();
 
             tween(this.content)
@@ -141,30 +152,6 @@ export class UITile extends Component {
                 .call(() => this.node.destroy())
                 .start();
         }, delay);
-    }
-
-    startDestroyEffect() {
-        this.destroyLayout.addChild(this.node);
-
-        if (this.particles_1) {
-            this.particles_1.resetSystem();
-        }
-        if (this.particles_2) {
-            this.particles_2.resetSystem();
-        }
-        if (this.particles_3) {
-            this.particles_3.resetSystem();
-        }
-        if (this.particles_4) {
-            this.particles_4.resetSystem();
-        }
-        if (this.particles_5) {
-            this.particles_5.resetSystem();
-        }
-    
-        this.scheduleOnce(() => {
-            this.node.destroy();
-        }, this.destroyTime / 2);
     }
 
 
