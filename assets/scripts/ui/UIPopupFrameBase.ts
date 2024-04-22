@@ -10,9 +10,12 @@ export class UIPopupFrameBase extends UIFrameBase {
 
     
     show() {
-        this.node.active = true;
-        this.contentNode.scale = new Vec3(0, 0, 0);
+        if(!this.node.active) {
+            this.contentNode.scale = new Vec3(0, 0, 0);
+        }
 
+        this.node.active = true;
+        
         tween(this.contentNode)
             //.to(0, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
             .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: 'backOut' })
