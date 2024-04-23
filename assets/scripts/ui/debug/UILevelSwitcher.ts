@@ -11,9 +11,14 @@ export class UILevelSwitcher extends Component {
 
     @property(Node)
     levelItemsContainer: Node = null;
+    @property(Node)
+    scrollView: Node = null;
 
     @property(Field)
     field: Field = null;
+
+    @property(Button)
+    showBtn: Button = null;
 
     private items: [UILevelSwitcherItem] = [];
 
@@ -23,7 +28,11 @@ export class UILevelSwitcher extends Component {
     start() {
         this.itemsCounter = 1;
 
+        this.showBtn.node.on(Button.EventType.CLICK, this.onShowBtnClick, this);
+
         GameData.instance.node.on("level_data", (level) => this.spawnItem(level));
+
+        this.scrollView.active = false;
     }
     
     spawnItems() {
@@ -37,6 +46,7 @@ export class UILevelSwitcher extends Component {
 
             item.on("click", (levelData) => {
                 this.field.spawnInitialBoard(levelData);
+                this.scrollView.active = false;
             });
         }
     }
@@ -52,9 +62,15 @@ export class UILevelSwitcher extends Component {
 
         item.on("click", (levelData) => {
             this.field.spawnInitialBoard(levelData);
+            this.scrollView.active = false;
         });
 
         this.itemsCounter++;
+    }
+
+
+    onShowBtnClick() {
+        this.scrollView.active = !this.scrollView.active;
     }
 }
 
