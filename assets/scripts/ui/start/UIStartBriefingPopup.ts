@@ -68,11 +68,11 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
         this.difficultyLabel.string = levelData ? levelData.difficulty + " Difficulty" : "Common Difficulty";
 
-        if(levelData.difficulty === "Hard") {
+        if(levelData.difficulty === "hard") {
             this.frame.spriteFrame = this.hard;
             this.header.spriteFrame = this.header_hard;
         }
-        else if(levelData.difficulty === "SuperHard") {
+        else if(levelData.difficulty === "superhard") {
             this.frame.spriteFrame = this.superHard;
             this.header.spriteFrame = this.header_superHard;
         }

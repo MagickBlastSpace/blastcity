@@ -73,11 +73,11 @@ export class UIStartFrame extends UIFrameBase {
         let currentLevelNumber = UserData.instance.getProgress() + 1;
         this.levelLabel.string = "Level " + currentLevelNumber;
 
-        if(levelData.difficulty === "Hard") {
+        if(levelData.difficulty === "hard") {
             this.sidePanel_Left.spriteFrame = this.hard;
             this.sidePanel_Right.spriteFrame = this.hard;
         }
-        else if(levelData.difficulty === "SuperHard") {
+        else if(levelData.difficulty === "superhard") {
             this.sidePanel_Left.spriteFrame = this.superHard;
             this.sidePanel_Right.spriteFrame = this.superHard;
         }
