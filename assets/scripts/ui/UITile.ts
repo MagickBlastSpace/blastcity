@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, Color } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, Color, Layers, BlockInputEvents } from 'cc';
 import { SpriteTileData } from '../game/Tile';
 import { Skeleton } from 'sp';
 const { ccclass, property } = _decorator;
@@ -139,15 +139,10 @@ export class UITile extends Component {
             this.particles_5.resetSystem();
         }
 
-        
-        if (this.spine && this.spine.skeletonData && this.spine.skeletonData.findAnimation('animation')) {
-            try {
-                this.spine.setAnimation(0, 'animation', false);
-            } catch (error) {
-                console.error('Error setting spine animation:', error);
-            }
-        } else {
-            console.warn('Spine node or animation not found or loaded:', this.spine);
+        try {
+            this.spine?.setAnimation(0, 'animation', false);
+        } catch (error) {
+            console.error('Error setting spine animation:', error);
         }
 
         this.scheduleOnce(() => {
@@ -190,6 +185,16 @@ export class UITile extends Component {
         if (this.particles_5) {
             this.particles_5.spriteFrame = this.particleIcons.find(i => i.id === color)?.icon_5;
         }
+    }
+
+
+    changeLayer(node: Node, layer: number) {
+        if (!node || !node.parent) {
+            console.warn('Node or parent is invalid.');
+            return;
+        }
+
+        node.layer = layer;
     }
 }
 
