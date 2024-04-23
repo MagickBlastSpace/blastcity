@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { SaveData } from '../../data/SaveData';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('ButlersGift')
@@ -13,6 +14,8 @@ export class ButlersGift extends Component {
 
     private isGifted: boolean = false;
 
+    private LEVEL_REQUIRED: number = 30;
+
     
     start() {
         this.level.on("complete", (isWin) => this.updateProgress(isWin));
@@ -21,6 +24,10 @@ export class ButlersGift extends Component {
 
 
     updateProgress(isWin: boolean) {
+        if(UserData.instance.getProgress() + 1 < this.LEVEL_REQUIRED) {
+            return;
+        }
+        
         if(isWin && this.streak < this.maxStreak) {
             this.streak++;
         }
