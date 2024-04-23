@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, SpriteFrame } from 'cc';
 import { GoalData } from '../../data/GameData';
 import { UILevelGoal } from './UILevelGoal';
 import { UIFrameBase } from '../UIFrameBase';
@@ -19,6 +19,18 @@ export class UILevel extends UIFrameBase {
 
     @property(UIFrameBase)
     levelResult: UIFrameBase = null;
+
+    @property(Sprite)
+    sidePanel_Left: Sprite = null;
+    @property(Sprite)
+    sidePanel_Right: Sprite = null;
+
+    @property(SpriteFrame)
+    common: SpriteFrame = null;
+    @property(SpriteFrame)
+    hard: SpriteFrame = null;
+    @property(SpriteFrame)
+    superHard: SpriteFrame = null;
 
 
     start() {
@@ -51,6 +63,21 @@ export class UILevel extends UIFrameBase {
 
         this.refresh(levelComp.getMoves());
         this.refreshGoals(levelComp.getGoals());
+
+        let difficulty = levelComp.getDifficulty();
+        
+        if(difficulty === "hard") {
+            this.sidePanel_Left.spriteFrame = this.hard;
+            this.sidePanel_Right.spriteFrame = this.hard;
+        }
+        else if(difficulty === "superhard") {
+            this.sidePanel_Left.spriteFrame = this.superHard;
+            this.sidePanel_Right.spriteFrame = this.superHard;
+        }
+        else {
+            this.sidePanel_Left.spriteFrame = this.common;
+            this.sidePanel_Right.spriteFrame = this.common;
+        }
     }
 
     showResult(isSuccess: boolean, goldEarned: number) {

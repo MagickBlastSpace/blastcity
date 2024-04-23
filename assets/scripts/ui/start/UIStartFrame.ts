@@ -19,18 +19,6 @@ export class UIStartFrame extends UIFrameBase {
     @property(UIFrameBase)
     briefingPopup: UIFrameBase = null;
 
-    @property(Sprite)
-    sidePanel_Left: Sprite = null;
-    @property(Sprite)
-    sidePanel_Right: Sprite = null;
-
-    @property(SpriteFrame)
-    common: SpriteFrame = null;
-    @property(SpriteFrame)
-    hard: SpriteFrame = null;
-    @property(SpriteFrame)
-    superHard: SpriteFrame = null;
-
     @property(Label)
     levelLabel: Label = null;
     @property(Label)
@@ -67,24 +55,8 @@ export class UIStartFrame extends UIFrameBase {
 
 
     refresh() {
-        let levelsCount = GameData.instance.levels.length;
-        let levelData = GameData.instance.levels[UserData.instance.getProgress() % levelsCount];
-
         let currentLevelNumber = UserData.instance.getProgress() + 1;
         this.levelLabel.string = "Level " + currentLevelNumber;
-
-        if(levelData.difficulty === "hard") {
-            this.sidePanel_Left.spriteFrame = this.hard;
-            this.sidePanel_Right.spriteFrame = this.hard;
-        }
-        else if(levelData.difficulty === "superhard") {
-            this.sidePanel_Left.spriteFrame = this.superHard;
-            this.sidePanel_Right.spriteFrame = this.superHard;
-        }
-        else {
-            this.sidePanel_Left.spriteFrame = this.common;
-            this.sidePanel_Right.spriteFrame = this.common;
-        }
     }
 
     show() {
