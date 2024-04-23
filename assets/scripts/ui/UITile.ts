@@ -139,7 +139,16 @@ export class UITile extends Component {
             this.particles_5.resetSystem();
         }
 
-        this.spine?.setAnimation(0, 'animation', false);
+        
+        if (this.spine && this.spine.skeletonData && this.spine.skeletonData.findAnimation('animation')) {
+            try {
+                this.spine.setAnimation(0, 'animation', false);
+            } catch (error) {
+                console.error('Error setting spine animation:', error);
+            }
+        } else {
+            console.warn('Spine node or animation not found or loaded:', this.spine);
+        }
 
         this.scheduleOnce(() => {
             tween(this.content).stop();
