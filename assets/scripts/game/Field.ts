@@ -1781,10 +1781,13 @@ export class Field extends Component {
             }
             else if(this.isLevelComplete) {
                 this.completeLevel();
+                return;
             }
         }
 
-        this.node.emit("move_end");
+        if(!this.isSpawnScheduled) {
+            this.node.emit("move_end");
+        }
     }
 
     setPotentialBonus(tiles: Node[], bonus: string) {
