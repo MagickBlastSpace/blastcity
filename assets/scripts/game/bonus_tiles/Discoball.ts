@@ -172,7 +172,8 @@ export class Discoball extends BonusTileBase {
 
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
-                this.node.emit("extra_hit", i, j, false, 0);
+                let isBonusChain = this.isChain(i, j);
+                this.node.emit("extra_hit", i, j, isBonusChain, 0);
 
                 this.node.emit("goal", "discoball");
             }
@@ -195,7 +196,7 @@ export class Discoball extends BonusTileBase {
                     continue;
                 }
 
-                this.node.emit("extra_hit", i, j, false, 0);
+                this.node.emit("extra_hit", i, j, true, 0);
 
                 this.node.emit("goal", "discoball");
             }
@@ -226,6 +227,10 @@ export class Discoball extends BonusTileBase {
 
     setRespawnEvent(timeToRespawn: number) {
         this.node.emit("respawn", timeToRespawn);
+    }
+
+    isChain(row: number, col: number) {
+        return row !== this.row && col !== this.col && row !== this.row + 1 && row !== this.row - 1 && col !== this.col + 1 && col !== this.col - 1;
     }
 }
 
