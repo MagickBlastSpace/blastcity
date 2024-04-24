@@ -361,10 +361,7 @@
     "__prefab": {
       "__id__": 13
     },
-    "_customMaterial": {
-      "__uuid__": "fda095cb-831d-4601-ad94-846013963de8",
-      "__expectedType__": "cc.Material"
-    },
+    "_customMaterial": null,
     "_srcBlendFactor": 2,
     "_dstBlendFactor": 4,
     "_color": {
@@ -374,15 +371,15 @@
       "b": 255,
       "a": 255
     },
-    "duration": 2.5,
+    "duration": 1.2,
     "emissionRate": 7,
-    "life": 2.5,
+    "life": 1.2,
     "lifeVar": 0,
     "angle": 360,
     "angleVar": 360,
     "startSize": 30,
     "startSizeVar": 5,
-    "endSize": 70,
+    "endSize": 50,
     "endSizeVar": 5,
     "startSpin": 45,
     "startSpinVar": 20,
@@ -401,14 +398,14 @@
     "emitterMode": 0,
     "gravity": {
       "__type__": "cc.Vec2",
-      "x": 10,
-      "y": 0
+      "x": 0,
+      "y": -380
     },
-    "speed": 200,
+    "speed": 300,
     "speedVar": 20,
-    "tangentialAccel": 200,
+    "tangentialAccel": 300,
     "tangentialAccelVar": 10,
-    "radialAccel": 100,
+    "radialAccel": 150,
     "radialAccelVar": 5,
     "rotationIsDir": false,
     "startRadius": 0,
@@ -418,13 +415,16 @@
     "rotatePerS": 0,
     "rotatePerSVar": 0,
     "playOnLoad": false,
-    "autoRemoveOnFinish": false,
+    "autoRemoveOnFinish": true,
     "_preview": true,
     "preview": true,
     "_custom": true,
-    "_file": null,
+    "_file": {
+      "__uuid__": "f8b1f82e-7fbd-4624-a31c-acf8d6539b15",
+      "__expectedType__": "cc.ParticleAsset"
+    },
     "_spriteFrame": {
-      "__uuid__": "9ac2c57f-5198-4ac0-8199-29bdbe146564@f9941",
+      "__uuid__": "505204f9-711f-4cff-87c1-7b8b342d50c8@98094",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_totalParticles": 2,
@@ -579,15 +579,15 @@
       "b": 255,
       "a": 255
     },
-    "duration": 2.5,
+    "duration": 1.2,
     "emissionRate": 7,
-    "life": 2.5,
+    "life": 1.2,
     "lifeVar": 0,
     "angle": 360,
     "angleVar": 360,
     "startSize": 30,
     "startSizeVar": 5,
-    "endSize": 70,
+    "endSize": 50,
     "endSizeVar": 5,
     "startSpin": 45,
     "startSpinVar": 20,
@@ -606,14 +606,14 @@
     "emitterMode": 0,
     "gravity": {
       "__type__": "cc.Vec2",
-      "x": 10,
-      "y": 0
+      "x": 0,
+      "y": -380
     },
-    "speed": 200,
+    "speed": 300,
     "speedVar": 20,
-    "tangentialAccel": 200,
+    "tangentialAccel": 300,
     "tangentialAccelVar": 10,
-    "radialAccel": 100,
+    "radialAccel": 150,
     "radialAccelVar": 5,
     "rotationIsDir": false,
     "startRadius": 0,
@@ -623,11 +623,14 @@
     "rotatePerS": 0,
     "rotatePerSVar": 0,
     "playOnLoad": false,
-    "autoRemoveOnFinish": false,
+    "autoRemoveOnFinish": true,
     "_preview": true,
     "preview": true,
     "_custom": true,
-    "_file": null,
+    "_file": {
+      "__uuid__": "f8b1f82e-7fbd-4624-a31c-acf8d6539b15",
+      "__expectedType__": "cc.ParticleAsset"
+    },
     "_spriteFrame": {
       "__uuid__": "9ac2c57f-5198-4ac0-8199-29bdbe146564@f9941",
       "__expectedType__": "cc.SpriteFrame"
@@ -784,15 +787,15 @@
       "b": 255,
       "a": 255
     },
-    "duration": 2.5,
+    "duration": 1.2,
     "emissionRate": 7,
-    "life": 2.5,
+    "life": 1.2,
     "lifeVar": 0,
     "angle": 360,
     "angleVar": 360,
     "startSize": 30,
     "startSizeVar": 5,
-    "endSize": 70,
+    "endSize": 50,
     "endSizeVar": 5,
     "startSpin": 45,
     "startSpinVar": 20,
@@ -811,14 +814,14 @@
     "emitterMode": 0,
     "gravity": {
       "__type__": "cc.Vec2",
-      "x": 10,
-      "y": 0
+      "x": 0,
+      "y": -380
     },
-    "speed": 200,
+    "speed": 300,
     "speedVar": 20,
-    "tangentialAccel": 200,
+    "tangentialAccel": 300,
     "tangentialAccelVar": 10,
-    "radialAccel": 100,
+    "radialAccel": 150,
     "radialAccelVar": 5,
     "rotationIsDir": false,
     "startRadius": 0,
@@ -828,11 +831,14 @@
     "rotatePerS": 0,
     "rotatePerSVar": 0,
     "playOnLoad": false,
-    "autoRemoveOnFinish": false,
+    "autoRemoveOnFinish": true,
     "_preview": true,
     "preview": true,
     "_custom": true,
-    "_file": null,
+    "_file": {
+      "__uuid__": "f8b1f82e-7fbd-4624-a31c-acf8d6539b15",
+      "__expectedType__": "cc.ParticleAsset"
+    },
     "_spriteFrame": {
       "__uuid__": "9ac2c57f-5198-4ac0-8199-29bdbe146564@f9941",
       "__expectedType__": "cc.SpriteFrame"
@@ -989,15 +995,15 @@
       "b": 255,
       "a": 255
     },
-    "duration": 2.5,
+    "duration": 1.2,
     "emissionRate": 7,
-    "life": 2.5,
+    "life": 1.2,
     "lifeVar": 0,
     "angle": 360,
     "angleVar": 360,
     "startSize": 30,
     "startSizeVar": 5,
-    "endSize": 70,
+    "endSize": 50,
     "endSizeVar": 5,
     "startSpin": 45,
     "startSpinVar": 20,
@@ -1016,14 +1022,14 @@
     "emitterMode": 0,
     "gravity": {
       "__type__": "cc.Vec2",
-      "x": 10,
-      "y": 0
+      "x": 0,
+      "y": -380
     },
-    "speed": 200,
+    "speed": 300,
     "speedVar": 20,
-    "tangentialAccel": 200,
+    "tangentialAccel": 300,
     "tangentialAccelVar": 10,
-    "radialAccel": 100,
+    "radialAccel": 150,
     "radialAccelVar": 5,
     "rotationIsDir": false,
     "startRadius": 0,
@@ -1033,11 +1039,14 @@
     "rotatePerS": 0,
     "rotatePerSVar": 0,
     "playOnLoad": false,
-    "autoRemoveOnFinish": false,
+    "autoRemoveOnFinish": true,
     "_preview": true,
     "preview": true,
     "_custom": true,
-    "_file": null,
+    "_file": {
+      "__uuid__": "f8b1f82e-7fbd-4624-a31c-acf8d6539b15",
+      "__expectedType__": "cc.ParticleAsset"
+    },
     "_spriteFrame": {
       "__uuid__": "9ac2c57f-5198-4ac0-8199-29bdbe146564@f9941",
       "__expectedType__": "cc.SpriteFrame"
@@ -1194,15 +1203,15 @@
       "b": 255,
       "a": 255
     },
-    "duration": 2.5,
+    "duration": 1.2,
     "emissionRate": 7,
-    "life": 2.5,
+    "life": 1.2,
     "lifeVar": 0,
     "angle": 360,
     "angleVar": 360,
     "startSize": 30,
     "startSizeVar": 5,
-    "endSize": 70,
+    "endSize": 50,
     "endSizeVar": 5,
     "startSpin": 45,
     "startSpinVar": 20,
@@ -1221,14 +1230,14 @@
     "emitterMode": 0,
     "gravity": {
       "__type__": "cc.Vec2",
-      "x": 10,
-      "y": 0
+      "x": 0,
+      "y": -380
     },
-    "speed": 200,
+    "speed": 300,
     "speedVar": 20,
-    "tangentialAccel": 200,
+    "tangentialAccel": 300,
     "tangentialAccelVar": 10,
-    "radialAccel": 100,
+    "radialAccel": 150,
     "radialAccelVar": 5,
     "rotationIsDir": false,
     "startRadius": 0,
@@ -1238,11 +1247,14 @@
     "rotatePerS": 0,
     "rotatePerSVar": 0,
     "playOnLoad": false,
-    "autoRemoveOnFinish": false,
+    "autoRemoveOnFinish": true,
     "_preview": true,
     "preview": true,
     "_custom": true,
-    "_file": null,
+    "_file": {
+      "__uuid__": "f8b1f82e-7fbd-4624-a31c-acf8d6539b15",
+      "__expectedType__": "cc.ParticleAsset"
+    },
     "_spriteFrame": {
       "__uuid__": "9ac2c57f-5198-4ac0-8199-29bdbe146564@f9941",
       "__expectedType__": "cc.SpriteFrame"
@@ -1310,8 +1322,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
-      "height": 100
+      "width": 0,
+      "height": 0
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1889,6 +1901,9 @@
     },
     "particles_5": {
       "__id__": 36
+    },
+    "particlesParent": {
+      "__id__": 8
     },
     "particleIcons": [
       {

@@ -35,6 +35,9 @@ export class UITile extends Component {
     @property(ParticleSystem2D)
     particles_5: ParticleSystem2D = null;
 
+    @property(Node)
+    particlesParent: Node = null;
+
     @property([ParticleTileData])
     particleIcons: ParticleTileData[] = [];
 
@@ -45,7 +48,7 @@ export class UITile extends Component {
     spine: sp.Skeleton = null;
 
     private fallTime: number = 0.35;
-    private destroyTime: number = 1;
+    private destroyTime: number = 0.25;
 
     private isBlocked: boolean = false;
 
@@ -139,8 +142,15 @@ export class UITile extends Component {
             this.particles_5.resetSystem();
         }
 
+        if(this.particlesParent) {
+            this.destroyLayout.addChild(this.particlesParent);
+            this.particlesParent.setPosition(this.currentX, this.currentY);
+        }
+        
         try {
-            this.spine?.setAnimation(0, 'animation', false);
+            if(this.spine) {
+                this.spine.setAnimation(0, 'animation', false);
+            }
         } catch (error) {
             console.error('Error setting spine animation:', error);
         }
@@ -150,9 +160,7 @@ export class UITile extends Component {
             tween(this.node).stop();
 
             tween(this.content)
-                .to(this.destroyTime / 4, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
-                //.to(, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
-                .to(this.destroyTime / 4 * 3, { color: new Color(255,255,255,0)})
+                .to(this.destroyTime, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
                 .call(() => this.node.destroy())
                 .start();
         }, delay);
