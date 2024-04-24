@@ -47,8 +47,6 @@ export class Birds extends MagicHat {
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
-
-        this.isGrouped = false;
     }
 
     getDamage(damageType: string) {

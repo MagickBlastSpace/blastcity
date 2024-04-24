@@ -58,7 +58,7 @@ export class MagicHat extends SpecTileBase {
         super.init(row, col, tileType);
 
         this.isShifts = false;
-        this.isGrouped = true;
+        this.isGrouped = false;
     }
 
     getDamage(damageType: string) {
