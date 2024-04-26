@@ -405,6 +405,8 @@ export class GameData extends Component {
 
         //this.loadLevelsFromURLs(urls);
         this.loadLevelsFromURL(gamepush.variables.get("levels_" + difficulty));
+
+        this.node.emit("experiment", difficulty);
     }
 
 

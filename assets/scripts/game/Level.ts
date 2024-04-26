@@ -1,5 +1,5 @@
 import { _decorator, Component, Node } from 'cc';
-import { GoalData, LevelData } from '../data/GameData';
+import { GameData, GoalData, LevelData } from '../data/GameData';
 import { UserData } from '../data/UserData';
 import { SaveData } from '../data/SaveData';
 import { LevelProgressStatisticsData, Statistics } from '../data/Statistics';
@@ -28,6 +28,8 @@ export class Level extends Component {
 
     private stats: LevelProgressStatisticsData = null;
 
+    private isMovesUnlimited: boolean = false;
+
 
     start() {
         this.field.on("move", () => this.moveCallback());
@@ -39,6 +41,8 @@ export class Level extends Component {
         this.field.on("goal_check", (goalType, count) => this.checkGoalPossibility(goalType, count));
 
         this.movesShop.on("extra_moves", (movesCount) => this.addExtraMoves(movesCount));
+
+        GameData.instance.node.on("experiment", (category) => this.setExperimentCategory(category));
     }
 
     resetStats() {
@@ -53,7 +57,7 @@ export class Level extends Component {
 
     init(level: LevelData) {
         this.goals = [];
-        this.moves = level.movesCount;
+        this.moves = this.isMovesUnlimited ? 99999 : level.movesCount;
         this.difficulty = level.difficulty;
         this.coinsCollected = 0;
 
@@ -314,6 +318,13 @@ export class Level extends Component {
 
     getFailsCount(): number {
         return this.stats.fails;
+    }
+
+
+    setExperimentCategory(category: string) {
+        this.isMovesUnlimited = category === "B";
+
+        console.log("experiment: " + category);
     }
 }
 
