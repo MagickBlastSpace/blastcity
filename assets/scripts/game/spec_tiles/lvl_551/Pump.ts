@@ -33,7 +33,7 @@ export class Pump extends SpecTileBase {
         this.fieldNode = field;
 
         this.destroyTileCallback = (tileType) => {
-            if(tileType === "sticker") {
+            if(tileType === "balloon") {
                 this.goalCount--;
 
                 if(this.goalCount <= 0) {
@@ -77,7 +77,7 @@ export class Pump extends SpecTileBase {
 
     startPreActionEffect(field: Node[][]): boolean {
         if(this.isDamaged && this.goalCount > 0) {
-            this.node.emit("special", "sticker");
+            this.node.emit("special", "balloon");
         }
 
         return false;
@@ -88,7 +88,7 @@ export class Pump extends SpecTileBase {
         this.goalCount = 0;
 
         for(let i = 0; i < goals.length; i++) {
-            if(goals[i].id === "sticker") {
+            if(goals[i].id === "balloon") {
                 this.goalCount = goals[i].count;
                 return;
             }
