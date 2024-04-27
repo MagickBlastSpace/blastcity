@@ -29,6 +29,10 @@ export class ButlersGift extends Component {
 
 
     updateProgress(isWin: boolean) {
+        if(this.isBlocked) {
+            return;
+        }
+        
         if(UserData.instance.getProgress() + 1 < this.LEVEL_REQUIRED) {
             return;
         }
