@@ -351,9 +351,9 @@ export class GameData extends Component {
     }
 
     start() {
-        this.loadLevelsFromDirectory("levels");
+        //this.loadLevelsFromDirectory("levels");
 
-        //this.loadLevels();
+        this.loadLevels();
     }
 
 
