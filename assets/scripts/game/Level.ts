@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { GameData, GoalData, LevelData } from '../data/GameData';
 import { UserData } from '../data/UserData';
@@ -29,6 +31,7 @@ export class Level extends Component {
     private stats: LevelProgressStatisticsData = null;
 
     private isMovesUnlimited: boolean = false;
+    private startMovesCount: number = 0;
 
 
     start() {
@@ -57,9 +60,11 @@ export class Level extends Component {
 
     init(level: LevelData) {
         this.goals = [];
-        this.moves = this.isMovesUnlimited ? 99999 : level.movesCount;
         this.difficulty = level.difficulty;
+        this.moves = this.isMovesUnlimited && this.difficulty !== "bonus" ? 99999 : level.movesCount;
         this.coinsCollected = 0;
+
+        this.startMovesCount = this.moves;
 
         this.resetStats();
 
@@ -157,6 +162,7 @@ export class Level extends Component {
         this.isFailed = false;
 
         this.moves += movesCount;
+        this.startMovesCount += movesCount;
 
         this.node.emit("refresh", this.moves);
         this.node.emit("extra");
@@ -254,6 +260,8 @@ export class Level extends Component {
 
             this.isComplete = true;
 
+            this.publishGamepushLevelRecord('level_' + UserData.instance.getProgress(), this.startMovesCount - this.moves, 0);
+
             return;
         }
 
@@ -262,7 +270,9 @@ export class Level extends Component {
                 UserData.instance.addProgress();
                 this.node.emit("all_goals_complete_event", 0);
 
-                return;
+                let totalReward = this.coinsCollected * this.difficultyMultiplier;
+
+                this.publishGamepushLevelRecord('level_' + UserData.instance.getProgress(), 0, totalReward);
             }
 
             this.isFailed = true;
@@ -323,8 +333,20 @@ export class Level extends Component {
 
     setExperimentCategory(category: string) {
         this.isMovesUnlimited = category === "B";
+    }
 
-        console.log("experiment: " + category);
+
+    publishGamepushLevelRecord(levelId: string, movesCount: number, scoreCount: number) {
+        gamepush.leaderboard.publishRecord({
+            id: 11354,
+            tag: 'LEVELS',
+            variant: levelId,
+            override: true,
+            record: {
+                moves: movesCount,
+                score: scoreCount,
+            },
+        });
     }
 }
 
