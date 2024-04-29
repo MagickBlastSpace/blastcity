@@ -89,21 +89,25 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
         this.movesShop.refresh();
 
-        let levelsCount = GameData.instance.levels.length;
-        let completedLevelIndex = UserData.instance.getProgress() - 1;
-        let levelData = GameData.instance.levels[completedLevelIndex % levelsCount];
+        try {
+            let levelsCount = GameData.instance.levels.length;
+            let completedLevelIndex = UserData.instance.getProgress() - 1;
+            let levelData = GameData.instance.levels[completedLevelIndex % levelsCount];
 
-        if(levelData.difficulty === "hard") {
-            this.frame.spriteFrame = this.hard;
-            this.header.spriteFrame = this.header_hard;
-        }
-        else if(levelData.difficulty === "superhard") {
-            this.frame.spriteFrame = this.superHard;
-            this.header.spriteFrame = this.header_superHard;
-        }
-        else {
-            this.frame.spriteFrame = this.common;
-            this.header.spriteFrame = this.header_common;
+            if(levelData.difficulty === "hard") {
+                this.frame.spriteFrame = this.hard;
+                this.header.spriteFrame = this.header_hard;
+            }
+            else if(levelData.difficulty === "superhard") {
+                this.frame.spriteFrame = this.superHard;
+                this.header.spriteFrame = this.header_superHard;
+            }
+            else {
+                this.frame.spriteFrame = this.common;
+                this.header.spriteFrame = this.header_common;
+            }
+        } catch (error) {
+            console.error('Error setting level result:', error);
         }
     }
 

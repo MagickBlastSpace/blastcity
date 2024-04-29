@@ -389,21 +389,11 @@ export class GameData extends Component {
     loadLevelsFromGamePush() {
         this.levels = [];
 
-        //let urls = [];
-
-        //const levelsCount = gamepush.variables.get("levelsCount");
-
         let difficulty = "A";
         if (gamepush.experiments.has('LDT', 'B')) {
             difficulty = 'B';
         }
         
-        /*for(let i = 0; i < levelsCount; i++) {
-            const url = gamepush.variables.get("lvl_" + i.toString() + "_" + difficulty);  
-            urls.push(url);
-        }*/
-
-        //this.loadLevelsFromURLs(urls);
         this.loadLevelsFromURL(gamepush.variables.get("levels_" + difficulty));
 
         this.node.emit("experiment", difficulty);

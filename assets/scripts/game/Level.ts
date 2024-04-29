@@ -1,5 +1,3 @@
-declare const gamepush: any;
-
 import { _decorator, Component, Node } from 'cc';
 import { GameData, GoalData, LevelData } from '../data/GameData';
 import { UserData } from '../data/UserData';
@@ -32,6 +30,7 @@ export class Level extends Component {
 
     private isMovesUnlimited: boolean = false;
     private startMovesCount: number = 0;
+    private experimentCategory: string = "";
 
 
     start() {
@@ -260,7 +259,7 @@ export class Level extends Component {
 
             this.isComplete = true;
 
-            this.publishGamepushLevelRecord('level_' + UserData.instance.getProgress(), this.startMovesCount - this.moves, 0);
+            this.node.emit("publish_record", 'level_' + UserData.instance.getProgress(), this.startMovesCount - this.moves, 0);
 
             return;
         }
@@ -272,7 +271,7 @@ export class Level extends Component {
 
                 let totalReward = this.coinsCollected * this.difficultyMultiplier;
 
-                this.publishGamepushLevelRecord('level_' + UserData.instance.getProgress(), 0, totalReward);
+                this.node.emit("publish_record", 'level_' + UserData.instance.getProgress(), 0, totalReward);
             }
 
             this.isFailed = true;
@@ -330,23 +329,15 @@ export class Level extends Component {
         return this.stats.fails;
     }
 
-
-    setExperimentCategory(category: string) {
-        this.isMovesUnlimited = category === "B";
+    getExperimentCategory(): string {
+        return this.experimentCategory;
     }
 
 
-    publishGamepushLevelRecord(levelId: string, movesCount: number, scoreCount: number) {
-        gamepush.leaderboard.publishRecord({
-            id: 11354,
-            tag: 'LEVELS',
-            variant: levelId,
-            override: true,
-            record: {
-                moves: movesCount,
-                score: scoreCount,
-            },
-        });
+    setExperimentCategory(category: string) {
+        this.isMovesUnlimited = category === "B";
+
+        this.experimentCategory = category;
     }
 }
 

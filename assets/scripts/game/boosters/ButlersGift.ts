@@ -1,7 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
 import { SaveData } from '../../data/SaveData';
 import { UserData } from '../../data/UserData';
-import { GameData } from '../../data/GameData';
+import { Level } from '../Level';
 const { ccclass, property } = _decorator;
 
 @ccclass('ButlersGift')
@@ -17,19 +17,19 @@ export class ButlersGift extends Component {
 
     private LEVEL_REQUIRED: number = 30;
 
-    private isBlocked: boolean = false;
+    private levelComp: Level = null;
 
     
     start() {
         this.level.on("complete", (isWin) => this.updateProgress(isWin));
         this.level.on("fail", () => this.clearStreak());
 
-        GameData.instance.node.on("experiment", (category) => this.setExperimentCategory(category));
+        this.levelComp = this.level.getComponent("Level");
     }
 
 
     updateProgress(isWin: boolean) {
-        if(this.isBlocked) {
+        if(this.levelComp.getExperimentCategory() === "B") {
             return;
         }
         
@@ -110,7 +110,10 @@ export class ButlersGift extends Component {
 
 
     setExperimentCategory(category: string) {
+        console.log("experiment category: " + category);
         this.isBlocked = category === "B";
+
+        this.clearStreak();
     }
 }
 
