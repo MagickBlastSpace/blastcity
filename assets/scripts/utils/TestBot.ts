@@ -1,10 +1,11 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, math } from 'cc';
 import { Field } from '../game/Field';
 import { GameData } from '../data/GameData';
 import { UIFrameBase } from '../ui/UIFrameBase';
 import { TileBase } from '../game/TileBase';
 import { Level } from '../game/Level';
 const { ccclass, property } = _decorator;
+const { clamp } = math;
 
 @ccclass('TestBot')
 export class TestBot extends Component {
@@ -23,7 +24,10 @@ export class TestBot extends Component {
     private isBotActive: boolean = false;
 
     private currentLevelIndex: number = 0;
+    private currentIteration: number = 0;
+
     private maxLevels: number = 0;
+    private maxIterations: number = 0;
 
     private availableColors: string[] = [];
     private priorityList: string[] = [];
@@ -42,10 +46,14 @@ export class TestBot extends Component {
     }
 
 
-    activateBot() {
+    activateBot(startLevel: number, endLevel: number, iterations: number) {
         this.isBotActive = true;
-        this.currentLevelIndex = 0;
-        this.maxLevels = GameData.instance.levels.length;
+
+        this.currentLevelIndex = clamp(startLevel, 0, GameData.instance.levels.length - 1);
+        this.maxLevels = clamp(endLevel, startLevel, GameData.instance.levels.length - 1);
+
+        this.maxIterations = clamp(iterations, 1, 100);
+        this.currentIteration = 0;
 
         this.setNextLevel();
     }
@@ -63,8 +71,14 @@ export class TestBot extends Component {
 
         this.fieldComp.spawnInitialBoard(GameData.instance.levels[this.currentLevelIndex]);
 
-        this.currentLevelIndex++;
+        this.currentIteration++;
 
+        if(this.currentIteration >= this.maxIterations) {
+            this.currentLevelIndex++;
+
+            this.currentIteration = 0;
+        }
+        
         this.levelResult.hide();
     }
 

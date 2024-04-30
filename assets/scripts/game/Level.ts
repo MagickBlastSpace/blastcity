@@ -60,7 +60,7 @@ export class Level extends Component {
     init(level: LevelData) {
         this.goals = [];
         this.difficulty = level.difficulty;
-        this.moves = this.isMovesUnlimited && this.difficulty !== "bonus" ? 99999 : level.movesCount;
+        this.moves = level.movesCount;
         this.coinsCollected = 0;
 
         this.startMovesCount = this.moves;
@@ -134,7 +134,7 @@ export class Level extends Component {
             return;
         }
 
-        if(this.moves > 0) {
+        if(this.moves > 0 || this.isMovesUnlimited) {
             this.moves--;
 
             if(this.moves <= 0) {
@@ -150,8 +150,14 @@ export class Level extends Component {
             return;
         }
 
+        if(this.isMovesUnlimited) {
+            return;
+        }
+
         this.stats.fails++;
-        this.node.emit("complete", false, 0);
+        if(!this.isMovesUnlimited) {
+            this.node.emit("complete", false, 0);
+        }
 
         Statistics.instance.updateLevelStat(this.stats);
         SaveData.instance.saveStatistics();
@@ -274,7 +280,9 @@ export class Level extends Component {
                 this.node.emit("publish_record", 'level_' + UserData.instance.getProgress(), 0, totalReward);
             }
 
-            this.isFailed = true;
+            if(!this.isMovesUnlimited) {
+                this.isFailed = true;
+            }
         }
     }
 
@@ -338,6 +346,8 @@ export class Level extends Component {
         this.isMovesUnlimited = category === "B";
 
         this.experimentCategory = category;
+
+        console.log("experiment category: " + category);
     }
 }
 

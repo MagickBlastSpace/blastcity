@@ -61,6 +61,7 @@ export class Field extends Component {
 
     private spawnTilesSchedule: Function = null;
     private isSpawnScheduled: boolean = false;
+    private isCompleteScheduled: boolean = false;
 
     private rocketPreset: string = "random";
     private dynamiteGoals: GoalData[] = [];
@@ -264,6 +265,8 @@ export class Field extends Component {
         if(level.tutorial) {
             this.node.emit("tutorial", level.tutorial);
         }
+
+        this.isCompleteScheduled = false;
     }
 
     restoreSpecTilesState(specs: SpecialTileStateData[]) {
@@ -1982,6 +1985,12 @@ export class Field extends Component {
     }
     
     completeLevel() {
+        if(this.isCompleteScheduled) {
+            return;
+        }
+
+        this.isCompleteScheduled = true;
+
         const timeBetweenTiles = 0.2;
 
         const availableTiles = this.shuffleArray(this.getAllCommonTilesPositions());
