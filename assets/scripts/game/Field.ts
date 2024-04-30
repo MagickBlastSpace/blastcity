@@ -1787,6 +1787,8 @@ export class Field extends Component {
 
         if(!this.isSpawnScheduled) {
             this.node.emit("move_end");
+
+            this.node.emit("game_state", this.tileArray, this.statusArray);
         }
     }
 

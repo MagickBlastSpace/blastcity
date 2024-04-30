@@ -132,16 +132,16 @@ export class TileBase extends Component {
         if(this.row < numRows - 1) {
             matches.push(field[this.row + 1][this.col]);
         }
-        if(this.row > 0) {
-            matches.push(field[this.row - 1][this.col]);
+        if(this.col > 0) {
+            matches.push(field[this.row][this.col - 1]);
         }
         if(this.col < numCols - 1) {
             matches.push(field[this.row][this.col + 1]);
         }
-        if(this.col > 0) {
-            matches.push(field[this.row][this.col - 1]);
+        if(this.row > 0) {
+            matches.push(field[this.row - 1][this.col]);
         }
-
+        
         return matches;
     }
 
