@@ -145,6 +145,93 @@ export class TileBase extends Component {
         return matches;
     }
 
+    getAdditionalTiles_1(field: Node[][]): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        if(this.row < numRows - 1 && this.col < numCols - 1) {
+            matches.push(field[this.row + 1][this.col + 1]);
+        }
+        if(this.col > 0 && this.row > 0) {
+            matches.push(field[this.row - 1][this.col - 1]);
+        }
+        if(this.col < numCols - 1 && this.row > 0) {
+            matches.push(field[this.row - 1][this.col + 1]);
+        }
+        if(this.col > 0 && this.row < numRows - 1) {
+            matches.push(field[this.row + 1][this.col - 1]);
+        }
+        
+        return matches;
+    }
+
+    getAdditionalTiles_2(field: Node[][]): Node[] {
+        let matches = [];
+
+        const numRows: number = field.length;
+        const numCols: number = field.length > 0 ? field[0].length : 0;
+
+        if(this.row < numRows - 2) {
+            matches.push(field[this.row + 2][this.col]);
+            if(this.col > 0) {
+                matches.push(field[this.row + 2][this.col - 1]);
+            }
+            if(this.col > 1) {
+                matches.push(field[this.row + 2][this.col - 2]);
+                matches.push(field[this.row + 1][this.col - 2]);
+                matches.push(field[this.row][this.col - 2]);
+            }
+            if(this.col < numCols - 1) {
+                matches.push(field[this.row + 2][this.col + 1]);
+            }
+            if(this.col < numCols - 2) {
+                matches.push(field[this.row + 2][this.col + 2]);
+                matches.push(field[this.row + 1][this.col + 2]);
+                matches.push(field[this.row][this.col + 2]);
+            }
+        }
+        else if(this.row < numRows - 1) {
+            if(this.col > 1) {
+                matches.push(field[this.row + 1][this.col - 2]);
+                matches.push(field[this.row][this.col - 2]);
+            }
+            if(this.col < numCols - 2) {
+                matches.push(field[this.row + 1][this.col + 2]);
+                matches.push(field[this.row][this.col + 2]);
+            }
+        }
+        else {
+            if(this.col > 1) {
+                matches.push(field[this.row][this.col - 2]);
+            }
+            if(this.col < numCols - 2) {
+                matches.push(field[this.row][this.col + 2]);
+            }
+        }
+
+        if(this.row > 1) {
+            matches.push(field[this.row - 2][this.col]);
+            if(this.col > 0) {
+                matches.push(field[this.row - 2][this.col - 1]);
+            }
+            if(this.col > 1) {
+                matches.push(field[this.row - 2][this.col - 2]);
+                matches.push(field[this.row - 1][this.col - 2]);
+            }
+            if(this.col < numCols - 1) {
+                matches.push(field[this.row - 2][this.col + 1]);
+            }
+            if(this.col < numCols - 2) {
+                matches.push(field[this.row - 2][this.col + 2]);
+                matches.push(field[this.row - 1][this.col + 2]);
+            }
+        }
+        
+        return matches;
+    }
+
 
     canFall(field: Node[][], rowIndexToFall: number): boolean {
         const numCols: number = field.length > 0 ? field[0].length : 0;

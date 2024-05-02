@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, math } from 'cc';
+import { _decorator, Component, Node, math, EditBox } from 'cc';
 import { Field } from '../game/Field';
 import { GameData } from '../data/GameData';
 import { UIFrameBase } from '../ui/UIFrameBase';
@@ -6,6 +6,24 @@ import { TileBase } from '../game/TileBase';
 import { Level } from '../game/Level';
 const { ccclass, property } = _decorator;
 const { clamp } = math;
+
+
+@ccclass('TestOutputData')
+export class TestOutputData {
+    @property
+    id = '';
+    @property([TestOutputDataItem])
+    items: TestOutputDataItem[] = [];
+}
+
+@ccclass('TestOutputDataItem')
+export class TestOutputDataItem {
+    @property
+    moves = 0;
+    @property
+    score = 0;
+}
+
 
 @ccclass('TestBot')
 export class TestBot extends Component {
@@ -17,6 +35,9 @@ export class TestBot extends Component {
 
     @property(UIFrameBase)
     levelResult: UIFrameBase = null;
+
+    @property(EditBox)
+    inputField: EditBox = null;
 
     private fieldComp: Field = null;
     private levelComp: Level = null;
@@ -33,10 +54,17 @@ export class TestBot extends Component {
     private priorityList: string[] = [];
     private goals: string[] = [];
 
+    private movesCounter: number = 0;
+
+    private outputData: TestOutputData[] = [];
+
+    private isLevelChangeScheduled: boolean = false;
+    private isMoveScheduled: boolean = false;
+
 
     start() {
-        this.field.on("game_state", (tiles, statuses) => this.makeMove(tiles, statuses));
-        this.level.on("complete", () => this.setNextLevel());
+        this.field.on("game_state", (tiles, statuses) => this.scheduleMakeMove(tiles, statuses));
+        this.level.on("complete", (isWin, score) => this.scheduleLevelChange(score));
 
         this.fieldComp = this.field.getComponent("Field");
         this.levelComp = this.level.getComponent("Level");
@@ -55,16 +83,117 @@ export class TestBot extends Component {
         this.maxIterations = clamp(iterations, 1, 100);
         this.currentIteration = 0;
 
-        this.setNextLevel();
+        this.initOutput(startLevel, endLevel);
+
+        this.setNextLevel(-100);
     }
 
-    setNextLevel() {
+
+    initOutput(startLevel: number, endLevel: number) {
+        this.outputData = [];
+
+        for(let i = startLevel + 1; i < endLevel + 1; i++) {
+            let data = new TestOutputData();
+            data.id = "level_" + i.toString();
+            this.outputData.push(data);
+        }
+    }
+
+    pushOutput(level_id: string, moves: number, score: number) {
+        let foundItem = this.outputData.find((item) => item.id === level_id);
+
+        if(foundItem) {
+            let itemData = new TestOutputDataItem();
+            itemData.moves = moves;
+            itemData.score = score;
+
+            foundItem.items.push(itemData);
+        }
+    }
+
+    generateOutput(outputData: TestOutputData[]): string {
+        let output = '';
+    
+        outputData.forEach(data => {
+            const moves = data.items.map(item => item.moves);
+            const scores = data.items.map(item => item.score);
+    
+            const minMoves = Math.min(...moves);
+            const maxMoves = Math.max(...moves);
+            const medianMoves = this.getMedian(moves);
+    
+            const minScore = Math.min(...scores);
+            const maxScore = Math.max(...scores);
+            const medianScore = this.getMedian(scores);
+    
+            output += `${data.id}\n`;
+            output += `min movesCount value: ${minMoves}, max movesCount value: ${maxMoves}, median movesCount: ${medianMoves}\n`;
+            output += `min score value: ${minScore}, max score value: ${maxScore}, median score: ${medianScore}\n\n`;
+        });
+    
+        return output;
+    }
+
+    generateSingleOutput(outputData: TestOutputData[], id: string): string {
+        const data = outputData.find(item => item.id === id);
+    
+        if (!data) {
+            console.error(`Item with ID '${id}' not found.`);
+            return ''; // Return an empty string or handle the error as needed.
+        }
+    
+        const moves = data.items.map(item => item.moves);
+        const scores = data.items.map(item => item.score);
+    
+        const minMoves = Math.min(...moves);
+        const maxMoves = Math.max(...moves);
+        const medianMoves = this.getMedian(moves);
+    
+        const minScore = Math.min(...scores);
+        const maxScore = Math.max(...scores);
+        const medianScore = this.getMedian(scores);
+    
+        let output = `${data.id}\n`;
+        output += `min movesCount value: ${minMoves}, max movesCount value: ${maxMoves}, median movesCount: ${medianMoves}\n`;
+        output += `min score value: ${minScore}, max score value: ${maxScore}, median score: ${medianScore}\n\n`;
+    
+        return output;
+    }
+    
+    getMedian(values: number[]): number {
+        const sorted = values.sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+    }
+
+
+    setNextLevel(score: number) {
         if(!this.isBotActive) {
             return;
         }
 
+        let level_number = this.currentLevelIndex + 1;
+        let level_id = "level_" + level_number.toString();
+
+        if(this.movesCounter > 0 && score > -100) {
+
+            this.pushOutput(level_id, this.movesCounter, score);
+        }
+
+        if(this.currentIteration >= this.maxIterations) {
+            let outputString = this.generateSingleOutput(this.outputData, level_id);
+            console.log(outputString);
+
+            this.currentLevelIndex++;
+
+            this.currentIteration = 0;
+        }
+
         if(this.currentLevelIndex >= this.maxLevels) {
             this.isBotActive = false;
+
+            let outputString = this.generateOutput(this.outputData);
+            this.inputField.string = outputString;
 
             return;
         }
@@ -72,14 +201,10 @@ export class TestBot extends Component {
         this.fieldComp.spawnInitialBoard(GameData.instance.levels[this.currentLevelIndex]);
 
         this.currentIteration++;
-
-        if(this.currentIteration >= this.maxIterations) {
-            this.currentLevelIndex++;
-
-            this.currentIteration = 0;
-        }
         
         this.levelResult.hide();
+
+        this.movesCounter = 0;
     }
 
     
@@ -87,6 +212,8 @@ export class TestBot extends Component {
         if(!this.isBotActive) {
             return;
         }
+
+        this.movesCounter++;
 
         this.updateGoalsData();
 
@@ -117,7 +244,15 @@ export class TestBot extends Component {
         if(this.checkComboBonus(tiles, statuses)) {
             return;
         }
-        
+
+        if(this.checkSpecTiles_Circle_1(tiles, statuses)) {
+            return;
+        }
+
+        if(this.checkSpecTiles_Circle_2(tiles, statuses)) {
+            return;
+        }
+
         if(this.checkCommonTiles(tiles, statuses)) {
             return;
         }
@@ -127,6 +262,31 @@ export class TestBot extends Component {
         }
     }
 
+
+    scheduleLevelChange(score: number) {
+        if(this.isLevelChangeScheduled) {
+            return;
+        }
+
+        this.isLevelChangeScheduled = true;
+        this.scheduleOnce(() => {
+            this.isLevelChangeScheduled = false;
+            this.setNextLevel(score);
+        }, 0.2);
+    }
+
+    scheduleMakeMove(tiles: Node[][], statuses: Node[][]) {
+        if (this.isMoveScheduled) {
+            this.unschedule(this.makeMove.bind(this, tiles, statuses));
+        }
+    
+        this.isMoveScheduled = true;
+        this.scheduleOnce(() => {
+            this.isMoveScheduled = false;
+            this.makeMove(tiles, statuses);
+        }, 0.02);
+    }
+    
 
     updateGoalsData() {
         this.goals = [];
@@ -234,6 +394,8 @@ export class TestBot extends Component {
 
         return false;
     }
+
+
 
     findAdjacentMatchByColor(tiles: Node[][], statuses: Node[][], tileComp: TileBase, color: string) {
         let clickCandidates = tileComp.getAdjacentTiles(tiles);
@@ -630,6 +792,12 @@ export class TestBot extends Component {
                         if(this.findAdjacentMatch(tiles, statuses, tileComp)) {
                             return true;
                         }
+                        if(this.findCircleMatch_1(tiles, statuses, tileComp)) {
+                            return true;
+                        }
+                        if(this.findCircleMatch_2(tiles, statuses, tileComp)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -692,6 +860,100 @@ export class TestBot extends Component {
                         }
                     }
                 } 
+            }
+        }
+
+        return false;
+    }
+
+    
+    checkSpecTiles_Circle_1(tiles: Node[][], statuses: Node[][]): boolean {
+        for (let row = 8; row >= 0; row--) {
+            for (let col = 0; col <= 8; col++) {
+
+                let tile = tiles[row][col];
+                if(tile !== null) {
+                    let tileComp = tile.getComponent("TileBase");
+
+                    if(tileComp.isSpecialTile()) {
+                        if(this.findCircleMatch_1(tiles, statuses, tileComp)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    findCircleMatch_1(tiles: Node[][], statuses: Node[][], tileComp: TileBase) {
+        let clickCandidates = tileComp.getAdditionalTiles_1(tiles);
+
+        for(let i = 0; i < clickCandidates.length; i++) {
+            if(clickCandidates[i] !== null) {
+                let candTileComp = clickCandidates[i].getComponent("TileBase");
+                if(candTileComp.isCommonTile()) {
+                    let candRow = candTileComp.getRow();
+                    let candCol = candTileComp.getCol();
+
+                    if(this.fieldComp.isInteractionAvailable(candRow, candCol)) {
+                        let matches = candTileComp.getMatches(tiles, statuses);
+                        if(matches.length > 1) {
+                            this.fieldComp.onTileClick(clickCandidates[i]);
+
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    checkSpecTiles_Circle_2(tiles: Node[][], statuses: Node[][]): boolean {
+        for (let row = 8; row >= 0; row--) {
+            for (let col = 0; col <= 8; col++) {
+
+                let tile = tiles[row][col];
+                if(tile !== null) {
+                    let tileComp = tile.getComponent("TileBase");
+
+                    if(tileComp.isSpecialTile()) {
+                        if(this.findCircleMatch_2(tiles, statuses, tileComp)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    findCircleMatch_2(tiles: Node[][], statuses: Node[][], tileComp: TileBase) {
+        let clickCandidates = tileComp.getAdditionalTiles_2(tiles);
+
+        for(let i = 0; i < clickCandidates.length; i++) {
+            if(clickCandidates[i] !== null) {
+                let candTileComp = clickCandidates[i].getComponent("TileBase");
+                if(candTileComp.isCommonTile()) {
+                    let candRow = candTileComp.getRow();
+                    let candCol = candTileComp.getCol();
+
+                    if(this.fieldComp.isInteractionAvailable(candRow, candCol)) {
+                        let matches = candTileComp.getMatches(tiles, statuses);
+                        if(matches.length > 1) {
+                            this.fieldComp.onTileClick(clickCandidates[i]);
+
+                            return true;
+                        }
+                    }
+                }
             }
         }
 

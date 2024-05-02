@@ -56,7 +56,7 @@ export class Field extends Component {
     private startPool: string[] = [];
     private spawnPools: string[][] = [];
 
-    private fallTime: number = 0.3;
+    private fallTime: number = 0.02; //0.3
     private swapTime: number = 0.15;
 
     private spawnTilesSchedule: Function = null;
@@ -1071,7 +1071,13 @@ export class Field extends Component {
         }
         
         let isBlockingCombo = !isRespawn || (this.isSuperDiscoballMode && choosenType === "multi");
-        let matches = choosenTile.getMatches(this.tileArray, this.statusArray, isBlockingCombo);
+        let matches = [];
+        try {
+            matches = choosenTile.getMatches(this.tileArray, this.statusArray, isBlockingCombo);
+        } catch (error) {
+            return false;
+        }
+
         let isComboBonus = this.isComboBonus(choosenTile);
 
         if(isComboBonus && (choosenType === "multi" || choosenType === "super")) {
@@ -1656,6 +1662,9 @@ export class Field extends Component {
     
     onTileClick(tile: Node) {
         if(!this.isClickAvailable || tile === null || this.isLevelComplete) {
+
+            this.node.emit("game_state", this.tileArray, this.statusArray);
+
             return;
         }
 
@@ -1664,14 +1673,21 @@ export class Field extends Component {
         if(this.boosters.isBoosterActive()) {
             this.isClickAvailable = false;
             this.boosters.useActiveBooster(this.tileArray, tileComponent.getRow(), tileComponent.getCol());
+
+            this.node.emit("game_state", this.tileArray, this.statusArray);
+
             return;
         }
 
         if(tileComponent.isSpecialTile()) {
+            this.node.emit("game_state", this.tileArray, this.statusArray);
+
             return;
         }
 
         if(!this.isInteractionAvailable(tileComponent.getRow(), tileComponent.getCol())) {
+            this.node.emit("game_state", this.tileArray, this.statusArray);
+
             return;
         }
 
@@ -1683,6 +1699,9 @@ export class Field extends Component {
             if(this.levelCompletePoints > 0) {
                 this.levelCompletePoints = this.levelCompletePoints - 1;
             }
+        }
+        else {
+            this.node.emit("game_state", this.tileArray, this.statusArray);
         }
     }
 
