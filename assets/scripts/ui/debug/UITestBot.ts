@@ -7,6 +7,8 @@ export class UITestBot extends Component {
 
     @property(Button)
     botBtn: Button = null;
+    @property(Button)
+    stopBtn: Button = null;
 
     @property(TestBot)
     bot: TestBot = null;
@@ -21,6 +23,7 @@ export class UITestBot extends Component {
 
     start() {
         this.botBtn.node.on(Button.EventType.CLICK, this.activateBot, this);
+        this.stopBtn.node.on(Button.EventType.CLICK, this.stopBot, this);
 
         this.startLevel_input.string = "1";
         this.endLevel_input.string = "100";
@@ -46,6 +49,10 @@ export class UITestBot extends Component {
         }
 
         this.bot.activateBot(startLevel - 1, endLevel, iterations);
+    }
+
+    stopBot() {
+        this.bot.stopBot();
     }
 }
 

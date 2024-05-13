@@ -88,6 +88,13 @@ export class TestBot extends Component {
         this.setNextLevel(-100);
     }
 
+    stopBot() {
+        this.isBotActive = false;
+
+        let outputString = this.generateOutput(this.outputData);
+        this.inputField.string = outputString;
+    }
+
 
     initOutput(startLevel: number, endLevel: number) {
         this.outputData = [];
@@ -190,10 +197,7 @@ export class TestBot extends Component {
         }
 
         if(this.currentLevelIndex >= this.maxLevels) {
-            this.isBotActive = false;
-
-            let outputString = this.generateOutput(this.outputData);
-            this.inputField.string = outputString;
+            this.stopBot();
 
             return;
         }
@@ -217,6 +221,14 @@ export class TestBot extends Component {
 
         this.updateGoalsData();
 
+        if(this.checkHighPriorityComboBonus(tiles, statuses)) {
+            return;
+        }
+
+        if(this.checkComboBonus(tiles, statuses)) {
+            return;
+        }
+
         if(this.checkAbsolutePrioritySpecTiles(tiles, statuses)) {
             return;
         }
@@ -238,10 +250,6 @@ export class TestBot extends Component {
         }
 
         if(this.checkBonusTiles(tiles, statuses)) {
-            return;
-        }
-
-        if(this.checkComboBonus(tiles, statuses)) {
             return;
         }
 
@@ -284,7 +292,7 @@ export class TestBot extends Component {
         this.scheduleOnce(() => {
             this.isMoveScheduled = false;
             this.makeMove(tiles, statuses);
-        }, 0.02);
+        }, 0.03);
     }
     
 
@@ -854,6 +862,44 @@ export class TestBot extends Component {
                                     if(adjTileComponent.isBonusTile()) {
                                         this.fieldComp.onTileClick(tile);
                                         return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } 
+            }
+        }
+
+        return false;
+    }
+
+    checkHighPriorityComboBonus(tiles: Node[][], statuses: Node[][]): boolean {
+        for (let row = 8; row >= 0; row--) {
+            for (let col = 0; col <= 8; col++) {
+
+                let tile = tiles[row][col];
+                if(tile !== null) {
+                    let tileComp = tile.getComponent("TileBase");
+
+                    if(tileComp.isBonusTile()) {
+                        let candRow = tileComp.getRow();
+                        let candCol = tileComp.getCol();
+
+                        let tileType = tileComp.getTileType();
+
+                        if(this.fieldComp.isInteractionAvailable(candRow, candCol)) {
+
+                            if(this.availableColors.includes(tileType) || tileType === "multi" || tileType === "super") {
+                                let adjTiles = tileComp.getAdjacentTiles(tiles);
+                                for(let i = 0; i < adjTiles.length; i++) {
+                                    const adjTile = adjTiles[i];
+                                    if(adjTile !== null) {
+                                        const adjTileComponent = adjTile.getComponent("TileBase");
+                                        if(adjTileComponent.isBonusTile()) {
+                                            this.fieldComp.onTileClick(tile);
+                                            return true;
+                                        }
                                     }
                                 }
                             }
