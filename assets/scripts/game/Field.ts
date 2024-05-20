@@ -138,7 +138,11 @@ export class Field extends Component {
                 this.resetSpawnPools();
             }
             else {
-                this.spawnPools = level.spawnPools;
+                for (let i = 0; i < level.spawnPools.length; i++) {
+                    const duplicateSpawnPool = level.spawnPools[i].slice();
+                    
+                    this.spawnPools.push(duplicateSpawnPool);
+                }
             }
         }
         else {
