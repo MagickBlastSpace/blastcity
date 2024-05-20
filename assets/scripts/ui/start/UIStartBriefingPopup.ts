@@ -50,6 +50,7 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
         SaveData.instance.node.on("level_progress_loaded", () => this.hide());
+
         this.butlersGiftInfoPopup.node.on("play", () => this.onPlayBtnClick());
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);

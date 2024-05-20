@@ -24,8 +24,9 @@ export class BigSafe extends WashingMachine {
     getDamage(damageType: string) {
         if(!this.isClosed && !this.isDamaged) {
             this.strength--;
-            this.node.emit("goal", "big_safe");
             this.setAsDamaged();
+            
+            this.node.emit("goal", "big_safe");
         }
         else {
             if(damageType === "bonus") {
