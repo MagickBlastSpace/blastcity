@@ -64,7 +64,7 @@ export class TestBot extends Component {
 
     start() {
         this.field.on("game_state", (tiles, statuses) => this.scheduleMakeMove(tiles, statuses));
-        this.level.on("complete", (isWin, score) => this.scheduleLevelChange(score));
+        this.level.on("complete", (isWin, score) => this.scheduleLevelChange(score, isWin));
 
         this.fieldComp = this.field.getComponent("Field");
         this.levelComp = this.level.getComponent("Level");
@@ -232,6 +232,10 @@ export class TestBot extends Component {
         if(this.checkAbsolutePrioritySpecTiles(tiles, statuses)) {
             return;
         }
+
+        if(this.checkBonusTiles(tiles, statuses)) {
+            return;
+        }
         
         if(this.checkPrioritySpecTiles(tiles, statuses)) {
             return;
@@ -246,10 +250,6 @@ export class TestBot extends Component {
         }
 
         if(this.checkStatuses(tiles, statuses)) {
-            return;
-        }
-
-        if(this.checkBonusTiles(tiles, statuses)) {
             return;
         }
 
@@ -271,8 +271,12 @@ export class TestBot extends Component {
     }
 
 
-    scheduleLevelChange(score: number) {
+    scheduleLevelChange(score: number, isWin: boolean) {
         if(this.isLevelChangeScheduled) {
+            return;
+        }
+
+        if(!isWin) {
             return;
         }
 
