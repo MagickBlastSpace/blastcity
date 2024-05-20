@@ -6,6 +6,7 @@ import { StartBonuses } from './boosters/StartBonuses';
 import { ButlersGift } from './boosters/ButlersGift';
 import { SaveData } from '../data/SaveData';
 import { UserData } from '../data/UserData';
+import { UIField } from '../ui/UIField';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -36,6 +37,9 @@ export class Field extends Component {
     startBonuses: StartBonuses = null;
     @property(ButlersGift)
     butlersGift: ButlersGift = null;
+
+    @property([Node])
+    layersForCleanup: Node = [];
 
     @property
     numRows: number = 8;
@@ -362,6 +366,24 @@ export class Field extends Component {
             }
         }
 
+        for(let col = 0; col < this.numCols; col++) {
+            for(let row = 0; row < this.numRows; row++) {
+                this.tileArray[row][col] = null;
+                this.statusArray[row][col] = null;
+            }
+        }
+
+        for(let i = 0; i < this.layersForCleanup.length; i++) {
+            let children = this.layersForCleanup[i].children;
+
+            for (let child of children) {
+                child.destroy();
+            }
+
+            this.layersForCleanup[i].removeAllChildren();
+        }
+        
+
         this.presetedNodes = [];
     }
 
@@ -389,6 +411,7 @@ export class Field extends Component {
     spawnCommonTile(row: number, col: number, tType: string): Node {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.tilePrefab);
+        this.layersForCleanup[0].addChild(tileNode);
         const tileComponent = tileNode.getComponent("Tile");
         const tileTypeIndex = tType === "start" ? Math.floor(Math.random() * this.startPool.length).toString() : Math.floor(Math.random() * this.spawnPools[col].length).toString();
         let tileType = tType === "random" ? this.spawnPools[col][tileTypeIndex] : tType;
@@ -427,6 +450,7 @@ export class Field extends Component {
     spawnBomb(row: number, col: number): Node {
         this.destroyTile(row, col, false);
         const tileNode = instantiate(this.bombPrefab);
+        this.layersForCleanup[0].addChild(tileNode);
         const tileComponent = tileNode.getComponent("Bomb");
         let spawnedTile = this.initTile(tileComponent, row, col, "bomb");
         return spawnedTile;
@@ -435,6 +459,7 @@ export class Field extends Component {
     spawnRocket(row: number, col: number, tileType: string): Node {
         this.destroyTile(row, col, false);
         const tileNode = instantiate(this.rocketPrefab);
+        this.layersForCleanup[0].addChild(tileNode);
         const tileComponent = tileNode.getComponent("Rocket");
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
         return spawnedTile;
@@ -458,6 +483,7 @@ export class Field extends Component {
     spawnDiscoball(row: number, col: number): Node {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.discoballPrefab);
+        this.layersForCleanup[0].addChild(tileNode);
         const tileComponent = tileNode.getComponent("Discoball");
         let tileType = this.isSuperDiscoballMode ? "super" : "multi";
         let spawnedTile = this.initTile(tileComponent, row, col, tileType);
@@ -467,6 +493,7 @@ export class Field extends Component {
     spawnEmptyTile(row: number, col: number): Node {
         this.destroyTile(row, col, true);
         const tileNode = instantiate(this.emptyPrefab);
+        this.layersForCleanup[0].addChild(tileNode);
         const tileComponent = tileNode.getComponent("EmptyTile");
         let spawnedTile = this.initTile(tileComponent, row, col, "empty");
         return spawnedTile;
@@ -488,6 +515,7 @@ export class Field extends Component {
 
         this.destroyTile(row, col, true);
         const tileNode = instantiate(prefab);
+        this.layersForCleanup[0].addChild(tileNode);
         const tileComponent = tileNode.getComponent("SpecTileBase");
         let spawnedTile = this.initTile(tileComponent, row, col, tileId);
         return spawnedTile;
@@ -501,6 +529,7 @@ export class Field extends Component {
 
         this.destroyStatus(row, col, true);
         const statusNode = instantiate(prefab);
+        this.layersForCleanup[0].addChild(statusNode);
         const statusComponent = statusNode.getComponent("StatusBase");
         let spawnedStatus = this.initStatus(statusComponent, row, col, statusId);
         return spawnedStatus;
