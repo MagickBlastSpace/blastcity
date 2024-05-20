@@ -1,6 +1,6 @@
 import { _decorator, Component, Node, EditBox, Button } from 'cc';
 import { Field } from '../../game/Field';
-import { LevelData } from '../../data/GameData';
+import { GameData, LevelData } from '../../data/GameData';
 import { UIStartFrame } from '../start/UIStartFrame';
 import { SaveData } from '../../data/SaveData';
 import { Statistics } from '../../data/Statistics';
@@ -68,12 +68,19 @@ export class UILevelConstructor extends Component {
     onPlayBtnClick() {
         try {
             const levelData = LevelData.fromJSON(this.inputField.string);
+            
             this.field.spawnInitialBoard(levelData);
 
             this.startFrame.hide();
         }
         catch (error) {
             this.inputField.string = error;
+
+            let levelsCount = GameData.instance.levels.length;
+
+            this.scheduleOnce(() => {
+                this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
+            }, 0.5);
         }
     }
 
