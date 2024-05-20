@@ -353,9 +353,22 @@ export class GameData extends Component {
     start() {
         //this.loadLevelsFromDirectory("levels");
 
-        this.loadLevels();
+        //this.loadLevels();
+
+        this.tryLoadLevels();
     }
 
+
+    tryLoadLevels() {
+        try {
+            this.loadLevelsFromGamePush();
+        }
+        catch(error) {
+            console.error('Error Game Push:', error);
+
+            this.tryLoadLevels();
+        }
+    }
 
     loadLevels() {
         this.waitForGamePush().then(() => {
