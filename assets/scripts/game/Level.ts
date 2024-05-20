@@ -277,7 +277,7 @@ export class Level extends Component {
 
                 let totalReward = this.coinsCollected * this.difficultyMultiplier;
 
-                this.node.emit("publish_record", 'level_' + UserData.instance.getProgress(), 0, totalReward);
+                this.node.emit("publish_record", 'level_' + UserData.instance.getProgress(), this.startMovesCount - this.moves, totalReward);
             }
 
             if(!this.isMovesUnlimited) {
