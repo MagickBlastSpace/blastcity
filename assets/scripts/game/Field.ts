@@ -111,7 +111,22 @@ export class Field extends Component {
         this.isSuperDiscoballMode = false;
 
         SaveData.instance.node.on("level_progress_loaded", (level) => {
-            this.spawnInitialBoard(level);
+            try {
+                console.log("Save Level Data Initialization Started...");
+
+                this.spawnInitialBoard(level);
+            }
+            catch (error) {
+                console.log("Save Level Data Load Error: " + error);
+
+                console.log("Level Data Report: " + level.toJSON());
+
+                let levelsCount = GameData.instance.levels.length;
+                
+                this.scheduleOnce(() => {
+                    this.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
+                }, 0.5);
+            }
         });
     }
 
@@ -663,7 +678,16 @@ export class Field extends Component {
     destroyTile(row: number, col: number, isClear: boolean) {
         const tile = this.tileArray[row][col];
         if(tile !== null) {
-            let tileComponent = tile.getComponent("TileBase");
+            let tileComponent = null;
+            try {
+                tileComponent = tile.getComponent("TileBase");
+            }
+            catch (error) {
+                console.log("Destroy Catch: " + error);
+
+                return;
+            }
+
             if(tileComponent.isEmptyTile() && !isClear) {
                 return;
             }
@@ -1204,13 +1228,21 @@ export class Field extends Component {
 
 
     spawnNewTiles(isRespawn: boolean, isBlockingInactionEffect: boolean) {
-        this.checkStatusesForDestroy();
-        this.checkSpecTilesForDestroy();
-        this.checkSpecTilesPreActionEffect();
-        this.fallTiles();
+        try {
+            this.checkStatusesForDestroy();
+            this.checkSpecTilesForDestroy();
+            this.checkSpecTilesPreActionEffect();
+            this.fallTiles();
+        }
+        catch (error) {
+            console.log("Spawn Err: " + error);
+
+            this.scheduleRespawn(0.2, isBlockingInactionEffect);
+            return;
+        }
 
         if (this.checkSpecTilesForDestroy()) {
-            this.spawnNewTiles(isRespawn, isBlockingInactionEffect);
+            this.scheduleRespawn(0.2, isBlockingInactionEffect);
             return;
         }
 
@@ -1250,11 +1282,20 @@ export class Field extends Component {
                 for (let row = 0; row < this.numRows; row++) {
                     const tile = this.tileArray[row][col];
                     if (tile !== null) {
-                        const tileComponent = tile.getComponent("TileBase");
+                        try {
+                            const tileComponent = tile.getComponent("TileBase");
 
-                        if(tileComponent.getTileType() === "") {
-                            this.spawnCommonTile(row, col, "random");
-                            break;
+                            if(tileComponent.getTileType() === "") {
+                                this.spawnCommonTile(row, col, "random");
+                                break;
+                            }
+                        }
+                        catch (error) {
+                            console.log("Error in Schedule: " + error);
+
+                            this.node.emit("load_level_error");
+
+                            return;
                         }
                     }
                 }
@@ -1843,8 +1884,13 @@ export class Field extends Component {
             for(let j = 0; j < this.numCols; j++) {
                 let tile = this.tileArray[i][j];
                 if(tile !== null) {
-                    let tileComponent = tile.getComponent("TileBase");
-                    tileComponent.clearExtra();
+                    try {
+                        let tileComponent = tile.getComponent("TileBase");
+                        tileComponent.clearExtra();
+                    }
+                    catch (error) {
+                        console.log("Clear extra catch: " + error);
+                    }
                 }
             }
         }
