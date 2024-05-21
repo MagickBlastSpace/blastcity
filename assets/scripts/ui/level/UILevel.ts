@@ -19,6 +19,8 @@ export class UILevel extends UIFrameBase {
 
     @property(UIFrameBase)
     levelResult: UIFrameBase = null;
+    @property(UIFrameBase)
+    levelCompletePopup: UIFrameBase = null;
 
     @property(Sprite)
     sidePanel_Left: Sprite = null;
@@ -35,8 +37,8 @@ export class UILevel extends UIFrameBase {
 
     start() {
         this.level.on("refresh", () => this.refreshAll());
-
         this.level.on("complete", (isSuccess: boolean, goldEarned: number) => this.showResult(isSuccess, goldEarned));
+        this.level.on("all_goals_complete_event", (movesRemain) => this.showLevelCompletePopup());
 
         SaveData.instance.node.on("level_progress_loaded", () => this.refreshAll());
     }
@@ -83,6 +85,10 @@ export class UILevel extends UIFrameBase {
     showResult(isSuccess: boolean, goldEarned: number) {
         this.levelResult.show();
         this.levelResult.refresh(isSuccess, goldEarned);
+    }
+
+    showLevelCompletePopup() {
+        this.levelCompletePopup.show();
     }
 }
 

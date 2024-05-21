@@ -1009,6 +1009,11 @@ export class TestBot extends Component {
 
         return false;
     }
+
+
+    isActive(): boolean {
+        return this.isBotActive;
+    }
 }
 
 

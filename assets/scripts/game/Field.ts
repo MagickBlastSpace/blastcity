@@ -1876,7 +1876,7 @@ export class Field extends Component {
                 this.isClickAvailable = true;
             }
             else if(this.isLevelComplete) {
-                this.completeLevel();
+                //this.completeLevel();
                 return;
             }
         }
@@ -2080,6 +2080,8 @@ export class Field extends Component {
         this.isLevelComplete = true;
 
         this.levelCompletePoints = moves;
+
+        //change goal to reward UI
     }
     
     completeLevel() {
@@ -2105,6 +2107,26 @@ export class Field extends Component {
         this.scheduleOnce(() => {
             this.node.emit("complete", this.countBonusGold());
         }, totalTime);
+    }
+
+    completeLevel_Skip() {
+        if(this.isCompleteScheduled) {
+            return;
+        }
+
+        this.isCompleteScheduled = true;
+
+        const availableTiles = this.shuffleArray(this.getAllCommonTilesPositions());
+        const totalSpawns = availableTiles.length >= this.levelCompletePoints ? this.levelCompletePoints : availableTiles.length;
+
+        for(let i = 0; i < totalSpawns; i++) {
+            this.spawnRandomRocket(availableTiles[i].x, availableTiles[i].y);
+            this.node.emit("move");
+        }
+
+        this.scheduleOnce(() => {
+            this.node.emit("complete", this.countBonusGold());
+        }, 0.2);
     }
 
     countBonusGold(): number {
