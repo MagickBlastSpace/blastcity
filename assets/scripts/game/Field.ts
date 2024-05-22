@@ -2101,6 +2101,7 @@ export class Field extends Component {
             this.scheduleOnce(() => {
                 this.spawnRandomRocket(availableTiles[i].x, availableTiles[i].y);
                 this.node.emit("move");
+                this.node.emit("coin_reward", availableTiles[i].x, availableTiles[i].y);
             }, timeBetweenTiles * i);
         }
 
@@ -2122,6 +2123,7 @@ export class Field extends Component {
         for(let i = 0; i < totalSpawns; i++) {
             this.spawnRandomRocket(availableTiles[i].x, availableTiles[i].y);
             this.node.emit("move");
+            this.node.emit("coin_reward", availableTiles[i].x, availableTiles[i].y);
         }
 
         this.scheduleOnce(() => {

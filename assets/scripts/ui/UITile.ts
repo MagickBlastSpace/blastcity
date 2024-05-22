@@ -73,8 +73,8 @@ export class UITile extends Component {
         this.currentX = posX;
         this.currentY = posY;
 
-        //this.destroyLayout = this.node.parent;
-        this.destroyLayout = layout;
+        this.destroyLayout = this.node.parent;
+        //this.destroyLayout = layout;
 
         if(this.content === null || this.content === undefined) {
             this.content = this.node;
@@ -125,7 +125,7 @@ export class UITile extends Component {
 
         this.isBlocked = true;
 
-        //this.destroyLayout.addChild(this.node);
+        this.destroyLayout.addChild(this.node);
 
         if (this.particles_1) {
             this.particles_1.resetSystem();
