@@ -58,6 +58,8 @@ export class Level extends Component {
 
 
     init(level: LevelData) {
+        this.node.emit("init");
+        
         this.goals = [];
         this.difficulty = level.difficulty;
         this.moves = level.movesCount;
@@ -143,6 +145,10 @@ export class Level extends Component {
         }
 
         this.node.emit("refresh", this.moves);
+
+        if(this.isComplete) {
+            this.node.emit("reward_move");
+        }
     }
 
     moveEndCallback() {
@@ -347,7 +353,16 @@ export class Level extends Component {
 
         this.experimentCategory = category;
 
-        console.log("experiment category: " + category);
+        console.log("Experiment Category: " + category);
+    }
+
+
+    getCompletionReward(): number {
+        return this.completionReward;
+    }
+
+    getDifficultyMultiplier(): number {
+        return this.difficultyMultiplier;
     }
 }
 
