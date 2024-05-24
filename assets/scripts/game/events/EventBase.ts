@@ -42,6 +42,8 @@ export class EventBase extends Component {
 
         /*console.log("Start time: " + this.startTime);
         console.log("End time: " + this.endTime);*/
+
+        this.node.emit("init");
     }
 
     isEventAvailable(): boolean {
@@ -73,6 +75,17 @@ export class EventBase extends Component {
 
     getEventDuration(): number {
         return (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60 * 60);
+    }
+
+    getTimeProgress(): number {
+        let duration = this.getEventDuration();
+
+        const now = new Date();
+        let timePassed = (now.getTime() - this.startTime.getTime()) / (1000 * 60 * 60);
+
+        let timeProgress = timePassed / duration;
+
+        return timeProgress;
     }
 
     activateEvent() {

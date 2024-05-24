@@ -11,6 +11,8 @@ export class WeeklyEventBase extends EventBase {
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         this.startDayOfWeek = startDayOfWeek;
         this.calculateStartEndTime(startHourUTC, durationDays);
+
+        this.node.emit("init");
     }
 
     private calculateStartEndTime(startHourUTC: number, durationDays: number): void {

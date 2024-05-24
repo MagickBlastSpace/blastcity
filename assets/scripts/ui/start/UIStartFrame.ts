@@ -32,8 +32,6 @@ export class UIStartFrame extends UIFrameBase {
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
-        this.refresh();
-
         SaveData.instance.loadLevelProgressData();
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
@@ -45,6 +43,8 @@ export class UIStartFrame extends UIFrameBase {
         GameData.instance.node.on("levels_loaded", () => this.unlockPlay());
 
         this.playBtn.node.active = false;
+
+        this.refresh();
     }
 
     onPlayBtnClick() {
@@ -59,10 +59,17 @@ export class UIStartFrame extends UIFrameBase {
         this.levelLabel.string = "Level " + currentLevelNumber;
     }
 
+    refreshEventsIcons() {
+        for(let i = 0; i < this.eventBtns.length && i < this.eventPopups.length; i++) {
+            this.eventBtns[i].node.getComponent("UIEventButton").setProgress();
+        }
+    }
+
     show() {
         super.show();
 
         this.refresh();
+        this.refreshEventsIcons();
     }
 
 
