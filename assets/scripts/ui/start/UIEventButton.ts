@@ -27,7 +27,6 @@ export class UIEventButton extends Component {
 
     setProgress() {
         let eventProgress = this.eventController.getTimeProgress();
-        console.log(eventProgress);
 
         tween(this.progressBar)
             .to(0.8, { progress: eventProgress })

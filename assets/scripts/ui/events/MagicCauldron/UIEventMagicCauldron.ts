@@ -3,10 +3,11 @@ import { UIFrameBase } from '../../UIFrameBase';
 import { SpecialEventBase } from '../../../game/events/special/SpecialEventBase';
 import { UIEventMagicCauldronItem } from './UIEventMagicCauldronItem';
 import { UIEventMagicCauldronPredictionButton } from './UIEventMagicCauldronPredictionButton';
+import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldron')
-export class UIEventMagicCauldron extends UIFrameBase {
+export class UIEventMagicCauldron extends UIPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;
