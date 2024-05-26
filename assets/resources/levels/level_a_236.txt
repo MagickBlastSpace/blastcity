@@ -1,0 +1,597 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 0,
+      "y": 5
+    },
+    {
+      "x": 0,
+      "y": 6
+    },
+    {
+      "x": 0,
+      "y": 7
+    },
+    {
+      "x": 0,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "EasterEgg",
+      "row": 0,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "EasterEgg",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "EasterEgg",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "EasterEgg",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 2
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 5
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 6
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 4,
+      "col": 8
+    },
+    {
+      "id": "EasterEgg",
+      "row": 5,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 5,
+      "col": 8
+    },
+    {
+      "id": "EasterEgg",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 6,
+      "col": 8
+    },
+    {
+      "id": "EasterEgg",
+      "row": 7,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 7,
+      "col": 8
+    },
+    {
+      "id": "EasterEgg",
+      "row": 8,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 8,
+      "col": 8
+    }
+  ],
+  "statuses": [
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 5
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 4
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Jail",
+      "row": 7,
+      "col": 4
+    },
+    {
+      "id": "Jail",
+      "row": 8,
+      "col": 4
+    }
+  ],
+  "destroyedOnStart": [
+    {
+      "x": 1,
+      "y": 0
+    },
+    {
+      "x": 2,
+      "y": 0
+    },
+    {
+      "x": 3,
+      "y": 0
+    },
+    {
+      "x": 5,
+      "y": 0
+    },
+    {
+      "x": 6,
+      "y": 0
+    },
+    {
+      "x": 7,
+      "y": 0
+    },
+    {
+      "x": 1,
+      "y": 1
+    },
+    {
+      "x": 2,
+      "y": 1
+    },
+    {
+      "x": 3,
+      "y": 1
+    },
+    {
+      "x": 5,
+      "y": 1
+    },
+    {
+      "x": 6,
+      "y": 1
+    },
+    {
+      "x": 7,
+      "y": 1
+    },
+    {
+      "x": 1,
+      "y": 2
+    },
+    {
+      "x": 2,
+      "y": 2
+    },
+    {
+      "x": 3,
+      "y": 2
+    },
+    {
+      "x": 5,
+      "y": 2
+    },
+    {
+      "x": 6,
+      "y": 2
+    },
+    {
+      "x": 7,
+      "y": 2
+    },
+    {
+      "x": 1,
+      "y": 3
+    },
+    {
+      "x": 2,
+      "y": 3
+    },
+    {
+      "x": 3,
+      "y": 3
+    },
+    {
+      "x": 5,
+      "y": 3
+    },
+    {
+      "x": 6,
+      "y": 3
+    },
+    {
+      "x": 7,
+      "y": 3
+    }
+  ],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow",
+    "Purple"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Bubble",
+      "count": 24
+    },
+    {
+      "id": "EasterEgg",
+      "count": 15
+    },
+    {
+      "id": "Magic_Hat",
+      "count": 40
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 62,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Common",
+  "tutorial": ""
+}

@@ -1,0 +1,561 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 7,
+      "y": 2
+    },
+    {
+      "x": 6,
+      "y": 3
+    },
+    {
+      "x": 7,
+      "y": 3
+    },
+    {
+      "x": 5,
+      "y": 4
+    },
+    {
+      "x": 6,
+      "y": 4
+    },
+    {
+      "x": 7,
+      "y": 4
+    },
+    {
+      "x": 4,
+      "y": 5
+    },
+    {
+      "x": 5,
+      "y": 5
+    },
+    {
+      "x": 6,
+      "y": 5
+    },
+    {
+      "x": 7,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 5
+    },
+    {
+      "x": 3,
+      "y": 6
+    },
+    {
+      "x": 4,
+      "y": 6
+    },
+    {
+      "x": 5,
+      "y": 6
+    },
+    {
+      "x": 6,
+      "y": 6
+    },
+    {
+      "x": 7,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 2,
+      "y": 7
+    },
+    {
+      "x": 3,
+      "y": 7
+    },
+    {
+      "x": 4,
+      "y": 7
+    },
+    {
+      "x": 5,
+      "y": 7
+    },
+    {
+      "x": 6,
+      "y": 7
+    },
+    {
+      "x": 7,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 1,
+      "y": 8
+    },
+    {
+      "x": 2,
+      "y": 8
+    },
+    {
+      "x": 3,
+      "y": 8
+    },
+    {
+      "x": 4,
+      "y": 8
+    },
+    {
+      "x": 5,
+      "y": 8
+    },
+    {
+      "x": 6,
+      "y": 8
+    },
+    {
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Box",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Box",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Box",
+      "row": 0,
+      "col": 5
+    },
+    {
+      "id": "Box",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Box",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Box",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "Box",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "Box",
+      "row": 1,
+      "col": 6
+    },
+    {
+      "id": "Duck",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Box",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Box",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Box",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Duck",
+      "row": 2,
+      "col": 6
+    },
+    {
+      "id": "Box",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "Box",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Box",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Duck",
+      "row": 3,
+      "col": 5
+    },
+    {
+      "id": "Box",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "Box",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Duck",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "Box",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "Box",
+      "row": 5,
+      "col": 2
+    },
+    {
+      "id": "Duck",
+      "row": 5,
+      "col": 3
+    },
+    {
+      "id": "Box",
+      "row": 6,
+      "col": 1
+    },
+    {
+      "id": "Duck",
+      "row": 6,
+      "col": 2
+    },
+    {
+      "id": "Box",
+      "row": 7,
+      "col": 0
+    },
+    {
+      "id": "Duck",
+      "row": 7,
+      "col": 1
+    },
+    {
+      "id": "Duck",
+      "row": 8,
+      "col": 0
+    }
+  ],
+  "statuses": [
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "Bubble",
+      "row": 5,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 6,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 7,
+      "col": 0
+    }
+  ],
+  "destroyedOnStart": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 2,
+      "y": 0
+    },
+    {
+      "x": 4,
+      "y": 0
+    },
+    {
+      "x": 6,
+      "y": 0
+    },
+    {
+      "x": 1,
+      "y": 1
+    },
+    {
+      "x": 3,
+      "y": 1
+    },
+    {
+      "x": 5,
+      "y": 1
+    },
+    {
+      "x": 0,
+      "y": 2
+    },
+    {
+      "x": 2,
+      "y": 2
+    },
+    {
+      "x": 4,
+      "y": 2
+    },
+    {
+      "x": 1,
+      "y": 3
+    },
+    {
+      "x": 3,
+      "y": 3
+    },
+    {
+      "x": 0,
+      "y": 4
+    },
+    {
+      "x": 2,
+      "y": 4
+    },
+    {
+      "x": 1,
+      "y": 5
+    },
+    {
+      "x": 0,
+      "y": 6
+    }
+  ],
+  "startPool": [
+    "Blue",
+    "Red",
+    "Yellow"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Red",
+      "Yellow"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Duck",
+      "count": 8
+    },
+    {
+      "id": "Bubble",
+      "count": 20
+    },
+    {
+      "id": "Box",
+      "count": 20
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 25,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Hard",
+  "tutorial": ""
+}

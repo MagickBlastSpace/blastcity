@@ -1,0 +1,275 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 1,
+      "y": 0
+    },
+    {
+      "x": 7,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 1
+    },
+    {
+      "x": 1,
+      "y": 1
+    },
+    {
+      "x": 7,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 0,
+      "y": 2
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 0,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 0,
+      "y": 4
+    },
+    {
+      "x": 8,
+      "y": 4
+    },
+    {
+      "x": 0,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 5
+    },
+    {
+      "x": 0,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 0,
+      "y": 7
+    },
+    {
+      "x": 1,
+      "y": 7
+    },
+    {
+      "x": 7,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 0,
+      "y": 8
+    },
+    {
+      "x": 1,
+      "y": 8
+    },
+    {
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Rocket",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Rocket",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Rocket",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "id": "Rocket",
+      "row": 3,
+      "col": 7
+    },
+    {
+      "id": "Rocket",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "Rocket",
+      "row": 4,
+      "col": 7
+    },
+    {
+      "id": "Rocket",
+      "row": 5,
+      "col": 1
+    },
+    {
+      "id": "Rocket",
+      "row": 5,
+      "col": 7
+    },
+    {
+      "id": "Rocket",
+      "row": 6,
+      "col": 1
+    },
+    {
+      "id": "Rocket",
+      "row": 6,
+      "col": 7
+    }
+  ],
+  "statuses": [],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Coin",
+    "Coin",
+    "Green"
+  ],
+  "spawnPools": [
+    [],
+    [
+      "Rocket"
+    ],
+    [
+      "Blue",
+      "Coin",
+      "Coin",
+      "Green"
+    ],
+    [
+      "Blue",
+      "Coin",
+      "Coin",
+      "Green"
+    ],
+    [
+      "Blue",
+      "Coin",
+      "Coin",
+      "Green"
+    ],
+    [
+      "Blue",
+      "Coin",
+      "Coin",
+      "Green"
+    ],
+    [
+      "Blue",
+      "Coin",
+      "Coin",
+      "Green"
+    ],
+    [
+      "Rocket"
+    ],
+    []
+  ],
+  "goals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 20,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Bonus",
+  "tutorial": ""
+}

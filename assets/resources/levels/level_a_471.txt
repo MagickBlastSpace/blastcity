@@ -1,0 +1,412 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 4,
+      "y": 0
+    },
+    {
+      "x": 4,
+      "y": 1
+    },
+    {
+      "x": 4,
+      "y": 2
+    },
+    {
+      "x": 4,
+      "y": 3
+    },
+    {
+      "x": 4,
+      "y": 4
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Balloon",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Billboard",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 0,
+      "col": 5
+    },
+    {
+      "id": "Billboard",
+      "row": 0,
+      "col": 6
+    },
+    {
+      "id": "Balloon",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Balloon",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "Billboard",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 1,
+      "col": 5
+    },
+    {
+      "id": "Billboard",
+      "row": 1,
+      "col": 6
+    },
+    {
+      "id": "Balloon",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Billboard",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Billboard",
+      "row": 2,
+      "col": 6
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Balloon",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "id": "Billboard",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 3,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 3,
+      "col": 5
+    },
+    {
+      "id": "Billboard",
+      "row": 3,
+      "col": 6
+    },
+    {
+      "id": "Balloon",
+      "row": 3,
+      "col": 7
+    },
+    {
+      "id": "Balloon",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "Billboard",
+      "row": 4,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 4,
+      "col": 5
+    },
+    {
+      "id": "Billboard",
+      "row": 4,
+      "col": 6
+    },
+    {
+      "id": "Balloon",
+      "row": 4,
+      "col": 7
+    },
+    {
+      "id": "Balloon",
+      "row": 5,
+      "col": 1
+    },
+    {
+      "id": "Billboard",
+      "row": 5,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 5,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 5,
+      "col": 4
+    },
+    {
+      "id": "Balloon",
+      "row": 5,
+      "col": 5
+    },
+    {
+      "id": "Billboard",
+      "row": 5,
+      "col": 6
+    },
+    {
+      "id": "Balloon",
+      "row": 5,
+      "col": 7
+    },
+    {
+      "id": "Balloon",
+      "row": 6,
+      "col": 1
+    },
+    {
+      "id": "Billboard",
+      "row": 6,
+      "col": 2
+    },
+    {
+      "id": "Billboard",
+      "row": 6,
+      "col": 3
+    },
+    {
+      "id": "Billboard",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Billboard",
+      "row": 6,
+      "col": 5
+    },
+    {
+      "id": "Billboard",
+      "row": 6,
+      "col": 6
+    },
+    {
+      "id": "Balloon",
+      "row": 6,
+      "col": 7
+    },
+    {
+      "id": "Balloon",
+      "row": 7,
+      "col": 1
+    },
+    {
+      "id": "Balloon",
+      "row": 7,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 7,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 7,
+      "col": 4
+    },
+    {
+      "id": "Balloon",
+      "row": 7,
+      "col": 5
+    },
+    {
+      "id": "Balloon",
+      "row": 7,
+      "col": 6
+    },
+    {
+      "id": "Balloon",
+      "row": 7,
+      "col": 7
+    }
+  ],
+  "statuses": [],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Billboard",
+      "count": 17
+    },
+    {
+      "id": "Balloon",
+      "count": 34
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 38,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Common",
+  "tutorial": ""
+}

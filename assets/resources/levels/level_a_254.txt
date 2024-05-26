@@ -1,0 +1,414 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 3,
+      "y": 3
+    },
+    {
+      "x": 4,
+      "y": 3
+    },
+    {
+      "x": 5,
+      "y": 3
+    },
+    {
+      "x": 3,
+      "y": 4
+    },
+    {
+      "x": 4,
+      "y": 4
+    },
+    {
+      "x": 5,
+      "y": 4
+    },
+    {
+      "x": 3,
+      "y": 5
+    },
+    {
+      "x": 4,
+      "y": 5
+    },
+    {
+      "x": 5,
+      "y": 5
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "EasterEgg",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "EasterEgg",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "EasterEgg",
+      "row": 0,
+      "col": 4
+    },
+    {
+      "id": "EasterEgg",
+      "row": 0,
+      "col": 6
+    },
+    {
+      "id": "EasterEgg",
+      "row": 0,
+      "col": 8
+    },
+    {
+      "id": "EasterEgg",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Balloon",
+      "row": 2,
+      "col": 6
+    },
+    {
+      "id": "EasterEgg",
+      "row": 2,
+      "col": 8
+    },
+    {
+      "id": "Balloon",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 3,
+      "col": 6
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "Balloon",
+      "row": 4,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 4,
+      "col": 6
+    },
+    {
+      "id": "EasterEgg",
+      "row": 4,
+      "col": 8
+    },
+    {
+      "id": "Balloon",
+      "row": 5,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 5,
+      "col": 6
+    },
+    {
+      "id": "EasterEgg",
+      "row": 6,
+      "col": 0
+    },
+    {
+      "id": "Balloon",
+      "row": 6,
+      "col": 2
+    },
+    {
+      "id": "Balloon",
+      "row": 6,
+      "col": 3
+    },
+    {
+      "id": "Balloon",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Balloon",
+      "row": 6,
+      "col": 5
+    },
+    {
+      "id": "Balloon",
+      "row": 6,
+      "col": 6
+    },
+    {
+      "id": "EasterEgg",
+      "row": 6,
+      "col": 8
+    },
+    {
+      "id": "EasterEgg",
+      "row": 8,
+      "col": 0
+    },
+    {
+      "id": "EasterEgg",
+      "row": 8,
+      "col": 2
+    },
+    {
+      "id": "EasterEgg",
+      "row": 8,
+      "col": 4
+    },
+    {
+      "id": "EasterEgg",
+      "row": 8,
+      "col": 6
+    },
+    {
+      "id": "EasterEgg",
+      "row": 8,
+      "col": 8
+    }
+  ],
+  "statuses": [
+    {
+      "id": "Jail",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Jail",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Jail",
+      "row": 2,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 3,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 5
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 6
+    }
+  ],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "EasterEgg",
+      "count": 16
+    },
+    {
+      "id": "Balloon",
+      "count": 16
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 42,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Common",
+  "tutorial": ""
+}

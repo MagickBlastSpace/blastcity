@@ -1,0 +1,339 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 3,
+      "y": 0
+    },
+    {
+      "x": 4,
+      "y": 0
+    },
+    {
+      "x": 5,
+      "y": 0
+    },
+    {
+      "x": 4,
+      "y": 1
+    },
+    {
+      "x": 4,
+      "y": 7
+    },
+    {
+      "x": 3,
+      "y": 8
+    },
+    {
+      "x": 4,
+      "y": 8
+    },
+    {
+      "x": 5,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Lamp",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Small_Safe",
+      "row": 1,
+      "col": 8
+    },
+    {
+      "id": "Lamp",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "Lamp",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Small_Safe",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Small_Safe",
+      "row": 2,
+      "col": 8
+    },
+    {
+      "id": "Lamp",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "Lamp",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "id": "Lamp",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Small_Safe",
+      "row": 3,
+      "col": 6
+    },
+    {
+      "id": "Small_Safe",
+      "row": 3,
+      "col": 7
+    },
+    {
+      "id": "Small_Safe",
+      "row": 3,
+      "col": 8
+    },
+    {
+      "id": "Lamp",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "Lamp",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "Lamp",
+      "row": 4,
+      "col": 2
+    },
+    {
+      "id": "Lamp",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Small_Safe",
+      "row": 4,
+      "col": 5
+    },
+    {
+      "id": "Small_Safe",
+      "row": 4,
+      "col": 6
+    },
+    {
+      "id": "Small_Safe",
+      "row": 4,
+      "col": 7
+    },
+    {
+      "id": "Small_Safe",
+      "row": 4,
+      "col": 8
+    },
+    {
+      "id": "Lamp",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "Lamp",
+      "row": 5,
+      "col": 1
+    },
+    {
+      "id": "Lamp",
+      "row": 5,
+      "col": 2
+    },
+    {
+      "id": "Small_Safe",
+      "row": 5,
+      "col": 6
+    },
+    {
+      "id": "Small_Safe",
+      "row": 5,
+      "col": 7
+    },
+    {
+      "id": "Small_Safe",
+      "row": 5,
+      "col": 8
+    },
+    {
+      "id": "Lamp",
+      "row": 6,
+      "col": 0
+    },
+    {
+      "id": "Lamp",
+      "row": 6,
+      "col": 1
+    },
+    {
+      "id": "Small_Safe",
+      "row": 6,
+      "col": 7
+    },
+    {
+      "id": "Small_Safe",
+      "row": 6,
+      "col": 8
+    },
+    {
+      "id": "Lamp",
+      "row": 7,
+      "col": 0
+    },
+    {
+      "id": "Small_Safe",
+      "row": 7,
+      "col": 8
+    }
+  ],
+  "statuses": [],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow",
+    "Purple"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Lamp",
+      "count": 16
+    },
+    {
+      "id": "Small_Safe",
+      "count": 16
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 32,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Common",
+  "tutorial": ""
+}

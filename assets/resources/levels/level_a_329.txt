@@ -1,0 +1,319 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 3,
+      "y": 0
+    },
+    {
+      "x": 4,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 0,
+      "y": 3
+    },
+    {
+      "x": 7,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 0,
+      "y": 4
+    },
+    {
+      "x": 7,
+      "y": 4
+    },
+    {
+      "x": 8,
+      "y": 4
+    },
+    {
+      "x": 0,
+      "y": 5
+    },
+    {
+      "x": 7,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 5
+    },
+    {
+      "x": 0,
+      "y": 6
+    },
+    {
+      "x": 7,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 0,
+      "y": 7
+    },
+    {
+      "x": 7,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 0,
+      "y": 8
+    },
+    {
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 5
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 6
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Jars",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "Jars",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "Jars",
+      "row": 1,
+      "col": 5
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Jars",
+      "row": 3,
+      "col": 3
+    },
+    {
+      "id": "Jars",
+      "row": 5,
+      "col": 3
+    },
+    {
+      "id": "Jars",
+      "row": 7,
+      "col": 3
+    }
+  ],
+  "statuses": [],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow",
+    "Purple"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Magic_Hat",
+      "count": 30
+    },
+    {
+      "id": "Jars",
+      "count": 54
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 52,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "SuperHard",
+  "tutorial": ""
+}

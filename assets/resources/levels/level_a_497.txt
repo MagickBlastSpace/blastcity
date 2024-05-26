@@ -1,0 +1,587 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 1,
+      "y": 0
+    },
+    {
+      "x": 2,
+      "y": 0
+    },
+    {
+      "x": 3,
+      "y": 0
+    },
+    {
+      "x": 4,
+      "y": 0
+    },
+    {
+      "x": 5,
+      "y": 0
+    },
+    {
+      "x": 6,
+      "y": 0
+    },
+    {
+      "x": 7,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 0
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 5
+    },
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 6
+    },
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Box_Triple",
+      "row": 1,
+      "col": 8
+    },
+    {
+      "id": "Box_Triple",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Box_Triple",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Box_Triple",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Box_Triple",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Box_Triple",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Box_Triple",
+      "row": 2,
+      "col": 6
+    },
+    {
+      "id": "Box_Triple",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Box_Triple",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Box_Triple",
+      "row": 3,
+      "col": 3
+    },
+    {
+      "id": "Box_Triple",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Box_Triple",
+      "row": 3,
+      "col": 5
+    },
+    {
+      "id": "Box_Triple",
+      "row": 3,
+      "col": 6
+    },
+    {
+      "id": "Shell",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "Box_Triple",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Box_Triple",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "Box_Triple",
+      "row": 4,
+      "col": 5
+    },
+    {
+      "id": "Shell",
+      "row": 4,
+      "col": 8
+    },
+    {
+      "id": "Shell",
+      "row": 5,
+      "col": 1
+    },
+    {
+      "id": "Box_Triple",
+      "row": 5,
+      "col": 4
+    },
+    {
+      "id": "Shell",
+      "row": 5,
+      "col": 7
+    },
+    {
+      "id": "Shell",
+      "row": 6,
+      "col": 2
+    },
+    {
+      "id": "Shell",
+      "row": 6,
+      "col": 6
+    },
+    {
+      "id": "Shell",
+      "row": 7,
+      "col": 3
+    },
+    {
+      "id": "Shell",
+      "row": 7,
+      "col": 5
+    },
+    {
+      "id": "Shell",
+      "row": 8,
+      "col": 4
+    }
+  ],
+  "statuses": [
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Bubble",
+      "row": 1,
+      "col": 8
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 6
+    },
+    {
+      "id": "Bubble",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 2
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 5
+    },
+    {
+      "id": "Bubble",
+      "row": 3,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 3
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "Bubble",
+      "row": 4,
+      "col": 5
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 8
+    },
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 1
+    },
+    {
+      "id": "Bubble",
+      "row": 5,
+      "col": 4
+    },
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 7,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 7,
+      "col": 5
+    },
+    {
+      "id": "Jail",
+      "row": 8,
+      "col": 4
+    }
+  ],
+  "destroyedOnStart": [
+    {
+      "x": 0,
+      "y": 2
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 0,
+      "y": 3
+    },
+    {
+      "x": 1,
+      "y": 3
+    },
+    {
+      "x": 7,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 1,
+      "y": 4
+    },
+    {
+      "x": 2,
+      "y": 4
+    },
+    {
+      "x": 6,
+      "y": 4
+    },
+    {
+      "x": 7,
+      "y": 4
+    },
+    {
+      "x": 2,
+      "y": 5
+    },
+    {
+      "x": 3,
+      "y": 5
+    },
+    {
+      "x": 5,
+      "y": 5
+    },
+    {
+      "x": 6,
+      "y": 5
+    },
+    {
+      "x": 3,
+      "y": 6
+    },
+    {
+      "x": 4,
+      "y": 6
+    },
+    {
+      "x": 5,
+      "y": 6
+    },
+    {
+      "x": 4,
+      "y": 7
+    }
+  ],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Bubble",
+      "count": 25
+    },
+    {
+      "id": "Shell",
+      "count": 9
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 46,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Common",
+  "tutorial": ""
+}

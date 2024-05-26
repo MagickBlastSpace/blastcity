@@ -1,0 +1,447 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 6,
+      "y": 0
+    },
+    {
+      "x": 7,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 7,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 0,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 0,
+      "y": 4
+    },
+    {
+      "x": 8,
+      "y": 4
+    },
+    {
+      "x": 0,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 5
+    },
+    {
+      "x": 0,
+      "y": 6
+    },
+    {
+      "x": 0,
+      "y": 7
+    },
+    {
+      "x": 1,
+      "y": 7
+    },
+    {
+      "x": 0,
+      "y": 8
+    },
+    {
+      "x": 1,
+      "y": 8
+    },
+    {
+      "x": 2,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "Box",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Box",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "Box",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Box",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "Lamp",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "Box",
+      "row": 1,
+      "col": 3
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "Box",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Box",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Box",
+      "row": 2,
+      "col": 3
+    },
+    {
+      "id": "Box",
+      "row": 6,
+      "col": 5
+    },
+    {
+      "id": "Box",
+      "row": 6,
+      "col": 6
+    },
+    {
+      "id": "Box",
+      "row": 6,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 6,
+      "col": 8
+    },
+    {
+      "id": "Box",
+      "row": 7,
+      "col": 5
+    },
+    {
+      "id": "Lamp",
+      "row": 7,
+      "col": 6
+    },
+    {
+      "id": "Box",
+      "row": 7,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 7,
+      "col": 8
+    },
+    {
+      "id": "Box",
+      "row": 8,
+      "col": 5
+    },
+    {
+      "id": "Box",
+      "row": 8,
+      "col": 6
+    },
+    {
+      "id": "Box",
+      "row": 8,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 8,
+      "col": 8
+    }
+  ],
+  "statuses": [],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow",
+    "Purple"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple",
+      "Lamp",
+      "Red",
+      "Red",
+      "Blue",
+      "Blue",
+      "Green",
+      "Green",
+      "Yellow",
+      "Yellow",
+      "Purple",
+      "Purple",
+      "Lamp"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Lamp",
+      "count": 20
+    },
+    {
+      "id": "Magic_Hat",
+      "count": 16
+    },
+    {
+      "id": "Box",
+      "count": 16
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 60,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Common",
+  "tutorial": ""
+}

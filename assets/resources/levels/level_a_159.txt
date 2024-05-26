@@ -1,0 +1,307 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 4,
+      "y": 2
+    },
+    {
+      "x": 5,
+      "y": 2
+    },
+    {
+      "x": 6,
+      "y": 2
+    },
+    {
+      "x": 7,
+      "y": 2
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 4,
+      "y": 3
+    },
+    {
+      "x": 5,
+      "y": 3
+    },
+    {
+      "x": 6,
+      "y": 3
+    },
+    {
+      "x": 7,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 4,
+      "y": 4
+    },
+    {
+      "x": 5,
+      "y": 4
+    },
+    {
+      "x": 6,
+      "y": 4
+    },
+    {
+      "x": 7,
+      "y": 4
+    },
+    {
+      "x": 8,
+      "y": 4
+    },
+    {
+      "x": 4,
+      "y": 5
+    },
+    {
+      "x": 5,
+      "y": 5
+    },
+    {
+      "x": 6,
+      "y": 5
+    },
+    {
+      "x": 7,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Jars",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "Jars",
+      "row": 0,
+      "col": 4
+    },
+    {
+      "id": "Jars",
+      "row": 0,
+      "col": 6
+    },
+    {
+      "id": "Jars",
+      "row": 2,
+      "col": 2
+    },
+    {
+      "id": "Jars",
+      "row": 4,
+      "col": 2
+    },
+    {
+      "id": "Jars",
+      "row": 6,
+      "col": 2
+    },
+    {
+      "id": "Jars",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Jars",
+      "row": 6,
+      "col": 6
+    },
+    {
+      "id": "Duck",
+      "row": 8,
+      "col": 2
+    },
+    {
+      "id": "Duck",
+      "row": 8,
+      "col": 3
+    },
+    {
+      "id": "Duck",
+      "row": 8,
+      "col": 4
+    },
+    {
+      "id": "Duck",
+      "row": 8,
+      "col": 5
+    },
+    {
+      "id": "Duck",
+      "row": 8,
+      "col": 6
+    },
+    {
+      "id": "Duck",
+      "row": 8,
+      "col": 7
+    }
+  ],
+  "statuses": [],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Duck",
+      "count": 6
+    },
+    {
+      "id": "Jars",
+      "count": 72
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 55,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "SuperHard",
+  "tutorial": ""
+}

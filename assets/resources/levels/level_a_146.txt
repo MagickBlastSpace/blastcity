@@ -1,0 +1,424 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 8,
+      "y": 3
+    },
+    {
+      "x": 8,
+      "y": 4
+    },
+    {
+      "x": 8,
+      "y": 5
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Jelly",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Jelly",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "Jelly",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Jelly",
+      "row": 0,
+      "col": 4
+    },
+    {
+      "id": "Jelly",
+      "row": 0,
+      "col": 5
+    },
+    {
+      "id": "Jelly",
+      "row": 0,
+      "col": 6
+    },
+    {
+      "id": "Jelly",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Jelly",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Jelly",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Jelly",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 3,
+      "col": 7
+    },
+    {
+      "id": "Jelly",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 4,
+      "col": 7
+    },
+    {
+      "id": "Jelly",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 5,
+      "col": 7
+    },
+    {
+      "id": "Jelly",
+      "row": 6,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 6,
+      "col": 7
+    },
+    {
+      "id": "Jelly",
+      "row": 7,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 7,
+      "col": 7
+    },
+    {
+      "id": "Jelly",
+      "row": 8,
+      "col": 0
+    },
+    {
+      "id": "Jelly",
+      "row": 8,
+      "col": 7
+    }
+  ],
+  "statuses": [
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 4
+    },
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 5
+    },
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 2,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 3,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 4,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 7,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 7,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 8,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 8,
+      "col": 7
+    }
+  ],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow",
+    "Purple"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Jelly",
+      "count": 24
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 50,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Common",
+  "tutorial": ""
+}

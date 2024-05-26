@@ -1,0 +1,319 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 1
+    },
+    {
+      "x": 8,
+      "y": 1
+    },
+    {
+      "x": 0,
+      "y": 2
+    },
+    {
+      "x": 8,
+      "y": 2
+    },
+    {
+      "x": 4,
+      "y": 4
+    },
+    {
+      "x": 0,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 0,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 0,
+      "y": 8
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Sticker_Purple",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Sticker_Purple",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Balloon_Blue",
+      "row": 1,
+      "col": 1
+    },
+    {
+      "id": "Balloon_Blue",
+      "row": 1,
+      "col": 7
+    },
+    {
+      "id": "Balloon_Red",
+      "row": 2,
+      "col": 1
+    },
+    {
+      "id": "Sticker_Purple",
+      "row": 2,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 3,
+      "col": 0
+    },
+    {
+      "id": "Balloon_Yellow",
+      "row": 3,
+      "col": 1
+    },
+    {
+      "id": "Balloon_Green",
+      "row": 3,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 3,
+      "col": 8
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 4,
+      "col": 0
+    },
+    {
+      "id": "Balloon_Yellow",
+      "row": 4,
+      "col": 1
+    },
+    {
+      "id": "Balloon_Yellow",
+      "row": 4,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 4,
+      "col": 8
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "Balloon_Blue",
+      "row": 5,
+      "col": 1
+    },
+    {
+      "id": "Balloon_Green",
+      "row": 5,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 5,
+      "col": 8
+    },
+    {
+      "id": "Balloon_Red",
+      "row": 6,
+      "col": 1
+    },
+    {
+      "id": "Balloon_Red",
+      "row": 6,
+      "col": 7
+    },
+    {
+      "id": "Balloon_Green",
+      "row": 7,
+      "col": 1
+    },
+    {
+      "id": "Balloon_Yellow",
+      "row": 7,
+      "col": 7
+    },
+    {
+      "id": "Balloon_Red",
+      "row": 8,
+      "col": 1
+    },
+    {
+      "id": "Sticker_Purple",
+      "row": 8,
+      "col": 7
+    }
+  ],
+  "statuses": [],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow",
+    "Purple"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Colored_Balloon",
+      "count": 18
+    },
+    {
+      "id": "Magic_Hat",
+      "count": 20
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 60,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Hard",
+  "tutorial": ""
+}

@@ -1,0 +1,375 @@
+{
+  "id": "custom",
+  "emptyTiles": [
+    {
+      "x": 0,
+      "y": 0
+    },
+    {
+      "x": 2,
+      "y": 0
+    },
+    {
+      "x": 4,
+      "y": 0
+    },
+    {
+      "x": 6,
+      "y": 0
+    },
+    {
+      "x": 8,
+      "y": 0
+    },
+    {
+      "x": 0,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 6
+    },
+    {
+      "x": 0,
+      "y": 7
+    },
+    {
+      "x": 1,
+      "y": 7
+    },
+    {
+      "x": 7,
+      "y": 7
+    },
+    {
+      "x": 8,
+      "y": 7
+    },
+    {
+      "x": 0,
+      "y": 8
+    },
+    {
+      "x": 1,
+      "y": 8
+    },
+    {
+      "x": 2,
+      "y": 8
+    },
+    {
+      "x": 6,
+      "y": 8
+    },
+    {
+      "x": 7,
+      "y": 8
+    },
+    {
+      "x": 8,
+      "y": 8
+    }
+  ],
+  "specialTiles": [
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 1
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 3
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 5
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 0,
+      "col": 7
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 0
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 2
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 4
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 6
+    },
+    {
+      "id": "Magic_Hat",
+      "row": 1,
+      "col": 8
+    },
+    {
+      "id": "Red",
+      "row": 2,
+      "col": 4
+    },
+    {
+      "id": "Yellow",
+      "row": 3,
+      "col": 4
+    },
+    {
+      "id": "Red",
+      "row": 4,
+      "col": 4
+    },
+    {
+      "id": "Pinata",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "Yellow",
+      "row": 5,
+      "col": 4
+    },
+    {
+      "id": "Pinata",
+      "row": 5,
+      "col": 8
+    },
+    {
+      "id": "Pinata",
+      "row": 6,
+      "col": 1
+    },
+    {
+      "id": "Red",
+      "row": 6,
+      "col": 4
+    },
+    {
+      "id": "Pinata",
+      "row": 6,
+      "col": 7
+    },
+    {
+      "id": "Pinata",
+      "row": 7,
+      "col": 2
+    },
+    {
+      "id": "Yellow",
+      "row": 7,
+      "col": 4
+    },
+    {
+      "id": "Pinata",
+      "row": 7,
+      "col": 6
+    },
+    {
+      "id": "Pinata",
+      "row": 8,
+      "col": 3
+    },
+    {
+      "id": "Yellow",
+      "row": 8,
+      "col": 4
+    },
+    {
+      "id": "Pinata",
+      "row": 8,
+      "col": 5
+    }
+  ],
+  "statuses": [
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 0
+    },
+    {
+      "id": "Jail",
+      "row": 5,
+      "col": 8
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 1
+    },
+    {
+      "id": "Jail",
+      "row": 6,
+      "col": 7
+    },
+    {
+      "id": "Jail",
+      "row": 7,
+      "col": 2
+    },
+    {
+      "id": "Jail",
+      "row": 7,
+      "col": 6
+    },
+    {
+      "id": "Jail",
+      "row": 8,
+      "col": 3
+    },
+    {
+      "id": "Jail",
+      "row": 8,
+      "col": 5
+    }
+  ],
+  "destroyedOnStart": [],
+  "startPool": [
+    "Blue",
+    "Green",
+    "Red",
+    "Yellow"
+  ],
+  "spawnPools": [
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ],
+    [
+      "Blue",
+      "Green",
+      "Red",
+      "Yellow",
+      "Purple"
+    ]
+  ],
+  "goals": [
+    {
+      "id": "Pinata",
+      "count": 8
+    },
+    {
+      "id": "Magic_Hat",
+      "count": 40
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "movesCount": 50,
+  "rocketPreset": "Random",
+  "dynamiteGoals": [
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    },
+    {
+      "id": "Common",
+      "count": 0
+    }
+  ],
+  "cosmorocketGoals": [
+    {
+      "id": "red",
+      "count": 0
+    },
+    {
+      "id": "blue",
+      "count": 0
+    },
+    {
+      "id": "green",
+      "count": 0
+    },
+    {
+      "id": "yellow",
+      "count": 0
+    },
+    {
+      "id": "purple",
+      "count": 0
+    }
+  ],
+  "difficulty": "Common",
+  "tutorial": ""
+}
