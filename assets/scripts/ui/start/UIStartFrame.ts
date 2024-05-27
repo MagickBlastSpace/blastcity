@@ -36,6 +36,10 @@ export class UIStartFrame extends UIFrameBase {
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
 
+        for(let i = 0; i < this.eventPopups.length; i++) {
+            this.eventPopups[i].node.on("play", () => this.hide());
+        }
+
         for(let i = 0; i < this.eventBtns.length && i < this.eventPopups.length; i++) {
             this.eventBtns[i].node.on(Button.EventType.CLICK, () => this.onEventBtnClick(i), this);
         }
