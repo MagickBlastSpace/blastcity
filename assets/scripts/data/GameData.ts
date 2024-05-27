@@ -355,11 +355,28 @@ export class GameData extends Component {
 
         //this.loadLevels();
 
-        this.tryLoadLevels();
+        //this.tryLoadLevels();
+
+        this.tryFetchVariables();
+
+        gamepush.variables.on('fetch', () => this.tryLoadLevels());
+        gamepush.variables.on('error:fetch', (error) => console.error(error));
     }
 
 
+    tryFetchVariables() {
+        try {
+            gamepush.variables.fetch();
+        }
+        catch(error) {
+            console.error('Error Game Push fetch variables:', error);
+
+            gamepush.variables.fetch();
+        }
+    }
+    
     tryLoadLevels() {
+        console.log("Gamepush variables fetched. Loading levels...");
         try {
             this.loadLevelsFromGamePush();
         }
@@ -370,7 +387,7 @@ export class GameData extends Component {
         }
     }
 
-    loadLevels() {
+    /*loadLevels() {
         this.waitForGamePush().then(() => {
             this.loadLevelsFromGamePush();
         }).catch((error) => {
@@ -382,7 +399,6 @@ export class GameData extends Component {
     
     waitForGamePush(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            if (gamepush.variables && gamepush.experiments) {
                 resolve();
             } else {
                 const checkReady = () => {
@@ -396,7 +412,7 @@ export class GameData extends Component {
                 checkReady();
             }
         });
-    }
+    }*/
 
 
     loadLevelsFromGamePush() {
