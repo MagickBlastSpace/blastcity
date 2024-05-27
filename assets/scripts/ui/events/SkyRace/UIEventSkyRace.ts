@@ -3,10 +3,11 @@ import { SkyRaceEvent } from '../../../game/events/competitive/SkyRaceEvent';
 import { UIEventSkyRacePlayerItem } from './UIEventSkyRacePlayerItem';
 import { UIFrameBase } from '../../UIFrameBase';
 import { EventBase } from '../../../game/events/EventBase';
+import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventSkyRace')
-export class UIEventSkyRace extends UIFrameBase {
+export class UIEventSkyRace extends UIPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;

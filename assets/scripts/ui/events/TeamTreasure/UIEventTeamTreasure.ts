@@ -33,7 +33,7 @@ export class UIEventTeamTreasure extends UIEventKingsCup {
             this.rewards[i].refresh(rewardsData[i], isPicked[i], totalProgress);
         }
 
-        this.total.string = "My Team " + totalProgress;
+        this.total.string = totalProgress + "/" + rewardsData[rewardsData.length - 1].progress;
     }
 
 

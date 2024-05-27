@@ -12,7 +12,7 @@ export class UIEventTeamTreasureRewardItem extends Component {
     progressLabel: Label = null;
 
     @property(Node)
-    unavailble: Node = null;
+    reward: Node = null;
     @property(Node)
     done: Node = null;
 
@@ -23,7 +23,7 @@ export class UIEventTeamTreasureRewardItem extends Component {
 
     refresh(data: EventRewardData, isPicked: boolean, progress: number) {
         this.done.active = isPicked;
-        this.unavailble.active = progress < data.progress;
+        this.reward.active = progress >= data.progress && !isPicked;
 
         this.progressLabel.string = progress + "/" + data.progress;
     }
