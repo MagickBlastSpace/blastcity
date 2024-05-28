@@ -46,6 +46,8 @@ export class RocketFeverEvent extends WeeklyEventBase {
         this.collectedRockets = this.collectedRockets + statistics.rocketsDestroyed;
 
         this.checkStageCompletion();
+
+        this.node.emit("refresh");
     }
 
     checkStageCompletion() {
@@ -83,6 +85,8 @@ export class RocketFeverEvent extends WeeklyEventBase {
 
     setCurrentStage(stage: number) {
         this.currentStage = stage;
+
+        this.node.emit("refresh");
     }
 
 
@@ -92,6 +96,8 @@ export class RocketFeverEvent extends WeeklyEventBase {
 
     setCollectable(value: number) {
         this.collectedRockets = value;
+
+        this.node.emit("refresh");
     }
 
 
@@ -132,6 +138,11 @@ export class RocketFeverEvent extends WeeklyEventBase {
         //console.log("Rocket Fever started");
 
         SaveData.instance.saveEvent(this.eventId);
+    }
+
+
+    getTimeProgress(): number {
+        return this.getCollectable() / this.getCurrentStageStep();
     }
 }
 

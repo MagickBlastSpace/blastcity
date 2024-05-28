@@ -17,6 +17,7 @@ export class UIEventButton extends Component {
 
     start() {
         this.eventController.node.on("init", () => this.setProgress());
+        this.eventController.node.on("refresh", () => this.setProgress());
     }
     
     update(deltaTime: number) {
