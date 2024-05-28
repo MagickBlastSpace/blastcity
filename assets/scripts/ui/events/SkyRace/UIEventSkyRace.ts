@@ -22,6 +22,8 @@ export class UIEventSkyRace extends UIPopupFrameBase {
     @property(Label)
     timeLabel: Label = null;
     @property(Label)
+    timeLabel_Duplicate: Label = null;
+    @property(Label)
     levelRequired: Label = null;
 
     @property(Node)
@@ -44,6 +46,9 @@ export class UIEventSkyRace extends UIPopupFrameBase {
 
     update(deltaTime: number) {
         this.timeLabel.string = this.eventController.getRemainingTimeString();
+        if(this.timeLabel_Duplicate) {
+            this.timeLabel_Duplicate.string = this.eventController.getRemainingTimeString();
+        }
     }
 
 
