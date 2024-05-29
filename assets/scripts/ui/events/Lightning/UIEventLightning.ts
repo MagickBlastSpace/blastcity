@@ -2,10 +2,11 @@ import { _decorator, Component, Node, Button, Label } from 'cc';
 import { UIFrameBase } from '../../UIFrameBase';
 import { UIEventSkyRacePlayerItem } from '../SkyRace/UIEventSkyRacePlayerItem';
 import { EventBase } from '../../../game/events/EventBase';
+import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventLightning')
-export class UIEventLightning extends UIFrameBase {
+export class UIEventLightning extends UIPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;
