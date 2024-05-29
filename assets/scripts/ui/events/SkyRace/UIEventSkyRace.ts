@@ -14,6 +14,8 @@ export class UIEventSkyRace extends UIPopupFrameBase {
     @property(Button)
     closeBtn: Button = null;
     @property(Button)
+    closeBtn_Duplicate: Button = null;
+    @property(Button)
     takeRewardBtn: Button = null;
 
     @property(EventBase)
@@ -41,6 +43,7 @@ export class UIEventSkyRace extends UIPopupFrameBase {
     start() {
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
     }
 
