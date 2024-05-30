@@ -43,7 +43,9 @@ export class UIEventSkyRace extends UIPopupFrameBase {
     start() {
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
-        this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        if(this.closeBtn_Duplicate) {
+            this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        }
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
     }
 
