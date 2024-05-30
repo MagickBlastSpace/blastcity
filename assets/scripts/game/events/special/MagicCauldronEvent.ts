@@ -14,7 +14,15 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
     private predictions: string[] = [];
 
+    private hints: string[] = [];
 
+
+    onLoad() {
+        this.hints = [];
+        this.poolToPredict = [];
+        this.predictions = [];
+    }
+    
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
@@ -51,6 +59,13 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
         if(this.poolToPredict.length === 0) {
             this.poolToPredict = this.shufflePool(this.getCurrentPool());
+            
+            if(this.hints.length !== this.poolToPredict.length) {
+                this.hints = [];
+                for(let i = 0; i < this.poolToPredict.length; i++) {
+                    this.hints.push("undefined");
+                }
+            }
         }
 
         if(this.predictions.length >= this.poolToPredict.length) {
@@ -64,6 +79,9 @@ export class MagicCauldronEvent extends SpecialEventBase {
     private checkStageCompletion() {
         if(this.isPredicted()) {
             this.applyRewards(this.eventData[this.currentStage].rewards);
+
+            this.hints = [];
+            this.poolToPredict = [];
             
             this.currentStage = this.currentStage + 1;
         }
@@ -72,13 +90,18 @@ export class MagicCauldronEvent extends SpecialEventBase {
     }
 
     private isPredicted(): boolean {
+        let isPredicted = true;
+
         for(let i = 0; i < this.poolToPredict.length; i++) {
             if(this.poolToPredict[i] !== this.predictions[i]) {
-                return false;
+                isPredicted = false;
+            }
+            else {
+                this.hints[i] = this.predictions[i];
             }
         }
 
-        return true;
+        return isPredicted;
     }
 
 
@@ -101,7 +124,16 @@ export class MagicCauldronEvent extends SpecialEventBase {
             return;
         }
 
-        this.poolToPredict = this.shufflePool(this.eventData[this.currentStage].pool);
+        if(this.poolToPredict.length === 0) {
+            this.poolToPredict = this.shufflePool(this.getCurrentPool());
+        }
+
+        if(this.hints.length !== this.poolToPredict.length) {
+            this.hints = [];
+            for(let i = 0; i < this.poolToPredict.length; i++) {
+                this.hints.push("undefined");
+            }
+        }
 
         this.predictions = [];
 
@@ -162,6 +194,18 @@ export class MagicCauldronEvent extends SpecialEventBase {
         }
 
         this.predictions = predictions;
+    }
+
+    getSpecialHints(): stirng[] {
+        return this.hints;
+    }
+
+    setSpecialHints(hints: string[]) {
+        if(!hints) {
+            return;
+        }
+
+        this.hints = hints;
     }
 }
 

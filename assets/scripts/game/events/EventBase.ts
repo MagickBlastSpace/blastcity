@@ -189,6 +189,13 @@ export class EventBase extends Component {
 
     setSpecialPredictions(predictions: string[]) {}
 
+    getSpecialHints(): stirng[] {
+        let pool = [];
+        return pool;
+    }
+
+    setSpecialHints(pool: string[]) {}
+
 
     getLastTimestamp(): number {
         return this.lastAttemptTimestamp;

@@ -29,6 +29,8 @@ export class UIEventMagicCauldron extends UIPopupFrameBase {
 
     @property([UIEventMagicCauldronItem])
     items: UIEventMagicCauldronItem[] = [];
+    @property([UIEventMagicCauldronItem])
+    hints: UIEventMagicCauldronItem[] = [];
     @property([UIEventMagicCauldronPredictionButton])
     predictionBtns: UIEventMagicCauldronPredictionButton[] = [];
 
@@ -81,10 +83,16 @@ export class UIEventMagicCauldron extends UIPopupFrameBase {
 
         let predictions = this.eventController.getPredictions();
         let pool = this.eventController.getCurrentPool();
+        let hints = this.eventController.getSpecialHints();
 
         for(let i = 0; i < this.items.length; i++) {
-            let color = i < predictions.length ? predictions[i] : "undefined";
+            let color = i < predictions.length ? predictions[i] : "none";
             this.items[i].refresh(color);
+        }
+
+        for(let i = 0; i < this.hints.length; i++) {
+            let color = i < hints.length ? hints[i] : "undefined";
+            this.hints[i].refresh(color);
         }
 
         for(let i = 0; i < this.predictionBtns.length; i++) {

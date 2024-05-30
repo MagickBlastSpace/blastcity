@@ -13,6 +13,10 @@ export class UIEventMagicCauldronItem extends Component {
 
 
     refresh(color: string) {
+        if(color === "none") {
+            this.icon.spriteFrame = null;
+            return;
+        }
         this.icon.spriteFrame = this.iconsData.find(i => i.id === color)?.icon;
     }
 }

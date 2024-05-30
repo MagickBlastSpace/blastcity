@@ -390,7 +390,8 @@ export class SaveData extends Component {
                     currentLevel: eventComp.getCurrentLevel(),
                     hp: eventComp.getHp(),
                     specialPool: eventComp.getSpecialPool(),
-                    specialPredictions: eventComp.getSpecialPredictions()
+                    specialPredictions: eventComp.getSpecialPredictions(),
+                    specialHints: eventComp.getSpecialHints()
                 };
         
                 try {
@@ -420,6 +421,7 @@ export class SaveData extends Component {
                         eventComp.setHp(eventData.hp);
                         eventComp.setSpecialPool(eventData.specialPool);
                         eventComp.setSpecialPredictions(eventData.specialPredictions);
+                        eventComp.setSpecialHints(eventData.specialHints);
 
                         eventComp.setLastTimestamp(eventData.lastAttemptTimestamp);
                     } else {
