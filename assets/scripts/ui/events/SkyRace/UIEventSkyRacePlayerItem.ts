@@ -25,7 +25,7 @@ export class UIEventSkyRacePlayerItem extends Component {
         this.isPlayer.active = UserData.instance.getPlayerName() === data.playerName || data.playerName === "My Team";
 
         if (!this.slider) {
-            console.warn("Slider component is not assigned.");
+            //console.warn("Slider component is not assigned.");
             return;
         }
 
