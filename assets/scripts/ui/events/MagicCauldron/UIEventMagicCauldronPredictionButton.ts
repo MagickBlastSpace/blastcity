@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Sprite } from 'cc';
+import { _decorator, Component, Node, Button, Sprite, tween, Vec3 } from 'cc';
 import { SpriteTileData } from '../../../game/Tile';
 const { ccclass, property } = _decorator;
 
@@ -24,10 +24,22 @@ export class UIEventMagicCauldronPredictionButton extends Component {
 
     refresh(color: string, predictions: string[]) {
         this.currentColor = color;
-        
-        this.node.active = !predictions.includes(color);
 
         this.icon.spriteFrame = this.iconsData.find(i => i.id === color)?.icon;
+        
+        if(predictions.includes(color)) {
+            tween(this.node).stop();
+            tween(this.node)
+                .to(0.3, { scale: new Vec3(0, 0, 0) }, { easing: 'backIn' })
+                .start();
+        }
+        else if(!predictions.includes(color)) {
+            tween(this.node).stop();
+            
+            tween(this.node)
+                .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: 'backIn' })
+                .start();
+        }
     }
 
 
