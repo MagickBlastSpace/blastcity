@@ -76,6 +76,37 @@ export class MovesShopStageData {
 }
 
 
+
+@ccclass('ShopItemData')
+export class ShopItemData {
+    @property
+    gold = 0;
+
+    @property
+    startBonus_Bomb = 0;
+    @property
+    startBonus_Rocket = 0;
+    @property
+    startBonus_Discoball = 0;
+
+    @property
+    booster_Hammer = 0;
+    @property
+    booster_Bow = 0;
+    @property
+    booster_Cannon = 0;
+    @property
+    booster_Jester = 0;
+
+    @property
+    endlessLives_Minutes = 0;
+
+    @property
+    price = 0;
+}
+
+
+
 @ccclass('LevelData')
 export class LevelData {
     @property
@@ -344,6 +375,9 @@ export class GameData extends Component {
     @property([LevelData])
     levels: LevelData[] = [];
 
+    @property([ShopItemData])
+    shopItems: ShopItemData[] = [];
+
     public static instance: GameData = null;
 
     onLoad() {
@@ -386,33 +420,6 @@ export class GameData extends Component {
             this.tryLoadLevels();
         }
     }
-
-    /*loadLevels() {
-        this.waitForGamePush().then(() => {
-            this.loadLevelsFromGamePush();
-        }).catch((error) => {
-            console.error('Error wait for Game Push variables:', error);
-
-            this.loadLevels();
-        });
-    }
-    
-    waitForGamePush(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-                resolve();
-            } else {
-                const checkReady = () => {
-                    if (gamepush.variables && gamepush.experiments) {
-                        resolve();
-                    } else {
-                        setTimeout(checkReady, 100);
-                    }
-                };
-    
-                checkReady();
-            }
-        });
-    }*/
 
 
     loadLevelsFromGamePush() {
