@@ -3,6 +3,8 @@ import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
+import { UIEventButton } from './UIEventButton';
+import { Field } from '../../game/Field';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -11,10 +13,8 @@ export class UIStartFrame extends UIFrameBase {
     @property(Button)
     playBtn: Button = null;
 
-    @property([Button])
-    eventBtns: Button[] = [];
-    @property([UIFrameBase])
-    eventPopups: UIFrameBase[] = [];
+    @property([UIEventButton])
+    eventBtns: UIEventButton[] = [];
 
     @property(UIFrameBase)
     briefingPopup: UIFrameBase = null;
@@ -24,11 +24,14 @@ export class UIStartFrame extends UIFrameBase {
     @property(Label)
     difficultyLabel: Label = null;
 
+    @property(Field)
+    field: Field = null;
+
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
         SaveData.instance.node.on("level_progress_loaded", () => this.hide());
-        this.briefingPopup.node.on("play", () => this.hide());
+        this.briefingPopup.node.on("play", () => this.onPlay());
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
@@ -36,12 +39,9 @@ export class UIStartFrame extends UIFrameBase {
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
 
-        for(let i = 0; i < this.eventPopups.length; i++) {
-            this.eventPopups[i].node.on("play", () => this.hide());
-        }
-
-        for(let i = 0; i < this.eventBtns.length && i < this.eventPopups.length; i++) {
-            this.eventBtns[i].node.on(Button.EventType.CLICK, () => this.onEventBtnClick(i), this);
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].node.on("click", () => this.onEventBtnClick(i), this);
+            this.eventBtns[i].node.on("play", () => this.onPlay());
         }
 
         GameData.instance.node.on("levels_loaded", () => this.unlockPlay());
@@ -64,8 +64,8 @@ export class UIStartFrame extends UIFrameBase {
     }
 
     refreshEventsIcons() {
-        for(let i = 0; i < this.eventBtns.length && i < this.eventPopups.length; i++) {
-            this.eventBtns[i].node.getComponent("UIEventButton").setProgress();
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].setProgress();
         }
     }
 
@@ -80,7 +80,7 @@ export class UIStartFrame extends UIFrameBase {
     onEventBtnClick(index: number) {
         this.hideAllPopups();
 
-        this.eventPopups[index].show();
+        this.eventBtns[index].showEventPrefab();
     }
 
 
@@ -92,11 +92,24 @@ export class UIStartFrame extends UIFrameBase {
 
 
     hideAllPopups() {
-        for(let i = 0; i < this.eventPopups.length; i++) {
-            this.eventPopups[i].hideClean();
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].hideClean();
         }
 
         this.briefingPopup.hideClean();
+    }
+
+
+    onPlay() {
+        try {
+            let levelsCount = GameData.instance.levels.length;
+            this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
+
+            this.hide();
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
 }
 

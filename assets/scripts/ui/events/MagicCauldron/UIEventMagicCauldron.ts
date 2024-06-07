@@ -4,18 +4,16 @@ import { SpecialEventBase } from '../../../game/events/special/SpecialEventBase'
 import { UIEventMagicCauldronItem } from './UIEventMagicCauldronItem';
 import { UIEventMagicCauldronPredictionButton } from './UIEventMagicCauldronPredictionButton';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
+import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldron')
-export class UIEventMagicCauldron extends UIPopupFrameBase {
+export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;
     @property(Button)
     closeBtn: Button = null;
-
-    @property(SpecialEventBase)
-    eventController: SpecialEventBase = null;
 
     @property(Label)
     progressLabel: Label = null;
@@ -52,6 +50,10 @@ export class UIEventMagicCauldron extends UIPopupFrameBase {
     }
 
     update(deltaTime: number) {
+        if(!this.isInited) {
+            return;
+        }
+        
         this.timeLabel.string = this.eventController.getRemainingTimeString();
     }
 

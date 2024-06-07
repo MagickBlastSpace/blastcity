@@ -3,10 +3,11 @@ import { UIFrameBase } from '../../UIFrameBase';
 import { UIEventSkyRacePlayerItem } from '../SkyRace/UIEventSkyRacePlayerItem';
 import { EventBase } from '../../../game/events/EventBase';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
+import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventLightning')
-export class UIEventLightning extends UIPopupFrameBase {
+export class UIEventLightning extends UIEventPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;
@@ -14,9 +15,6 @@ export class UIEventLightning extends UIPopupFrameBase {
     closeBtn: Button = null;
     @property(Button)
     takeRewardBtn: Button = null;
-
-    @property(EventBase)
-    eventController: EventBase = null;
 
     @property(Label)
     timeLabel: Label = null;
@@ -48,6 +46,10 @@ export class UIEventLightning extends UIPopupFrameBase {
     }
 
     update(deltaTime: number) {
+        if(!this.isInited) {
+            return;
+        }
+
         if(!this.node.active) {
             return;
         }

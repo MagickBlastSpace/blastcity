@@ -73,6 +73,10 @@ export class EventBase extends Component {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
+    getRemainingCooldownString(): string {
+        return "";
+    }
+
     getEventDuration(): number {
         return (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60 * 60);
     }

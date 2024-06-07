@@ -3,6 +3,7 @@ import { UIFrameBase } from '../../UIFrameBase';
 import { SpecialEventBase } from '../../../game/events/special/SpecialEventBase';
 import { UIEventHiddenTempleItem } from './UIEventHiddenTempleItem';
 import { UIEventHiddenTempleTile } from './UIEventHiddenTempleTile';
+import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 
@@ -20,14 +21,11 @@ export class UIHiddenTempleEventData {
 
 
 @ccclass('UIEventHiddenTemple')
-export class UIEventHiddenTemple extends UIFrameBase {
+export class UIEventHiddenTemple extends UIEventPopupFrameBase {
     @property(Button)
     startBtn: Button = null;
     @property(Button)
     closeBtn: Button = null;
-
-    @property(SpecialEventBase)
-    eventController: SpecialEventBase = null;
 
     @property(Label)
     progressLabel: Label = null;
@@ -47,8 +45,6 @@ export class UIEventHiddenTemple extends UIFrameBase {
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
 
-        this.eventController.node.on("refresh", () => this.refresh());
-
         this.refresh();
 
         for(let i = 0; i < this.data.length; i++) {
@@ -61,11 +57,19 @@ export class UIEventHiddenTemple extends UIFrameBase {
     }
 
     update(deltaTime: number) {
+        if(!this.isInited) {
+            return;
+        }
+
         this.timeLabel.string = this.eventController.getRemainingTimeString();
     }
 
 
     refresh() {
+        if(!this.isInited) {
+            return;
+        }
+
         this.eventController.refresh();
 
         this.isEventStarted = this.eventController.getIsStarted();
@@ -120,6 +124,10 @@ export class UIEventHiddenTemple extends UIFrameBase {
 
 
     onStartBtnClick() {
+        if(!this.isInited) {
+            return;
+        }
+
         this.eventController.activateEvent();
 
         this.refresh();
@@ -131,6 +139,10 @@ export class UIEventHiddenTemple extends UIFrameBase {
 
 
     makeMove(prediction: string) {
+        if(!this.isInited) {
+            return;
+        }
+        
         this.eventController.makeMove(prediction);
     }
 }

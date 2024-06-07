@@ -3,18 +3,16 @@ import { UIFrameBase } from '../../UIFrameBase';
 import { RocketFeverEvent } from '../../../game/events/RocketFeverEvent';
 import { UIEventRocketFeverItem } from './UIEventRocketFeverItem';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
+import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventRocketFever')
-export class UIEventRocketFever extends UIPopupFrameBase {
+export class UIEventRocketFever extends UIEventPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;
     @property(Button)
     closeBtn: Button = null;
-
-    @property(RocketFeverEvent)
-    eventController: RocketFeverEvent = null;
 
     @property(Label)
     progressLabel: Label = null;
@@ -76,6 +74,10 @@ export class UIEventRocketFever extends UIPopupFrameBase {
     }
 
     update(deltaTime: number) {
+        if(!this.isInited) {
+            return;
+        }
+        
         this.timeLabel.string = this.eventController.getRemainingTimeString();
     }
 

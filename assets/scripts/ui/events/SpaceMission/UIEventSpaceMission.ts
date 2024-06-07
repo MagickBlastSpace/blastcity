@@ -12,9 +12,6 @@ export class UIEventSpaceMission extends UIFrameBase {
     @property(Button)
     closeBtn: Button = null;
 
-    @property(SpaceMissionEvent)
-    eventController: SpaceMissionEvent = null;
-
     @property(Label)
     timeLabel: Label = null;
     @property(Label)

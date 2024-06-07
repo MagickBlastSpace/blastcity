@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, Label, ProgressBar, tween } from 'cc';
+import { _decorator, Component, Node, Label, ProgressBar, tween, assetManager, Prefab, instantiate } from 'cc';
 import { EventBase } from '../../game/events/EventBase';
+import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventButton')
@@ -13,6 +14,24 @@ export class UIEventButton extends Component {
 
     @property(ProgressBar)
     progressBar: ProgressBar = null;
+
+    @property
+    eventName: string = "";
+
+    @property(Node)
+    popupLayout: Node = null;
+
+    private instantiatedNode: Node | null = null;
+    private eventPopup: any = null;
+
+
+    onLoad() {
+        this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
+    }
+
+    onDestroy() {
+        this.node.off(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
+    }
 
 
     start() {
@@ -32,6 +51,61 @@ export class UIEventButton extends Component {
         tween(this.progressBar)
             .to(0.8, { progress: eventProgress })
             .start();
+    }
+
+
+    showEventPrefab() {
+
+        if(this.eventPopup) {
+            this.eventPopup.show();
+
+            return;
+        }
+
+        assetManager.loadBundle("events", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: events`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: events"`);
+
+            bundle.load(this.eventName, Prefab, (err, prefab) => {
+                if (err) {
+                    console.error(`Failed to load prefab: ${this.eventName}`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: ${this.eventName}`);
+
+                this.instantiatedNode = instantiate(prefab);
+
+                this.instantiatedNode.on("play", () => {
+                    this.node.emit("play");
+                });
+
+                this.popupLayout.addChild(this.instantiatedNode);
+
+                this.eventPopup = this.instantiatedNode.getComponent("UIEvent" + this.eventName);
+                this.eventPopup.init(this.eventController);
+
+                this.instantiatedNode.active = false;
+
+                this.eventPopup.show();
+            });
+        });
+    }
+
+
+    hideClean() {
+        if(this.eventPopup) {
+            this.eventPopup.hideClean();
+        }
+    }
+
+
+    onTouchStart(event: cc.Event.EventTouch) {
+        this.node.emit("click", this.node);
     }
 }
 

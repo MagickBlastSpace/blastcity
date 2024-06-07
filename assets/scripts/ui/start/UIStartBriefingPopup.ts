@@ -43,9 +43,6 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     @property(UIFrameBase)
     butlersGiftInfoPopup: UIFrameBase = null;
 
-    @property(Field)
-    field: Field = null;
-
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
@@ -91,17 +88,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
 
     onPlayBtnClick() {
-        try {
-            let levelsCount = GameData.instance.levels.length;
-            this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
-
-            this.hide();
-
-            this.node.emit("play");
-        }
-        catch (error) {
-            console.log(error);
-        }
+        this.hide();
+        
+        this.node.emit("play");
     }
 
     showButlerGiftInfo() {

@@ -5,10 +5,11 @@ import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { GameData } from '../../data/GameData';
 import { Field } from '../../game/Field';
 import { UserData } from '../../data/UserData';
+import { UIEventPopupFrameBase } from './UIEventPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventLavaAdventure')
-export class UIEventLavaAdventure extends UIPopupFrameBase {
+export class UIEventLavaAdventure extends UIEventPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;
@@ -18,9 +19,6 @@ export class UIEventLavaAdventure extends UIPopupFrameBase {
     closeBtn_2: Button = null;
     @property(Button)
     playBtn: Button = null;
-
-    @property(LavaAdventureEvent)
-    eventController: LavaAdventureEvent = null;
 
     @property(Label)
     progressLabel: Label = null;
@@ -39,9 +37,6 @@ export class UIEventLavaAdventure extends UIPopupFrameBase {
     background: Node = null;
     @property(Node)
     player: Node = null;
-
-    @property(Field)
-    field: Field = null;
 
     private bckg_start_Y: number = 1700;
     private bckg_total_length: number = 3400;
@@ -62,6 +57,10 @@ export class UIEventLavaAdventure extends UIPopupFrameBase {
     }
 
     update(deltaTime: number) {
+        if(!this.isInited) {
+            return;
+        }
+
         this.timeLabel.string = this.eventController.getRemainingTimeString();
         this.timeLabel_duplicate.string = this.eventController.getRemainingTimeString();
 
@@ -70,6 +69,10 @@ export class UIEventLavaAdventure extends UIPopupFrameBase {
 
 
     refresh() {
+        if(!this.isInited) {
+            return;
+        }
+
         this.eventController.refresh();
 
         this.isEventStarted = this.eventController.getIsStarted();
@@ -113,6 +116,10 @@ export class UIEventLavaAdventure extends UIPopupFrameBase {
 
 
     onStartBtnClick() {
+        if(!this.isInited) {
+            return;
+        }
+
         this.eventController.activateEvent();
 
         this.refresh();
@@ -124,17 +131,9 @@ export class UIEventLavaAdventure extends UIPopupFrameBase {
 
 
     onPlayBtnClick() {
-        try {
-            let levelsCount = GameData.instance.levels.length;
-            this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
+        this.hide();
 
-            this.hide();
-
-            this.node.emit("play");
-        }
-        catch (error) {
-            console.log(error);
-        }
+        this.node.emit("play");
     }
 }
 

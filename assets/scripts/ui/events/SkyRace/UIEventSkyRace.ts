@@ -4,10 +4,11 @@ import { UIEventSkyRacePlayerItem } from './UIEventSkyRacePlayerItem';
 import { UIFrameBase } from '../../UIFrameBase';
 import { EventBase } from '../../../game/events/EventBase';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
+import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventSkyRace')
-export class UIEventSkyRace extends UIPopupFrameBase {
+export class UIEventSkyRace extends UIEventPopupFrameBase {
 
     @property(Button)
     startBtn: Button = null;
@@ -17,9 +18,6 @@ export class UIEventSkyRace extends UIPopupFrameBase {
     closeBtn_Duplicate: Button = null;
     @property(Button)
     takeRewardBtn: Button = null;
-
-    @property(EventBase)
-    eventController: EventBase = null;
 
     @property(Label)
     timeLabel: Label = null;
@@ -50,6 +48,10 @@ export class UIEventSkyRace extends UIPopupFrameBase {
     }
 
     update(deltaTime: number) {
+        if(!this.isInited) {
+            return;
+        }
+
         this.timeLabel.string = this.eventController.getRemainingTimeString();
         if(this.timeLabel_Duplicate) {
             this.timeLabel_Duplicate.string = this.eventController.getRemainingTimeString();
