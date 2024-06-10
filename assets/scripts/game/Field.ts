@@ -6,28 +6,11 @@ import { StartBonuses } from './boosters/StartBonuses';
 import { ButlersGift } from './boosters/ButlersGift';
 import { SaveData } from '../data/SaveData';
 import { UserData } from '../data/UserData';
-import { UIField } from '../ui/UIField';
+import { AssetsLoader } from '../utils/AssetsLoader';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
 export class Field extends Component {
-    @property(Prefab)
-    tilePrefab: Prefab = null;
-
-    @property(Prefab)
-    emptyPrefab: Prefab = null;
-
-    @property(Prefab)
-    bombPrefab: Prefab = null;
-    @property(Prefab)
-    rocketPrefab: Prefab = null;
-    @property(Prefab)
-    discoballPrefab: Prefab = null;
-
-    @property([SpecialPrefabData])
-    specialPrefabs: SpecialPrefabData[] = [];
-    @property([SpecialPrefabData])
-    statusPrefabs: SpecialPrefabData[] = [];
 
     @property(Node)
     level: Node = null;
@@ -80,7 +63,67 @@ export class Field extends Component {
 
     private levelCompletePoints: number = 0;
 
+    private isAssetsLoaded = false;
 
+    private tilePrefab: Prefab = null;
+    private emptyPrefab: Prefab = null;
+    private bombPrefab: Prefab = null;
+    private rocketPrefab: Prefab = null;
+    private discoballPrefab: Prefab = null;
+    
+    private specialPrefabs: SpecialPrefabData[] = [];
+    private statusPrefabs: SpecialPrefabData[] = [];
+
+
+    onLoad() {
+        this.isAssetsLoaded = false;
+    }
+
+    
+    setTilePrefab(prefab: Prefab) {
+        this.tilePrefab = prefab;
+    }
+
+    setEmptyTilePrefab(prefab: Prefab) {
+        this.emptyPrefab = prefab;
+    }
+
+    setBombPrefab(prefab: Prefab) {
+        this.bombPrefab = prefab;
+    }
+
+    setRocketPrefab(prefab: Prefab) {
+        this.rocketPrefab = prefab;
+    }
+
+    setDiscoballPrefab(prefab: Prefab) {
+        this.discoballPrefab = prefab;
+    }
+
+    addSpecialPrefab(prefab: Prefab, specName: string) {
+        let spec = new SpecialPrefabData();
+        spec.id = specName;
+        spec.prefab = prefab;
+
+        this.specialPrefabs.push(spec);
+    }
+
+    addStatusPrefab(prefab: Prefab, statusName: string) {
+        let status = new SpecialPrefabData();
+        status.id = statusName;
+        status.prefab = prefab;
+
+        this.statusPrefabs.push(status);
+    }
+
+    setAssetsAsLoaded() {
+        this.isAssetsLoaded = true;
+
+        let levelsCount = GameData.instance.levels.length;  
+        this.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
+    }
+
+    
     start() {
         for (let row = 0; row < this.numRows; row++) {
             this.tileArray[row] = [];
@@ -137,6 +180,12 @@ export class Field extends Component {
 
     spawnInitialBoard(level: LevelData) {
         if(level === null || level === undefined) {
+            return;
+        }
+
+        if(!this.isAssetsLoaded) {
+            AssetsLoader.instance.loadGameplayAssets();
+
             return;
         }
 
@@ -500,6 +549,8 @@ export class Field extends Component {
     }
 
     spawnSpecialTile(row: number, col: number, tileId: string): Node {
+        console.log("Spawning special tile of type: " + tileId);
+
         if(tileId.split("_")[1] === "random") {
             let availableColors = this.getAvailableColors();
             let colorIndex = Math.floor(Math.random() * availableColors.length);

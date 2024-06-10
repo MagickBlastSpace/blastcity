@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Button, Label, Sprite, SpriteFrame, assetManager } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
@@ -23,6 +23,11 @@ export class UIStartFrame extends UIFrameBase {
     levelLabel: Label = null;
     @property(Label)
     difficultyLabel: Label = null;
+
+    @property(Sprite)
+    background: Sprite = null;
+    @property(Sprite)
+    background_1: Sprite = null;
 
     @property(Field)
     field: Field = null;
@@ -49,6 +54,27 @@ export class UIStartFrame extends UIFrameBase {
         this.playBtn.node.active = false;
 
         this.refresh();
+
+        assetManager.loadBundle("big_graphics", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: big_graphics`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: big_graphics"`);
+
+            bundle.load("back/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: background`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: background`);
+
+                this.background.spriteFrame = spriteFrame;
+                this.background_1.spriteFrame = spriteFrame;
+            });
+        });
     }
 
     onPlayBtnClick() {
