@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Label, ProgressBar, tween, assetManager, Prefab, instantiate } from 'cc';
 import { EventBase } from '../../game/events/EventBase';
 import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
+import { AssetsLoader } from '../../utils/AssetsLoader';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventButton')
@@ -62,6 +63,8 @@ export class UIEventButton extends Component {
             return;
         }
 
+        AssetsLoader.instance.startLoading();
+
         assetManager.loadBundle("events", (err, bundle) => {
             if (err) {
                 console.error(`Failed to load bundle: events`, err);
@@ -92,6 +95,8 @@ export class UIEventButton extends Component {
                 this.instantiatedNode.active = false;
 
                 this.eventPopup.show();
+
+                AssetsLoader.instance.stopLoading();
             });
         });
     }

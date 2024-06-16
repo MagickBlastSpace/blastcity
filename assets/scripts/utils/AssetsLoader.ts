@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, assetManager, AssetManager, Prefab } from 'cc';
 import { Field } from '../game/Field';
+import { UIAssetsLoadingFrame } from '../ui/loading/UIAssetsLoadingFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('AssetsLoader')
@@ -7,6 +8,9 @@ export class AssetsLoader extends Component {
 
     @property(Node)
     field: Node = null;
+
+    @property(UIAssetsLoadingFrame)
+    loadingFrame: UIAssetsLoadingFrame = null;
 
     public static instance: AssetsLoader = null;
 
@@ -29,6 +33,8 @@ export class AssetsLoader extends Component {
 
 
     loadGameplayAssets() {
+        this.startLoading();
+
         this.maxGamplayAssets = 0;
         this.loadedGameplayBundlesCount = 0;
 
@@ -39,11 +45,22 @@ export class AssetsLoader extends Component {
     }
 
 
+    startLoading() {
+        this.loadingFrame.show();
+    }
+
+    stopLoading() {
+        this.loadingFrame.hide();
+    }
+
+
     private checkLoadCompletion() {
         this.gamplayAssetsCounter++;
 
         if(this.gamplayAssetsCounter >= this.maxGamplayAssets && this.loadedGameplayBundlesCount >= this.gameplayBundlesCount) {
             this.fieldComp.setAssetsAsLoaded();
+
+            this.stopLoading();
         }
     }
 
