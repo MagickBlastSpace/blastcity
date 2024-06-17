@@ -989,6 +989,8 @@ export class Field extends Component {
 
         let tile = this.tileArray[row][col];
 
+        this.node.emit("extra_hit", row, col);
+
         if(tile !== null) {
             if(isBonusChain) {
                 const tileComp = tile.getComponent("TileBase");

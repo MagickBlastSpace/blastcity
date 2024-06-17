@@ -6,6 +6,8 @@ export class UIEffectManager extends Component {
 
     @property(Prefab)
     coinReward: Prefab = null;
+    @property(Prefab)
+    extraHit: Prefab = null;
 
     @property(Node)
     effectsLayer: Node = null;
@@ -18,17 +20,18 @@ export class UIEffectManager extends Component {
 
 
     @property
-    tileSpacing: number = 5;
+    tileSpacing: number = 0;
     @property
-    xOffset: number = -150;
+    xOffset: number = -660;
     @property
-    yOffset: number = -175;
+    yOffset: number = -660;
     @property
-    tileSize: number = 40;
+    tileSize: number = 165;
 
 
     start() {
         this.field.on("coin_reward", (row, col) => this.createEffectCoinReward(row, col));
+        this.field.on("extra_hit", (row, col) => this.createEffectExtraHit(row, col));
     }
 
     createEffectCoinReward(row: number, col: number) {
@@ -40,6 +43,17 @@ export class UIEffectManager extends Component {
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
         coinComp.init(new Vec2(posX, posY), this.goalsPosition);
+    }
+
+    createEffectExtraHit(row: number, col: number) {
+        /*const effect = instantiate(this.extraHit);
+        this.effectsLayer.addChild(effect);
+        const effectComp = effect.getComponent("UIExtraHitEffect");
+
+        let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
+        let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
+
+        effectComp.init(new Vec2(posX, posY));*/
     }
 }
 
