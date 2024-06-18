@@ -87,17 +87,25 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
         let pool = this.eventController.getCurrentPool();
         let hints = this.eventController.getSpecialHints();
 
+        let poolSize = pool.length;
+
         for(let i = 0; i < this.items.length; i++) {
+            this.items[i].node.active = i < poolSize;
+
             let color = i < predictions.length ? predictions[i] : "none";
             this.items[i].refresh(color);
         }
 
         for(let i = 0; i < this.hints.length; i++) {
+            this.hints[i].node.active = i < poolSize;
+
             let color = i < hints.length ? hints[i] : "undefined";
             this.hints[i].refresh(color);
         }
 
         for(let i = 0; i < this.predictionBtns.length; i++) {
+            this.predictionBtns[i].node.active = i < poolSize;
+
             let color = i < pool.length ? pool[i] : "undefined";
             this.predictionBtns[i].refresh(color, predictions);
         }
