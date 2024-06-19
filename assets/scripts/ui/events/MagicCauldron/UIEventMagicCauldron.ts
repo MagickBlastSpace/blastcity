@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, tween } from 'cc';
 import { UIFrameBase } from '../../UIFrameBase';
 import { SpecialEventBase } from '../../../game/events/special/SpecialEventBase';
 import { UIEventMagicCauldronItem } from './UIEventMagicCauldronItem';
@@ -16,8 +16,11 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     @property(Button)
     closeBtn: Button = null;
 
+    @property(ProgressBar)
+    progressBar: ProgressBar = null;
+
     @property(Label)
-    progressLabel: Label = null;
+    reqLabel: Label = null;
     @property(Label)
     timeLabel: Label = null;
     @property(Label)
@@ -69,21 +72,27 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
         this.isEventComplete = this.eventController.getIsComplete();
 
         this.minigameContainer.active = this.isEventStarted && !this.isEventComplete;
+        this.progressBar.node.active = this.isEventStarted && !this.isEventComplete;
 
         if(this.isEventStarted && !this.isEventComplete) {
             let curLvl = this.eventController.getCurrentStage() + 1;
-            this.progressLabel.string = "Level " + curLvl + "/" + this.eventController.getTotalLevels();
+            this.reqLabel.string = "";
             this.collectablesCount.string = this.eventController.getCollectable();
+
+            tween(this.progressBar)
+                .to(0.8, { progress: curLvl / this.eventController.getTotalLevels() })
+                .start();
         }
         else if(this.isEventComplete) {
-            this.progressLabel.string = "Event Complete";
+            this.reqLabel.string = "Event Complete";
         }
         else if(!this.eventController.isRequiredLevelReached()) {
-            this.progressLabel.string = "Required Level " + this.eventController.getLevelRequired();
+            this.reqLabel.string = "Required Level " + this.eventController.getLevelRequired();
         }
         else {
-            this.progressLabel.string = "Not Started";
+            this.reqLabel.string = "Not Started";
         }
+        
         
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
 

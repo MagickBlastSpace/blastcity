@@ -10,6 +10,9 @@ export class MagicCauldronEvent extends SpecialEventBase {
     @property([MagicCauldronEventData])
     eventData: MagicCauldronEventData[] = [];
 
+    @property([EventRewardData])
+    grandRewardData: EventRewardData[] = [];
+
     private poolToPredict: string[] = [];
 
     private predictions: string[] = [];
@@ -167,6 +170,8 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
     private handleEventCompletion() {
         super.handleEventCompletion();
+
+        this.applyRewards(this.grandRewardData);
 
         this.node.emit("refresh");
     }
