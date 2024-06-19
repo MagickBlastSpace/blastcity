@@ -5,6 +5,7 @@ import { UIEventMagicCauldronItem } from './UIEventMagicCauldronItem';
 import { UIEventMagicCauldronPredictionButton } from './UIEventMagicCauldronPredictionButton';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
+import { UIEventMagicCauldronReward } from './UIEventMagicCauldronReward';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldron')
@@ -31,6 +32,9 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     hints: UIEventMagicCauldronItem[] = [];
     @property([UIEventMagicCauldronPredictionButton])
     predictionBtns: UIEventMagicCauldronPredictionButton[] = [];
+
+    @property(UIEventMagicCauldronReward)
+    reward: UIEventMagicCauldronReward = null;
 
     private isEventStarted = false;
     private isEventComplete = false;
@@ -109,6 +113,9 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             let color = i < pool.length ? pool[i] : "undefined";
             this.predictionBtns[i].refresh(color, predictions);
         }
+
+        let rewardData = this.eventController.getReward();
+        this.reward.refresh(rewardData);
     }
 
 

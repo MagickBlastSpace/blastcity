@@ -1,6 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { SpecialEventBase } from './SpecialEventBase';
-import { MagicCauldronEventData } from '../../../data/EventData';
+import { EventRewardData, MagicCauldronEventData } from '../../../data/EventData';
 import { SaveData } from '../../../data/SaveData';
 const { ccclass, property } = _decorator;
 
@@ -206,6 +206,14 @@ export class MagicCauldronEvent extends SpecialEventBase {
         }
 
         this.hints = hints;
+    }
+
+
+    getReward(): EventRewardData {
+        if(this.currentStage >= this.eventData.length) {
+            return this.eventData[this.eventData.length - 1].rewards[0];
+        }
+        return this.eventData[this.currentStage].rewards[0];
     }
 }
 
