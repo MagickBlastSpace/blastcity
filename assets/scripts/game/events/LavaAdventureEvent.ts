@@ -21,6 +21,8 @@ export class LavaAdventureEvent extends EventBase {
     private currentStep: number = 0;
     private currentPlayers: number = 0;
 
+    private isCompletedToday: boolean = false;
+
 
     start() {
         this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
@@ -31,6 +33,7 @@ export class LavaAdventureEvent extends EventBase {
         super.init(startHourUTC, durationHours);
 
         this.currentStep = 0;
+        this.isCompletedToday = false;
 
         this.eventId = "lava_adventure";
     }
@@ -95,6 +98,8 @@ export class LavaAdventureEvent extends EventBase {
 
         console.log("Lava Adventure completed! Player rewarded:", rewardGold, "coins");
 
+        this.isCompletedToday = true;
+
         SaveData.instance.saveEvent(this.eventId);
     }
 
@@ -148,6 +153,15 @@ export class LavaAdventureEvent extends EventBase {
 
     setCollectable(value: number) {
         this.currentPlayers = value;
+    }
+
+
+    getIsComplete(): boolean {
+        return this.isCompletedToday;
+    }
+
+    setIsComplete(isComplete: boolean) {
+        this.isCompletedToday = isComplete;
     }
 }   
 

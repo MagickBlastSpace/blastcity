@@ -295,6 +295,15 @@ export class UserData extends Component {
 
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
+
+
+    isTemproraryBonusActive(): boolean {
+        if(this.getRemainingTimeString("bomb") !== "" || this.getRemainingTimeString("rocket") !== "" || this.getRemainingTimeString("discoball") !== "") {
+            return true;
+        }
+
+        return false;
+    }
 }
 
 

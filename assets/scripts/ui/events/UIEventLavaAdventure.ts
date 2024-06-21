@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Button, Label, tween, Vec3, Prefab, instantiate } from 'cc';
 import { UIEventPopupFrameBase } from './UIEventPopupFrameBase';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventLavaAdventure')
@@ -109,11 +110,14 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
         if(!this.eventController.isRequiredLevelReached()) {
             this.levelReqLabel.string = "Required Level " + this.eventController.getLevelRequired();
         }
+        else if(this.eventController.getIsComplete() && UserData.instance.isTemproraryBonusActive()) {
+            this.levelReqLabel.string = "Can not start with bonuses";
+        }
         else {
             this.levelReqLabel.string = "";
         }
         
-        this.startBtn.node.active = this.eventController.canParticipate() && !this.isEventStarted;
+        this.startBtn.node.active = this.eventController.canParticipate() && !this.isEventStarted && !(this.eventController.getIsComplete() && UserData.instance.isTemproraryBonusActive());
     }
 
     private destroyAllPlayers() {
