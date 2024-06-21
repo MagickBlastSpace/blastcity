@@ -1,10 +1,4 @@
-import { _decorator, Component, Node, Button, Label, tween, Vec3 } from 'cc';
-import { UIFrameBase } from '../UIFrameBase';
-import { LavaAdventureEvent } from '../../game/events/LavaAdventureEvent';
-import { UIPopupFrameBase } from '../UIPopupFrameBase';
-import { GameData } from '../../data/GameData';
-import { Field } from '../../game/Field';
-import { UserData } from '../../data/UserData';
+import { _decorator, Component, Node, Button, Label, tween, Vec3, Prefab, instantiate } from 'cc';
 import { UIEventPopupFrameBase } from './UIEventPopupFrameBase';
 const { ccclass, property } = _decorator;
 
@@ -23,6 +17,8 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
     @property(Label)
     progressLabel: Label = null;
     @property(Label)
+    playersLabel: Label = null;
+    @property(Label)
     levelReqLabel: Label = null;
     @property(Label)
     timeLabel: Label = null;
@@ -37,6 +33,9 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
     background: Node = null;
     @property(Node)
     player: Node = null;
+
+    @property(Prefab)
+    playerPrefab: Prefab = null;
 
     private bckg_start_Y: number = 1700;
     private bckg_total_length: number = 3400;
@@ -73,6 +72,8 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
             return;
         }
 
+        this.destroyAllPlayers();
+
         this.eventController.refresh();
 
         this.isEventStarted = this.eventController.getIsStarted();
@@ -81,6 +82,14 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
 
         if(this.isEventStarted) {
             this.progressLabel.string = "Level " + this.eventController.getCurrentStage() + "/" + this.eventController.getTotalSteps();
+
+            let playersCount = this.eventController.getCollectable();
+            this.playersLabel.string = "Players " + playersCount + "/100";
+
+            for(let i = 0; i < playersCount; i++) {
+                const newPlayerNode = instantiate(this.playerPrefab);
+                this.player.addChild(newPlayerNode);
+            }
 
             let bckg_Y = this.bckg_start_Y - (this.bckg_total_length / (this.eventController.getTotalSteps() - 1) * this.eventController.getCurrentStage());
 
@@ -105,6 +114,16 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
         }
         
         this.startBtn.node.active = this.eventController.canParticipate() && !this.isEventStarted;
+    }
+
+    private destroyAllPlayers() {
+        const children = this.player.children;
+
+        for (let i = children.length - 1; i >= 0; i--) {
+            children[i].destroy();
+        }
+
+        this.player.removeAllChildren();
     }
 
 

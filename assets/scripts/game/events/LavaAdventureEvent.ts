@@ -14,7 +14,12 @@ export class LavaAdventureEvent extends EventBase {
     private REWARD_COINS: number = 10000;
     private RETRY_COOLDOWN_MINUTES: number = 30;
 
+    private MAX_PLAYERS: number = 100;
+    private PLAYERS_REMOVE_COUNT_MIN: number = 12;
+    private PLAYERS_REMOVE_COUNT_MAX: number = 15;
+
     private currentStep: number = 0;
+    private currentPlayers: number = 0;
 
 
     start() {
@@ -46,6 +51,7 @@ export class LavaAdventureEvent extends EventBase {
         }
 
         this.currentStep = 0;
+        this.currentPlayers = this.MAX_PLAYERS;
 
         //console.log("Lava Adventure started for player at level: ", UserData.instance.getProgress());
     }
@@ -84,6 +90,11 @@ export class LavaAdventureEvent extends EventBase {
         this.isStarted = false;
         this.currentStep = 0;
 
+        let rewardGold = Math.floor(this.REWARD_COINS / this.currentPlayers);
+        UserData.instance.addResource("gold", rewardGold);
+
+        console.log("Lava Adventure completed! Player rewarded:", rewardGold, "coins");
+
         SaveData.instance.saveEvent(this.eventId);
     }
 
@@ -94,13 +105,11 @@ export class LavaAdventureEvent extends EventBase {
         }
 
         this.currentStep = this.currentStep + 1;
+        this.currentPlayers = this.currentPlayers - (Math.floor(Math.random() * (this.PLAYERS_REMOVE_COUNT_MAX - this.PLAYERS_REMOVE_COUNT_MIN + 1)) + this.PLAYERS_REMOVE_COUNT_MIN);
+        this.currentPlayers = this.currentPlayers < 1 ? 1 : this.currentPlayers;
 
         if(this.currentStep >= this.TOTAL_LEVELS) {
             this.handleEventCompletion();
-
-            UserData.instance.addResource("gold", this.REWARD_COINS);
-
-            //console.log("Lava Adventure completed! Player rewarded:", this.REWARD_COINS, "coins");
         }
         else {
             SaveData.instance.saveEvent(this.eventId);
@@ -130,6 +139,15 @@ export class LavaAdventureEvent extends EventBase {
 
     setLastTimestamp(stamp: number) {
         this.lastAttemptTimestamp = stamp;
+    }
+
+
+    getCollectable(): number {
+        return this.currentPlayers;
+    }
+
+    setCollectable(value: number) {
+        this.currentPlayers = value;
     }
 }   
 
