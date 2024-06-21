@@ -89,17 +89,10 @@ export class UIStartFrame extends UIFrameBase {
         this.levelLabel.string = "Level " + currentLevelNumber;
     }
 
-    refreshEventsIcons() {
-        for(let i = 0; i < this.eventBtns.length; i++) {
-            this.eventBtns[i].setProgress();
-        }
-    }
-
     show() {
         super.show();
 
         this.refresh();
-        this.refreshEventsIcons();
     }
 
 

@@ -36,10 +36,9 @@ export class UIEventButton extends Component {
 
 
     start() {
-        this.eventController.node.on("init", () => this.setProgress());
-        this.eventController.node.on("refresh", () => this.setProgress());
+        this.setProgress();
     }
-    
+
     update(deltaTime: number) {
         this.timeLabel.string = this.eventController.getRemainingTimeString();
 
@@ -47,10 +46,20 @@ export class UIEventButton extends Component {
     }
 
     setProgress() {
+        if(!this.eventController.isEventAvailable()) {
+            tween(this.progressBar)
+                .to(0.8, { progress: 0 })
+                .call(() => this.setProgress())
+                .start();
+
+            return;
+        }
+
         let eventProgress = this.eventController.getTimeProgress();
 
         tween(this.progressBar)
             .to(0.8, { progress: eventProgress })
+            .call(() => this.setProgress())
             .start();
     }
 
