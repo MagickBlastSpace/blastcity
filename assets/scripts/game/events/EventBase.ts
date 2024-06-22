@@ -213,6 +213,12 @@ export class EventBase extends Component {
         }
     }
 
+    getMultiplayerChannel(): number {
+        return 0;
+    }
+
+    setMultiplayerChannel(id: number) {}
+
 
     private applyRewards(rewards: EventRewardData[]) {
         for(let i = 0; i < rewards.length; i++) {

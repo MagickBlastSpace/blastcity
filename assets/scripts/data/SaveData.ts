@@ -391,7 +391,8 @@ export class SaveData extends Component {
                     hp: eventComp.getHp(),
                     specialPool: eventComp.getSpecialPool(),
                     specialPredictions: eventComp.getSpecialPredictions(),
-                    specialHints: eventComp.getSpecialHints()
+                    specialHints: eventComp.getSpecialHints(),
+                    multiplayerChannel: eventComp.getMultiplayerChannel()
                 };
         
                 try {
@@ -424,6 +425,7 @@ export class SaveData extends Component {
                         eventComp.setSpecialHints(eventData.specialHints);
 
                         eventComp.setLastTimestamp(eventData.lastAttemptTimestamp);
+                        eventComp.setMultiplayerChannel(eventData.multiplayerChannel)
                     } else {
                         //console.log("No event " + eventComp.getEventId() + " data found");
                     }
