@@ -4,13 +4,19 @@ import { _decorator, Component, Node } from 'cc';
 import { CompetitiveEventBase } from './CompetitiveEventBase';
 import { SaveData } from '../../../data/SaveData';
 import { UserData } from '../../../data/UserData';
+import { EventRewardData } from '../../../data/EventData';
 const { ccclass, property } = _decorator;
 
 @ccclass('SkyRaceEvent')
 export class SkyRaceEvent extends CompetitiveEventBase {
 
+    @property([EventRewardData])
+    rewards: EventRewardData[] = [];
+
     private TOTAL_LEVELS: number = 15;
-    private REWARD_COINS: number = 10000;
+
+    private playerPlace: number = -1;
+    private isRewardPicked: boolean = false;
 
     
     start() {
@@ -22,6 +28,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
         this.currentStep = 0;
+        this.playerPlace = -1;
 
         this.isStarted = false;
         this.isComplete = false;
@@ -58,6 +65,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         this.isComplete = true;
 
         //reward algorithm
+        this.sortPlayersByProgress();
+        this.playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -87,7 +96,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
             return;
         }
 
-        UserData.instance.addResource("gold", this.REWARD_COINS);
+        //UserData.instance.addResource("gold", this.REWARD_COINS);
+        this.applyReward(rewards[this.playerPlace]);
 
         this.currentStep = 0;
 
@@ -96,12 +106,32 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     }
 
     isRewardAvailable(): boolean {
-        return this.isComplete;
+        return this.isComplete && this.playerPlace > -1 && this.playerPlace < 3;
     }
 
 
     getTotalSteps(): number {
         return this.TOTAL_LEVELS;
+    }
+
+
+    sortPlayersByProgress(): PlayerEventData[] {
+        let sortedPlayers = [];
+
+        sortedPlayers = this.players;
+
+        sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
+
+        if(this.playerPlace < 0) {
+            //swap
+        }
+
+        return sortedPlayers;
+    }
+
+
+    getPlayerPlace(): number {
+        return this.playerPlace;
     }
 }
 

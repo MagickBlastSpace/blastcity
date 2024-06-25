@@ -187,20 +187,15 @@ export class LightningEvent extends KingsCupEvent {
     }
 
 
-    /*sortPlayersByProgress(): PlayerEventData[] {
+    sortPlayersByProgress(): PlayerEventData[] {
         let sortedPlayers = [];
 
-        let player = new PlayerEventData();
-        player.playerName = "Player";
-        player.progressValue = this.collectables;
-
-        sortedPlayers.push(player);
-        sortedPlayers = sortedPlayers.concat(this.players);
+        sortedPlayers = this.players;
 
         sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
 
         return sortedPlayers;
-    }*/
+    }
 }
 
 

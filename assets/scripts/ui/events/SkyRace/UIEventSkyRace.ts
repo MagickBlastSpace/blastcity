@@ -28,8 +28,6 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
 
     @property(Node)
     playersLayout: Node = null;
-    @property(Node)
-    rewardLayout: Node = null;
 
     @property([UIEventSkyRacePlayerItem])
     items: UIEventSkyRacePlayerItem[] = [];
@@ -45,6 +43,11 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
             this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         }
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
+
+        for(let i = 0; i < this.items.length; i++) {
+            this.items[i].init(i);
+            this.items[i].node.on("take_reward", this.onTakeRewardBtnClick, this);
+        }
     }
 
     update(deltaTime: number) {
@@ -64,7 +67,6 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
         this.isEventComplete = this.eventController.getIsComplete();
 
         this.playersLayout.active = this.isEventStarted && !this.isEventComplete;
-        this.rewardLayout.active = this.isEventComplete;
    
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
 
@@ -81,7 +83,6 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
     show() {
         super.show();
 
-        //this.refresh();
         this.eventController.updateMultiplayerData();
     }
 
