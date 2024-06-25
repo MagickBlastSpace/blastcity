@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { GameData } from './GameData';
 import { SaveData } from './SaveData';
@@ -37,8 +39,6 @@ export class UserData extends Component {
     }
     
     start() {
-        this.playerName = "Player";
-
         this.currentProgress = 0;
 
         this.Gold = 5000;
@@ -53,6 +53,8 @@ export class UserData extends Component {
         SaveData.instance.loadUserData();
 
         this.node.emit("resources_update", this.Gold);
+
+        this.playerName = gamepush.player.name !== "" ? gamepush.player.name : "Player" + gamepush.player.id;
     }
 
 

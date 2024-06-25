@@ -89,7 +89,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 memberData.playerName = member.state.name;
                 memberData.progressValue = member.state["score_" + this.eventId];
 
-                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Guest" + member.playerId;
+                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Player" + member.playerId;
 
                 this.players.push(memberData);
             }
