@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { WeeklyContestEvent } from './WeeklyContestEvent';
 import { SaveData } from '../../../data/SaveData';
@@ -24,14 +26,10 @@ export class KingsCupEvent extends WeeklyContestEvent {
         }
 
         if(!this.isEventAvailable()) {
-            //console.log("Unable to start King's Cup");
             return;
         }
 
-        this.currentStep = 0;
         this.isComplete = false;
-
-        //console.log("King's Cup started for player at level: ", UserData.instance.getProgress());
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -46,6 +44,19 @@ export class KingsCupEvent extends WeeklyContestEvent {
 
         this.isComplete = false;
         this.isStarted = false;
+
+        SaveData.instance.saveEvent(this.eventId);
+    }
+
+    private handleLevelCompletion(isComplete: boolean) {
+        if(!this.isEventAvailable() || !isComplete || !this.canParticipate()) {
+            return;
+        }
+
+        this.currentStep = this.currentStep + 1;
+
+        gamepush.player.set('score_kings_cup', this.currentStep);
+        gamepush.player.sync();
 
         SaveData.instance.saveEvent(this.eventId);
     }

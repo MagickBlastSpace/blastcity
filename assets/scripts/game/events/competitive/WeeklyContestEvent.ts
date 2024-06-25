@@ -7,7 +7,9 @@ const { ccclass, property } = _decorator;
 @ccclass('WeeklyContestEvent')
 export class WeeklyContestEvent extends SkyRaceEvent {
 
-    start() {
+    onLoad() {
+        super.onLoad();
+        
         this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
     }
 

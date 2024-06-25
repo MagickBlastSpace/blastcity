@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { SaveData } from '../../../data/SaveData';
 import { KingsCupEvent } from './KingsCupEvent';
@@ -65,7 +67,6 @@ export class LightningEvent extends KingsCupEvent {
         super.activateEvent();
 
         if(!this.isEventAvailable()) {
-            //console.log("Unable to start Faster Than Lightning event");
             return;
         }
 
@@ -83,6 +84,9 @@ export class LightningEvent extends KingsCupEvent {
         }
 
         this.collectables = this.collectables + statistics.destroyedByDiscoball;
+
+        gamepush.player.set('score_lightning', this.collectables);
+        gamepush.player.sync();
 
         SaveData.instance.saveEvent(this.eventId);
     }

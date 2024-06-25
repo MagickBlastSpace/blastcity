@@ -87,11 +87,9 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
                 let memberData = new PlayerEventData();
                 memberData.playerName = member.state.name;
-                memberData.progressValue = member.state.score;
+                memberData.progressValue = member.state["score_" + this.eventId];
 
-                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Guest";
-
-                console.log("Member: " + member.state.name + " --- " + member.state.score);
+                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Guest" + member.playerId;
 
                 this.players.push(memberData);
             }
@@ -248,6 +246,9 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
         gamepush.channels.deleteChannel({ channelId: this.multiplayerChannelId });
         this.multiplayerChannelId = 0;
+
+        gamepush.player.set('score_' + this.eventId, 0);
+        gamepush.player.sync();
 
         SaveData.instance.saveEvent(this.eventId);
     }

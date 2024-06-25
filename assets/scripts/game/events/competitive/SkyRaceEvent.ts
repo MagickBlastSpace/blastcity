@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { CompetitiveEventBase } from './CompetitiveEventBase';
 import { SaveData } from '../../../data/SaveData';
@@ -34,8 +36,6 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         const timeDiffInMillis = this.endTime.getTime() - now.getTime();
         const hoursDiff = timeDiffInMillis / (1000 * 60 * 60);
 
-        //console.log("can participate hours diff: " + hoursDiff);
-
         return  super.canParticipate() && hoursDiff > 1;
     }
 
@@ -43,13 +43,10 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         super.activateEvent();
 
         if(!this.isEventAvailable()) {
-            //console.log("Unable to start Sky Race");
             return;
         }
 
         this.currentStep = 0;
-
-        //console.log("Sky Race started for player at level: ", UserData.instance.getProgress());
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -57,6 +54,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
     private handleEventCompletion() {
         this.isComplete = true;
+
+        //reward algorithm
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -69,10 +68,11 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         this.currentStep = this.currentStep + 1;
 
+        gamepush.player.set('score_sky_race', this.currentStep);
+        gamepush.player.sync();
+
         if(this.currentStep >= this.TOTAL_LEVELS) {
             this.handleEventCompletion();
-
-            //console.log("Sky Race completed!");
         }
         else {
             SaveData.instance.saveEvent(this.eventId);
