@@ -81,7 +81,8 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
     show() {
         super.show();
 
-        this.refresh();
+        //this.refresh();
+        this.eventController.updateMultiplayerData();
     }
 
 

@@ -28,6 +28,8 @@ export class EventsController extends Component {
             }
 
             SaveData.instance.loadEvent(eventComp.getEventId());
+
+            eventComp.requestChannels();
         }
     }
 }

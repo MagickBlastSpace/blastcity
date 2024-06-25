@@ -26,12 +26,18 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         this.players = [];
 
         gamepush.channels.on('fetchChannels', (result) => {
-            result.items.forEach((channel) => {
-                if(channel.membersCount < channel.capacity) {
-                    this.tryToJoinMultiplayerChannel(this.multiplayerChannelId);
-                    return;
+            console.log("Fetching channels: ");
+
+            for(let i = 0; i < result.items.length; i++) {
+                let channel = result.items[i];
+
+                if(channel.tags.includes(this.eventId)) {
+                    if(channel.membersCount < channel.capacity) {
+                        this.tryToJoinMultiplayerChannel(channel.id);
+                        return;
+                    }
                 }
-            });
+            }
 
             if(result.canLoadMore) {
                 this.requestMoreChannels();
@@ -42,17 +48,23 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         });
 
         gamepush.channels.on('error:fetchChannels', (err) => {
-            console.log("Error fetch multiplayer channel for: " + this.eventId);
+            console.log("Error fetch multiplayer channel for: " + this.eventId + ": " + err);
         });
 
 
         gamepush.channels.on('fetchMoreChannels', (result) => {
-            result.items.forEach((channel) => {
-                if(channel.membersCount < channel.capacity) {
-                    this.tryToJoinMultiplayerChannel(this.multiplayerChannelId);
+            for(let i = 0; i < result.items.length; i++) {
+                let channel = result.items[i];
+
+                if(!channel.tags.includes(this.eventId)) {
                     return;
                 }
-            });
+
+                if(channel.membersCount < channel.capacity) {
+                    this.tryToJoinMultiplayerChannel(channel.id);
+                    return;
+                }
+            }
 
             if(result.canLoadMore) {
                 this.requestMoreChannels();
@@ -66,84 +78,69 @@ export class CompetitiveEventBase extends WeeklyEventBase {
             console.log("Error fetch more multiplayer channel for: " + this.eventId);
         });
 
-
-        gamepush.channels.on('join', () => {
-            console.log("Successfully joined channel: " + this.multiplayerChannelId);
-
-            this.isStarted = true;
-            this.lastAttemptTimestamp = Date.now();
-
-            SaveData.instance.saveEvent(this.eventId);
-
-            this.fetchMembersOfChannel(this.multiplayerChannelId);
-        });
-
-        gamepush.channels.on('error:join', (err) => {
-            console.log("Error joining channel: " + err);
-
-            if(err === "already_in_channel") {
-                this.isStarted = true;
-                this.lastAttemptTimestamp = Date.now();
-
-                SaveData.instance.saveEvent(this.eventId);
-
-                this.fetchMembersOfChannel(this.multiplayerChannelId);
-                return;
-            }
-
-            this.multiplayerChannelId = 0;
-        });
-
-
         gamepush.channels.on('fetchMembers', (result) => {
             this.players = [];
             console.log("Fetching members: " + result.items.length);
 
-            result.items.forEach((member) => {
+            for(let i = 0; i < result.items.length; i++) {
+                let member = result.items[i];
+
                 let memberData = new PlayerEventData();
                 memberData.playerName = member.state.name;
                 memberData.progressValue = member.state.score;
 
+                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Guest";
+
                 console.log("Member: " + member.state.name + " --- " + member.state.score);
 
                 this.players.push(memberData);
+            }
 
-                this.node.emit("refresh");
-            });
+            this.node.emit("refresh");
         });
 
         gamepush.channels.on('error:fetchMembers', (err) => {
             console.log("Error fetching members: " + err);
-
-            this.fetchMembersOfChannel(this.multiplayerChannelId);
         });
 
 
         gamepush.channels.on('createChannel', (channel) => {
             console.log("Created MP channel: " + channel.id);
-            /*this.multiplayerChannelId = channel.id;
 
-            this.isStarted = true;
-            this.lastAttemptTimestamp = Date.now();
+            if(!channel.tags.includes(this.eventId)) {
+                return;
+            }
 
-            SaveData.instance.saveEvent(this.eventId);*/
+            if(this.multiplayerChannelId > 0) {
+                gamepush.channels.deleteChannel({ channelId: channel.id });
+                return;
+            }
 
-            //this.fetchMembersOfChannel(this.multiplayerChannelId);
-            this.tryToJoinMultiplayerChannel(channel.id);
+            this.multiplayerChannelId = channel.id;
+
+            SaveData.instance.saveEvent(this.eventId);
         });
 
         gamepush.channels.on('error:createChannel', (err) => {
             console.log("Error creating MP channel: " + err);
         });
+
+        gamepush.channels.on('deleteChannel', () => {
+            this.requestChannels();
+        });
     }
 
 
     activateEvent() {
-        if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
-            this.requestChannels();
-            /*this.isStarted = true;
+        if(this.multiplayerChannelId === 0) {
+            console.log("Multiplayer is not ready");
+            return;
+        }
 
-            this.lastAttemptTimestamp = Date.now();*/
+        if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
+            this.isStarted = true;
+
+            this.lastAttemptTimestamp = Date.now();
         }
     }
 
@@ -151,12 +148,6 @@ export class CompetitiveEventBase extends WeeklyEventBase {
     sortPlayersByProgress(): PlayerEventData[] {
         let sortedPlayers = [];
 
-        /*let player = new PlayerEventData();
-        player.playerName = "Player";
-        player.progressValue = this.currentStep;
-
-        sortedPlayers.push(player);
-        sortedPlayers = sortedPlayers.concat(this.players);*/
         sortedPlayers = this.players;
 
         sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
@@ -192,20 +183,24 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
 
     async requestChannels() {
-        try {
-            const response = await gamepush.channels.fetchChannels({
-                tags: [this.eventId],
-                limit: 100
-            });
-        } catch (error) {
-            console.log('Error requestChannels:', error);
+        if(this.multiplayerChannelId > 0) {
+            return;
+        }
+
+        if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
+            try {
+                const response = await gamepush.channels.fetchChannels({
+                    limit: 100
+                });
+            } catch (error) {
+                console.log('Error requestChannels:', error);
+            }
         }
     }
 
     async requestMoreChannels() {
         try {
             const response = await gamepush.channels.fetchMoreChannels({
-                tags: [this.eventId],
                 limit: 100
             });
         } catch (error) {
@@ -216,7 +211,8 @@ export class CompetitiveEventBase extends WeeklyEventBase {
     async tryToJoinMultiplayerChannel(id: number) {
         this.multiplayerChannelId = id;
 
-        
+        SaveData.instance.saveEvent(this.eventId);
+
         try {
             const response = await gamepush.channels.join({ channelId: id });
         } catch (error) {
@@ -234,6 +230,26 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         } catch (error) {
             console.log('Error fetchMembersOfChannel:', error);
         }
+    }
+
+
+    public updateMultiplayerData() {
+        if(this.multiplayerChannelId > 0 && this.isStarted) {
+            this.fetchMembersOfChannel(this.multiplayerChannelId);
+        }
+        else {
+            this.node.emit("refresh");
+        }
+    }
+
+
+    restartEvent(): void {
+        this.init(this.startTime.getUTCHours(), this.getEventDuration());
+
+        gamepush.channels.deleteChannel({ channelId: this.multiplayerChannelId });
+        this.multiplayerChannelId = 0;
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 }
 

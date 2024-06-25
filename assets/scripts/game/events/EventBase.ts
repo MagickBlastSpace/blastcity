@@ -240,6 +240,9 @@ export class EventBase extends Component {
             UserData.instance.addResource("modifier_x2_minutes", rewards[i].modifierX2_Minutes);
         }
     }
+
+
+    requestChannels() {}
 }
 
 
