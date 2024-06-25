@@ -1,8 +1,50 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate } from 'cc';
 import { UIEventWeeklyContest } from '../WeeklyContest/UIEventWeeklyContest';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventKingsCup')
-export class UIEventKingsCup extends UIEventWeeklyContest {}
+export class UIEventKingsCup extends UIEventWeeklyContest {
+    @property(Prefab)
+    itemPrefab: Prefab = null;
+
+    @property(Node)
+    playerItemsLayout: Node = null;
+
+    start() {
+        super.start();
+
+        for(let i = 1; i <= this.eventController.getTotalPlayers(); i++) {
+            const itemNode = instantiate(this.itemPrefab);
+            this.playerItemsLayout.addChild(itemNode);
+
+            let item = itemNode.getComponent("UIEventKingsCupPlayerItem");
+            item.init(i);
+
+            this.items.push(item);
+        }
+    }
+
+
+    refresh() {
+        this.isEventStarted = this.eventController.getIsStarted();
+        this.isEventComplete = this.eventController.getIsComplete();
+
+        this.playersLayout.active = this.isEventStarted && !this.isEventComplete;
+        this.rewardLayout.active = this.isEventComplete;
+   
+        this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
+
+        let data = this.eventController.sortPlayersByProgress();
+
+        for(let i = 0; i < this.items.length; i++) {
+            this.items[i].node.active = i < data.length;
+            if(i < data.length) {
+                this.items[i].refresh(data[i]);
+            }
+        }
+
+        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
+    }
+}
 
 

@@ -139,6 +139,8 @@ export class CompetitiveEventBase extends WeeklyEventBase {
             this.isStarted = true;
 
             this.lastAttemptTimestamp = Date.now();
+
+            this.updateMultiplayerData();
         }
     }
 

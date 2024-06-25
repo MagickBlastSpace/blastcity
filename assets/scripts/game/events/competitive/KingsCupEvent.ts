@@ -9,6 +9,8 @@ const { ccclass, property } = _decorator;
 @ccclass('KingsCupEvent')
 export class KingsCupEvent extends WeeklyContestEvent {
 
+    private TOTAL_PLAYERS: number = 50;
+
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
@@ -59,6 +61,11 @@ export class KingsCupEvent extends WeeklyContestEvent {
         gamepush.player.sync();
 
         SaveData.instance.saveEvent(this.eventId);
+    }
+
+
+    getTotalPlayers(): number {
+        return this.TOTAL_PLAYERS;
     }
 }
 
