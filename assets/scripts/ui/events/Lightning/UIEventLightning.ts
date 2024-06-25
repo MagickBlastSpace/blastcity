@@ -87,7 +87,7 @@ export class UIEventLightning extends UIEventPopupFrameBase {
     
                 this.items.push(item);
             }
-            
+
             this.items[i].refresh(data[i]);
         }
 
@@ -98,7 +98,8 @@ export class UIEventLightning extends UIEventPopupFrameBase {
     show() {
         super.show();
 
-        this.refresh();
+        //this.refresh();
+        this.eventController.updateMultiplayerData();
     }
 
 

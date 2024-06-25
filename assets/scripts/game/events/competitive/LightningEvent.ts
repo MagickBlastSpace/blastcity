@@ -85,6 +85,10 @@ export class LightningEvent extends KingsCupEvent {
             return;
         }
 
+        if(isNaN(statistics.destroyedByDiscoball)) {
+            return;
+        }
+
         this.collectables = this.collectables + statistics.destroyedByDiscoball;
 
         gamepush.player.set('score_lightning', this.collectables);
