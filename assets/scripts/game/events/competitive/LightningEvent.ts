@@ -74,6 +74,8 @@ export class LightningEvent extends KingsCupEvent {
 
         this.lastAttemptTimestamp = Date.now();
 
+        this.updateMultiplayerData();
+
         SaveData.instance.saveEvent(this.eventId);
     }
 
@@ -181,7 +183,7 @@ export class LightningEvent extends KingsCupEvent {
     }
 
 
-    sortPlayersByProgress(): PlayerEventData[] {
+    /*sortPlayersByProgress(): PlayerEventData[] {
         let sortedPlayers = [];
 
         let player = new PlayerEventData();
@@ -194,7 +196,7 @@ export class LightningEvent extends KingsCupEvent {
         sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
 
         return sortedPlayers;
-    }
+    }*/
 }
 
 

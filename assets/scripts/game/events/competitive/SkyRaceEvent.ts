@@ -48,6 +48,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         this.currentStep = 0;
 
+        this.updateMultiplayerData();
+
         SaveData.instance.saveEvent(this.eventId);
     }
 

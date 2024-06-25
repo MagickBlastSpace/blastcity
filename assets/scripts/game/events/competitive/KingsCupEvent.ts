@@ -33,6 +33,8 @@ export class KingsCupEvent extends WeeklyContestEvent {
 
         this.isComplete = false;
 
+        this.updateMultiplayerData();
+
         SaveData.instance.saveEvent(this.eventId);
     }
 

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label } from 'cc';
+import { _decorator, Component, Node, Button, Label, instantiate, Prefab } from 'cc';
 import { UIFrameBase } from '../../UIFrameBase';
 import { UIEventSkyRacePlayerItem } from '../SkyRace/UIEventSkyRacePlayerItem';
 import { EventBase } from '../../../game/events/EventBase';
@@ -32,6 +32,12 @@ export class UIEventLightning extends UIEventPopupFrameBase {
 
     @property([UIEventSkyRacePlayerItem])
     items: UIEventSkyRacePlayerItem[] = [];
+
+    @property(Prefab)
+    itemPrefab: Prefab = null;
+
+    @property(Node)
+    playerItemsLayout: Node = null;
 
     private isEventStarted = false;
     private isEventComplete = false;
@@ -71,7 +77,17 @@ export class UIEventLightning extends UIEventPopupFrameBase {
 
         let data = this.eventController.sortPlayersByProgress();
 
-        for(let i = 0; i < data.length && i < this.items.length; i++) {
+        for(let i = 0; i < data.length; i++) {
+            if(i >= this.items.length) {
+                const itemNode = instantiate(this.itemPrefab);
+                this.playerItemsLayout.addChild(itemNode);
+    
+                let item = itemNode.getComponent("UIEventKingsCupPlayerItem");
+                item.init(i + 1);
+    
+                this.items.push(item);
+            }
+            
             this.items[i].refresh(data[i]);
         }
 
