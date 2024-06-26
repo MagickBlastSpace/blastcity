@@ -187,7 +187,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
             return;
         }
 
-        if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
+        if(this.isEventAvailable() && !this.isStarted) {
             try {
                 const response = await gamepush.channels.fetchChannels({
                     limit: 100

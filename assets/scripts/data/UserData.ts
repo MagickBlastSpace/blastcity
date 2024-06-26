@@ -54,7 +54,7 @@ export class UserData extends Component {
 
         this.node.emit("resources_update", this.Gold);
 
-        this.playerName = gamepush.player.name !== "" ? gamepush.player.name : "Player #" + gamepush.player.id;
+        this.playerName = gamepush.player.name !== "" ? gamepush.player.name : "Player" + gamepush.player.id;
         console.log("Logged as: " + this.playerName);
     }
 
