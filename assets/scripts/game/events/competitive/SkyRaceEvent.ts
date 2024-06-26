@@ -4,7 +4,7 @@ import { _decorator, Component, Node } from 'cc';
 import { CompetitiveEventBase } from './CompetitiveEventBase';
 import { SaveData } from '../../../data/SaveData';
 import { UserData } from '../../../data/UserData';
-import { EventRewardData } from '../../../data/EventData';
+import { EventRewardData, PlayerEventData } from '../../../data/EventData';
 const { ccclass, property } = _decorator;
 
 @ccclass('SkyRaceEvent')
@@ -96,7 +96,6 @@ export class SkyRaceEvent extends CompetitiveEventBase {
             return;
         }
 
-        //UserData.instance.addResource("gold", this.REWARD_COINS);
         this.applyReward(rewards[this.playerPlace]);
 
         this.currentStep = 0;
@@ -122,8 +121,20 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
 
-        if(this.playerPlace < 0) {
-            //swap
+        if(this.playerPlace >= 0) {
+            let playerIndex = sortedPlayers.findIndex(player => player.playerName === UserData.instance.getPlayerName());
+            if(playerIndex !== this.playerPlace) {
+                let bufferPlayer = new PlayerEventData();
+                bufferPlayer.playerName = sortedPlayers[this.playerPlace].playerName;
+                bufferPlayer.progressValue = sortedPlayers[this.playerPlace].progressValue;
+
+                let player = new PlayerEventData();
+                player.playerName = sortedPlayers[playerIndex].playerName;
+                player.progressValue = sortedPlayers[playerIndex].progressValue;
+                
+                sortedPlayers[this.playerPlace] = player;
+                sortedPlayers[playerIndex] = bufferPlayer;
+            }
         }
 
         return sortedPlayers;

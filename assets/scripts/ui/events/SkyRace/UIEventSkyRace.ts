@@ -16,8 +16,6 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
     closeBtn: Button = null;
     @property(Button)
     closeBtn_Duplicate: Button = null;
-    @property(Button)
-    takeRewardBtn: Button = null;
 
     @property(Label)
     timeLabel: Label = null;
@@ -42,7 +40,6 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
         if(this.closeBtn_Duplicate) {
             this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         }
-        this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
 
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].init(i);

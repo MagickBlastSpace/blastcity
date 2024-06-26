@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Vec2 } from 'cc';
 import { UserData } from './UserData';
 import { GameData, LevelData, LevelProgressData, SpecialTileData, SpecialTileStateData } from './GameData';
@@ -84,6 +86,11 @@ export class SaveData extends Component {
 
             cc.sys.localStorage.removeItem('event_' + eventComp.getEventId());
         }
+
+        gamepush.player.set('score_lightning', 0);
+        gamepush.player.set('score_kings_cup', 0);
+        gamepush.player.set('score_sky_race', 0);
+        gamepush.player.sync();
     }
 
 

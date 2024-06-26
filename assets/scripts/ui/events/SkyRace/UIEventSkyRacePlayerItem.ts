@@ -39,7 +39,9 @@ export class UIEventSkyRacePlayerItem extends Component {
 
     
     start() {
-        this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeClick, this);
+        if(this.takeRewardBtn && this.takeRewardBtn !== undefined) {
+            this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeClick, this);
+        }
     }
     
     init(index: number) {
@@ -52,7 +54,7 @@ export class UIEventSkyRacePlayerItem extends Component {
 
         this.isPlayer.active = UserData.instance.getPlayerName() === data.playerName || data.playerName === "My Team";
 
-        if(this.rewardsLayout) {
+        if(this.rewardsLayout && this.rewardsLayout !== undefined) {
             this.rewardsLayout.active = data.progressValue >= 15;
 
             if(this.rewardIcon) {
@@ -60,11 +62,11 @@ export class UIEventSkyRacePlayerItem extends Component {
             }
         }
         
-        if(this.rewardsPlayerLayout) {
+        if(this.rewardsPlayerLayout && this.rewardsPlayerLayout !== undefined) {
             this.rewardsPlayerLayout.active = data.progressValue >= 15 && UserData.instance.getPlayerName() === data.playerName && !this.isRewardTaken;
         }
 
-        if(this.placeIcon) {
+        if(this.placeIcon && this.placeIcon !== undefined) {
             if(this.index > 2 || this.index < 0) {
                 this.placeIcon.spriteFrame = null;
             }

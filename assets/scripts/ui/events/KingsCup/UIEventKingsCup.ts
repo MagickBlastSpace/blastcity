@@ -9,7 +9,10 @@ export class UIEventKingsCup extends UIEventWeeklyContest {
 
     @property(Node)
     playerItemsLayout: Node = null;
-    
+
+    @property(Node)
+    rewardLayout: Node = null;
+
 
     start() {
         super.start();
