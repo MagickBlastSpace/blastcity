@@ -67,7 +67,7 @@ export class SaveData extends Component {
             UserData.instance.setResource("jester", userData.jester);
         } else {
             //console.log("No saved user data found");
-            UserData.instance.setProgress(66);
+            UserData.instance.setProgress(0);
         }
 
         this.node.emit("user_data");

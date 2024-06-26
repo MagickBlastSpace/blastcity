@@ -89,7 +89,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 memberData.playerName = member.state.name;
                 memberData.progressValue = member.state["score_" + this.eventId];
 
-                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Player" + member.playerId;
+                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Player" + member.state.id;
 
                 this.players.push(memberData);
             }
@@ -244,6 +244,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
 
     restartEvent(): void {
+        console.log("Restarting Multiplayer Event: " + this.eventId);
         this.init(this.startTime.getUTCHours(), this.getEventDuration());
 
         gamepush.channels.deleteChannel({ channelId: this.multiplayerChannelId });
