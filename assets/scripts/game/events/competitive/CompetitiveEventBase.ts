@@ -26,10 +26,20 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         this.players = [];
 
         gamepush.channels.on('fetchChannels', (result) => {
-            console.log("Fetching channels: ");
+            if(this.multiplayerChannelId > 0) {
+                return;
+            }
+
+            if(!this.isEventAvailable() || this.isStarted) {
+                return;
+            }
 
             for(let i = 0; i < result.items.length; i++) {
                 let channel = result.items[i];
+
+                if(!channel.tags.includes("event")) {
+                    return;
+                }
 
                 if(channel.tags.includes(this.eventId)) {
                     if(channel.membersCount < channel.capacity) {
@@ -43,7 +53,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 this.requestMoreChannels();
             }
             else {
-                gamepush.channels.createChannel({ template: this.eventId });
+                this.createChannel();
             }
         });
 
@@ -53,16 +63,22 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
 
         gamepush.channels.on('fetchMoreChannels', (result) => {
+            if(this.multiplayerChannelId > 0) {
+                return;
+            }
+
             for(let i = 0; i < result.items.length; i++) {
                 let channel = result.items[i];
 
-                if(!channel.tags.includes(this.eventId)) {
+                if(!channel.tags.includes("event")) {
                     return;
                 }
 
-                if(channel.membersCount < channel.capacity) {
-                    this.tryToJoinMultiplayerChannel(channel.id);
-                    return;
+                if(channel.tags.includes(this.eventId)) {
+                    if(channel.membersCount < channel.capacity) {
+                        this.tryToJoinMultiplayerChannel(channel.id);
+                        return;
+                    }
                 }
             }
 
@@ -70,7 +86,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 this.requestMoreChannels();
             }
             else {
-                gamepush.channels.createChannel({ template: this.eventId });
+                this.createChannel();
             }
         });
 
@@ -182,25 +198,18 @@ export class CompetitiveEventBase extends WeeklyEventBase {
     }
 
 
-    async requestChannels() {
-        if(this.multiplayerChannelId > 0) {
-            return;
-        }
-
-        if(this.isEventAvailable() && !this.isStarted) {
-            try {
-                const response = await gamepush.channels.fetchChannels({
-                    limit: 100
-                });
-            } catch (error) {
-                console.log('Error requestChannels:', error);
-            }
+    async createChannel() {
+        try {
+            const response = await gamepush.channels.createChannel({ template: this.eventId });
+        } catch (error) {
+            console.log('Error create channels:', error);
         }
     }
 
     async requestMoreChannels() {
         try {
             const response = await gamepush.channels.fetchMoreChannels({
+                tags: [this.eventId],
                 limit: 100
             });
         } catch (error) {

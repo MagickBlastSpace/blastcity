@@ -2,6 +2,7 @@ import { _decorator, Component, Node } from 'cc';
 import { EventBase } from './EventBase';
 import { InitEventData } from '../../data/EventData';
 import { SaveData } from '../../data/SaveData';
+import { Net } from '../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventsController')
@@ -28,9 +29,9 @@ export class EventsController extends Component {
             }
 
             SaveData.instance.loadEvent(eventComp.getEventId());
-
-            eventComp.requestChannels();
         }
+
+        Net.instance.requestEventsChannels();
     }
 }
 
