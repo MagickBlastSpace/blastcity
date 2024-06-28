@@ -4,6 +4,7 @@ import { _decorator, Component, Node } from 'cc';
 import { WeeklyEventBase } from '../WeeklyEventBase';
 import { PlayerEventData } from '../../../data/EventData';
 import { SaveData } from '../../../data/SaveData';
+import { Net } from '../../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('CompetitiveEventBase')
@@ -123,8 +124,6 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
 
         gamepush.channels.on('createChannel', (channel) => {
-            console.log("Created MP channel: " + channel.id);
-
             if(!channel.tags.includes(this.eventId)) {
                 return;
             }
@@ -202,47 +201,24 @@ export class CompetitiveEventBase extends WeeklyEventBase {
     }
 
 
-    async createChannel() {
-        try {
-            const response = await gamepush.channels.createChannel({ template: this.eventId });
-        } catch (error) {
-            console.log('Error create channels:', error);
-        }
+    createChannel() {
+        Net.instance.createChannel(this.eventId);
     }
 
-    async requestMoreChannels() {
-        try {
-            const response = await gamepush.channels.fetchMoreChannels({
-                tags: [this.eventId],
-                limit: 100
-            });
-        } catch (error) {
-            console.log('Error requestMoreChannels:', error);
-        }
+    requestMoreChannels() {
+        Net.instance.requestMoreChannels(this.eventId);
     }
 
-    async tryToJoinMultiplayerChannel(id: number) {
+    tryToJoinMultiplayerChannel(id: number) {
         this.multiplayerChannelId = id;
 
         SaveData.instance.saveEvent(this.eventId);
 
-        try {
-            const response = await gamepush.channels.join({ channelId: id });
-        } catch (error) {
-            console.log('Error tryToJoinMultiplayerChannel:', error);
-        }
+        Net.instance.tryToJoinMultiplayerChannel(id);
     }
 
-    async fetchMembersOfChannel(id: number) {
-        console.log("Fetching members of channel: " + id);
-
-        try {
-            const response = await gamepush.channels.fetchMembers({
-                channelId: id,
-            });
-        } catch (error) {
-            console.log('Error fetchMembersOfChannel:', error);
-        }
+    fetchMembersOfChannel(id: number) {
+        Net.instance.fetchMembersOfChannel(id);
     }
 
 

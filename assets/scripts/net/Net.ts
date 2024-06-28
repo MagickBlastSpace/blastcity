@@ -23,6 +23,9 @@ export class Net extends Component {
     }
 
 
+    /*
+    Leaderboards
+    */
     publishGamepushLevelRecord(levelId: string, movesCount: number, scoreCount: number) {
         console.log("Net module publishig record");
 
@@ -39,6 +42,9 @@ export class Net extends Component {
     }
 
 
+    /*
+    Events
+    */
     async requestEventsChannels() {
         try {
             const response = await gamepush.channels.fetchChannels({
@@ -50,6 +56,49 @@ export class Net extends Component {
         }
     }
 
+    async createChannel(eventId: string) {
+        try {
+            const response = await gamepush.channels.createChannel({ template: eventId });
+        } catch (error) {
+            console.log('Error create channels:', error);
+        }
+    }
+
+    async requestMoreChannels(eventId: string) {
+        try {
+            const response = await gamepush.channels.fetchMoreChannels({
+                tags: [eventId],
+                limit: 100
+            });
+        } catch (error) {
+            console.log('Error requestMoreChannels:', error);
+        }
+    }
+
+    async tryToJoinMultiplayerChannel(id: number) {
+        try {
+            const response = await gamepush.channels.join({ channelId: id });
+        } catch (error) {
+            console.log('Error tryToJoinMultiplayerChannel:', error);
+        }
+    }
+
+    async fetchMembersOfChannel(id: number) {
+        console.log("Fetching members of channel: " + id);
+
+        try {
+            const response = await gamepush.channels.fetchMembers({
+                channelId: id,
+            });
+        } catch (error) {
+            console.log('Error fetchMembersOfChannel:', error);
+        }
+    }
+
+
+    /*
+    Clans
+    */
     async requestClansChannels() {
         try {
             const response = await gamepush.channels.fetchChannels({
