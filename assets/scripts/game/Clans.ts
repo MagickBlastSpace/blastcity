@@ -12,6 +12,7 @@ export class Clans extends Component {
     private clans: ClanData[] = [];
 
     private playerClanId: number = 0;
+    private playerClanName: string = "";
 
 
     onLoad() {
@@ -45,6 +46,7 @@ export class Clans extends Component {
             }
     
             this.playerClanId = channel.id;
+            this.playerClanName = channel.name;
 
             this.refresh();
         });
@@ -60,7 +62,7 @@ export class Clans extends Component {
         });
     }
 
-
+    
     refresh() {
         this.clans = [];
 
@@ -87,6 +89,7 @@ export class Clans extends Component {
 
             if(channel.isJoined) {
                 this.playerClanId = channel.id;
+                this.playerClanName = channel.name;
             }
         }
 
@@ -109,6 +112,7 @@ export class Clans extends Component {
         Net.instance.tryToLeaveClanChannel(clanId);
 
         this.playerClanId = 0;
+        this.playerClanName = "";
     }
 
     createClan() {
@@ -122,6 +126,15 @@ export class Clans extends Component {
 
     isJoined(): boolean {
         return this.playerClanId > 0;
+    }
+
+
+    getClanId(): number {
+        return this.playerClanId;
+    }
+
+    getClanName(): string {
+        return this.playerClanName;
     }
 }
 

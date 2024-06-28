@@ -1,29 +1,88 @@
-import { _decorator, Component, Node, Label } from 'cc';
-import { UIEventKingsCup } from '../KingsCup/UIEventKingsCup';
+import { _decorator, Component, Node, Label, Button, Prefab, instantiate } from 'cc';
 import { UIEventTeamTreasureRewardItem } from './UIEventTeamTreasureRewardItem';
+import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
+import { UIEventKingsCupPlayerItem } from '../KingsCup/UIEventKingsCupPlayerItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventTeamTreasure')
-export class UIEventTeamTreasure extends UIEventKingsCup {
+export class UIEventTeamTreasure extends UIEventPopupFrameBase {
 
+    @property(Button)
+    startBtn: Button = null;
+    @property(Button)
+    closeBtn: Button = null;
+    
     @property(Label)
     total: Label = null;
+    @property(Label)
+    teamName: Label = null;
+
+    @property(Label)
+    timeLabel: Label = null;
+    @property(Label)
+    levelRequired: Label = null;
 
     @property([UIEventTeamTreasureRewardItem])
     rewards: UIEventTeamTreasureRewardItem[] = [];
 
+    @property(Node)
+    playersLayout: Node = null;
+    @property(Node)
+    playerItemsLayout: Node = null;
+    @property(Prefab)
+    itemPrefab: Prefab = null;
+    @property([UIEventKingsCupPlayerItem])
+    items: UIEventKingsCupPlayerItem[] = [];
+
+    private isEventStarted = false;
+    private isEventComplete = false;
+
 
     start() {
-        super.start();
+        this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
+        this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
 
         for(let i = 0; i < this.rewards.length; i++) {
             this.rewards[i].node.on("pick", () => this.pickReward(i));
         }
     }
 
+    update(deltaTime: number) {
+        if(!this.isInited) {
+            return;
+        }
+
+        this.timeLabel.string = this.eventController.getRemainingTimeString();
+    }
+
 
     refresh() {
-        super.refresh();
+        this.isEventStarted = this.eventController.getIsStarted();
+        this.isEventComplete = this.eventController.getIsComplete();
+
+        this.playersLayout.active = this.isEventStarted && !this.isEventComplete;
+   
+        this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
+
+        let data = this.eventController.sortPlayersByProgress();
+
+        for(let i = 0; i < data.length; i++) {
+            if(i >= this.items.length) {
+                const itemNode = instantiate(this.itemPrefab);
+                this.playerItemsLayout.addChild(itemNode);
+    
+                let item = itemNode.getComponent("UIEventKingsCupPlayerItem");
+                item.init(i + 1);
+    
+                this.items.push(item);
+            }
+
+            this.items[i].refresh(data[i]);
+        }
+
+        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
+        this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : "Join Clan";
+
 
         let rewardsData = this.eventController.getRewardsData();
         let isPicked = this.eventController.getIsRewardPicked();
@@ -34,6 +93,25 @@ export class UIEventTeamTreasure extends UIEventKingsCup {
         }
 
         this.total.string = totalProgress + "/" + rewardsData[rewardsData.length - 1].progress;
+        this.teamName.string = this.eventController.getClanName();
+    }
+
+
+    show() {
+        super.show();
+
+        this.eventController.updateMultiplayerData();
+    }
+
+
+    onStartBtnClick() {
+        this.eventController.activateEvent();
+
+        this.refresh();
+    }
+
+    onCloseBtnClick() {
+        this.hide();
     }
 
 

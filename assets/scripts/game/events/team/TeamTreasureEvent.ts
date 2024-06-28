@@ -1,18 +1,29 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
-import { KingsCupEvent } from '../competitive/KingsCupEvent';
 import { EventRewardData } from '../../../data/EventData';
 import { UserData } from '../../../data/UserData';
+import { SaveData } from '../../../data/SaveData';
+import { TeamEventBase } from './TeamEventBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('TeamTreasureEvent')
-export class TeamTreasureEvent extends KingsCupEvent {
+export class TeamTreasureEvent extends TeamEventBase {
 
     @property([EventRewardData])
     rewards: EventRewardData[] = [];
 
+    @property([EventRewardData])
+    playersPlaceRewards: EventRewardData[] = [];
+
     private isRewardPicked: boolean[] = [];
 
 
+    start() {
+        this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
+    }
+
+    
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
@@ -47,10 +58,35 @@ export class TeamTreasureEvent extends KingsCupEvent {
     }
 
     pickReward(rewardIndex: number) {
-        UserData.instance.addResource("gold", this.rewards[rewardIndex].gold);
-        //all rewards TBD
+        this.applyReward(this.rewards[rewardIndex]);
 
         this.isRewardPicked[rewardIndex] = true;
+    }
+
+
+    private handleLevelCompletion(isComplete: boolean) {
+        if(!this.isEventAvailable() || !isComplete || !this.canParticipate()) {
+            return;
+        }
+
+        this.currentStep = this.currentStep + 1;
+
+        gamepush.player.set('score_team_treasure', this.currentStep);
+        gamepush.player.sync();
+
+        SaveData.instance.saveEvent(this.eventId);
+    }
+
+
+    restartEvent(): void {
+        let playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName()); //TBD correctly
+        if(playerPlace) {
+            if(playerPlace > -1 && playerPlace < 3) {
+                this.applyReward(this.playersPlaceRewards[playerPlace]);
+            }
+        }
+
+        super.restartEvent();
     }
 }
 

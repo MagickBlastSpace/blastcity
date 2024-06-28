@@ -8,6 +8,8 @@ const { ccclass, property } = _decorator;
 export class LevelProgressStatisticsData {
     @property
     levelId = 0;
+    @property
+    levelDifficulty = "";
 
     @property
     redDestroyed = 0;
@@ -41,6 +43,7 @@ export class Statistics extends Component {
         for(let i = 0; i < levels.length; i++) {
             let newStat = new LevelProgressStatisticsData();
             newStat.levelId = i;
+            newStat.levelDifficulty = levels[i].difficulty;
             newStat.redDestroyed = 0;
             newStat.rocketsDestroyed = 0;
             newStat.destroyedByDiscoball = 0;

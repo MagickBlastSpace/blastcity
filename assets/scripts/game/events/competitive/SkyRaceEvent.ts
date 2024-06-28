@@ -64,7 +64,6 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     private handleEventCompletion() {
         this.isComplete = true;
 
-        //reward algorithm
         this.sortPlayersByProgress();
         this.playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
 

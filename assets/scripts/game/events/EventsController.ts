@@ -32,6 +32,7 @@ export class EventsController extends Component {
         }
 
         Net.instance.requestEventsChannels();
+        Net.instance.requestClansChannels();
     }
 }
 
