@@ -2,10 +2,11 @@ import { _decorator, Component, Node } from 'cc';
 import { UIShopItem } from './UIShopItem';
 import { GameData, ShopItemData } from '../../data/GameData';
 import { Shop } from '../../game/Shop';
+import { UIFrameBase } from '../UIFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIShopFrame')
-export class UIShopFrame extends Component {
+export class UIShopFrame extends UIFrameBase {
 
     @property([UIShopItem])
     items: UIShopItem[] = [];

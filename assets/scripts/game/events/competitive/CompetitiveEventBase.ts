@@ -67,6 +67,10 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 return;
             }
 
+            if(!this.isEventAvailable() || this.isStarted) {
+                return;
+            }
+
             for(let i = 0; i < result.items.length; i++) {
                 let channel = result.items[i];
 
