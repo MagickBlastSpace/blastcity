@@ -29,6 +29,8 @@ export class TeamTreasureEvent extends TeamEventBase {
 
         this.currentStep = 0;
 
+        this.isStarted = false;
+
         this.isRewardPicked = [];
         for(let i = 0; i < this.rewards.length; i++) {
             this.isRewardPicked.push(false);

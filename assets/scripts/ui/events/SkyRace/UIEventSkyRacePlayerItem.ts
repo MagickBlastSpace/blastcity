@@ -52,7 +52,7 @@ export class UIEventSkyRacePlayerItem extends Component {
         this.playerName.string = data.playerName;
         this.progressLabel.string = data.progressValue;
 
-        this.isPlayer.active = UserData.instance.getPlayerName() === data.playerName || data.playerName === "My Team";
+        this.isPlayer.active = UserData.instance.getPlayerName() === data.playerName || data.playerName === UserData.instance.getClanName();
 
         if(this.rewardsLayout && this.rewardsLayout !== undefined) {
             this.rewardsLayout.active = data.progressValue >= 15;

@@ -3,6 +3,7 @@ declare const gamepush: any;
 import { _decorator, Component, Node } from 'cc';
 import { ClanData } from '../data/ClanData';
 import { Net } from '../net/Net';
+import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 
@@ -45,9 +46,6 @@ export class Clans extends Component {
                 return;
             }
     
-            this.playerClanId = channel.id;
-            this.playerClanName = channel.name;
-
             this.refresh();
         });
     
@@ -90,6 +88,8 @@ export class Clans extends Component {
             if(channel.isJoined) {
                 this.playerClanId = channel.id;
                 this.playerClanName = channel.name;
+
+                UserData.instance.setClanName(this.playerClanName);
             }
         }
 
@@ -104,8 +104,6 @@ export class Clans extends Component {
 
     joinClan(clanId: number) {
         Net.instance.tryToJoinClanChannel(clanId, this.playerClanId);
-
-        this.playerClanId = clanId;
     }
 
     leaveClan(clanId: number) {
@@ -135,6 +133,11 @@ export class Clans extends Component {
 
     getClanName(): string {
         return this.playerClanName;
+    }
+
+
+    getAllClans(): ClanData[] {
+        return this.clans;
     }
 }
 

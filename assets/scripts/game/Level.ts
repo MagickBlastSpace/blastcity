@@ -50,6 +50,7 @@ export class Level extends Component {
     resetStats() {
         this.stats = new LevelProgressStatisticsData();
         this.stats.levelId = UserData.instance.getProgress();
+        this.stats.levelDifficulty = this.difficulty;
         this.stats.redDestroyed = 0;
         this.stats.rocketsDestroyed = 0;
         this.stats.destroyedByDiscoball = 0;
@@ -72,6 +73,7 @@ export class Level extends Component {
         let loadedStats = Statistics.instance.loadLevelStat(UserData.instance.getProgress());
         if(loadedStats) {
             this.stats.levelId = loadedStats.levelId;
+            this.stats.levelDifficulty = this.difficulty;
             this.stats.redDestroyed = loadedStats.redDestroyed;
             this.stats.rocketsDestroyed = loadedStats.rocketsDestroyed;
             this.stats.destroyedByDiscoball = loadedStats.destroyedByDiscoball;

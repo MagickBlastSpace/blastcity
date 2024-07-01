@@ -9,6 +9,7 @@ const { ccclass, property } = _decorator;
 export class UserData extends Component {
 
     private playerName: string = "";
+    private clanName: string = "";
 
     private currentProgress: number = 0;
     private levelsCount: number = 0;
@@ -261,6 +262,14 @@ export class UserData extends Component {
 
     getPlayerName(): string {
         return this.playerName;
+    }
+
+    getClanName(): string {
+        return this.clanName;
+    }
+
+    setClanName(clan: string) {
+        this.clanName = clan;
     }
 
 

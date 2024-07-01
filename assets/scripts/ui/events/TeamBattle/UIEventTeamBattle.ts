@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button } from 'cc';
+import { _decorator, Component, Node, Button, instantiate } from 'cc';
 import { UIEventKingsCup } from '../KingsCup/UIEventKingsCup';
 import { UIEventSkyRacePlayerItem } from '../SkyRace/UIEventSkyRacePlayerItem';
 const { ccclass, property } = _decorator;
@@ -18,10 +18,13 @@ export class UIEventTeamBattle extends UIEventKingsCup {
 
     @property([UIEventSkyRacePlayerItem])
     teams: UIEventSkyRacePlayerItem[] = [];
+    @property(Node)
+    teamItemsLayout: Node = null;
 
 
     start() {
-        super.start();
+        this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
+        this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
 
         this.showBattleBtn.node.on(Button.EventType.CLICK, this.onShowBattleBtnClick, this);
         this.showTeamBtn.node.on(Button.EventType.CLICK, this.onShowTeamBtnClick, this);
@@ -31,13 +34,49 @@ export class UIEventTeamBattle extends UIEventKingsCup {
 
 
     refresh() {
-        super.refresh();
+        this.isEventStarted = this.eventController.getIsStarted();
+        this.isEventComplete = this.eventController.getIsComplete();
+
+        this.playersLayout.active = this.isEventStarted && !this.isEventComplete;
+   
+        this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
+
+        let data = this.eventController.sortPlayersByProgress();
+
+        for(let i = 0; i < data.length; i++) {
+            if(i >= this.items.length) {
+                const itemNode = instantiate(this.itemPrefab);
+                this.playerItemsLayout.addChild(itemNode);
+    
+                let item = itemNode.getComponent("UIEventKingsCupPlayerItem");
+                item.init(i + 1);
+    
+                this.items.push(item);
+            }
+
+            this.items[i].refresh(data[i]);
+        }
+
+        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
+        this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : "Join Clan";
 
         let teamsData = this.eventController.sortTeamsByProgress();
 
-        for(let i = 0; i < teamsData.length && i < this.teams.length; i++) {
+        for(let i = 0; i < teamsData.length; i++) {
+            if(i >= this.teams.length) {
+                const itemNode = instantiate(this.itemPrefab);
+                this.teamItemsLayout.addChild(itemNode);
+    
+                let item = itemNode.getComponent("UIEventKingsCupPlayerItem");
+                item.init(i + 1);
+    
+                this.teams.push(item);
+            }
+
             this.teams[i].refresh(teamsData[i]);
         }
+
+        this.onShowBattleBtnClick();
     }
 
 
