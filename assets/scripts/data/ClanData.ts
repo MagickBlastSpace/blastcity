@@ -17,7 +17,20 @@ export class ClanData {
     @property
     isJoined = false;
 
-    //TBD Players and Score
+    @property([ClanMemberData])
+    members: ClanMemberData[] = [];
+}
+
+
+@ccclass('ClanMemberData')
+export class ClanMemberData {
+    @property
+    name = "";
+
+    @property
+    score_team_battle = 0;
+    @property
+    score_team_treasure = 0;
 }
 
 

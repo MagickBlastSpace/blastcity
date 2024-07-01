@@ -5,6 +5,7 @@ import { PlayerEventData } from '../../../data/EventData';
 import { LevelProgressStatisticsData } from '../../../data/Statistics';
 import { SaveData } from '../../../data/SaveData';
 import { TeamEventBase } from './TeamEventBase';
+import { ClanData } from '../../../data/ClanData';
 const { ccclass, property } = _decorator;
 
 @ccclass('TeamBattleEvent')
@@ -34,7 +35,7 @@ export class TeamBattleEvent extends TeamEventBase {
         for(let i = 0; i < clansData.length; i++) {
             let data = new PlayerEventData();
             data.playerName = clansData[i].clanName;
-            data.progressValue = 0; //TBD correctly
+            data.progressValue = this.countClanProgress(clansData[i]);
 
             sortedTeams.push(data);
         }
@@ -60,6 +61,17 @@ export class TeamBattleEvent extends TeamEventBase {
         gamepush.player.sync();
 
         SaveData.instance.saveEvent(this.eventId);
+    }
+
+
+    countClanProgress(data: ClanData) {
+        let progress = 0;
+
+        for(let i = 0; i < data.members.length; i++) {
+            progress += data.members[i].score_team_battle;
+        }
+
+        return progress;
     }
 }
 

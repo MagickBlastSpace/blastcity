@@ -60,12 +60,10 @@ export class TeamEventBase extends WeeklyEventBase {
         if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
             this.currentStep = 0;
 
-            gamepush.player.set('score_' + this.eventId, 0); //TBD: Set 0 for all
-            gamepush.player.sync();
-
             this.isStarted = true;
-
             this.isComplete = false;
+
+            this.lastAttemptTimestamp = Date.now();
 
             this.updateMultiplayerData();
 
@@ -121,9 +119,10 @@ export class TeamEventBase extends WeeklyEventBase {
 
     restartEvent(): void {
         console.log("Restarting Multiplayer Event: " + this.eventId);
-        this.init(this.startTime.getUTCHours(), this.getEventDuration());
+        this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
 
-        SaveData.instance.saveEvent(this.eventId);
+        gamepush.player.set('score_' + this.eventId, 0); //TBD: Set 0 for all
+        gamepush.player.sync();
     }
 
 

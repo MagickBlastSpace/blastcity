@@ -234,7 +234,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
     restartEvent(): void {
         console.log("Restarting Multiplayer Event: " + this.eventId);
-        this.init(this.startTime.getUTCHours(), this.getEventDuration());
+        this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
 
         gamepush.channels.deleteChannel({ channelId: this.multiplayerChannelId });
         this.multiplayerChannelId = 0;
