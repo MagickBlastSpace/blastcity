@@ -82,10 +82,11 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
         this.miniGame.active = this.isEventStarted;
 
         if(this.isEventStarted) {
-            this.progressLabel.string = "Level " + this.eventController.getCurrentStage() + "/" + this.eventController.getTotalSteps();
+            let curStage = this.eventController.getCurrentStage() + 1;
+            this.progressLabel.string = curStage + "/" + this.eventController.getTotalSteps();
 
             let playersCount = this.eventController.getCollectable();
-            this.playersLabel.string = "Players " + playersCount + "/100";
+            this.playersLabel.string = playersCount + "/100";
 
             for(let i = 0; i < playersCount; i++) {
                 const newPlayerNode = instantiate(this.playerPrefab);
