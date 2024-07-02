@@ -14,9 +14,6 @@ export class TeamEventBase extends WeeklyEventBase {
     @property(Node)
     level: Node = null;
 
-    @property([PlayerEventData])
-    players: PlayerEventData[] = [];
-
     @property(Clans)
     clans: Clans = null;
 
@@ -24,31 +21,11 @@ export class TeamEventBase extends WeeklyEventBase {
 
     private isComplete: boolean = false;
 
-
+    
     onLoad() {
         this.players = [];
 
-        gamepush.channels.on('fetchMembers', (result) => {
-            this.players = [];
-
-            for(let i = 0; i < result.items.length; i++) {
-                let member = result.items[i];
-
-                let memberData = new PlayerEventData();
-                memberData.playerName = member.state.name;
-                memberData.progressValue = member.state["score_" + this.eventId];
-
-                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Player" + member.state.id;
-
-                this.players.push(memberData);
-            }
-
-            this.node.emit("refresh");
-        });
-
-        gamepush.channels.on('error:fetchMembers', (err) => {
-            console.log("Error fetching members: " + err);
-        });
+        this.clans.node.on("refresh_members", () => this.refresh());
     }
 
 
@@ -71,16 +48,18 @@ export class TeamEventBase extends WeeklyEventBase {
         }
     }
 
+
+    refresh() {
+        this.node.emit("refresh");
+    }
+
     
     sortPlayersByProgress(): PlayerEventData[] {
         let sortedPlayers = [];
 
-        sortedPlayers = this.players;
-
-        sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
-
         return sortedPlayers;
     }
+    
 
 
     getIsComplete(): boolean {
@@ -107,13 +86,13 @@ export class TeamEventBase extends WeeklyEventBase {
 
 
     public updateMultiplayerData() {
-        let clanId = this.clans.getClanId();
-        if(clanId === 0) {
-            this.node.emit("refresh");
-            return;
-        }
+        //let clanId = this.clans.getClanId();
+        //if(clanId === 0) {
+        this.refresh();
+        //    return;
+        //}
 
-        this.fetchMembersOfChannel(clanId);
+        //this.fetchMembersOfChannel(clanId);
     }
 
 

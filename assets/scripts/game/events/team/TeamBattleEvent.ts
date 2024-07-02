@@ -28,6 +28,23 @@ export class TeamBattleEvent extends TeamEventBase {
     }
 
 
+    sortPlayersByProgress(): PlayerEventData[] {
+        let membersData = this.clans.getPlayerClanMembers();
+        let sortedPlayers = [];
+
+        for(let i = 0; i < membersData.length; i++) {
+            let data = new PlayerEventData();
+            data.playerName = membersData[i].name;
+            data.progressValue = membersData[i].score_team_battle;
+
+            sortedPlayers.push(data);
+        }
+
+        sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
+
+        return sortedPlayers;
+    }
+
     sortTeamsByProgress(): PlayerEventData[] {
         let clansData = this.clans.getAllClans();
         let sortedTeams = [];
@@ -51,14 +68,20 @@ export class TeamBattleEvent extends TeamEventBase {
             return;
         }
 
-        if(statistics.levelDifficulty !== "hard" && statistics.levelDifficulty !== "superhard") {
-            return;
+        let earnedPoints = 1;
+        if(statistics.levelDifficulty === "hard") {
+            earnedPoints = 3;
+        }
+        else if(statistics.levelDifficulty === "superhard") {
+            earnedPoints = 5;
         }
 
-        this.currentStep = this.currentStep + 1;
+        this.currentStep = this.currentStep + earnedPoints;
 
         gamepush.player.set('score_team_battle', this.currentStep);
         gamepush.player.sync();
+
+        this.clans.refresh();
 
         SaveData.instance.saveEvent(this.eventId);
     }

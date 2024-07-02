@@ -1,7 +1,7 @@
 declare const gamepush: any;
 
 import { _decorator, Component, Node } from 'cc';
-import { EventRewardData } from '../../../data/EventData';
+import { EventRewardData, PlayerEventData } from '../../../data/EventData';
 import { UserData } from '../../../data/UserData';
 import { SaveData } from '../../../data/SaveData';
 import { TeamEventBase } from './TeamEventBase';
@@ -76,6 +76,8 @@ export class TeamTreasureEvent extends TeamEventBase {
         gamepush.player.set('score_team_treasure', this.currentStep);
         gamepush.player.sync();
 
+        this.clans.refresh();
+
         SaveData.instance.saveEvent(this.eventId);
     }
 
@@ -89,6 +91,24 @@ export class TeamTreasureEvent extends TeamEventBase {
         }
 
         super.restartEvent();
+    }
+
+
+    sortPlayersByProgress(): PlayerEventData[] {
+        let membersData = this.clans.getPlayerClanMembers();
+        let sortedPlayers = [];
+
+        for(let i = 0; i < membersData.length; i++) {
+            let data = new PlayerEventData();
+            data.playerName = membersData[i].name;
+            data.progressValue = membersData[i].score_team_treasure;
+
+            sortedPlayers.push(data);
+        }
+
+        sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
+
+        return sortedPlayers;
     }
 }
 

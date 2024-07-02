@@ -16,7 +16,9 @@ export class Clans extends Component {
     private playerClanName: string = "";
 
     private membersFetchIndex: number = 0;
-    private isMemberFetchAvailable: boolean = false;;
+    private isMemberFetchAvailable: boolean = false;
+
+    private clansUpdate: ClanData[] = [];
 
 
     onLoad() {
@@ -41,7 +43,7 @@ export class Clans extends Component {
                 return;
             }
 
-            this.clans[this.membersFetchIndex].members = [];
+            this.clansUpdate[this.membersFetchIndex].members = [];
 
             for(let i = 0; i < result.items.length; i++) {
                 let member = result.items[i];
@@ -53,7 +55,7 @@ export class Clans extends Component {
 
                 memberData.name = memberData.name !== "" ? memberData.name : "Player" + member.state.id;
 
-                this.clans[this.membersFetchIndex].members.push(memberData);
+                this.clansUpdate[this.membersFetchIndex].members.push(memberData);
             }
 
             this.membersFetchIndex++;
@@ -86,8 +88,14 @@ export class Clans extends Component {
 
     
     refresh() {
-        this.clans = [];
+        if(this.isMemberFetchAvailable) {
+            return;
+        }
 
+        this.membersFetchIndex = 0;
+        this.isMemberFetchAvailable = true;
+
+        this.clansUpdate = [];
         Net.instance.requestClansChannels();
     }
 
@@ -107,7 +115,7 @@ export class Clans extends Component {
             clanData.membersCount = channel.membersCount;
             clanData.isJoined = channel.isJoined;
 
-            this.clans.push(clanData);
+            this.clansUpdate.push(clanData);
 
             if(channel.isJoined) {
                 this.playerClanId = channel.id;
@@ -122,27 +130,28 @@ export class Clans extends Component {
             return;
         }
 
-        this.node.emit("refresh", this.clans);
+        this.node.emit("refresh", this.clansUpdate);
 
-        //if(!this.isMembersFetched()) {
-        this.membersFetchIndex = 0;
-        this.isMemberFetchAvailable = true;
         this.requestNextClanMembers();
-        //}
     }
 
 
     requestNextClanMembers() {
-        /*if(this.isMembersFetched()) {
-            return;
-        }*/
+        if(this.membersFetchIndex >= this.clansUpdate.length) {
+            this.clans = [];
+            for(let i = 0; i < this.clansUpdate.length; i++) {
+                this.clans.push(this.clansUpdate[i]);
+            }
+            this.clansUpdate = [];
 
-        if(this.membersFetchIndex >= this.clans.length) {
             this.isMemberFetchAvailable = false;
+
+            this.node.emit("refresh_members");
+
             return;
         }
 
-        Net.instance.fetchMembersOfChannel(this.clans[this.membersFetchIndex].clanId);
+        Net.instance.fetchMembersOfChannel(this.clansUpdate[this.membersFetchIndex].clanId);
     }
 
 
@@ -182,6 +191,21 @@ export class Clans extends Component {
 
     getAllClans(): ClanData[] {
         return this.clans;
+    }
+
+    getPlayerClanMembers(): ClanMemberData[] {
+        let members = [];
+
+        if(this.playerClanId > 0) {
+            let playerClan = this.clans.find(clan => clan.clanId === this.playerClanId);
+            if(playerClan && playerClan !== undefined) {
+                for(let i = 0; i < playerClan.members.length; i++) {
+                    members.push(playerClan.members[i]);
+                }
+            }
+        }
+
+        return members;
     }
 
 
