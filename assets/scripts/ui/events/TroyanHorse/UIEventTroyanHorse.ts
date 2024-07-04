@@ -9,7 +9,6 @@ export class UIEventTroyanHorse extends UIEventTeamTreasure {
         this.isEventComplete = this.eventController.getIsComplete();
 
         this.playersLayout.active = this.isEventStarted && !this.isEventComplete;
-        this.rewardLayout.active = false;
    
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
         

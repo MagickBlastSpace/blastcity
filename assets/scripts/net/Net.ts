@@ -26,6 +26,18 @@ export class Net extends Component {
     /*
     Leaderboards
     */
+    publishScore(variantId: string, scoreCount: number) {
+        gamepush.leaderboard.publishRecord({
+            id: 12464,
+            tag: 'SCORE',
+            variant: variantId,
+            override: true,
+            record: {
+                score: scoreCount,
+            },
+        });
+    }
+
     publishGamepushLevelRecord(levelId: string, movesCount: number, scoreCount: number) {
         console.log("Net module publishig record");
 
@@ -39,6 +51,22 @@ export class Net extends Component {
                 score: scoreCount,
             },
         });
+    }
+
+
+    async fetchScoreLeaderboardData(variantId: string) {
+        const result = await gamepush.leaderboard.fetchScoped({
+            id: 12464,
+            tag: 'SCORE',
+            variant: variantId,
+            order: 'DESC',
+            limit: 10,
+            includeFields: ['score'],
+            withMe: 'last',
+            showNearest: 1,
+        });
+
+        return result;
     }
 
 

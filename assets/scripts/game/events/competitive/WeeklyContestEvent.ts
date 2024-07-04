@@ -2,14 +2,18 @@ import { _decorator, Component, Node } from 'cc';
 import { SkyRaceEvent } from './SkyRaceEvent';
 import { SaveData } from '../../../data/SaveData';
 import { UserData } from '../../../data/UserData';
+import { Net } from '../../../net/Net';
+import { PlayerEventData } from '../../../data/EventData';
 const { ccclass, property } = _decorator;
 
 @ccclass('WeeklyContestEvent')
 export class WeeklyContestEvent extends SkyRaceEvent {
 
     onLoad() {
-        super.onLoad();
-        
+        this.players = [];
+    }
+
+    start() {
         this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
     }
 
@@ -46,6 +50,8 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
         this.currentStep = this.currentStep + 1;
 
+        Net.instance.publishScore("week_" + this.getWeekNumber(this.startTime), this.currentStep);
+
         SaveData.instance.saveEvent(this.eventId);
     }
 
@@ -71,6 +77,48 @@ export class WeeklyContestEvent extends SkyRaceEvent {
         this.handleEventCompletion();
 
         this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
+    }
+
+
+    public sortPlayersByProgress(): PlayerEventData[] {
+        return this.players;
+    }
+
+
+    async updateMultiplayerData() {
+        this.players = [];
+
+        try {
+            const result = await Net.instance.fetchScoreLeaderboardData("week_" + this.getWeekNumber(this.startTime));
+            const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
+
+            console.log('Players:', players.length);
+
+            for(let i = 0; i < players.length; i++) {
+                let player = new PlayerEventData();
+                player.playerName = players[i].name;
+                player.progressValue = players[i].score;
+
+                this.players.push(player);
+            }
+
+            this.node.emit("refresh");
+
+        } catch (error) {
+            console.log('Error fetching leaderboard data:', error);
+        }
+    }
+
+
+    private getWeekNumber(date: Date): number {
+        const targetDate = new Date(date.valueOf());
+        const dayNumber = (date.getUTCDay() + 6) % 7;
+        targetDate.setUTCDate(targetDate.getUTCDate() - dayNumber + 3);
+        const firstThursday = new Date(targetDate.getUTCFullYear(), 0, 4);
+        firstThursday.setUTCDate(firstThursday.getUTCDate() - ((firstThursday.getUTCDay() + 6) % 7) + 3);
+        const weekNumber = Math.ceil((targetDate.getTime() - firstThursday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+
+        return weekNumber;
     }
 }
 

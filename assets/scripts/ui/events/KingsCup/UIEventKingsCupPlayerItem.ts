@@ -1,9 +1,9 @@
 import { _decorator, Component, Node, Label } from 'cc';
-import { UIEventWeeklyContestPlayerItem } from '../WeeklyContest/UIEventWeeklyContestPlayerItem';
+import { UIEventSkyRacePlayerItem } from '../SkyRace/UIEventSkyRacePlayerItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventKingsCupPlayerItem')
-export class UIEventKingsCupPlayerItem extends UIEventWeeklyContestPlayerItem {
+export class UIEventKingsCupPlayerItem extends UIEventSkyRacePlayerItem {
 
     @property(Label)
     indexLabel: Label = null;

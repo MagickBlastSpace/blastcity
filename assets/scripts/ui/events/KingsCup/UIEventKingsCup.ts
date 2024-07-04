@@ -1,9 +1,9 @@
 import { _decorator, Component, Node, Prefab, instantiate } from 'cc';
-import { UIEventWeeklyContest } from '../WeeklyContest/UIEventWeeklyContest';
+import { UIEventSkyRace } from '../SkyRace/UIEventSkyRace';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventKingsCup')
-export class UIEventKingsCup extends UIEventWeeklyContest {
+export class UIEventKingsCup extends UIEventSkyRace {
     @property(Prefab)
     itemPrefab: Prefab = null;
 

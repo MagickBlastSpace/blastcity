@@ -5,6 +5,7 @@ import { CompetitiveEventBase } from './CompetitiveEventBase';
 import { SaveData } from '../../../data/SaveData';
 import { UserData } from '../../../data/UserData';
 import { EventRewardData, PlayerEventData } from '../../../data/EventData';
+import { Net } from '../../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('SkyRaceEvent')
@@ -80,6 +81,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         gamepush.player.set('score_sky_race', this.currentStep);
         gamepush.player.sync();
+
+        Net.instance.publishScore("sky_race_" + this.multiplayerChannelId, this.currentStep);
 
         if(this.currentStep >= this.TOTAL_LEVELS) {
             this.handleEventCompletion();

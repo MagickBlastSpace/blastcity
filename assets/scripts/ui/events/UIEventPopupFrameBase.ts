@@ -9,7 +9,8 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
     @property([Widget])
     widgets: Widget[] = [];
 
-    private eventController: EventBase = null;
+    @property(EventBase)
+    eventController: EventBase = null;
 
     private isInited: boolean = false;
 
