@@ -16,9 +16,6 @@ export class ClanData {
 
     @property
     isJoined = false;
-
-    @property([ClanMemberData])
-    members: ClanMemberData[] = [];
 }
 
 
@@ -28,9 +25,7 @@ export class ClanMemberData {
     name = "";
 
     @property
-    score_team_battle = 0;
-    @property
-    score_team_treasure = 0;
+    score = 0;
 }
 
 
