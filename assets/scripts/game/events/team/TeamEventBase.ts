@@ -17,6 +17,9 @@ export class TeamEventBase extends WeeklyEventBase {
     @property(Clans)
     clans: Clans = null;
 
+    @property([PlayerEventData])
+    players: PlayerEventData[] = [];
+
     private currentStep: number = 0;
 
     private isComplete: boolean = false;
@@ -24,8 +27,6 @@ export class TeamEventBase extends WeeklyEventBase {
     
     onLoad() {
         this.players = [];
-
-        this.clans.node.on("refresh_members", () => this.refresh());
     }
 
 
@@ -42,6 +43,8 @@ export class TeamEventBase extends WeeklyEventBase {
 
             this.lastAttemptTimestamp = Date.now();
 
+            Net.instance.publishScore(this.eventId, this.eventId + "_" + this.clans.getClanId() + "_" + this.getWeekNumber(this.startTime), this.currentStep);
+
             this.updateMultiplayerData();
 
             SaveData.instance.saveEvent(this.eventId);
@@ -55,9 +58,7 @@ export class TeamEventBase extends WeeklyEventBase {
 
     
     sortPlayersByProgress(): PlayerEventData[] {
-        let sortedPlayers = [];
-
-        return sortedPlayers;
+        return this.players;
     }
     
 
@@ -80,28 +81,14 @@ export class TeamEventBase extends WeeklyEventBase {
     }
 
 
-    fetchMembersOfChannel(id: number) {
-        Net.instance.fetchMembersOfChannel(id);
-    }
-
-
     public updateMultiplayerData() {
-        //let clanId = this.clans.getClanId();
-        //if(clanId === 0) {
         this.refresh();
-        //    return;
-        //}
-
-        //this.fetchMembersOfChannel(clanId);
     }
 
 
     restartEvent(): void {
         console.log("Restarting Multiplayer Event: " + this.eventId);
         this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
-
-        gamepush.player.set('score_' + this.eventId, 0); //TBD: Set 0 for all
-        gamepush.player.sync();
     }
 
 

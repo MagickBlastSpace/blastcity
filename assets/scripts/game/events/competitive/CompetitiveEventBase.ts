@@ -99,29 +99,6 @@ export class CompetitiveEventBase extends WeeklyEventBase {
             console.log("Error fetch more multiplayer channel for: " + this.eventId);
         });
 
-        gamepush.channels.on('fetchMembers', (result) => {
-            this.players = [];
-            console.log("Fetching members: " + result.items.length);
-
-            for(let i = 0; i < result.items.length; i++) {
-                let member = result.items[i];
-
-                let memberData = new PlayerEventData();
-                memberData.playerName = member.state.name;
-                memberData.progressValue = member.state["score_" + this.eventId];
-
-                memberData.playerName = memberData.playerName !== "" ? memberData.playerName : "Player" + member.state.id;
-
-                this.players.push(memberData);
-            }
-
-            this.node.emit("refresh");
-        });
-
-        gamepush.channels.on('error:fetchMembers', (err) => {
-            console.log("Error fetching members: " + err);
-        });
-
 
         gamepush.channels.on('createChannel', (channel) => {
             if(!channel.tags.includes(this.eventId)) {
@@ -158,8 +135,6 @@ export class CompetitiveEventBase extends WeeklyEventBase {
             this.isStarted = true;
 
             this.lastAttemptTimestamp = Date.now();
-
-            this.updateMultiplayerData();
         }
     }
 
@@ -217,17 +192,26 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         Net.instance.tryToJoinMultiplayerChannel(id);
     }
 
-    fetchMembersOfChannel(id: number) {
-        Net.instance.fetchMembersOfChannel(id);
-    }
 
+    async updateMultiplayerData() {
+        this.players = [];
 
-    public updateMultiplayerData() {
-        if(this.multiplayerChannelId > 0 && this.isStarted) {
-            this.fetchMembersOfChannel(this.multiplayerChannelId);
-        }
-        else {
+        try {
+            const result = await Net.instance.fetchScoreLeaderboardData(this.eventId, this.eventId + "_" + this.multiplayerChannelId);
+            const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
+
+            for(let i = 0; i < players.length; i++) {
+                let player = new PlayerEventData();
+                player.playerName = players[i].name;
+                player.progressValue = players[i].score;
+
+                this.players.push(player);
+            }
+
             this.node.emit("refresh");
+
+        } catch (error) {
+            console.log('Error fetching leaderboard data:', error);
         }
     }
 
@@ -238,9 +222,6 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
         gamepush.channels.deleteChannel({ channelId: this.multiplayerChannelId });
         this.multiplayerChannelId = 0;
-
-        gamepush.player.set('score_' + this.eventId, 0);
-        gamepush.player.sync();
 
         SaveData.instance.saveEvent(this.eventId);
     }

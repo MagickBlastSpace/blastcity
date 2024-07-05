@@ -48,17 +48,27 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     }
 
     activateEvent() {
-        super.activateEvent();
-
-        if(!this.isEventAvailable()) {
+        if(this.multiplayerChannelId === 0) {
+            console.log("Multiplayer is not ready");
             return;
         }
 
+        if(!this.isEventAvailable() || this.isStarted || !this.canParticipate()) {
+            return;
+        }
+
+        this.isStarted = true;
+        this.isComplete = false;
+
         this.currentStep = 0;
 
-        this.updateMultiplayerData();
+        this.lastAttemptTimestamp = Date.now();
 
         SaveData.instance.saveEvent(this.eventId);
+
+        Net.instance.publishScore(this.eventId, "sky_race_" + this.multiplayerChannelId, this.currentStep);
+
+        this.updateMultiplayerData();
     }
 
 
@@ -79,10 +89,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         this.currentStep = this.currentStep + 1;
 
-        gamepush.player.set('score_sky_race', this.currentStep);
-        gamepush.player.sync();
-
-        Net.instance.publishScore("sky_race_" + this.multiplayerChannelId, this.currentStep);
+        Net.instance.publishScore(this.eventId, "sky_race_" + this.multiplayerChannelId, this.currentStep);
 
         if(this.currentStep >= this.TOTAL_LEVELS) {
             this.handleEventCompletion();
@@ -121,7 +128,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         sortedPlayers = this.players;
 
-        sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
+        //sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
 
         if(this.playerPlace >= 0) {
             let playerIndex = sortedPlayers.findIndex(player => player.playerName === UserData.instance.getPlayerName());

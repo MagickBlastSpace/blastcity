@@ -6,6 +6,7 @@ import { KingsCupEvent } from './KingsCupEvent';
 import { UserData } from '../../../data/UserData';
 import { LevelProgressStatisticsData } from '../../../data/Statistics';
 import { PlayerEventData } from '../../../data/EventData';
+import { Net } from '../../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('LightningEvent')
@@ -64,19 +65,27 @@ export class LightningEvent extends KingsCupEvent {
 
 
     activateEvent() {
-        super.activateEvent();
-
-        if(!this.isEventAvailable()) {
+        if(this.multiplayerChannelId === 0) {
+            console.log("Multiplayer is not ready");
             return;
         }
+
+        if(!this.isEventAvailable() || this.isStarted || !this.canParticipate()) {
+            return;
+        }
+
+        this.isStarted = true;
+        this.isComplete = false;
 
         this.collectables = 0;
 
         this.lastAttemptTimestamp = Date.now();
 
-        this.updateMultiplayerData();
-
         SaveData.instance.saveEvent(this.eventId);
+
+        Net.instance.publishScore(this.eventId, "lightning_" + this.multiplayerChannelId, this.collectables);
+
+        this.updateMultiplayerData();
     }
 
 
@@ -91,8 +100,7 @@ export class LightningEvent extends KingsCupEvent {
 
         this.collectables = this.collectables + statistics.destroyedByDiscoball;
 
-        gamepush.player.set('score_lightning', this.collectables);
-        gamepush.player.sync();
+        Net.instance.publishScore(this.eventId, "lightning_" + this.multiplayerChannelId, this.collectables);
 
         SaveData.instance.saveEvent(this.eventId);
     }

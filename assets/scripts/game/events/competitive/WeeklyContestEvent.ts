@@ -50,7 +50,7 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
         this.currentStep = this.currentStep + 1;
 
-        Net.instance.publishScore("week_" + this.getWeekNumber(this.startTime), this.currentStep);
+        Net.instance.publishScore("", "week_" + this.getWeekNumber(this.startTime), this.currentStep);
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -89,7 +89,7 @@ export class WeeklyContestEvent extends SkyRaceEvent {
         this.players = [];
 
         try {
-            const result = await Net.instance.fetchScoreLeaderboardData("week_" + this.getWeekNumber(this.startTime));
+            const result = await Net.instance.fetchScoreLeaderboardData("", "week_" + this.getWeekNumber(this.startTime));
             const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
 
             console.log('Players:', players.length);
@@ -107,18 +107,6 @@ export class WeeklyContestEvent extends SkyRaceEvent {
         } catch (error) {
             console.log('Error fetching leaderboard data:', error);
         }
-    }
-
-
-    private getWeekNumber(date: Date): number {
-        const targetDate = new Date(date.valueOf());
-        const dayNumber = (date.getUTCDay() + 6) % 7;
-        targetDate.setUTCDate(targetDate.getUTCDate() - dayNumber + 3);
-        const firstThursday = new Date(targetDate.getUTCFullYear(), 0, 4);
-        firstThursday.setUTCDate(firstThursday.getUTCDate() - ((firstThursday.getUTCDay() + 6) % 7) + 3);
-        const weekNumber = Math.ceil((targetDate.getTime() - firstThursday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
-
-        return weekNumber;
     }
 }
 

@@ -5,11 +5,25 @@ import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 
+@ccclass('LeaderboardQueueItem')
+export class LeaderboardQueueItem {
+    @property
+    eventId = "";
+    @property
+    variantId = "";
+    @property
+    scoreCount = 0;
+}
+
+
 @ccclass('Net')
 export class Net extends Component {
 
     @property(Node)
     level: Node = null;
+
+    private leaderboardPublishQueue: LeaderboardQueueItem[] = [];
+    private isPublishing: boolean = false;
 
     public static instance: Net = null;
 
@@ -26,17 +40,48 @@ export class Net extends Component {
     /*
     Leaderboards
     */
-    publishScore(variantId: string, scoreCount: number) {
-        gamepush.leaderboard.publishRecord({
-            id: 12464,
-            tag: 'SCORE',
+    async publishScore(eventId: string, variantId: string, scoreCount: number) {
+        if(this.isPublishing) {
+            let newQueueItem = new LeaderboardQueueItem();
+            newQueueItem.eventId = eventId;
+            newQueueItem.variantId = variantId;
+            newQueueItem.scoreCount = scoreCount;
+
+            this.leaderboardPublishQueue.push(newQueueItem);
+
+            return;
+        }
+
+        this.isPublishing = true;
+
+        let leaderboardTag = "SCORE";
+        
+        if(eventId !== "") {
+            leaderboardTag += "_" + eventId.toUpperCase();
+        }
+
+        const result = await gamepush.leaderboard.publishRecord({
+            tag: leaderboardTag,
             variant: variantId,
             override: true,
             record: {
                 score: scoreCount,
+                default: 1,
             },
         });
+
+        const { record, fields } = result;
+
+        this.isPublishing = false;
+
+        if(this.leaderboardPublishQueue.length > 0) {
+            let queueItem = this.leaderboardPublishQueue.pop();
+            if(queueItem) {
+                this.publishScore(queueItem.eventId, queueItem.variantId, queueItem.scoreCount);
+            }
+        }
     }
+
 
     publishGamepushLevelRecord(levelId: string, movesCount: number, scoreCount: number) {
         console.log("Net module publishig record");
@@ -54,10 +99,15 @@ export class Net extends Component {
     }
 
 
-    async fetchScoreLeaderboardData(variantId: string) {
+    async fetchScoreLeaderboardData(eventId: string, variantId: string) {
+        let leaderboardTag = "SCORE";
+        
+        if(eventId !== "") {
+            leaderboardTag += "_" + eventId.toUpperCase();
+        }
+
         const result = await gamepush.leaderboard.fetchScoped({
-            id: 12464,
-            tag: 'SCORE',
+            tag: leaderboardTag,
             variant: variantId,
             order: 'DESC',
             limit: 10,

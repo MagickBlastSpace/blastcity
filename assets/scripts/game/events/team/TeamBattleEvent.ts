@@ -6,10 +6,15 @@ import { LevelProgressStatisticsData } from '../../../data/Statistics';
 import { SaveData } from '../../../data/SaveData';
 import { TeamEventBase } from './TeamEventBase';
 import { ClanData } from '../../../data/ClanData';
+import { Net } from '../../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('TeamBattleEvent')
 export class TeamBattleEvent extends TeamEventBase {
+
+    @property([PlayerEventData])
+    teams: PlayerEventData[] = [];
+
 
     start() {
         this.level.on("complete_statistics", (stats) => this.handleLevelCompletion(stats));
@@ -28,38 +33,10 @@ export class TeamBattleEvent extends TeamEventBase {
     }
 
 
-    sortPlayersByProgress(): PlayerEventData[] {
-        let membersData = this.clans.getPlayerClanMembers();
-        let sortedPlayers = [];
-
-        for(let i = 0; i < membersData.length; i++) {
-            let data = new PlayerEventData();
-            data.playerName = membersData[i].name;
-            data.progressValue = membersData[i].score_team_battle;
-
-            sortedPlayers.push(data);
-        }
-
-        sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
-
-        return sortedPlayers;
-    }
-
     sortTeamsByProgress(): PlayerEventData[] {
-        let clansData = this.clans.getAllClans();
-        let sortedTeams = [];
+        this.teams.sort((a, b) => b.progressValue - a.progressValue);
 
-        for(let i = 0; i < clansData.length; i++) {
-            let data = new PlayerEventData();
-            data.playerName = clansData[i].clanName;
-            data.progressValue = this.countClanProgress(clansData[i]);
-
-            sortedTeams.push(data);
-        }
-
-        sortedTeams.sort((a, b) => b.progressValue - a.progressValue);
-
-        return sortedTeams;
+        return this.teams;
     }
 
 
@@ -78,23 +55,59 @@ export class TeamBattleEvent extends TeamEventBase {
 
         this.currentStep = this.currentStep + earnedPoints;
 
-        gamepush.player.set('score_team_battle', this.currentStep);
-        gamepush.player.sync();
-
-        this.clans.refresh();
+        Net.instance.publishScore(this.eventId, this.eventId + "_" + this.clans.getClanId() + "_" + this.getWeekNumber(this.startTime), this.currentStep);
 
         SaveData.instance.saveEvent(this.eventId);
     }
 
 
-    countClanProgress(data: ClanData) {
-        let progress = 0;
+    async updateMultiplayerData() {
+        this.players = [];
 
-        for(let i = 0; i < data.members.length; i++) {
-            progress += data.members[i].score_team_battle;
+        try {
+            const result = await Net.instance.fetchScoreLeaderboardData(this.eventId, this.eventId + "_" + this.clans.getClanId() + "_" + this.getWeekNumber(this.startTime));
+            const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
+
+            for(let i = 0; i < players.length; i++) {
+                let player = new PlayerEventData();
+                player.playerName = players[i].name;
+                player.progressValue = players[i].score;
+
+                this.players.push(player);
+            }
+
+            this.node.emit("refresh");
+
+        } catch (error) {
+            console.log('Error fetching leaderboard data:', error);
         }
 
-        return progress;
+
+        this.teams = [];
+
+        let clansData = this.clans.getAllClans();
+
+        for(let i = 0; i < clansData.length; i++) {
+            let data = new PlayerEventData();
+            data.playerName = clansData[i].clanName;
+            data.progressValue = 0;
+
+            try {
+                const result = await Net.instance.fetchScoreLeaderboardData(this.eventId, this.eventId + "_" + clansData[i].clanId + "_" + this.getWeekNumber(this.startTime));
+                const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
+    
+                for(let i = 0; i < players.length; i++) {
+                    data.progressValue += players[i].score;
+                }
+
+                this.teams.push(data);
+
+                this.node.emit("refresh");
+    
+            } catch (error) {
+                console.log('Error fetching leaderboard data:', error);
+            }
+        }
     }
 }
 

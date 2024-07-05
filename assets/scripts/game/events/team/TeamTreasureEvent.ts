@@ -5,6 +5,7 @@ import { EventRewardData, PlayerEventData } from '../../../data/EventData';
 import { UserData } from '../../../data/UserData';
 import { SaveData } from '../../../data/SaveData';
 import { TeamEventBase } from './TeamEventBase';
+import { Net } from '../../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('TeamTreasureEvent')
@@ -73,10 +74,7 @@ export class TeamTreasureEvent extends TeamEventBase {
 
         this.currentStep = this.currentStep + 1;
 
-        gamepush.player.set('score_team_treasure', this.currentStep);
-        gamepush.player.sync();
-
-        this.clans.refresh();
+        Net.instance.publishScore(this.eventId, this.eventId + "_" + this.clans.getClanId() + "_" + this.getWeekNumber(this.startTime), this.currentStep);
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -94,21 +92,26 @@ export class TeamTreasureEvent extends TeamEventBase {
     }
 
 
-    sortPlayersByProgress(): PlayerEventData[] {
-        let membersData = this.clans.getPlayerClanMembers();
-        let sortedPlayers = [];
+    async updateMultiplayerData() {
+        this.players = [];
 
-        for(let i = 0; i < membersData.length; i++) {
-            let data = new PlayerEventData();
-            data.playerName = membersData[i].name;
-            data.progressValue = membersData[i].score_team_treasure;
+        try {
+            const result = await Net.instance.fetchScoreLeaderboardData(this.eventId, this.eventId + "_" + this.clans.getClanId() + "_" + this.getWeekNumber(this.startTime));
+            const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
 
-            sortedPlayers.push(data);
+            for(let i = 0; i < players.length; i++) {
+                let player = new PlayerEventData();
+                player.playerName = players[i].name;
+                player.progressValue = players[i].score;
+
+                this.players.push(player);
+            }
+
+            this.node.emit("refresh");
+
+        } catch (error) {
+            console.log('Error fetching leaderboard data:', error);
         }
-
-        sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
-
-        return sortedPlayers;
     }
 }
 
