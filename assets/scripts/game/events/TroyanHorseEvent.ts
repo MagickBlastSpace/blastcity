@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { TeamTreasureEvent } from './team/TeamTreasureEvent';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('TroyanHorseEvent')
@@ -17,8 +18,32 @@ export class TroyanHorseEvent extends TeamTreasureEvent {
         this.eventId = "troyan_horse";
     }
 
+    activateEvent() {
+        if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
+            this.isStarted = true;
+
+            this.lastAttemptTimestamp = Date.now();
+        }
+    }
+
     getTotalTeamProgress(): number {
         return this.currentStep;
+    }
+
+
+    private handleLevelCompletion(isComplete: boolean) {
+        if(!this.isEventAvailable() || !isComplete || !this.canParticipate()) {
+            return;
+        }
+
+        this.currentStep = this.currentStep + 1;
+
+        SaveData.instance.saveEvent(this.eventId);
+    }
+
+
+    updateMultiplayerData() {
+        this.node.emit("refresh");
     }
 }
 
