@@ -126,6 +126,18 @@ export class Net extends Component {
         return result;
     }
 
+    async fetchScoreLeaderboardDataUnscoped() {
+        const result = await gamepush.leaderboard.fetch({
+            tag: "SCORE",
+            order: 'DESC',
+            limit: 50,
+            includeFields: ['score'],
+            withMe: 'last',
+        });
+
+        return result;
+    }
+
 
     /*
     Events
