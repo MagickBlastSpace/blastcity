@@ -58,6 +58,11 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
 
         this.eventController.updateMultiplayerData();
     }
+
+
+    getRemainingTimeString(): string {
+        return this.eventController.getRemainingTimeString();
+    }
 }
 
 
