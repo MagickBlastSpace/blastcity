@@ -60,13 +60,16 @@ export class Net extends Component {
             leaderboardTag += "_" + eventId.toUpperCase();
         }
 
+        let isRemove = scoreCount < 0 ? 0 : 1;
+        let newScore = scoreCount < 0 ? 0 : scoreCount;
+
         const result = await gamepush.leaderboard.publishRecord({
             tag: leaderboardTag,
             variant: variantId,
             override: true,
             record: {
-                score: scoreCount,
-                default: 1,
+                score: newScore,
+                default: isRemove,
             },
         });
 
@@ -80,6 +83,10 @@ export class Net extends Component {
                 this.publishScore(queueItem.eventId, queueItem.variantId, queueItem.scoreCount);
             }
         }
+    }
+
+    async removeScore(eventId: string, variantId: string) {
+        this.publishScore(eventId, variantId, -1);
     }
 
 
