@@ -23,7 +23,7 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
         let members = [];
     
         try {
-            const result = await Net.instance.fetchScoreLeaderboardDataUnscoped();
+            const result = await Net.instance.fetchScoreLeaderboardDataUnscoped("SCORE");
             const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
     
             for(let i = 0; i < players.length; i++) {

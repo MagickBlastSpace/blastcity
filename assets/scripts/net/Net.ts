@@ -126,9 +126,9 @@ export class Net extends Component {
         return result;
     }
 
-    async fetchScoreLeaderboardDataUnscoped() {
+    async fetchScoreLeaderboardDataUnscoped(lb_tag: string) {
         const result = await gamepush.leaderboard.fetch({
-            tag: "SCORE",
+            tag: lb_tag,
             order: 'DESC',
             limit: 50,
             includeFields: ['score'],
