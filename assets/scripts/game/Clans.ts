@@ -10,10 +10,15 @@ const { ccclass, property } = _decorator;
 @ccclass('Clans')
 export class Clans extends Component {
 
+    @property(Node)
+    level: Node = null;
+
     private clans: ClanData[] = [];
 
     private playerClanId: number = 0;
     private playerClanName: string = "";
+
+    private playerClanScore: number = 0;
 
     private clansUpdate: ClanData[] = [];
 
@@ -46,6 +51,8 @@ export class Clans extends Component {
                 gamepush.channels.deleteChannel({ channelId: channel.id });
                 return;
             }
+
+            this.playerClanScore = 0;
     
             this.refresh();
         });
@@ -53,12 +60,35 @@ export class Clans extends Component {
         gamepush.channels.on('deleteChannel', () => {});
 
         gamepush.channels.on('leave', () => {
+            this.playerClanScore = 0;
             this.refresh();
         });
 
         gamepush.channels.on('join', () => {
+            if(this.playerClanId === 0) {
+                return;
+            }
+
+            this.playerClanScore = 0;
+
             this.refresh();
         });
+    }
+
+
+    start() {
+        this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
+    }
+
+
+    private handleLevelCompletion(isComplete: boolean) {
+        if(!isComplete || !this.isJoined()) {
+            return;
+        }
+
+        this.playerClanScore = this.playerClanScore + 1;
+
+        Net.instance.publishScore("clan", "clan_" + this.playerClanId, this.playerClanScore);
     }
 
     
@@ -89,6 +119,8 @@ export class Clans extends Component {
                 this.playerClanId = channel.id;
                 this.playerClanName = channel.name;
 
+                Net.instance.publishScore("clan", "clan_" + this.playerClanId, this.playerClanScore);
+
                 UserData.instance.setClanName(this.playerClanName);
             }
         }
@@ -102,7 +134,7 @@ export class Clans extends Component {
             for(let i = 0; i < this.clansUpdate.length; i++) {
                 this.clans.push(this.clansUpdate[i]);
             }
-            this.clansUpdate = [];
+        this.clansUpdate = [];
 
         this.node.emit("refresh", this.clans);
     }
@@ -144,21 +176,6 @@ export class Clans extends Component {
 
     getAllClans(): ClanData[] {
         return this.clans;
-    }
-
-    getPlayerClanMembers(): ClanMemberData[] {
-        let members = [];
-
-        if(this.playerClanId > 0) {
-            let playerClan = this.clans.find(clan => clan.clanId === this.playerClanId);
-            if(playerClan && playerClan !== undefined) {
-                for(let i = 0; i < playerClan.members.length; i++) {
-                    members.push(playerClan.members[i]);
-                }
-            }
-        }
-
-        return members;
     }
 }
 

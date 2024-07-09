@@ -3,6 +3,7 @@ import { Clans } from '../../game/Clans';
 import { UIClanItem } from './UIClanItem';
 import { UIFrameBase } from '../UIFrameBase';
 import { ClanData } from '../../data/ClanData';
+import { UIClanInfoPopup } from './UIClanInfoPopup';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClansFrame')
@@ -15,6 +16,9 @@ export class UIClansFrame extends UIFrameBase {
     @property([UIClanItem])
     items: UIClanItem[] = [];
 
+    @property(UIClanInfoPopup)
+    clanInfoPopup: UIClanInfoPopup = null;
+
     @property(Button)
     createBtn: Button = null;
 
@@ -26,6 +30,9 @@ export class UIClansFrame extends UIFrameBase {
         this.clans.node.on("refresh", (clansData) => this.refresh(clansData));
 
         this.createBtn.node.on(Button.EventType.CLICK, this.onCreateBtnClick, this);
+
+        this.clanInfoPopup.node.on("join", (id) => this.join(id));
+        this.clanInfoPopup.node.on("leave", (id) => this.leave(id));
     }
 
 
@@ -44,6 +51,9 @@ export class UIClansFrame extends UIFrameBase {
         }
 
         this.createBtn.node.active = !this.clans.isJoined();
+
+        this.clanInfoPopup.init(data);
+        this.clanInfoPopup.refresh();
     }
 
     show() {
@@ -58,8 +68,7 @@ export class UIClansFrame extends UIFrameBase {
     spawnItem() {
         const itemNode = instantiate(this.itemPrefab);
 
-        itemNode.on("join", (id) => this.join(id));
-        itemNode.on("leave", (id) => this.leave(id));
+        itemNode.on("show_info", (data) => this.showClanInfo(data));
 
         this.itemsLayout.addChild(itemNode);
 
@@ -80,6 +89,17 @@ export class UIClansFrame extends UIFrameBase {
 
     onCreateBtnClick() {
         this.clans.createClan();
+    }
+
+
+    showClanInfo(data: ClanData) {
+        if(this.clanInfoPopup.node.active) {
+            return;
+        }
+
+        this.clanInfoPopup.init(data);
+
+        this.clanInfoPopup.show();
     }
 }
 

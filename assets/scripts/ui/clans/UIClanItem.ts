@@ -12,9 +12,7 @@ export class UIClanItem extends Component {
     membersCountLabel: Label = null;
 
     @property(Button)
-    joinBtn: Button = null;
-    @property(Button)
-    leaveBtn: Button = null;
+    clickBtn: Button = null;
 
     @property(Node)
     isJoined: Node = null;
@@ -23,8 +21,7 @@ export class UIClanItem extends Component {
 
 
     start() {
-        this.joinBtn.node.on(Button.EventType.CLICK, this.onJoinBtnClick, this);
-        this.leaveBtn.node.on(Button.EventType.CLICK, this.onLeaveBtnClick, this);
+        this.clickBtn.node.on(Button.EventType.CLICK, this.onShowInfoClick, this);
     }
 
 
@@ -33,21 +30,13 @@ export class UIClanItem extends Component {
 
         this.nameLabel.string = data.clanName;
         this.membersCountLabel.string = data.membersCount + "/" + data.capacity;
-        
+
         this.isJoined.active = data.isJoined;
     }
 
 
-    onJoinBtnClick() {
-        if(this.isFull()) {
-            return;
-        }
-
-        this.node.emit("join", this.clanData.clanId);
-    }
-
-    onLeaveBtnClick() {
-        this.node.emit("leave", this.clanData.clanId);
+    onShowInfoClick() {
+        this.node.emit("show_info", this.clanData);
     }
 
 

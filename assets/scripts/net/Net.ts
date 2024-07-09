@@ -110,7 +110,7 @@ export class Net extends Component {
             tag: leaderboardTag,
             variant: variantId,
             order: 'DESC',
-            limit: 10,
+            limit: 50,
             includeFields: ['score'],
             withMe: 'last',
             showNearest: 1,
