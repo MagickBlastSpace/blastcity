@@ -18,8 +18,6 @@ export class Clans extends Component {
     private playerClanId: number = 0;
     private playerClanName: string = "";
 
-    private playerClanScore: number = 0;
-
     private clansUpdate: ClanData[] = [];
 
 
@@ -51,8 +49,6 @@ export class Clans extends Component {
                 gamepush.channels.deleteChannel({ channelId: channel.id });
                 return;
             }
-
-            this.playerClanScore = 0;
     
             this.refresh();
         });
@@ -60,7 +56,6 @@ export class Clans extends Component {
         gamepush.channels.on('deleteChannel', () => {});
 
         gamepush.channels.on('leave', () => {
-            this.playerClanScore = 0;
             this.refresh();
         });
 
@@ -68,8 +63,6 @@ export class Clans extends Component {
             if(this.playerClanId === 0) {
                 return;
             }
-
-            this.playerClanScore = 0;
 
             this.refresh();
         });
@@ -86,9 +79,7 @@ export class Clans extends Component {
             return;
         }
 
-        this.playerClanScore = this.playerClanScore + 1;
-
-        Net.instance.publishScore("clan", "clan_" + this.playerClanId, this.playerClanScore);
+        Net.instance.publishScore("clan", "clan_" + this.playerClanId, UserData.instance.getProgress());
     }
 
     
@@ -119,7 +110,7 @@ export class Clans extends Component {
                 this.playerClanId = channel.id;
                 this.playerClanName = channel.name;
 
-                Net.instance.publishScore("clan", "clan_" + this.playerClanId, this.playerClanScore);
+                Net.instance.publishScore("clan", "clan_" + this.playerClanId, UserData.instance.getProgress());
 
                 UserData.instance.setClanName(this.playerClanName);
             }
@@ -146,9 +137,12 @@ export class Clans extends Component {
 
     leaveClan(clanId: number) {
         Net.instance.tryToLeaveClanChannel(clanId);
+        Net.instance.removeScore("clan", "clan_" + this.playerClanId);
 
         this.playerClanId = 0;
         this.playerClanName = "";
+
+        UserData.instance.setClanName(this.playerClanName);
     }
 
     createClan() {
