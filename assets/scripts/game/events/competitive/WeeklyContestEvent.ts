@@ -36,8 +36,13 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
 
     private handleEventCompletion() {
-        //let sortedPlayers = this.sortPlayersByProgress(); find place etc.
+        this.updateMultiplayerData();
+
         this.isComplete = true;
+
+        let playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
+
+        this.takeReward(playerPlace);
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -56,20 +61,18 @@ export class WeeklyContestEvent extends SkyRaceEvent {
     }
 
 
-    takeReward() {
-        if(!this.isRewardAvailable()) {
+    takeReward(playerPlace: number) {
+        if(!this.isRewardAvailable(playerPlace)) {
             return;
         }
 
-        UserData.instance.addResource("gold", this.REWARD_COINS);
+        this.applyReward(this.rewards[playerPlace]);
 
         this.isComplete = false;
-
-        SaveData.instance.saveEvent(this.eventId);
     }
 
-    isRewardAvailable(): boolean {
-        return this.isComplete;
+    isRewardAvailable(playerPlace: number): boolean {
+        return this.isComplete && playerPlace > -1 && playerPlace < this.rewards.length;
     }
 
 

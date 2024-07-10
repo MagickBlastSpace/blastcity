@@ -105,7 +105,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
             return;
         }
 
-        this.applyReward(rewards[this.playerPlace]);
+        this.applyReward(this.rewards[this.playerPlace]);
 
         this.currentStep = 0;
 
