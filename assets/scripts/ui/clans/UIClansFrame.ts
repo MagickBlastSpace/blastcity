@@ -5,6 +5,7 @@ import { ClanData } from '../../data/ClanData';
 import { UIClanInfoPopup } from './UIClanInfoPopup';
 import { UIClansObserveFrame } from './UIClansObserveFrame';
 import { UITab } from '../main/UITab';
+import { UIClansSearchFrame } from './UIClansSearchFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClansFrame')
@@ -15,6 +16,8 @@ export class UIClansFrame extends UIFrameBase {
 
     @property(UIClansObserveFrame)
     clansObserveFrame: UIClansObserveFrame = null;
+    @property(UIClansSearchFrame)
+    clansSearchFrame: UIClansSearchFrame = null;
 
     @property(Button)
     createBtn: Button = null;
@@ -38,6 +41,7 @@ export class UIClansFrame extends UIFrameBase {
         this.clanInfoPopup.node.on("leave", (id) => this.leave(id));
 
         this.clansObserveFrame.node.on("show_info", (data) => this.showClanInfo(data));
+        this.clansSearchFrame.node.on("show_info", (data) => this.showClanInfo(data));
 
         for(let i = 0; i < this.tabs.length; i++) {
             this.tabs[i].node.on("tab", (index) => this.showFrame(index));
@@ -47,6 +51,7 @@ export class UIClansFrame extends UIFrameBase {
 
     refresh(data: ClanData[]) {
         this.clansObserveFrame.refresh(data);
+        this.clansSearchFrame.refresh(data);
 
         this.createBtn.node.active = !this.clans.isJoined();
 

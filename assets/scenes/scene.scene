@@ -66,7 +66,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 2453
+      "__id__": 2455
     },
     "_id": "7b2dc026-88d5-4e1b-8f76-c916ba7bb4f8"
   },
@@ -23671,6 +23671,7 @@
       "__id__": 838
     },
     "clansObserveFrame": null,
+    "clansSearchFrame": null,
     "createBtn": {
       "__id__": 732
     },
@@ -65162,6 +65163,9 @@
       },
       {
         "__id__": 2451
+      },
+      {
+        "__id__": 2453
       }
     ],
     "nestedPrefabInstanceRoots": [
@@ -67045,30 +67049,52 @@
     ]
   },
   {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 843
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "clansSearchFrame"
+    ],
+    "target": {
+      "__id__": 710
+    },
+    "targetInfo": {
+      "__id__": 2454
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "53D+bjpgJAxasnh/Cg/gVP"
+    ]
+  },
+  {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 2454
-    },
-    "shadows": {
-      "__id__": 2455
-    },
-    "_skybox": {
       "__id__": 2456
     },
-    "fog": {
+    "shadows": {
       "__id__": 2457
     },
-    "octree": {
+    "_skybox": {
       "__id__": 2458
     },
-    "skin": {
+    "fog": {
       "__id__": 2459
     },
-    "lightProbeInfo": {
+    "octree": {
       "__id__": 2460
     },
-    "postSettings": {
+    "skin": {
       "__id__": 2461
+    },
+    "lightProbeInfo": {
+      "__id__": 2462
+    },
+    "postSettings": {
+      "__id__": 2463
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false
