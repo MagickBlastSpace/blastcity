@@ -112,6 +112,8 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
 
     onLeaveBtnClick() {
         this.node.emit("leave", this.clanData.clanId);
+
+        this.hide();
     }
 
 

@@ -37,7 +37,7 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
             data.progressValue = 0;
 
             try {
-                const result = await Net.instance.fetchScoreLeaderboardDataUnscoped("clan", "clan_" + clansData[i].clanId);
+                const result = await Net.instance.fetchScoreLeaderboardData("clan", "clan_" + clansData[i].clanId);
                 const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
     
                 for(let i = 0; i < players.length; i++) {

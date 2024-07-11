@@ -1,26 +1,29 @@
 import { _decorator, Component, Node, Prefab, instantiate, Button } from 'cc';
 import { Clans } from '../../game/Clans';
-import { UIClanItem } from './UIClanItem';
 import { UIFrameBase } from '../UIFrameBase';
 import { ClanData } from '../../data/ClanData';
 import { UIClanInfoPopup } from './UIClanInfoPopup';
+import { UIClansObserveFrame } from './UIClansObserveFrame';
+import { UITab } from '../main/UITab';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClansFrame')
 export class UIClansFrame extends UIFrameBase {
 
-    @property(Prefab)
-    itemPrefab: Prefab = null;
-    @property(Node)
-    itemsLayout: Node = null;
-    @property([UIClanItem])
-    items: UIClanItem[] = [];
-
     @property(UIClanInfoPopup)
     clanInfoPopup: UIClanInfoPopup = null;
 
+    @property(UIClansObserveFrame)
+    clansObserveFrame: UIClansObserveFrame = null;
+
     @property(Button)
     createBtn: Button = null;
+
+    @property([UITab])
+    tabs: UITab = [];
+
+    @property([UIFrameBase])
+    frames: UIFrameBase = [];
 
     @property(Clans)
     clans: Clans = null;
@@ -33,26 +36,20 @@ export class UIClansFrame extends UIFrameBase {
 
         this.clanInfoPopup.node.on("join", (id) => this.join(id));
         this.clanInfoPopup.node.on("leave", (id) => this.leave(id));
+
+        this.clansObserveFrame.node.on("show_info", (data) => this.showClanInfo(data));
+
+        for(let i = 0; i < this.tabs.length; i++) {
+            this.tabs[i].node.on("tab", (index) => this.showFrame(index));
+        }
     }
 
 
     refresh(data: ClanData[]) {
-        for(let i = 0; i < this.items.length; i++) {
-            this.items[i].node.active = false;
-        }
-
-        for(let i = 0; i < data.length; i++) {
-            if(i >= this.items.length) {
-                this.spawnItem();
-            }
-
-            this.items[i].node.active = true;
-            this.items[i].init(data[i]);
-        }
+        this.clansObserveFrame.refresh(data);
 
         this.createBtn.node.active = !this.clans.isJoined();
 
-        this.clanInfoPopup.init(data);
         this.clanInfoPopup.refresh();
     }
 
@@ -62,19 +59,16 @@ export class UIClansFrame extends UIFrameBase {
         this.createBtn.node.active = false;
 
         this.clans.refresh();
+
+        this.showFrame(0);
     }
 
+    hide() {
+        super.hide();
 
-    spawnItem() {
-        const itemNode = instantiate(this.itemPrefab);
+        this.clanInfoPopup.hideClean();
 
-        itemNode.on("show_info", (data) => this.showClanInfo(data));
-
-        this.itemsLayout.addChild(itemNode);
-
-        let item = itemNode.getComponent("UIClanItem");
-
-        this.items.push(item);
+        this.hideAllFrames();
     }
 
 
@@ -100,6 +94,29 @@ export class UIClansFrame extends UIFrameBase {
         this.clanInfoPopup.init(data);
 
         this.clanInfoPopup.show();
+    }
+
+
+    showFrame(index: number) {
+        this.setAllBtnsPassive();
+        this.hideAllFrames();
+
+        this.tabs[index].setActiveIcon(true);
+
+        this.frames[index].show();
+    }
+
+
+    setAllBtnsPassive() {
+        for(let i = 0; i < this.tabs.length; i++) {
+            this.tabs[i].setActiveIcon(false);
+        }
+    }
+
+    hideAllFrames() {
+        for(let i = 0; i < this.frames.length; i++) {
+            this.frames[i].hideClean();
+        }
     }
 }
 
