@@ -6,6 +6,8 @@ import { UIClanInfoPopup } from './UIClanInfoPopup';
 import { UIClansObserveFrame } from './UIClansObserveFrame';
 import { UITab } from '../main/UITab';
 import { UIClansSearchFrame } from './UIClansSearchFrame';
+import { UIClansCreateFrame } from './UIClansCreateFrame';
+import { UIMyClanFrame } from './UIMyClanFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClansFrame')
@@ -18,9 +20,15 @@ export class UIClansFrame extends UIFrameBase {
     clansObserveFrame: UIClansObserveFrame = null;
     @property(UIClansSearchFrame)
     clansSearchFrame: UIClansSearchFrame = null;
+    @property(UIClansCreateFrame)
+    clansCreateFrame: UIClansCreateFrame = null;
+    @property(UIMyClanFrame)
+    myClanFrame: UIMyClanFrame = null;
 
-    @property(Button)
-    createBtn: Button = null;
+    @property(Node)
+    joinedState: Node = null;
+    @property(Node)
+    notJoinedState: Node = null;
 
     @property([UITab])
     tabs: UITab = [];
@@ -35,13 +43,13 @@ export class UIClansFrame extends UIFrameBase {
     start() {
         this.clans.node.on("refresh", (clansData) => this.refresh(clansData));
 
-        this.createBtn.node.on(Button.EventType.CLICK, this.onCreateBtnClick, this);
-
         this.clanInfoPopup.node.on("join", (id) => this.join(id));
         this.clanInfoPopup.node.on("leave", (id) => this.leave(id));
 
         this.clansObserveFrame.node.on("show_info", (data) => this.showClanInfo(data));
         this.clansSearchFrame.node.on("show_info", (data) => this.showClanInfo(data));
+        this.myClanFrame.node.on("show_info", (data) => this.showClanInfo(data));
+        this.clansCreateFrame.node.on("create", (data) => this.onCreateBtnClick(data));
 
         for(let i = 0; i < this.tabs.length; i++) {
             this.tabs[i].node.on("tab", (index) => this.showFrame(index));
@@ -53,7 +61,16 @@ export class UIClansFrame extends UIFrameBase {
         this.clansObserveFrame.refresh(data);
         this.clansSearchFrame.refresh(data);
 
-        this.createBtn.node.active = !this.clans.isJoined();
+        let isJoined = this.clans.isJoined();
+
+        this.joinedState.active = isJoined;
+        this.notJoinedState.active = !isJoined;
+
+        if(isJoined) {
+            this.myClanFrame.refresh(this.clans.getMyClan());
+            this.myClanFrame.hideClean();
+            this.myClanFrame.show();
+        }
 
         this.clanInfoPopup.refresh();
     }
@@ -61,7 +78,8 @@ export class UIClansFrame extends UIFrameBase {
     show() {
         super.show();
 
-        this.createBtn.node.active = false;
+        this.joinedState.active = false;
+        this.notJoinedState.active = false;
 
         this.clans.refresh();
 
@@ -86,8 +104,8 @@ export class UIClansFrame extends UIFrameBase {
     }
 
 
-    onCreateBtnClick() {
-        this.clans.createClan();
+    onCreateBtnClick(data: string) {
+        this.clans.createClan(data);
     }
 
 

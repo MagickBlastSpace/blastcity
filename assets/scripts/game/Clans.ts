@@ -14,6 +14,7 @@ export class Clans extends Component {
     level: Node = null;
 
     private clans: ClanData[] = [];
+    private myClan: ClanData = null;
 
     private playerClanId: number = 0;
     private playerClanName: string = "";
@@ -113,6 +114,8 @@ export class Clans extends Component {
                 Net.instance.publishScore("clan", "clan_" + this.playerClanId, UserData.instance.getProgress());
 
                 UserData.instance.setClanName(this.playerClanName);
+
+                this.myClan = clanData;
             }
         }
 
@@ -145,12 +148,12 @@ export class Clans extends Component {
         UserData.instance.setClanName(this.playerClanName);
     }
 
-    createClan() {
+    createClan(data: string) {
         if(this.isJoined()) {
             return;
         }
 
-        Net.instance.createClanChannel();
+        Net.instance.createClanChannel(data);
     }
 
 
@@ -170,6 +173,10 @@ export class Clans extends Component {
 
     getAllClans(): ClanData[] {
         return this.clans;
+    }
+
+    getMyClan(): ClanData {
+        return this.myClan;
     }
 }
 

@@ -236,11 +236,11 @@ export class Net extends Component {
         }
     }
 
-    async createClanChannel() {
+    async createClanChannel(data: string) {
         try {
             const response = await gamepush.channels.createChannel({ 
                 template: "clan",
-                name: 'Clan_' + UserData.instance.getPlayerName(),
+                name: data,
             });
         } catch (error) {
             console.log('Error create clan ch:', error);
