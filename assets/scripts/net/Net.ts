@@ -87,7 +87,7 @@ export class Net extends Component {
     }
 
 
-    publishGamepushLevelRecord(levelId: string, movesCount: number, scoreCount: number) {
+    async publishGamepushLevelRecord(levelId: string, movesCount: number, scoreCount: number) {
         console.log("Net module publishig record");
 
         gamepush.leaderboard.publishRecord({
@@ -132,6 +132,14 @@ export class Net extends Component {
             withMe: 'last',
         });
 
+        return result;
+    }
+
+    async getPlayersByIds(playerIds: number[]) {
+        const result = await gamepush.players.fetch({
+            ids: playerIds,
+        });
+            
         return result;
     }
 

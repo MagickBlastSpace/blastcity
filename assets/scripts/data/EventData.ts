@@ -99,5 +99,8 @@ export class PlayerEventData {
 
     @property
     progressValue = 0;
+
+    @property
+    playerId = 0;
 }
 

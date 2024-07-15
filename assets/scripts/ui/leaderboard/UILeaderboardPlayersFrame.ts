@@ -30,6 +30,7 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
                 let player = new PlayerEventData();
                 player.playerName = players[i].name;
                 player.progressValue = players[i].score;
+                player.playerId = players[i].id;
     
                 members.push(player);
             }

@@ -55,7 +55,16 @@ export class UserData extends Component {
 
         this.node.emit("resources_update", this.Gold);
 
-        this.playerName = gamepush.player.name !== "" ? gamepush.player.name : "Player" + gamepush.player.id;
+        if(gamepush.player.name === "") {
+            this.playerName = "Player" + gamepush.player.id;
+
+            gamepush.player.set('name', this.playerName);
+            gamepush.player.sync();
+        }
+        else {
+            this.playerName = gamepush.player.name;
+        }
+
         console.log("Logged as: " + this.playerName);
     }
 
@@ -270,6 +279,9 @@ export class UserData extends Component {
 
     setClanName(clan: string) {
         this.clanName = clan;
+
+        gamepush.player.set('clanname', this.clanName);
+        gamepush.player.sync();
     }
 
 

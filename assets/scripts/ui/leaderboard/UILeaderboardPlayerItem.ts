@@ -3,8 +3,6 @@ import { UIEventWeeklyContestPlayerItem } from '../events/WeeklyContest/UIEventW
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardPlayerItem')
-export class UILeaderboardPlayerItem extends UIEventWeeklyContestPlayerItem {
-    //TBD Clan label
-}
+export class UILeaderboardPlayerItem extends UIEventWeeklyContestPlayerItem {}
 
 

@@ -101,6 +101,7 @@ export class WeeklyContestEvent extends SkyRaceEvent {
                 let player = new PlayerEventData();
                 player.playerName = players[i].name;
                 player.progressValue = players[i].score;
+                player.playerId = players[i].id;
 
                 this.players.push(player);
             }
