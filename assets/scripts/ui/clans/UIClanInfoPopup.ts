@@ -65,17 +65,23 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
             let totalScore = 0;
     
             for(let i = 0; i < players.length; i++) {
-                let player = new ClanMemberData();
-                player.name = players[i].name;
-                player.score = players[i].score;
+                if(players[i].score > 0) {
+                    let player = new ClanMemberData();
+                    player.name = players[i].name;
+                    player.score = players[i].score;
     
-                members.push(player);
+                    members.push(player);
 
-                totalScore += players[i].score;
+                    totalScore += players[i].score;
+                }
             }
 
             this.score.string = totalScore;
     
+            for(let i = 0; i < this.items.length; i++) {
+                this.items[i].node.active = false;
+            }
+            
             for(let i = 0; i < members.length; i++) {
                 if(i >= this.items.length) {
                     const itemNode = instantiate(this.itemPrefab);
@@ -85,7 +91,8 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
             
                     this.items.push(item);
                 }
-    
+
+                this.items[i].node.active = true;
                 this.items[i].init(i + 1, members[i]);
             }
     

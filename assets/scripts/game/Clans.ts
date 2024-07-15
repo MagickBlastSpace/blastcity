@@ -139,8 +139,8 @@ export class Clans extends Component {
     }
 
     leaveClan(clanId: number) {
-        Net.instance.tryToLeaveClanChannel(clanId);
         Net.instance.removeScore("clan", "clan_" + this.playerClanId);
+        Net.instance.tryToLeaveClanChannel(clanId);
 
         this.playerClanId = 0;
         this.playerClanName = "";
