@@ -95,7 +95,7 @@ export class WeeklyContestEvent extends SkyRaceEvent {
             const result = await Net.instance.fetchScoreLeaderboardData("", "week_" + this.getWeekNumber(this.startTime));
             const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
 
-            console.log('Players:', players.length);
+            //console.log('Players:', players.length);
 
             for(let i = 0; i < players.length; i++) {
                 let player = new PlayerEventData();
