@@ -3,6 +3,8 @@ declare const gamepush: any;
 import { _decorator, Component, Node, Button, Label, instantiate, Prefab } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { ClanData } from '../../data/ClanData';
+import { UserData } from '../../data/UserData';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMyClanFrame')
@@ -23,6 +25,9 @@ export class UIMyClanFrame extends UIPopupFrameBase {
     itemPrefab: Prefab = null;
     @property(Node)
     itemsLayout: Node = null;
+
+    @property(Label)
+    cooldownTimeLabel: Label = null;
 
     private data: ClanData = null;
 
@@ -54,6 +59,18 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         });
     }
 
+    update(deltaTime: number) {
+        if(UserData.instance.isEnergyAskAvailable()) {
+            this.askForEnergyBtn.node.active = true;
+            this.cooldownTimeLabel.string = "";
+        }
+        else {
+            this.askForEnergyBtn.node.active = false;
+            this.cooldownTimeLabel.string = UserData.instance.getEnergyCooldownTimeString();
+        }
+    }
+
+
     refresh(data: ClanData) {
         this.data = data;
 
@@ -77,7 +94,8 @@ export class UIMyClanFrame extends UIPopupFrameBase {
             tags: ['ask_for_energy'],
         });
 
-        this.askForEnergyBtn.node.active = false; //TBD Timing
+        UserData.instance.setEnergyAskTimestamp(Date.now());
+        SaveData.instance.saveUserData();
     }
 
     spawnAskForEnergyItem(message: any) {

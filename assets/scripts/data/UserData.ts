@@ -32,6 +32,9 @@ export class UserData extends Component {
     private EndlessLives_EndTime: Date;
     private Modifier_x2_EndTime: Date;
 
+    private energyAskTimestamp: number = 0;
+    private energyAskDelay_Hours: number = 4;
+
     public static instance: UserData = null;
 
 
@@ -50,6 +53,7 @@ export class UserData extends Component {
         this.Discoballs_EndTime = new Date(now);
         this.EndlessLives_EndTime = new Date(now);
         this.Modifier_x2_EndTime = new Date(now);
+        this.energyAskTimestamp = 0;
 
         SaveData.instance.loadUserData();
 
@@ -327,6 +331,57 @@ export class UserData extends Component {
         }
 
         return false;
+    }
+
+    /*Energy*/
+    getEnergyAskTimestamp(): number {
+        return this.energyAskTimestamp;
+    }
+
+    setEnergyAskTimestamp(stamp: number) {
+        this.energyAskTimestamp = stamp;
+    }
+
+    getEnergyAskTimeDifferenceInHours(): number {
+        const currentTime = Date.now();
+
+        const differenceInMillis = currentTime - this.energyAskTimestamp;
+
+        const differenceInHours = differenceInMillis / (1000 * 60 * 60);
+
+        return differenceInHours;
+    }
+        
+    isEnergyAskAvailable(): boolean {
+        if(this.energyAskTimestamp === 0 || this.energyAskTimestamp === undefined || this.energyAskTimestamp === null) {
+            return true;
+        }
+
+        if(this.getEnergyAskTimeDifferenceInHours() >= this.energyAskDelay_Hours) {
+            return true;
+        }
+
+        return false;
+    }
+
+    getEnergyCooldownTimeString(): string {
+        if(this.isEnergyAskAvailable()) {
+            return "";
+        }
+
+        const now = Date.now();
+        const cooldownEndTime = this.energyAskTimestamp + this.energyAskDelay_Hours * 60 * 60 * 1000;
+    
+        if (now >= cooldownEndTime) {
+            return "";
+        }
+    
+        const timeDiff = cooldownEndTime - now;
+        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+    
+        return "Cooldown: " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 }
 
