@@ -32,7 +32,7 @@ export class UIClansSearchFrame extends UIPopupFrameBase {
     }
 
     searchClans() {
-        const matchingClans = this.findClansBySubstring(this.searchInput.string);
+        const matchingClans = this.searchInput.string !== "" ? this.findClansBySubstring(this.searchInput.string) : this.findSuitableClans();
 
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].node.active = false;
@@ -68,6 +68,10 @@ export class UIClansSearchFrame extends UIPopupFrameBase {
 
     private findClansBySubstring(substring: string): ClanData[] {
         return this.data.filter(clan => clan.clanName.includes(substring));
+    }
+
+    private findSuitableClans(): ClanData[] {
+        return this.data.filter(clan => clan.isPrivate === false);
     }
 }
 
