@@ -1,6 +1,7 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, Button } from 'cc';
 import { ClanMemberData } from '../../data/ClanData';
 import { UserData } from '../../data/UserData';
+import { Net } from '../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClanMemberItem')
@@ -16,6 +17,16 @@ export class UIClanMemberItem extends Component {
     @property(Node)
     isPlayer: Node = null;
 
+    @property(Button)
+    kickBtn: Button = null;
+
+    private data: ClanMemberData = null;
+
+
+    start() {
+        this.kickBtn.node.on(Button.EventType.CLICK, this.kickPlayer, this);
+    }
+
 
     init(index: number, data: ClanMemberData) {
         this.indexLabel.string = index;
@@ -24,6 +35,18 @@ export class UIClanMemberItem extends Component {
         this.scoreLabel.string = data.score;
 
         this.isPlayer.active = UserData.instance.getPlayerName() === data.name;
+
+        this.data = data;
+    }
+
+
+    enableKick(isEnabled: boolean) {
+        this.kickBtn.node.active = isEnabled && this.data.playerId !== UserData.instance.getPlayerId();
+    }
+
+
+    kickPlayer() {
+        this.node.emit("kick", this.data.playerId);
     }
 }
 

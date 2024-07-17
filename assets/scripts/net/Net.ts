@@ -272,6 +272,10 @@ export class Net extends Component {
     rejectClanJoinRequests(player: number, clan: number) {
         gamepush.channels.rejectJoinRequest({ channelId: clan, playerId: player });
     }
+
+    kickClanMember(player: number, clan: number) {
+        gamepush.channels.kick({ channelId: clan, playerId: player });
+    }
 }
 
 

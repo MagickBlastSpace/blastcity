@@ -73,6 +73,7 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
                     let player = new ClanMemberData();
                     player.name = players[i].name;
                     player.score = players[i].score;
+                    player.playerId = players[i].id;
     
                     members.push(player);
 
@@ -89,6 +90,9 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
             for(let i = 0; i < members.length; i++) {
                 if(i >= this.items.length) {
                     const itemNode = instantiate(this.itemPrefab);
+
+                    itemNode.on("kick", (data) => this.kick(data));
+
                     this.itemsLayout.addChild(itemNode);
             
                     let item = itemNode.getComponent("UIClanMemberItem");
@@ -135,6 +139,19 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
 
     onCloseBtnClick() {
         this.hide();
+    }
+
+
+    enableKick(isEnabled: boolean) {
+        for(let i = 0; i < this.items.length; i++) {
+            this.items[i].enableKick(isEnabled);
+        }
+    }
+
+    kick(playerId: number) {
+        Net.instance.kickClanMember(playerId, this.clanData.clanId);
+
+        this.refresh();
     }
 }
 

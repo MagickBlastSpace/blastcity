@@ -31,6 +31,9 @@ export class ClanMemberData {
 
     @property
     score = 0;
+
+    @property
+    playerId = 0;
 }
 
 
