@@ -3,6 +3,7 @@ import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { ClanData, ClanMemberData } from '../../data/ClanData';
 import { Net } from '../../net/Net';
 import { UIClanMemberItem } from './UIClanMemberItem';
+import { UIProfilePopup } from '../profile/UIProfilePopup';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClanInfoPopup')
@@ -31,6 +32,9 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
 
     @property(Button)
     closeBtn: Button = null;
+
+    @property(UIProfilePopup)
+    profilePopup: UIProfilePopup = null;
 
     private clanData: ClanData = null;
 
@@ -92,6 +96,7 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
                     const itemNode = instantiate(this.itemPrefab);
 
                     itemNode.on("kick", (data) => this.kick(data));
+                    itemNode.on("profile", (data) => this.showProfile(data));
 
                     this.itemsLayout.addChild(itemNode);
             
@@ -152,6 +157,13 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
         Net.instance.kickClanMember(playerId, this.clanData.clanId);
 
         this.refresh();
+    }
+
+
+    showProfile(playerId: number) {
+        this.profilePopup.init(playerId);
+
+        this.profilePopup.show();
     }
 }
 

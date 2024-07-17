@@ -82,6 +82,9 @@ export class UserData extends Component {
         }
 
         SaveData.instance.saveUserData();
+
+        gamepush.player.set('score', this.currentProgress);
+        gamepush.player.sync();
     }
 
     getProgress(): number {

@@ -19,12 +19,15 @@ export class UIClanMemberItem extends Component {
 
     @property(Button)
     kickBtn: Button = null;
+    @property(Button)
+    profileBtn: Button = null;
 
     private data: ClanMemberData = null;
 
 
     start() {
         this.kickBtn.node.on(Button.EventType.CLICK, this.kickPlayer, this);
+        this.profileBtn.node.on(Button.EventType.CLICK, this.showProfile, this);
     }
 
 
@@ -47,6 +50,10 @@ export class UIClanMemberItem extends Component {
 
     kickPlayer() {
         this.node.emit("kick", this.data.playerId);
+    }
+
+    showProfile() {
+        this.node.emit("profile", this.data.playerId);
     }
 }
 
