@@ -5,6 +5,8 @@ import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { ClanData } from '../../data/ClanData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
+import { Net } from '../../net/Net';
+import { UIClanRequestItem } from './UIClanRequestItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMyClanFrame')
@@ -25,6 +27,11 @@ export class UIMyClanFrame extends UIPopupFrameBase {
     itemPrefab: Prefab = null;
     @property(Node)
     itemsLayout: Node = null;
+
+    @property(Prefab)
+    requestPrefab: Prefab = null;
+    @property([UIClanRequestItem])
+    requests: UIClanRequestItem = [];
 
     @property(Label)
     cooldownTimeLabel: Label = null;
@@ -57,6 +64,11 @@ export class UIMyClanFrame extends UIPopupFrameBase {
                 this.spawnAskForEnergyItem(message);
             }
         });
+
+
+        gamepush.channels.on('fetchJoinRequests', (result) => {
+            this.refreshJoinRequests(result.items);
+          });
     }
 
     update(deltaTime: number) {
@@ -75,6 +87,25 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         this.data = data;
 
         this.clanName.string = data.clanName;
+
+        if(data.ownerId === UserData.instance.getPlayerId()) {
+            Net.instance.fetchClanJoinRequests(data.clanId);
+        }
+    }
+
+    refreshJoinRequests(items: any) {
+        for(let i = 0; i < this.requests.length; i++) {
+            this.requests[i].node.active = false;
+        }
+
+        for(let i = 0; i < items.length; i++) {
+            if(i >= this.requests.length) {
+                this.spawnRequestItem();
+            }
+
+            this.requests[i].node.active = true;
+            this.requests[i].init(items[i], this.data.clanId);
+        }
     }
 
 
@@ -105,6 +136,15 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         let item = itemNode.getComponent("UIClansAskForEnergyItem");
             
         item.init(message);
+    }
+
+    spawnRequestItem() {
+        const itemNode = instantiate(this.requestPrefab);
+        this.itemsLayout.addChild(itemNode);
+            
+        let item = itemNode.getComponent("UIClansRequestItem");
+            
+        this.requests.push(item);
     }
 }
 

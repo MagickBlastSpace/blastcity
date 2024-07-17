@@ -1,0 +1,46 @@
+import { _decorator, Component, Node, Label, Button } from 'cc';
+import { Net } from '../../net/Net';
+const { ccclass, property } = _decorator;
+
+@ccclass('UIClanRequestItem')
+export class UIClanRequestItem extends Component {
+    
+    @property(Label)
+    nameLabel: Label = null;
+
+    @property(Button)
+    acceptButton: Button = null;
+    @property(Button)
+    rejectButton: Button = null;
+
+    private playerId: number = 0;
+    private clanId: number = 0;
+
+
+    start() {
+        this.acceptButton.node.on(Button.EventType.CLICK, this.accept, this);
+        this.rejectButton.node.on(Button.EventType.CLICK, this.reject, this);
+    }
+    
+    init(message: any, clanId: number) {
+        this.nameLabel.string = message.player.name + " requested to join clan";
+
+        this.playerId = message.player.id;
+        this.clanId = clanId;
+    }
+
+    
+    accept() {
+        Net.instance.acceptClanJoinRequests(this.clanId, this.playerId);
+
+        this.node.destroy();
+    }
+
+    reject() {
+        Net.instance.rejectClanJoinRequests(this.clanId, this.playerId);
+
+        this.node.destroy();
+    }
+}
+
+

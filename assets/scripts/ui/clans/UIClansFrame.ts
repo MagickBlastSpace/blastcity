@@ -49,7 +49,7 @@ export class UIClansFrame extends UIFrameBase {
         this.clansObserveFrame.node.on("show_info", (data) => this.showClanInfo(data));
         this.clansSearchFrame.node.on("show_info", (data) => this.showClanInfo(data));
         this.myClanFrame.node.on("show_info", (data) => this.showClanInfo(data));
-        this.clansCreateFrame.node.on("create", (data) => this.onCreateBtnClick(data));
+        this.clansCreateFrame.node.on("create", (data, isPrivate) => this.onCreateBtnClick(data, isPrivate));
 
         for(let i = 0; i < this.tabs.length; i++) {
             this.tabs[i].node.on("tab", (index) => this.showFrame(index));
@@ -104,8 +104,8 @@ export class UIClansFrame extends UIFrameBase {
     }
 
 
-    onCreateBtnClick(data: string) {
-        this.clans.createClan(data);
+    onCreateBtnClick(data: string, isPrivate: boolean) {
+        this.clans.createClan(data, isPrivate);
     }
 
 

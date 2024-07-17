@@ -10,6 +10,7 @@ export class UserData extends Component {
 
     private playerName: string = "";
     private clanName: string = "";
+    private playerId: number = 0;
 
     private currentProgress: number = 0;
     private levelsCount: number = 0;
@@ -68,6 +69,8 @@ export class UserData extends Component {
         else {
             this.playerName = gamepush.player.name;
         }
+
+        this.playerId = gamepush.player.id;
 
         console.log("Logged as: " + this.playerName);
     }
@@ -275,6 +278,10 @@ export class UserData extends Component {
 
     getPlayerName(): string {
         return this.playerName;
+    }
+
+    getPlayerId(): number {
+        return this.playerId;
     }
 
     getClanName(): string {

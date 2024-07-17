@@ -241,15 +241,36 @@ export class Net extends Component {
         }
     }
 
-    async createClanChannel(data: string) {
+    async createClanChannel(data: string, isPrivate: boolean) {
         try {
             const response = await gamepush.channels.createChannel({ 
                 template: "clan",
                 name: data,
+                private: isPrivate,
             });
         } catch (error) {
             console.log('Error create clan ch:', error);
         }
+    }
+
+    async fetchClanJoinRequests(id: number) {
+        try {
+            const response = await gamepush.channels.fetchJoinRequests({
+                channelId: id,
+                limit: 20,
+                offset: 0
+              });
+        } catch (error) {
+            console.log('Error fetching join reqs in clan channel:', error);
+        }
+    }
+
+    acceptClanJoinRequests(player: number, clan: number) {
+        gamepush.channels.acceptJoinRequest({ channelId: clan, playerId: player });
+    }
+
+    rejectClanJoinRequests(player: number, clan: number) {
+        gamepush.channels.rejectJoinRequest({ channelId: clan, playerId: player });
     }
 }
 

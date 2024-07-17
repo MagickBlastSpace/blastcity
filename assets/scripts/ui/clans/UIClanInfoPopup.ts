@@ -26,6 +26,8 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
     joinBtn: Button = null;
     @property(Button)
     leaveBtn: Button = null;
+    @property(Button)
+    requestBtn: Button = null;
 
     @property(Button)
     closeBtn: Button = null;
@@ -36,6 +38,7 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
     start() {
         this.joinBtn.node.on(Button.EventType.CLICK, this.onJoinBtnClick, this);
         this.leaveBtn.node.on(Button.EventType.CLICK, this.onLeaveBtnClick, this);
+        this.requestBtn.node.on(Button.EventType.CLICK, this.onJoinBtnClick, this);
 
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
     }
@@ -55,8 +58,9 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
         this.clanName.string = this.clanData.clanName;
         this.membersCount.string = this.clanData.membersCount + "/" + this.clanData.capacity;
 
-        this.joinBtn.node.active = !this.isFull() && !this.clanData.isJoined;
+        this.joinBtn.node.active = !this.isFull() && !this.clanData.isJoined && !this.clanData.isPrivate;
         this.leaveBtn.node.active = this.clanData.isJoined;
+        this.requestBtn.node.active = !this.isFull() && !this.clanData.isJoined && this.clanData.isPrivate;
     
         try {
             const result = await Net.instance.fetchScoreLeaderboardData("clan", "clan_" + this.clanData.clanId);

@@ -16,6 +16,11 @@ export class ClanData {
 
     @property
     isJoined = false;
+
+    @property
+    isPrivate = false;
+    @property
+    ownerId = 0;
 }
 
 

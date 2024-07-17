@@ -104,6 +104,8 @@ export class Clans extends Component {
             clanData.capacity = channel.capacity;
             clanData.membersCount = channel.membersCount;
             clanData.isJoined = channel.isJoined;
+            clanData.ownerId = channel.ownerId;
+            clanData.isPrivate = channel.private;
 
             this.clansUpdate.push(clanData);
 
@@ -148,12 +150,12 @@ export class Clans extends Component {
         UserData.instance.setClanName(this.playerClanName);
     }
 
-    createClan(data: string) {
+    createClan(data: string, isPrivate: boolean) {
         if(this.isJoined()) {
             return;
         }
 
-        Net.instance.createClanChannel(data);
+        Net.instance.createClanChannel(data, isPrivate);
     }
 
 
