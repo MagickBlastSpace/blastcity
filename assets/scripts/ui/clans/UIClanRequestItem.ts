@@ -31,15 +31,11 @@ export class UIClanRequestItem extends Component {
 
     
     accept() {
-        Net.instance.acceptClanJoinRequests(this.clanId, this.playerId);
-
-        this.node.destroy();
+        Net.instance.acceptClanJoinRequests(this.playerId, this.clanId);
     }
 
     reject() {
-        Net.instance.rejectClanJoinRequests(this.clanId, this.playerId);
-
-        this.node.destroy();
+        Net.instance.rejectClanJoinRequests(this.playerId, this.clanId);
     }
 }
 

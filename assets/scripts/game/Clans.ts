@@ -19,6 +19,8 @@ export class Clans extends Component {
     private playerClanId: number = 0;
     private playerClanName: string = "";
 
+    private joinRequestId: number = 0;
+
     private clansUpdate: ClanData[] = [];
 
 
@@ -61,9 +63,51 @@ export class Clans extends Component {
         });
 
         gamepush.channels.on('join', () => {
-            if(this.playerClanId === 0) {
+            this.refresh();
+        });
+        
+        gamepush.channels.on('event:leave', (memberLeave) => {
+            if(this.playerClanId === memberLeave.channelId && UserData.instance.getPlayerId() === memberLeave.playerId) {
+                this.leaveClan(memberLeave.channelId);
+            }
+            else if(this.playerClanId === memberLeave.channelId) {
+                this.refresh();
+            }
+        });
+
+        gamepush.channels.on('event:join', (member) => {
+            if(this.playerClanId === member.channelId || UserData.instance.getPlayerId() === member.playerId) {
+                this.refresh();
+            }
+        });
+
+        /*gamepush.channels.on('event:joinRequest', (joinRequest) => {
+            console.log("event join request");
+            if(this.isJoinRequested()) {
                 return;
             }
+
+            if(UserData.instance.getPlayerId() !== joinRequest.playerId) {
+                return;
+            }
+            
+            this.joinRequestId = joinRequest.channelId;
+        });
+
+        gamepush.channels.on('event:cancelJoin', (joinRequest) => {
+            if(UserData.instance.getPlayerId() !== joinRequest.playerId) {
+                return;
+            }
+
+            this.joinRequestId = 0;
+        });*/
+
+        gamepush.channels.on('event:rejectJoinRequest', (joinRequest) => {
+            if(UserData.instance.getPlayerId() !== joinRequest.playerId) {
+                return;
+            }
+
+            this.joinRequestId = 0;
 
             this.refresh();
         });
@@ -113,6 +157,8 @@ export class Clans extends Component {
                 this.playerClanId = channel.id;
                 this.playerClanName = channel.name;
 
+                this.joinRequestId = 0;
+
                 Net.instance.publishScore("clan", "clan_" + this.playerClanId, UserData.instance.getProgress());
 
                 UserData.instance.setClanName(this.playerClanName);
@@ -138,6 +184,24 @@ export class Clans extends Component {
 
     joinClan(clanId: number) {
         Net.instance.tryToJoinClanChannel(clanId, this.playerClanId);
+    }
+
+    joinPrivateClan(clanId: number) {
+        if(this.isJoinRequested()) {
+            return;
+        }
+        
+        this.joinRequestId = clanId;
+
+        Net.instance.tryToJoinClanChannel(clanId, this.playerClanId);
+    }
+
+    cancelJoinClan(clanId: number) {
+        Net.instance.tryToCancelJoinClanChannel(clanId);
+
+        this.leaveClan(clanId);
+
+        this.joinRequestId = 0;
     }
 
     leaveClan(clanId: number) {
@@ -179,6 +243,15 @@ export class Clans extends Component {
 
     getMyClan(): ClanData {
         return this.myClan;
+    }
+
+
+    isJoinRequested(): boolean {
+        return this.joinRequestId > 0;
+    }
+
+    getJoinRequestId(): number {
+        return this.joinRequestId;
     }
 }
 

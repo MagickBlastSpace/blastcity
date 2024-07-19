@@ -31,7 +31,7 @@ export class UIMyClanFrame extends UIPopupFrameBase {
     @property(Prefab)
     requestPrefab: Prefab = null;
     @property([UIClanRequestItem])
-    requests: UIClanRequestItem = [];
+    requests: UIClanRequestItem[] = [];
 
     @property(Label)
     cooldownTimeLabel: Label = null;
@@ -46,6 +46,8 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         this.askForEnergyBtn.node.on(Button.EventType.CLICK, this.askForEnergy, this);
 
         gamepush.channels.on('event:message', (message) => {
+            console.log("event message: " + message.text + message.tags[0]);
+
             if(message.channelId !== this.data.clanId) {
                 return;
             }
@@ -56,6 +58,8 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         });
 
         gamepush.channels.on('sendMessage', (message) => {
+            console.log("sending message: " + message.text + message.tags[0]);
+
             if(message.channelId !== this.data.clanId) {
                 return;
             }
@@ -68,7 +72,23 @@ export class UIMyClanFrame extends UIPopupFrameBase {
 
         gamepush.channels.on('fetchJoinRequests', (result) => {
             this.refreshJoinRequests(result.items);
-          });
+        });
+
+        gamepush.channels.on('event:rejectJoinRequest', (joinRequest) => {
+            if(this.data.clanId !== joinRequest.channelId) {
+                return;
+            }
+            
+            this.refresh(this.data);
+        });
+
+        gamepush.channels.on('event:acceptJoinRequest', (joinRequest) => {
+            if(this.data.clanId !== joinRequest.channelId) {
+                return;
+            }
+            
+            this.refresh(this.data);
+        });
     }
 
     update(deltaTime: number) {
@@ -142,7 +162,7 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         const itemNode = instantiate(this.requestPrefab);
         this.itemsLayout.addChild(itemNode);
             
-        let item = itemNode.getComponent("UIClansRequestItem");
+        let item = itemNode.getComponent("UIClanRequestItem");
             
         this.requests.push(item);
     }

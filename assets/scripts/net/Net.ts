@@ -233,6 +233,14 @@ export class Net extends Component {
         }
     }
 
+    async tryToCancelJoinClanChannel(id: number) {
+        try {
+            const response = await gamepush.channels.cancelJoin({ channelId: id });
+        } catch (error) {
+            console.log('Error tryToCancelJoinClanChannel:', error);
+        }
+    }
+
     async tryToLeaveClanChannel(id: number) {
         try {
             const response = await gamepush.channels.leave({ channelId: id });

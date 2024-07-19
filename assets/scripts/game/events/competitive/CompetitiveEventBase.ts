@@ -120,7 +120,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         });
 
         gamepush.channels.on('deleteChannel', () => {
-            this.requestChannels();
+            Net.instance.requestEventsChannels();
         });
     }
 

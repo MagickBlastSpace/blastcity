@@ -24,6 +24,7 @@ export class UIClansCreateFrame extends UIPopupFrameBase {
 
     start() {
         this.isPrivate = false;
+        this.privacy.string = this.isPrivate ? "Private" : "Open";
 
         this.createBtn.node.on(Button.EventType.CLICK, this.onCreateBtnClick, this);
 

@@ -111,7 +111,7 @@ export class KingsCupEvent extends WeeklyContestEvent {
         });
 
         gamepush.channels.on('deleteChannel', () => {
-            this.requestChannels();
+            Net.instance.requestEventsChannels();
         });
     }
     

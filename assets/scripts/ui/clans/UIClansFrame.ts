@@ -45,6 +45,8 @@ export class UIClansFrame extends UIFrameBase {
 
         this.clanInfoPopup.node.on("join", (id) => this.join(id));
         this.clanInfoPopup.node.on("leave", (id) => this.leave(id));
+        this.clanInfoPopup.node.on("join_private", (id) => this.joinPrivate(id));
+        this.clanInfoPopup.node.on("cancel_join", (id) => this.cancelJoin(id));
 
         this.clansObserveFrame.node.on("show_info", (data) => this.showClanInfo(data));
         this.clansSearchFrame.node.on("show_info", (data) => this.showClanInfo(data));
@@ -101,6 +103,14 @@ export class UIClansFrame extends UIFrameBase {
 
     leave(id: number) {
         this.clans.leaveClan(id);
+    }
+
+    joinPrivate(id: number) {
+        this.clans.joinPrivateClan(id);
+    }
+
+    cancelJoin(id: number) {
+        this.clans.cancelJoinClan(id);
     }
 
 

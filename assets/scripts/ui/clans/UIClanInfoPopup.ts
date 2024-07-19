@@ -4,6 +4,8 @@ import { ClanData, ClanMemberData } from '../../data/ClanData';
 import { Net } from '../../net/Net';
 import { UIClanMemberItem } from './UIClanMemberItem';
 import { UIProfilePopup } from '../profile/UIProfilePopup';
+import { UserData } from '../../data/UserData';
+import { Clans } from '../../game/Clans';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClanInfoPopup')
@@ -27,8 +29,11 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
     joinBtn: Button = null;
     @property(Button)
     leaveBtn: Button = null;
+
     @property(Button)
     requestBtn: Button = null;
+    @property(Button)
+    cancelRequestBtn: Button = null;
 
     @property(Button)
     closeBtn: Button = null;
@@ -36,13 +41,18 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
     @property(UIProfilePopup)
     profilePopup: UIProfilePopup = null;
 
+    @property(Clans)
+    clans: Clans = null;
+
     private clanData: ClanData = null;
 
 
     start() {
         this.joinBtn.node.on(Button.EventType.CLICK, this.onJoinBtnClick, this);
         this.leaveBtn.node.on(Button.EventType.CLICK, this.onLeaveBtnClick, this);
-        this.requestBtn.node.on(Button.EventType.CLICK, this.onJoinBtnClick, this);
+
+        this.requestBtn.node.on(Button.EventType.CLICK, this.onJoinPrivateBtnClick, this);
+        this.cancelRequestBtn.node.on(Button.EventType.CLICK, this.onCancelJoinBtnClick, this);
 
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
     }
@@ -64,7 +74,9 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
 
         this.joinBtn.node.active = !this.isFull() && !this.clanData.isJoined && !this.clanData.isPrivate;
         this.leaveBtn.node.active = this.clanData.isJoined;
-        this.requestBtn.node.active = !this.isFull() && !this.clanData.isJoined && this.clanData.isPrivate;
+
+        this.requestBtn.node.active = !this.isFull() && !this.clanData.isJoined && this.clanData.isPrivate && !this.clans.isJoinRequested();
+        this.cancelRequestBtn.node.active = this.clanData.isPrivate && this.clans.isJoinRequested() && this.clans.getJoinRequestId() === this.clanData.clanId;
     
         try {
             const result = await Net.instance.fetchScoreLeaderboardData("clan", "clan_" + this.clanData.clanId);
@@ -108,6 +120,8 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
                 this.items[i].node.active = true;
                 this.items[i].init(i + 1, members[i]);
             }
+
+            this.enableKick(this.isLeader());
     
         } catch (error) {
             console.log('Error fetching clan leaderboard data:', error);
@@ -130,6 +144,18 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
         this.node.emit("join", this.clanData.clanId);
     }
 
+    onJoinPrivateBtnClick() {
+        if(this.isFull()) {
+            return;
+        }
+
+        this.node.emit("join_private", this.clanData.clanId);
+    }
+
+    onCancelJoinBtnClick() {
+        this.node.emit("cancel_join", this.clanData.clanId);
+    }
+
     onLeaveBtnClick() {
         this.node.emit("leave", this.clanData.clanId);
 
@@ -147,6 +173,10 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
     }
 
 
+    isLeader(): boolean {
+        return this.clanData.ownerId === UserData.instance.getPlayerId();
+    }
+    
     enableKick(isEnabled: boolean) {
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].enableKick(isEnabled);
@@ -154,6 +184,10 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
     }
 
     kick(playerId: number) {
+        if(playerId === UserData.instance.getPlayerId()) {
+            return;
+        }
+        
         Net.instance.kickClanMember(playerId, this.clanData.clanId);
 
         this.refresh();
