@@ -36,6 +36,8 @@ export class UserData extends Component {
     private energyAskTimestamp: number = 0;
     private energyAskDelay_Hours: number = 4;
 
+    private friendsList: number[] = [];
+
     public static instance: UserData = null;
 
 
@@ -392,6 +394,25 @@ export class UserData extends Component {
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
         return "Cooldown: " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+
+    addFriend(playerId: number) {
+        if(this.friendsList.includes(playerId)) {
+            return;
+        }
+
+        this.friendsList.push(playerId);
+    }
+
+    removeFriend(playerId: number) {
+        if(this.friendsList.includes(playerId)) {
+            this.friendsList.filter(num => num !== playerId);
+        }
+    }
+
+    isFriend(playerId: number) {
+        return this.friendsList.includes(playerId);
     }
 }
 

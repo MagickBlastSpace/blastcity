@@ -1,6 +1,9 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Label, Button } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { Net } from '../../net/Net';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIProfilePopup')
@@ -64,6 +67,13 @@ export class UIProfilePopup extends UIPopupFrameBase {
         }
     }
 
+    refreshLocalData() {
+        let isFriend = UserData.instance.isFriend(this.playerId);
+
+        this.addToFriendsBtn.node.active = !isFriend;
+        this.removeFromFriendsBtn.node.active = isFriend;
+    }
+
 
     show() {
         super.show();
@@ -72,11 +82,25 @@ export class UIProfilePopup extends UIPopupFrameBase {
     }
 
 
-    onAddBtnClick() {}
+    onAddBtnClick() {
+        if(this.playerId !== 0) {
+            UserData.instance.addFriend(this.playerId);
+        }
+        
+        this.refreshLocalData();
+    }
 
-    onRemoveBtnClick() {}
+    onRemoveBtnClick() {
+        UserData.instance.removeFriend(this.playerId);
 
-    onOpenChatBtnClick() {}
+        this.refreshLocalData();
+    }
+
+    onOpenChatBtnClick() {
+        gamepush.channels.openPersonalChat({
+            playerId: this.playerId,
+        });
+    }
 
 
     onCloseBtnClick() {
