@@ -46,7 +46,9 @@ export class SaveData extends Component {
             cannon: UserData.instance.getResource("cannon"),
             jester: UserData.instance.getResource("jester"),
 
-            energyAskTimestamp: UserData.instance.getEnergyAskTimestamp()
+            energyAskTimestamp: UserData.instance.getEnergyAskTimestamp(),
+
+            friendsList: UserData.instance.getFriendsList()
         };
         
         cc.sys.localStorage.setItem('userData', JSON.stringify(userData));
@@ -69,6 +71,8 @@ export class SaveData extends Component {
             UserData.instance.setResource("jester", userData.jester);
             
             UserData.instance.setEnergyAskTimestamp(userData.energyAskTimestamp);
+
+            UserData.instance.setFriendsList(userData.friendsList);
         } else {
             //console.log("No saved user data found");
             UserData.instance.setProgress(0);

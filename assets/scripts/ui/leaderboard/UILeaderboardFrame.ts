@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Label } from 'cc';
 import { UIEventWeeklyContest } from '../events/WeeklyContest/UIEventWeeklyContest';
 import { UIFrameBase } from '../UIFrameBase';
 import { UITab } from '../main/UITab';
+import { UIProfilePopup } from '../profile/UIProfilePopup';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardFrame')
@@ -19,10 +20,17 @@ export class UILeaderboardFrame extends UIFrameBase {
     @property([UIFrameBase])
     frames: UIFrameBase = [];
 
+    @property(UIProfilePopup)
+    profilePopup: UIProfilePopup = null;
+
 
     start() {
         for(let i = 0; i < this.tabs.length; i++) {
             this.tabs[i].node.on("tab", (index) => this.showFrame(index));
+        }
+
+        for(let i = 0; i < this.frames.length; i++) {
+            this.frames[i].node.on("profile", (data) => this.showProfile(data));
         }
     }
 
@@ -68,6 +76,13 @@ export class UILeaderboardFrame extends UIFrameBase {
         for(let i = 0; i < this.frames.length; i++) {
             this.frames[i].hideClean();
         }
+    }
+
+
+    showProfile(playerId: number) {
+        this.profilePopup.init(playerId);
+
+        this.profilePopup.show();
     }
 }
 

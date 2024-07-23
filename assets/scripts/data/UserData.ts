@@ -57,6 +57,7 @@ export class UserData extends Component {
         this.EndlessLives_EndTime = new Date(now);
         this.Modifier_x2_EndTime = new Date(now);
         this.energyAskTimestamp = 0;
+        this.friendsList = [];
 
         SaveData.instance.loadUserData();
 
@@ -398,6 +399,10 @@ export class UserData extends Component {
 
 
     addFriend(playerId: number) {
+        if(this.friendsList === undefined || this.friendsList === null) {
+            this.friendsList = [];
+        }
+
         if(this.friendsList.includes(playerId)) {
             return;
         }
@@ -412,7 +417,21 @@ export class UserData extends Component {
     }
 
     isFriend(playerId: number) {
+        if(this.friendsList === undefined || this.friendsList === null) {
+            return false;
+        }
         return this.friendsList.includes(playerId);
+    }
+
+    getFriendsList(): number[] {
+        if(this.friendsList === undefined || this.friendsList === null) {
+            return [];
+        }
+        return this.friendsList;
+    }
+
+    setFriendsList(list: number[]) {
+        this.friendsList = list;
     }
 }
 

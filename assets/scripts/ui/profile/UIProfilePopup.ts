@@ -47,9 +47,15 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.clanName.string = "";
         this.score.string = "";
 
+        this.addToFriendsBtn.node.active = false;
+        this.removeFromFriendsBtn.node.active = false;
+        this.openChatBtn.node.active = false;
+
         if(!this.playerId || this.playerId === undefined || this.playerId === 0) {
             return;
         }
+
+        this.refreshLocalData();
     
         try {
             let ids = [this.playerId];
@@ -69,9 +75,11 @@ export class UIProfilePopup extends UIPopupFrameBase {
 
     refreshLocalData() {
         let isFriend = UserData.instance.isFriend(this.playerId);
+        let isMe = this.playerId === UserData.instance.getPlayerId();
 
-        this.addToFriendsBtn.node.active = !isFriend;
-        this.removeFromFriendsBtn.node.active = isFriend;
+        this.addToFriendsBtn.node.active = !isFriend && !isMe;
+        this.removeFromFriendsBtn.node.active = isFriend && !isMe;
+        this.openChatBtn.node.active = !isMe;
     }
 
 

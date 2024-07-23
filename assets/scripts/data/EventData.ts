@@ -102,5 +102,8 @@ export class PlayerEventData {
 
     @property
     playerId = 0;
+
+    @property
+    clanName = "";
 }
 
