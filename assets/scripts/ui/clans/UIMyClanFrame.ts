@@ -57,19 +57,6 @@ export class UIMyClanFrame extends UIPopupFrameBase {
             }
         });
 
-        gamepush.channels.on('sendMessage', (message) => {
-            console.log("sending message: " + message.text + message.tags[0]);
-
-            if(message.channelId !== this.data.clanId) {
-                return;
-            }
-
-            if(message.tags.includes("ask_for_energy")) {
-                this.spawnAskForEnergyItem(message);
-            }
-        });
-
-
         gamepush.channels.on('fetchJoinRequests', (result) => {
             this.refreshJoinRequests(result.items);
         });
@@ -83,6 +70,22 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         });
 
         gamepush.channels.on('event:acceptJoinRequest', (joinRequest) => {
+            if(this.data.clanId !== joinRequest.channelId) {
+                return;
+            }
+            
+            this.refresh(this.data);
+        });
+
+        gamepush.channels.on('event:join', (member) => {
+            if(this.data.clanId !== member.channelId) {
+                return;
+            }
+            
+            this.refresh(this.data);
+        });
+
+        gamepush.channels.on('event:cancelJoin', (joinRequest) => {
             if(this.data.clanId !== joinRequest.channelId) {
                 return;
             }

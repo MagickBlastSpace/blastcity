@@ -65,14 +65,13 @@ export class Clans extends Component {
         gamepush.channels.on('join', () => {
             this.refresh();
         });
-        
+
+        gamepush.channels.on('kick', () => {
+            this.refresh();
+        });
+
         gamepush.channels.on('event:leave', (memberLeave) => {
-            if(this.playerClanId === memberLeave.channelId && UserData.instance.getPlayerId() === memberLeave.playerId) {
-                this.leaveClan(memberLeave.channelId);
-            }
-            else if(this.playerClanId === memberLeave.channelId) {
-                this.refresh();
-            }
+            this.refresh();
         });
 
         gamepush.channels.on('event:join', (member) => {
@@ -80,27 +79,6 @@ export class Clans extends Component {
                 this.refresh();
             }
         });
-
-        /*gamepush.channels.on('event:joinRequest', (joinRequest) => {
-            console.log("event join request");
-            if(this.isJoinRequested()) {
-                return;
-            }
-
-            if(UserData.instance.getPlayerId() !== joinRequest.playerId) {
-                return;
-            }
-            
-            this.joinRequestId = joinRequest.channelId;
-        });
-
-        gamepush.channels.on('event:cancelJoin', (joinRequest) => {
-            if(UserData.instance.getPlayerId() !== joinRequest.playerId) {
-                return;
-            }
-
-            this.joinRequestId = 0;
-        });*/
 
         gamepush.channels.on('event:rejectJoinRequest', (joinRequest) => {
             if(UserData.instance.getPlayerId() !== joinRequest.playerId) {

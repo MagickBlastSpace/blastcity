@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Prefab, instantiate, Label, Button } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { ClanData, ClanMemberData } from '../../data/ClanData';
@@ -55,6 +57,27 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
         this.cancelRequestBtn.node.on(Button.EventType.CLICK, this.onCancelJoinBtnClick, this);
 
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        gamepush.channels.on('fetchMembers', (result) => {
+            
+            let totalScore = 0;
+            let members = [];
+    
+            for(let i = 0; i < result.items.length; i++) {
+                let player = new ClanMemberData();
+                player.name = result.items[i].state.name;
+                player.score = result.items[i].state.score;
+                player.playerId = result.items[i].id;
+    
+                members.push(player);
+
+                totalScore += result.items[i].state.score;
+            }
+
+            this.score.string = totalScore;
+
+            this.refreshMembers(members);
+          });
     }
 
 
@@ -62,12 +85,10 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
         this.clanData = data;
     }
     
-    async refresh() {
+    refresh() {
         if(!this.clanData || this.clanData === undefined) {
             return;
         }
-
-        let members = [];
 
         this.clanName.string = this.clanData.clanName;
         this.membersCount.string = this.clanData.membersCount + "/" + this.clanData.capacity;
@@ -77,55 +98,34 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
 
         this.requestBtn.node.active = !this.isFull() && !this.clanData.isJoined && this.clanData.isPrivate && !this.clans.isJoinRequested();
         this.cancelRequestBtn.node.active = this.clanData.isPrivate && this.clans.isJoinRequested() && this.clans.getJoinRequestId() === this.clanData.clanId;
-    
-        try {
-            const result = await Net.instance.fetchScoreLeaderboardData("clan", "clan_" + this.clanData.clanId);
-            const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
 
-            let totalScore = 0;
-    
-            for(let i = 0; i < players.length; i++) {
-                if(players[i].score > 0) {
-                    let player = new ClanMemberData();
-                    player.name = players[i].name;
-                    player.score = players[i].score;
-                    player.playerId = players[i].id;
-    
-                    members.push(player);
+        Net.instance.fetchMembersOfChannel(this.clanData.clanId);
+    }
 
-                    totalScore += players[i].score;
-                }
-            }
-
-            this.score.string = totalScore;
-    
-            for(let i = 0; i < this.items.length; i++) {
-                this.items[i].node.active = false;
-            }
-            
-            for(let i = 0; i < members.length; i++) {
-                if(i >= this.items.length) {
-                    const itemNode = instantiate(this.itemPrefab);
-
-                    itemNode.on("kick", (data) => this.kick(data));
-                    itemNode.on("profile", (data) => this.showProfile(data));
-
-                    this.itemsLayout.addChild(itemNode);
-            
-                    let item = itemNode.getComponent("UIClanMemberItem");
-            
-                    this.items.push(item);
-                }
-
-                this.items[i].node.active = true;
-                this.items[i].init(i + 1, members[i]);
-            }
-
-            this.enableKick(this.isLeader());
-    
-        } catch (error) {
-            console.log('Error fetching clan leaderboard data:', error);
+    refreshMembers(members: ClanMemberData[]) {
+        for(let i = 0; i < this.items.length; i++) {
+            this.items[i].node.active = false;
         }
+        
+        for(let i = 0; i < members.length; i++) {
+            if(i >= this.items.length) {
+                const itemNode = instantiate(this.itemPrefab);
+
+                itemNode.on("kick", (data) => this.kick(data));
+                itemNode.on("profile", (data) => this.showProfile(data));
+
+                this.itemsLayout.addChild(itemNode);
+        
+                let item = itemNode.getComponent("UIClanMemberItem");
+        
+                this.items.push(item);
+            }
+
+            this.items[i].node.active = true;
+            this.items[i].init(i + 1, members[i]);
+        }
+
+        this.enableKick(this.isLeader());
     }
 
 
@@ -187,7 +187,7 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
         if(playerId === UserData.instance.getPlayerId()) {
             return;
         }
-        
+
         Net.instance.kickClanMember(playerId, this.clanData.clanId);
 
         this.refresh();
