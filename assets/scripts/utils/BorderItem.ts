@@ -5,22 +5,13 @@ const { ccclass, property } = _decorator;
 export class BorderItem extends Component {
 
     @property(Node)
-    lineUpperLeft: Node | null = null;
+    lineUpper: Node | null = null;
     @property(Node)
-    lineBottomLeft: Node | null = null;
+    lineBottom: Node | null = null;
     @property(Node)
-    lineUpperRight: Node | null = null;
+    lineRight: Node | null = null;
     @property(Node)
-    lineBottomRight: Node | null = null;
-
-    @property(Node)
-    lineLeftUpper: Node | null = null;
-    @property(Node)
-    lineLeftBottom: Node | null = null;
-    @property(Node)
-    lineRightUpper: Node | null = null;
-    @property(Node)
-    lineRightBottom: Node | null = null;
+    lineLeft: Node | null = null;
 
     @property(Node)
     cornerUpperLeft: Node | null = null;
@@ -30,6 +21,15 @@ export class BorderItem extends Component {
     cornerBottomLeft: Node | null = null;
     @property(Node)
     cornerBottomRight: Node | null = null;
+
+    @property(Node)
+    cornerUpperLeft_Outside: Node | null = null;
+    @property(Node)
+    cornerUpperRight_Outside: Node | null = null;
+    @property(Node)
+    cornerBottomLeft_Outside: Node | null = null;
+    @property(Node)
+    cornerBottomRight_Outside: Node | null = null;
 
     @property
     tileSpacing: number = 0;
@@ -42,64 +42,32 @@ export class BorderItem extends Component {
     tileSize: number = 165;
 
 
-    init(row: number, col: number) {
+    init(row: number, col: number, direction: boolean[]) {
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
         this.node.setPosition(posX, posY);
-    }
-
-    /*init(row: number, col: number, direction: boolean[]) {
-        let posX = row * (this.tileSize + this.tileSpacing) + this.xOffset;
-        let posY = col * (this.tileSize + this.tileSpacing) + this.yOffset;
-
-        this.node.setPosition(posX, posY);
 
         this.renderBorderline(direction);
-    }*/
+    }
     
-    renderBorderline(direction: boolean[]) { //upper right bottom left
+    renderBorderline(direction: boolean[]) { //0-upper, 1-right, 2-bottom, 3-left, 4-upper_right, 5-bottom_right, 6-upper_left, 7-bottom_left
         this.resetAll();
 
-        if(direction[0] && direction[1]) {
-            this.cornerUpperRight.active = true;
-        }
-        if(direction[1] && direction[2]) {
-            this.cornerBottomRight.active = true;
-        }
-        if(direction[2] && direction[3]) {
-            this.cornerBottomLeft.active = true;
-        }
-        if(direction[3] && direction[0]) {
-            this.cornerUpperLeft.active = true;
-        }
+        this.cornerUpperRight.active = direction[0] && direction[1];
+        this.cornerBottomRight.active = direction[1] && direction[2];
+        this.cornerBottomLeft.active = direction[2] && direction[3];
+        this.cornerUpperLeft.active = direction[3] && direction[0];
 
+        this.lineUpper.active = direction[0];
+        this.lineBottom.active = direction[2];
+        this.lineLeft.active = direction[3] && !direction[6] && !direction[7];
+        this.lineRight.active = direction[1] && !direction[4] && !direction[5];
 
-        if(direction[0] && !direction[1]) {
-            this.lineUpperRight.active = true;
-        }
-        if(direction[0] && !direction[3]) {
-            this.lineUpperLeft.active = true;
-        }
-        if(direction[2] && !direction[1]) {
-            this.lineBottomRight.active = true;
-        }
-        if(direction[2] && !direction[3]) {
-            this.lineBottomLeft.active = true;
-        }
-
-        if(direction[1] && !direction[0]) {
-            this.lineRightUpper.active = true;
-        }
-        if(direction[1] && !direction[2]) {
-            this.lineRightBottom.active = true;
-        }
-        if(direction[3] && !direction[0]) {
-            this.lineLeftUpper.active = true;
-        }
-        if(direction[3] && !direction[2]) {
-            this.lineLeftBottom.active = true;
-        }
+        this.cornerUpperRight_Outside.active = direction[4];
+        this.cornerBottomRight_Outside.active = direction[5];
+        this.cornerBottomLeft_Outside.active = direction[7];
+        this.cornerUpperLeft_Outside.active = direction[6];
     }
 
 
@@ -109,15 +77,15 @@ export class BorderItem extends Component {
         this.cornerBottomLeft.active = false;
         this.cornerUpperLeft.active = false;
 
-        this.lineUpperRight.active = false;
-        this.lineUpperLeft.active = false;
-        this.lineBottomRight.active = false;
-        this.lineBottomLeft.active = false;
+        this.lineUpper.active = false;
+        this.lineBottom.active = false;
+        this.lineLeft.active = false;
+        this.lineRight.active = false;
 
-        this.lineRightUpper.active = false;
-        this.lineRightBottom.active = false;
-        this.lineLeftUpper.active = false;
-        this.lineLeftBottom.active = false;
+        this.cornerUpperRight_Outside.active = false;
+        this.cornerBottomRight_Outside.active = false;
+        this.cornerBottomLeft_Outside.active = false;
+        this.cornerUpperLeft_Outside.active = false;
     }
 }
 
