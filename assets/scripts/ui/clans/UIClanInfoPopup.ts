@@ -77,7 +77,7 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
             this.score.string = totalScore;
 
             this.refreshMembers(members);
-          });
+        });
     }
 
 
@@ -125,7 +125,7 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
             this.items[i].init(i + 1, members[i]);
         }
 
-        this.enableKick(this.isLeader());
+        //this.enableKick(this.isLeader());
     }
 
 

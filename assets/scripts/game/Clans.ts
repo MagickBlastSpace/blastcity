@@ -177,7 +177,7 @@ export class Clans extends Component {
     cancelJoinClan(clanId: number) {
         Net.instance.tryToCancelJoinClanChannel(clanId);
 
-        this.leaveClan(clanId);
+        //this.leaveClan(clanId);
 
         this.joinRequestId = 0;
     }

@@ -273,16 +273,29 @@ export class Net extends Component {
         }
     }
 
-    acceptClanJoinRequests(player: number, clan: number) {
-        gamepush.channels.acceptJoinRequest({ channelId: clan, playerId: player });
+    async acceptClanJoinRequests(player: number, clan: number) {
+        try {
+            const response = await gamepush.channels.acceptJoinRequest({ channelId: clan, playerId: player });
+        } catch (error) {
+            console.log('Error accepting request in clan channel:', error);
+        }
     }
 
-    rejectClanJoinRequests(player: number, clan: number) {
-        gamepush.channels.rejectJoinRequest({ channelId: clan, playerId: player });
+    async rejectClanJoinRequests(player: number, clan: number) {
+        try {
+            const response = await gamepush.channels.rejectJoinRequest({ channelId: clan, playerId: player });
+        } catch (error) {
+            console.log('Error rejecting request in clan channel:', error);
+        }
     }
 
-    kickClanMember(player: number, clan: number) {
-        gamepush.channels.kick({ channelId: clan, playerId: player });
+    async kickClanMember(player: number, clan: number) {
+        console.log("kick player " + player + " from channel: " + clan);
+        try {
+            const response = await gamepush.channels.kick({ channelId: clan, playerId: player });
+        } catch (error) {
+            console.log('Error kicking player from clan channel:', error);
+        }
     }
 }
 

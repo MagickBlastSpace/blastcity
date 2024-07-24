@@ -62,34 +62,18 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         });
 
         gamepush.channels.on('event:rejectJoinRequest', (joinRequest) => {
-            if(this.data.clanId !== joinRequest.channelId) {
-                return;
-            }
-            
             this.refresh(this.data);
         });
 
         gamepush.channels.on('event:acceptJoinRequest', (joinRequest) => {
-            if(this.data.clanId !== joinRequest.channelId) {
-                return;
-            }
-            
             this.refresh(this.data);
         });
 
         gamepush.channels.on('event:join', (member) => {
-            if(this.data.clanId !== member.channelId) {
-                return;
-            }
-            
             this.refresh(this.data);
         });
 
         gamepush.channels.on('event:cancelJoin', (joinRequest) => {
-            if(this.data.clanId !== joinRequest.channelId) {
-                return;
-            }
-            
             this.refresh(this.data);
         });
     }
