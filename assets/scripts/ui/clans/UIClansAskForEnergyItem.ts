@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Label, Button } from 'cc';
 import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
@@ -28,11 +30,18 @@ export class UIClansAskForEnergyItem extends Component {
             this.nameLabel.string = message.player.name + " asked for help";
             this.helpButton.node.active = true;
         }
+
+        this.playerId = message.authorId;
+        this.playerName = message.player.name;
     }
 
     
     help() {
-        //TBD when Energy System will be done
+        gamepush.channels.sendPersonalMessage({
+            playerId: this.playerId,
+            text: UserData.instance.getPlayerName() + " gives you 1 energy!",
+            tags: ['energy'],
+        });
 
         this.node.destroy();
     }

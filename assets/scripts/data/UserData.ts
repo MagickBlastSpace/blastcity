@@ -76,6 +76,12 @@ export class UserData extends Component {
         this.playerId = gamepush.player.id;
 
         console.log("Logged as: " + this.playerName);
+
+        gamepush.channels.on('event:message', (message) => {
+            if(message.target === "PERSONAL" && message.tags.includes("energy")) {
+                this.addResource("energy", 1);
+            }
+        });
     }
 
 
@@ -159,6 +165,12 @@ export class UserData extends Component {
                 timeDiff = this.Modifier_x2_EndTime instanceof Date ? this.Modifier_x2_EndTime.getTime() - now.getTime() : -1;
 
                 this.Modifier_x2_EndTime = timeDiff < 0 ? new Date(now.getTime() + value * 60 * 1000) : new Date(this.Modifier_x2_EndTime.getTime() + value * 60 * 1000);
+                break;
+
+            case "energy":
+                gamepush.player.add('energy', value);
+                gamepush.player.sync();
+
                 break;
         }
 
