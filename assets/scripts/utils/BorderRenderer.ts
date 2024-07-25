@@ -50,98 +50,108 @@ export class BorderRenderer extends Component {
         let startRow = b;
         let startCol = l;
 
-        console.log("Setting borders for field: up-" + u + "; right-" + r + "; bot-" + b + "; left-" + l);
+        //console.log("Setting borders for field: up-" + u + "; right-" + r + "; bot-" + b + "; left-" + l);
 
         for (let row = startRow; row < numRows; row++) {
             for (let col = startCol; col < numCols; col++) {
                 let choosenTile = field[row][col];
+
+                let isBorderItem = false;
+                
                 if(choosenTile !== null) {
                     let comp = choosenTile.getComponent("TileBase");
                     if(!comp.isEmptyTile()) {
-                        let upper = row === numRows - 1;
-                        let bottom = row === startRow;
-                        let left = col === startCol;
-                        let right = col === numCols - 1;
-
-                        let upper_right = false;
-                        let bottom_right = false;
-                        let upper_left = false;
-                        let bottom_left = false;
-
-                        if(!upper) {
-                            let tile = field[row + 1][col];
-                            if(tile !== null) {
-                                let comp = tile.getComponent("TileBase");
-                                upper = comp.isEmptyTile();
-                            }
-                        }
-                        if(!bottom) {
-                            let tile = field[row - 1][col];
-                            if(tile !== null) {
-                                let comp = tile.getComponent("TileBase");
-                                bottom = comp.isEmptyTile();
-                            }
-                        }
-                        if(!right) {
-                            let tile = field[row][col + 1];
-                            if(tile !== null) {
-                                let comp = tile.getComponent("TileBase");
-                                right = comp.isEmptyTile();
-                            }
-                        }
-                        if(!left) {
-                            let tile = field[row][col - 1];
-                            if(tile !== null) {
-                                let comp = tile.getComponent("TileBase");
-                                left = comp.isEmptyTile();
-                            }
-                        }
-                    
-                        if(right && row < numRows - 1 && col < numCols - 1) {
-                            let tile = field[row + 1][col + 1];
-                            if(tile !== null) {
-                                let comp = tile.getComponent("TileBase");
-                                upper_right = !comp.isEmptyTile();
-                            }
-                        }
-                        if(right && row > startRow && col < numCols - 1) {
-                            let tile = field[row - 1][col + 1];
-                            if(tile !== null) {
-                                let comp = tile.getComponent("TileBase");
-                                bottom_right = !comp.isEmptyTile();
-                            }
-                        }
-                        if(left && row < numRows - 1 && col > startCol) {
-                            let tile = field[row + 1][col - 1];
-                            if(tile !== null) {
-                                let comp = tile.getComponent("TileBase");
-                                upper_left = !comp.isEmptyTile();
-                            }
-                        }
-                        if(left && row > startRow && col > startCol) {
-                            let tile = field[row - 1][col - 1];
-                            if(tile !== null) {
-                                let comp = tile.getComponent("TileBase");
-                                bottom_left = !comp.isEmptyTile();
-                            }
-                        }
-                    
-                        let directions = [];
-                    
-                        directions.push(upper);
-                        directions.push(right);
-                        directions.push(bottom);
-                        directions.push(left);
-                    
-                        directions.push(upper_right);
-                        directions.push(bottom_right);
-                        directions.push(upper_left);
-                        directions.push(bottom_left);
-
-                        console.log("Spawning item at row-" + row + " col-" + col + ": up-" + upper + "; right-" + right + "; bot-" + bottom + "; left-" + left);
-                    
-                        this.spawnItem(row, col, directions);
+                        isBorderItem = true;
                     }
+                }
+                else {
+                    isBorderItem = true;
+                }
+
+                if(isBorderItem) {
+                    let upper = row === numRows - 1;
+                    let bottom = row === startRow;
+                    let left = col === startCol;
+                    let right = col === numCols - 1;
+
+                    let upper_right = false;
+                    let bottom_right = false;
+                    let upper_left = false;
+                    let bottom_left = false;
+
+                    if(!upper) {
+                        let tile = field[row + 1][col];
+                        if(tile !== null) {
+                            let comp = tile.getComponent("TileBase");
+                            upper = comp.isEmptyTile();
+                        }
+                    }
+                    if(!bottom) {
+                        let tile = field[row - 1][col];
+                        if(tile !== null) {
+                            let comp = tile.getComponent("TileBase");
+                            bottom = comp.isEmptyTile();
+                        }
+                    }
+                    if(!right) {
+                        let tile = field[row][col + 1];
+                        if(tile !== null) {
+                            let comp = tile.getComponent("TileBase");
+                            right = comp.isEmptyTile();
+                        }
+                    }
+                    if(!left) {
+                        let tile = field[row][col - 1];
+                        if(tile !== null) {
+                            let comp = tile.getComponent("TileBase");
+                            left = comp.isEmptyTile();
+                        }
+                    }
+                    
+                    if(bottom && row > startRow && col > startCol) {
+                        let tile = field[row - 1][col - 1];
+                        if(tile !== null) {
+                            let comp = tile.getComponent("TileBase");
+                            upper_right = !comp.isEmptyTile();
+                        }
+                    }
+                    if(right && row > startRow && col < numCols - 1) {
+                        let tile = field[row - 1][col + 1];
+                        if(tile !== null) {
+                            let comp = tile.getComponent("TileBase");
+                            bottom_right = !comp.isEmptyTile();
+                        }
+                    }
+                    if(bottom && row > startRow && col < numCols - 1) {
+                        let tile = field[row - 1][col + 1];
+                        if(tile !== null) {
+                            let comp = tile.getComponent("TileBase");
+                            upper_left = !comp.isEmptyTile();
+                        }
+                    }
+                    if(left && row > startRow && col > startCol) {
+                        let tile = field[row - 1][col - 1];
+                        if(tile !== null) {
+                            let comp = tile.getComponent("TileBase");
+                            bottom_left = !comp.isEmptyTile();
+                        }
+                    }
+                    
+                    let directions = [];
+                    
+                    directions.push(upper);
+                    directions.push(right);
+                    directions.push(bottom);
+                    directions.push(left);
+                    
+                    directions.push(upper_right);
+                    directions.push(bottom_right);
+                    directions.push(upper_left);
+                    directions.push(bottom_left);
+
+                    //console.log("Spawning item at row-" + row + " col-" + col + ": up-" + upper + "; right-" + right + "; bot-" + bottom + "; left-" + left);
+                    
+                    this.spawnItem(row, col, directions);
                 }
             }
         }

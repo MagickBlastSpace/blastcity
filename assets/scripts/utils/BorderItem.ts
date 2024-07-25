@@ -61,8 +61,8 @@ export class BorderItem extends Component {
 
         this.lineUpper.active = direction[0];
         this.lineBottom.active = direction[2];
-        this.lineLeft.active = direction[3] && !direction[6] && !direction[7];
-        this.lineRight.active = direction[1] && !direction[4] && !direction[5];
+        this.lineLeft.active = direction[3] && !direction[7];
+        this.lineRight.active = direction[1] && !direction[5];
 
         this.cornerUpperRight_Outside.active = direction[4];
         this.cornerBottomRight_Outside.active = direction[5];
