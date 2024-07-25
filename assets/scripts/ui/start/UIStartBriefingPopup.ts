@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { Field } from '../../game/Field';
@@ -42,6 +44,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
     @property(UIFrameBase)
     butlersGiftInfoPopup: UIFrameBase = null;
+    @property(UIFrameBase)
+    refillEnergyPopup: UIFrameBase = null;
 
 
     start() {
@@ -88,6 +92,13 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
 
     onPlayBtnClick() {
+        if (gamepush.player.get('energy') <= 0) {
+            this.refillEnergyPopup.show();
+            return;
+        }
+    
+        UserData.instance.subResource("energy", 1);
+
         this.hide();
         
         this.node.emit("play");

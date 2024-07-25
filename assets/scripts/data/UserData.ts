@@ -211,6 +211,12 @@ export class UserData extends Component {
                     this.Jesters -= value;
                 }
                 break;
+            
+            case "energy":
+                gamepush.player.add('energy', -1);
+                gamepush.player.sync();
+                
+                break;
         }
 
         this.node.emit("resources_update", this.Gold);
