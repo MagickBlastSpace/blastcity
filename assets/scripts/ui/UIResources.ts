@@ -15,7 +15,12 @@ export class UIResources extends Component {
     @property(Label)
     energyTimer: Label = null;
 
-    private lastEnergySeconds: number = 0;
+    @property(Label)
+    endlessLivesTimer: Label = null;
+    @property(Node)
+    endlessLivesPanel: Node = null;
+
+    //private lastEnergySeconds: number = 0;
 
 
     start() {
@@ -25,6 +30,16 @@ export class UIResources extends Component {
     }
 
     update(deltaTime: number) {
+        this.endlessLivesTimer.string = UserData.instance.getRemainingTimeString("endless_lives");
+
+        if(this.endlessLivesTimer.string !== "") {
+            this.endlessLivesPanel.active = true;
+
+            return;
+        }
+
+        this.endlessLivesPanel.active = false;
+        
         let energySeconds = gamepush.player.get('energy:secondsLeft');
 
         this.energyTimer.string = energySeconds <= 0 ? "" : "+1 in: " + this.getSecondsLeftHuman();

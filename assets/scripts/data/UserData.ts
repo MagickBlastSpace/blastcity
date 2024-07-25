@@ -215,7 +215,7 @@ export class UserData extends Component {
             case "energy":
                 gamepush.player.add('energy', -1);
                 gamepush.player.sync();
-                
+
                 break;
         }
 
@@ -346,6 +346,14 @@ export class UserData extends Component {
 
     isTemproraryBonusActive(): boolean {
         if(this.getRemainingTimeString("bomb") !== "" || this.getRemainingTimeString("rocket") !== "" || this.getRemainingTimeString("discoball") !== "") {
+            return true;
+        }
+
+        return false;
+    }
+
+    isEndlessLivesActive(): boolean {
+        if(this.getRemainingTimeString("endless_lives") !== "") {
             return true;
         }
 

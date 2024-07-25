@@ -92,13 +92,15 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
 
     onPlayBtnClick() {
-        if (gamepush.player.get('energy') <= 0) {
-            this.refillEnergyPopup.show();
-            return;
+        if(!UserData.instance.isEndlessLivesActive()) {
+            if (gamepush.player.get('energy') <= 0) {
+                this.refillEnergyPopup.show();
+                return;
+            }
+        
+            UserData.instance.subResource("energy", 1);
         }
-    
-        UserData.instance.subResource("energy", 1);
-
+        
         this.hide();
         
         this.node.emit("play");
