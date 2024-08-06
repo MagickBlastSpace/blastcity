@@ -9,24 +9,33 @@ export class Billboard extends SpecTileBase {
     isActive: Node = null;
 
     @property(Node)
-    midLeftBorder: Node = null;
+    lineUpper_left: Node | null = null;
     @property(Node)
-    midRightBorder: Node = null;
+    lineUpper_right: Node | null = null;
 
     @property(Node)
-    midBottomBorder: Node = null;
+    lineBottom_left: Node | null = null;
     @property(Node)
-    midTopBorder: Node = null;
+    lineBottom_right: Node | null = null;
 
     @property(Node)
-    leftBorder: Node = null;
+    lineRight_upper: Node | null = null;
     @property(Node)
-    rightBorder: Node = null;
+    lineRight_bottom: Node | null = null;
 
     @property(Node)
-    topBorder: Node = null;
+    lineLeft_upper: Node | null = null;
     @property(Node)
-    bottomBorder: Node = null;
+    lineLeft_bottom: Node | null = null;
+
+    @property(Node)
+    cornerUpperLeft: Node | null = null;
+    @property(Node)
+    cornerUpperRight: Node | null = null;
+    @property(Node)
+    cornerBottomLeft: Node | null = null;
+    @property(Node)
+    cornerBottomRight: Node | null = null;
 
     private isBorderRendered: boolean = false;
 
@@ -106,202 +115,94 @@ export class Billboard extends SpecTileBase {
             return;
         }
 
-        let tiles = this.getGroupedTiles(field);
+        let numRows = field.length;
+        let numCols = field.length > 0 ? field[0].length : 0;
 
-        let billboardType = this.getBillboardType(tiles);
-        if(billboardType === "horizontal") {
-            for(let i = 0; i < tiles.length; i++) {
-                tiles[i].getComponent("Billboard").renderHorizontal();
-            }
+        let upper = this.row === numRows - 1;
+        let bottom = this.row === 0;
+        let left = this.col === 0;
+        let right = this.col === numCols - 1;
 
-            let rightBorder = this.findRightBorder(tiles);
-            let leftBorder = this.findLeftBorder(tiles);
-
-            if(rightBorder !== null) {
-                let comp = rightBorder.getComponent("Billboard");
-                comp.renderRightBorder();
-            }
-
-            if(leftBorder !== null) {
-                let comp = leftBorder.getComponent("Billboard");
-                comp.renderLeftBorder();
+        if(!upper) {
+            let tile = field[this.row + 1][this.col];
+            if(tile !== null) {
+                let comp = tile.getComponent("TileBase");
+                upper = comp.getTileType() !== this.tileType;
             }
         }
-        else {
-            for(let i = 0; i < tiles.length; i++) {
-                tiles[i].getComponent("Billboard").renderVertical();
-            }
-
-            let topBorder = this.findTopBorder(tiles);
-            let bottomBorder = this.findBottomBorder(tiles);
-
-            if(topBorder !== null) {
-                let comp = topBorder.getComponent("Billboard");
-                comp.renderTopBorder();
-            }
-
-            if(bottomBorder !== null) {
-                let comp = bottomBorder.getComponent("Billboard");
-                comp.renderBottomBorder();
+        if(!bottom) {
+            let tile = field[this.row - 1][this.col];
+            if(tile !== null) {
+                let comp = tile.getComponent("TileBase");
+                bottom = comp.getTileType() !== this.tileType;
             }
         }
-
-        for(let i = 0; i < tiles.length; i++) {
-            if(tiles[i] !== null) {
-                let comp = tiles[i].getComponent("Billboard");
-                comp.setAsRendered();
+        if(!right) {
+            let tile = field[this.row][this.col + 1];
+            if(tile !== null) {
+                let comp = tile.getComponent("TileBase");
+                right = comp.getTileType() !== this.tileType;
             }
         }
-    }
-
-
-    renderHorizontal() {
-        this.midRightBorder.active = true;
-        this.midLeftBorder.active = true;
-
-        this.midTopBorder.active = false;
-        this.midBottomBorder.active = false;
-    }
-
-    renderVertical() {
-        this.midRightBorder.active = false;
-        this.midLeftBorder.active = false;
-
-        this.midTopBorder.active = true;
-        this.midBottomBorder.active = true;
-    }
-
-
-    renderRightBorder() {
-        this.midRightBorder.active = false;
-        this.rightBorder.active = true;
-    }
-
-    renderLeftBorder() {
-        this.midLeftBorder.active = false;
-        this.leftBorder.active = true;
-    }
-
-    renderTopBorder() {
-        this.midTopBorder.active = false;
-        this.topBorder.active = true;
-    }
-
-    renderBottomBorder() {
-        this.midBottomBorder.active = false;
-        this.bottomBorder.active = true;
-    }
-
-
-    getBillboardType(tiles: Node[]): string {
-        let tile = tiles[0].getComponent("TileBase");
-
-        let colIndex = tile.getCol();
-        let rowIndex = tile.getRow();
-
-        let isVertical = false;
-        let isHorizontal = false;
-
-        for(let i = 0; i < tiles.length; i++) {
-            let tileComp = tiles[i].getComponent("TileBase");
-
-            if(!isHorizontal) {
-                let newIndex = tileComp.getCol();
-                if(newIndex !== colIndex) {
-                    isHorizontal = true;
-                }
-            }
-            
-            if(!isVertical) {
-                let newIndex = tileComp.getRow();
-                if(newIndex !== rowIndex) {
-                    isVertical = true;
-                }
+        if(!left) {
+            let tile = field[this.row][this.col - 1];
+            if(tile !== null) {
+                let comp = tile.getComponent("TileBase");
+                left = comp.getTileType() !== this.tileType;
             }
         }
+                    
+        let directions = [];
+                    
+        directions.push(upper);
+        directions.push(right);
+        directions.push(bottom);
+        directions.push(left);
 
-        /*if(isVertical && isHorizontal) {
-            return "mixed";
-        }
-        else */if(isHorizontal) {
-            return "horizontal";
-        }
-        else if(isVertical) {
-            return "vertical";
-        }
+        this.renderBorderline(directions);
 
-        return "horizontal";
-    }
-
-
-
-    findTopBorder(tiles: Node[]): Node {
-        let tile = tiles[0];
-        let rowIndex = tile.getComponent("TileBase").getRow();
-
-        for(let i = 0; i < tiles.length; i++) {
-            let tileComp = tiles[i].getComponent("TileBase");
-            let newIndex = tileComp.getRow();
-            if(newIndex > rowIndex) {
-                rowIndex = newIndex;
-                tile = tiles[i];
-            }
-        }
-
-        return tile;
-    }
-
-    findBottomBorder(tiles: Node[]): Node {
-        let tile = tiles[0];
-        let rowIndex = tile.getComponent("TileBase").getRow();
-
-        for(let i = 0; i < tiles.length; i++) {
-            let tileComp = tiles[i].getComponent("TileBase");
-            let newIndex = tileComp.getRow();
-            if(newIndex < rowIndex) {
-                rowIndex = newIndex;
-                tile = tiles[i];
-            }
-        }
-
-        return tile;
-    }
-    
-    findRightBorder(tiles: Node[]): Node {
-        let tile = tiles[0];
-        let colIndex = tile.getComponent("TileBase").getCol();
-
-        for(let i = 0; i < tiles.length; i++) {
-            let tileComp = tiles[i].getComponent("TileBase");
-            let newIndex = tileComp.getCol();
-            if(newIndex > colIndex) {
-                colIndex = newIndex;
-                tile = tiles[i];
-            }
-        }
-
-        return tile;
-    }
-
-    findLeftBorder(tiles: Node[]): Node {
-        let tile = tiles[0];
-        let colIndex = tile.getComponent("TileBase").getCol();
-
-        for(let i = 0; i < tiles.length; i++) {
-            let tileComp = tiles[i].getComponent("TileBase");
-            let newIndex = tileComp.getCol();
-            if(newIndex < colIndex) {
-                colIndex = newIndex;
-                tile = tiles[i];
-            }
-        }
-
-        return tile;
-    }
-
-
-    setAsRendered() {
         this.isBorderRendered = true;
+    }
+
+    renderBorderline(direction: boolean[]) { //0-upper, 1-right, 2-bottom, 3-left, 4-upper_right, 5-bottom_right, 6-upper_left, 7-bottom_left
+        this.resetAll();
+
+        this.cornerUpperRight.active = direction[0] && direction[1];
+        this.cornerBottomRight.active = direction[1] && direction[2];
+        this.cornerBottomLeft.active = direction[2] && direction[3];
+        this.cornerUpperLeft.active = direction[3] && direction[0];
+
+        this.lineUpper_left.active = direction[0] && !direction[3];
+        this.lineUpper_right.active = direction[0] && !direction[1];
+
+        this.lineBottom_left.active = direction[2] && !direction[3];
+        this.lineBottom_right.active = direction[2] && !direction[1];
+
+        this.lineLeft_upper.active = direction[3] && !direction[0];
+        this.lineLeft_bottom.active = direction[3] && !direction[2];
+
+        this.lineRight_upper.active = direction[1] && !direction[0];
+        this.lineRight_bottom.active = direction[1] && !direction[2];
+    }
+
+
+    resetAll() {
+        this.cornerUpperRight.active = false;
+        this.cornerBottomRight.active = false;
+        this.cornerBottomLeft.active = false;
+        this.cornerUpperLeft.active = false;
+
+        this.lineUpper_left.active = false;
+        this.lineUpper_right.active = false;
+
+        this.lineBottom_left.active = false;
+        this.lineBottom_right.active = false;
+
+        this.lineLeft_upper.active = false;
+        this.lineLeft_bottom.active = false;
+
+        this.lineRight_upper.active = false;
+        this.lineRight_bottom.active = false;
     }
 }
 
