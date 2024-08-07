@@ -29,13 +29,20 @@ export class ResolutionManager extends Component {
 
     @property([Node])
     mainMenuScalableItems: Node[] = [];
-    //@property([Node])
-    //popups: Node[] = [];
+    @property([Node])
+    eventBtns: Node[] = [];
+    @property([Node])
+    popups: Node[] = [];
 
     @property(Widget)
     mainBtns: Widget = null;
-    //@property([Widget])
-    //popups: Widget[] = [];
+    @property([Widget])
+    eventBtnsLayouts: Widget[] = [];
+
+    @property(Widget)
+    playBtn: Widget = null;
+    @property([Widget])
+    resources: Widget[] = [];
 
 
     onLoad() {
@@ -65,53 +72,98 @@ export class ResolutionManager extends Component {
 
         if (window.innerWidth > window.innerHeight) {
             console.log("Landscape mode");
-            // Landscape mode
-            //cc.view.setDesignResolutionSize(this.width_landscape, this.height_landscape, cc.ResolutionPolicy.FIXED_HEIGHT);
-
-            //if (canvas) {
-            //    canvas.fitHeight = true;
-            //   canvas.fitWidth = false;
-            //}
-
-            this.enableLandscapeNodes(true);
-            this.enablePortraitNodes(false);
-
-            this.mainBtns.left = 700;
-            this.mainBtns.right = 700;
-
-            for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
-                this.mainMenuScalableItems[i].setScale(new Vec3(1, 1, 1));
-            }
-            /*for(let i = 0; i < this.popups.length; i++) {
-                this.popups[i].setScale(new Vec3(1, 1, 1));
-            }*/
+            this.setLandscapeMode();
 
         } else {
             console.log("Portrait mode");
-            // Portrait mode
-            //cc.view.setDesignResolutionSize(this.width_portrait, this.height_portrait, cc.ResolutionPolicy.FIXED_WIDTH);
-            //cc.view.setDesignResolutionSize(this.width_landscape, this.height_landscape, cc.ResolutionPolicy.FIXED_HEIGHT);
-
-            //if (canvas) {
-            //   canvas.fitHeight = false;
-             //   canvas.fitWidth = true;
-            //}
-            
-            this.enableLandscapeNodes(false);
-            this.enablePortraitNodes(true);
-
-            this.mainBtns.left = 0;
-            this.mainBtns.right = 0;
-
-            for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
-                this.mainMenuScalableItems[i].setScale(new Vec3(2, 2, 1));
-            }
-
-            /*for(let i = 0; i < this.popups.length; i++) {
-                this.popups[i].setScale(new Vec3(2, 2, 1));
-            }*/
+            this.setPortraitMode();
         }
 
+        this.scaleItemsByScreenRatio(ratio);
+    }
+
+
+    setLandscapeMode() {
+        this.enableLandscapeNodes(true);
+        this.enablePortraitNodes(false);
+
+        this.mainBtns.left = 700;
+        this.mainBtns.right = 700;
+        this.mainBtns.bottom = 0;
+
+        for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
+            this.mainMenuScalableItems[i].setScale(new Vec3(1, 1, 1));
+        }
+        for(let i = 0; i < this.popups.length; i++) {
+            this.popups[i].setScale(new Vec3(1, 1, 1));
+        }
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].setScale(new Vec3(1.4, 1.4, 1.4));
+        }
+
+        for(let i = 0; i < this.eventBtnsLayouts.length; i++) {
+            this.eventBtnsLayouts[i].top = 37.5;
+            this.eventBtnsLayouts[i].bottom = 37.5;
+        }
+
+        this.playBtn.bottom = 350;
+        this.playBtn.center = -420;
+
+        for(let i = 0; i < this.resources.length; i++) {
+            this.resources[i].top = 250;
+        }
+
+        this.mainBtns.updateAlignment();
+    }
+
+    setPortraitMode() {
+        this.enableLandscapeNodes(false);
+        this.enablePortraitNodes(true);
+
+        this.mainBtns.left = 0;
+        this.mainBtns.right = 0;
+        this.mainBtns.bottom = 150;
+
+        for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
+            this.mainMenuScalableItems[i].setScale(new Vec3(2, 2, 1));
+        }
+        for(let i = 0; i < this.popups.length; i++) {
+            this.popups[i].setScale(new Vec3(2, 2, 1));
+        }
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].setScale(new Vec3(2.2, 2.2, 2.2));
+        }
+
+        for(let i = 0; i < this.eventBtnsLayouts.length; i++) {
+            this.eventBtnsLayouts[i].top = 300;
+            this.eventBtnsLayouts[i].bottom = 500;
+        }
+
+        this.playBtn.bottom = 800;
+        this.playBtn.center = 0;
+
+        for(let i = 0; i < this.resources.length; i++) {
+            this.resources[i].top = 400;
+        }
+
+        this.mainBtns.updateAlignment();
+    }
+
+
+    enableLandscapeNodes(isActive: boolean) {
+        for(let i = 0; i < this.landscapeNodes.length; i++) {
+            this.landscapeNodes[i].active = isActive;
+        }
+    }
+
+    enablePortraitNodes(isActive: boolean) {
+        for(let i = 0; i < this.portraitNodes.length; i++) {
+            this.portraitNodes[i].active = isActive;
+        }
+    }
+
+
+    scaleItemsByScreenRatio(ratio: number) {
         if(ratio > 1.4) {
             this.field.setScale(new Vec3(1, 1, 1));
         }
@@ -135,20 +187,6 @@ export class ResolutionManager extends Component {
 
             this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
             this.goalsPortrait.setScale(new Vec3(1.7, 1.7, 1));
-        }
-
-        this.mainBtns.updateAlignment();
-    }
-
-    enableLandscapeNodes(isActive: boolean) {
-        for(let i = 0; i < this.landscapeNodes.length; i++) {
-            this.landscapeNodes[i].active = isActive;
-        }
-    }
-
-    enablePortraitNodes(isActive: boolean) {
-        for(let i = 0; i < this.portraitNodes.length; i++) {
-            this.portraitNodes[i].active = isActive;
         }
     }
 }
