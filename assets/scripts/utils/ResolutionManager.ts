@@ -1,4 +1,4 @@
-import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3 } from 'cc';
+import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('ResolutionManager')
@@ -16,7 +16,6 @@ export class ResolutionManager extends Component {
 
     @property([Node])
     landscapeNodes: Node[] = [];
-
     @property([Node])
     portraitNodes: Node[] = [];
 
@@ -27,6 +26,16 @@ export class ResolutionManager extends Component {
     boostersPortrait: Node = null;
     @property(Node)
     goalsPortrait: Node = null;
+
+    @property([Node])
+    mainMenuScalableItems: Node[] = [];
+    //@property([Node])
+    //popups: Node[] = [];
+
+    @property(Widget)
+    mainBtns: Widget = null;
+    //@property([Widget])
+    //popups: Widget[] = [];
 
 
     onLoad() {
@@ -67,6 +76,16 @@ export class ResolutionManager extends Component {
             this.enableLandscapeNodes(true);
             this.enablePortraitNodes(false);
 
+            this.mainBtns.left = 700;
+            this.mainBtns.right = 700;
+
+            for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
+                this.mainMenuScalableItems[i].setScale(new Vec3(1, 1, 1));
+            }
+            /*for(let i = 0; i < this.popups.length; i++) {
+                this.popups[i].setScale(new Vec3(1, 1, 1));
+            }*/
+
         } else {
             console.log("Portrait mode");
             // Portrait mode
@@ -80,6 +99,17 @@ export class ResolutionManager extends Component {
             
             this.enableLandscapeNodes(false);
             this.enablePortraitNodes(true);
+
+            this.mainBtns.left = 0;
+            this.mainBtns.right = 0;
+
+            for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
+                this.mainMenuScalableItems[i].setScale(new Vec3(2, 2, 1));
+            }
+
+            /*for(let i = 0; i < this.popups.length; i++) {
+                this.popups[i].setScale(new Vec3(2, 2, 1));
+            }*/
         }
 
         if(ratio > 1.4) {
@@ -106,6 +136,8 @@ export class ResolutionManager extends Component {
             this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
             this.goalsPortrait.setScale(new Vec3(1.7, 1.7, 1));
         }
+
+        this.mainBtns.updateAlignment();
     }
 
     enableLandscapeNodes(isActive: boolean) {
