@@ -44,6 +44,8 @@ export class ResolutionManager extends Component {
     @property([Widget])
     resources: Widget[] = [];
 
+    private orientation: string = "";
+
 
     onLoad() {
         console.log("Resolution manager load");
@@ -114,6 +116,8 @@ export class ResolutionManager extends Component {
         }
 
         this.mainBtns.updateAlignment();
+
+        this.orientation = "landscape";
     }
 
     setPortraitMode() {
@@ -147,6 +151,8 @@ export class ResolutionManager extends Component {
         }
 
         this.mainBtns.updateAlignment();
+
+        this.orientation = "portrait";
     }
 
 
@@ -188,6 +194,11 @@ export class ResolutionManager extends Component {
             this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
             this.goalsPortrait.setScale(new Vec3(1.7, 1.7, 1));
         }
+    }
+
+
+    isPortraitOrientation(): boolean {
+        return this.orientation === "portrait";
     }
 }
 

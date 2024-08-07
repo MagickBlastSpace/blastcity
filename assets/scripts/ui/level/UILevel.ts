@@ -17,10 +17,14 @@ export class UILevel extends UIFrameBase {
     @property(Label)
     movesCount: Label = null;
     @property(Label)
+    movesCount_Duplicate: Label = null;
+    @property(Label)
     goalLabel: Label = null;
 
     @property([UILevelGoal])
     goalItems: [UILevelGoal] = [];
+    @property([UILevelGoal])
+    goalItems_Duplicate: [UILevelGoal] = [];
 
     @property(UIFrameBase)
     levelResult: UIFrameBase = null;
@@ -61,17 +65,20 @@ export class UILevel extends UIFrameBase {
 
     refresh(movesCount: number) {
         this.movesCount.string = movesCount;
+        this.movesCount_Duplicate.string = movesCount;
     }
 
     refreshGoals(goals: GoalData[]) {
         for(let i = 0; i < goals.length || i < this.goalItems.length; i++) {
             if(i < goals.length) {
                 this.goalItems[i].refresh(goals[i]);
+                this.goalItems_Duplicate[i].refresh(goals[i]);
             }
             else {
                 let goalData = new GoalData();
                 goalData.id = "common";
                 this.goalItems[i].refresh(goalData);
+                this.goalItems_Duplicate[i].refresh(goalData);
             }
         }
     }

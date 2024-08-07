@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Prefab, Vec2, instantiate } from 'cc';
+import { ResolutionManager } from '../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEffectManager')
@@ -17,7 +18,11 @@ export class UIEffectManager extends Component {
 
     @property(Vec2)
     goalsPosition: Vec2 = null;
+    @property(Vec2)
+    goalsPosition_Portrait: Vec2 = null;
 
+    @property(ResolutionManager)
+    resolutionManager: ResolutionManager = null;
 
     @property
     tileSpacing: number = 0;
@@ -42,7 +47,9 @@ export class UIEffectManager extends Component {
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        coinComp.init(new Vec2(posX, posY), this.goalsPosition);
+        let targetPosition = this.resolutionManager.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
+
+        coinComp.init(new Vec2(posX, posY), targetPosition);
     }
 
     createEffectExtraHit(row: number, col: number) {
