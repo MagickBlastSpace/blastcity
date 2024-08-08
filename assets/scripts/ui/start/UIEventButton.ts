@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Label, ProgressBar, tween, assetManager, P
 import { EventBase } from '../../game/events/EventBase';
 import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 import { AssetsLoader } from '../../utils/AssetsLoader';
+import { ResolutionManager } from '../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventButton')
@@ -106,6 +107,8 @@ export class UIEventButton extends Component {
                 this.instantiatedNode.active = false;
 
                 this.eventPopup.show();
+
+                ResolutionManager.instance.addPopup(this.instantiatedNode);
 
                 AssetsLoader.instance.stopLoading();
             });

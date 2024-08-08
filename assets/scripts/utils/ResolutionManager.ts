@@ -44,11 +44,13 @@ export class ResolutionManager extends Component {
     @property([Widget])
     resources: Widget[] = [];
 
+    public static instance: ResolutionManager = null;
+
     private orientation: string = "";
 
 
     onLoad() {
-        console.log("Resolution manager load");
+        ResolutionManager.instance = this;
 
         window.addEventListener('resize', this.onWindowResize.bind(this));
 
@@ -199,6 +201,18 @@ export class ResolutionManager extends Component {
 
     isPortraitOrientation(): boolean {
         return this.orientation === "portrait";
+    }
+
+
+    addPopup(popup: Node) {
+        this.popups.push(popup);
+
+        if(this.isPortraitOrientation()) {
+            popup.setScale(new Vec3(2, 2, 1));
+        }
+        else {
+            popup.setScale(new Vec3(1, 1, 1));
+        }
     }
 }
 

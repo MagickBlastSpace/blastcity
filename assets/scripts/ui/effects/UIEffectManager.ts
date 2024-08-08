@@ -21,9 +21,6 @@ export class UIEffectManager extends Component {
     @property(Vec2)
     goalsPosition_Portrait: Vec2 = null;
 
-    @property(ResolutionManager)
-    resolutionManager: ResolutionManager = null;
-
     @property
     tileSpacing: number = 0;
     @property
@@ -47,7 +44,7 @@ export class UIEffectManager extends Component {
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        let targetPosition = this.resolutionManager.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
+        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
 
         coinComp.init(new Vec2(posX, posY), targetPosition);
     }

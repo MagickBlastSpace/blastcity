@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, ProgressBar, tween } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, tween, Widget } from 'cc';
 import { UIFrameBase } from '../../UIFrameBase';
 import { SpecialEventBase } from '../../../game/events/special/SpecialEventBase';
 import { UIEventMagicCauldronItem } from './UIEventMagicCauldronItem';
@@ -6,6 +6,7 @@ import { UIEventMagicCauldronPredictionButton } from './UIEventMagicCauldronPred
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventMagicCauldronReward } from './UIEventMagicCauldronReward';
+import { ResolutionManager } from '../../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldron')
@@ -39,8 +40,24 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     @property(UIEventMagicCauldronReward)
     reward: UIEventMagicCauldronReward = null;
 
+    @property([Widget])
+    frameWidgets: Widget[] = [];
+
     private isEventStarted = false;
     private isEventComplete = false;
+
+
+    onLoad() {
+        window.addEventListener('resize', this.onWindowResize.bind(this));
+    }
+
+    onDestroy() {
+        window.removeEventListener('resize', this.onWindowResize.bind(this));
+    }
+
+    onWindowResize() {
+        this.updateWidgetAlignment();
+    }
 
 
     start() {
@@ -131,7 +148,18 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     show() {
         super.show();
 
+        this.updateWidgetAlignment();
+
         this.refresh();
+    }
+
+    updateWidgetAlignment() {
+        for(let i = 0; i < this.frameWidgets.length; i++) {
+            this.frameWidgets[i].left = ResolutionManager.instance.isPortraitOrientation() ? 0 : 700;
+            this.frameWidgets[i].right = ResolutionManager.instance.isPortraitOrientation() ? 0 : 700;
+
+            this.frameWidgets[i].updateAlignment();
+        }
     }
 
 
