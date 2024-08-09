@@ -37,6 +37,22 @@ export class Billboard extends SpecTileBase {
     @property(Node)
     cornerBottomRight: Node | null = null;
 
+    @property(Node)
+    cornerUpperLeft_Outside: Node | null = null;
+    @property(Node)
+    cornerUpperRight_Outside: Node | null = null;
+    @property(Node)
+    cornerBottomLeft_Outside: Node | null = null;
+    @property(Node)
+    cornerBottomRight_Outside: Node | null = null;
+
+    @property(Node)
+    background_upper: Node | null = null;
+    @property(Node)
+    background_right: Node | null = null;
+    @property(Node)
+    background_upper_right: Node | null = null;
+
     private isBorderRendered: boolean = false;
 
     
@@ -123,6 +139,11 @@ export class Billboard extends SpecTileBase {
         let left = this.col === 0;
         let right = this.col === numCols - 1;
 
+        let upper_right = false;
+        let bottom_right = false;
+        let upper_left = false;
+        let bottom_left = false;
+
         if(!upper) {
             let tile = field[this.row + 1][this.col];
             if(tile !== null) {
@@ -151,6 +172,35 @@ export class Billboard extends SpecTileBase {
                 left = comp.getTileType() !== this.tileType;
             }
         }
+
+        if(upper && this.row < numRows - 1 && this.col < numCols - 1) {
+            let tile = field[this.row + 1][this.col + 1];
+            if(tile !== null) {
+                let comp = tile.getComponent("TileBase");
+                upper_right = comp.getTileType() === this.tileType;
+            }
+        }
+        if(bottom && this.row > 0 && this.col < numCols - 1) {
+            let tile = field[this.row - 1][this.col + 1];
+            if(tile !== null) {
+                let comp = tile.getComponent("TileBase");
+                bottom_right = comp.getTileType() === this.tileType;
+            }
+        }
+        if(upper && this.row < numRows - 1 && this.col > 0) {
+            let tile = field[this.row + 1][this.col - 1];
+            if(tile !== null) {
+                let comp = tile.getComponent("TileBase");
+                upper_left = comp.getTileType() === this.tileType;
+            }
+        }
+        if(bottom && this.row > 0 && this.col > 0) {
+            let tile = field[this.row - 1][this.col - 1];
+            if(tile !== null) {
+                let comp = tile.getComponent("TileBase");
+                bottom_left = comp.getTileType() === this.tileType;
+            }
+        }
                     
         let directions = [];
                     
@@ -158,6 +208,11 @@ export class Billboard extends SpecTileBase {
         directions.push(right);
         directions.push(bottom);
         directions.push(left);
+
+        directions.push(upper_right);
+        directions.push(bottom_right);
+        directions.push(upper_left);
+        directions.push(bottom_left);
 
         this.renderBorderline(directions);
 
@@ -183,6 +238,15 @@ export class Billboard extends SpecTileBase {
 
         this.lineRight_upper.active = direction[1] && !direction[0];
         this.lineRight_bottom.active = direction[1] && !direction[2];
+
+        this.cornerUpperRight_Outside.active = direction[4];
+        this.cornerBottomRight_Outside.active = direction[5];
+        this.cornerBottomLeft_Outside.active = direction[7];
+        this.cornerUpperLeft_Outside.active = direction[6];
+
+        this.background_upper.active = !direction[0];
+        this.background_right.active = !direction[1];
+        this.background_upper_right.active = !direction[0] && !direction[1];
     }
 
 
@@ -203,6 +267,15 @@ export class Billboard extends SpecTileBase {
 
         this.lineRight_upper.active = false;
         this.lineRight_bottom.active = false;
+
+        this.cornerUpperRight_Outside.active = false;
+        this.cornerBottomRight_Outside.active = false;
+        this.cornerBottomLeft_Outside.active = false;
+        this.cornerUpperLeft_Outside.active = false;
+
+        this.background_upper.active = false;
+        this.background_right.active = false;
+        this.background_upper_right.active = false;
     }
 }
 
