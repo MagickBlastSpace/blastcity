@@ -108,28 +108,28 @@ export class BorderRenderer extends Component {
                         }
                     }
                     
-                    if(bottom && row > startRow && col > startCol) {
-                        let tile = field[row - 1][col - 1];
+                    if(row < numRows - 1 && col < numCols - 1) {
+                        let tile = field[row + 1][col + 1];
                         if(tile !== null) {
                             let comp = tile.getComponent("TileBase");
                             upper_right = !comp.isEmptyTile();
                         }
                     }
-                    if(right && row > startRow && col < numCols - 1) {
+                    if(row > startRow && col < numCols - 1) {
                         let tile = field[row - 1][col + 1];
                         if(tile !== null) {
                             let comp = tile.getComponent("TileBase");
                             bottom_right = !comp.isEmptyTile();
                         }
                     }
-                    if(bottom && row > startRow && col < numCols - 1) {
-                        let tile = field[row - 1][col + 1];
+                    if(row < numRows - 1 && col > startCol) {
+                        let tile = field[row + 1][col - 1];
                         if(tile !== null) {
                             let comp = tile.getComponent("TileBase");
                             upper_left = !comp.isEmptyTile();
                         }
                     }
-                    if(left && row > startRow && col > startCol) {
+                    if(row > startRow && col > startCol) {
                         let tile = field[row - 1][col - 1];
                         if(tile !== null) {
                             let comp = tile.getComponent("TileBase");

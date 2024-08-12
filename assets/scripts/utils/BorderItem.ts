@@ -54,20 +54,20 @@ export class BorderItem extends Component {
     renderBorderline(direction: boolean[]) { //0-upper, 1-right, 2-bottom, 3-left, 4-upper_right, 5-bottom_right, 6-upper_left, 7-bottom_left
         this.resetAll();
 
-        this.cornerUpperRight.active = direction[0] && direction[1];
-        this.cornerBottomRight.active = direction[1] && direction[2];
-        this.cornerBottomLeft.active = direction[2] && direction[3];
-        this.cornerUpperLeft.active = direction[3] && direction[0];
+        this.cornerUpperRight.active = direction[0] && direction[1] && !direction[4];
+        this.cornerBottomRight.active = direction[1] && direction[2] && !direction[5];
+        this.cornerBottomLeft.active = direction[2] && direction[3] && !direction[7];
+        this.cornerUpperLeft.active = direction[3] && direction[0] && !direction[6];
 
         this.lineUpper.active = direction[0];
         this.lineBottom.active = direction[2];
         this.lineLeft.active = direction[3] && !direction[7];
         this.lineRight.active = direction[1] && !direction[5];
 
-        this.cornerUpperRight_Outside.active = direction[4];
-        this.cornerBottomRight_Outside.active = direction[5];
-        this.cornerBottomLeft_Outside.active = direction[7];
-        this.cornerUpperLeft_Outside.active = direction[6];
+        this.cornerUpperRight_Outside.active = direction[1] && direction[5];
+        this.cornerBottomRight_Outside.active = direction[2] && direction[5];
+        this.cornerBottomLeft_Outside.active = direction[2] && direction[7];
+        this.cornerUpperLeft_Outside.active = direction[3] && direction[7];
     }
 
 
