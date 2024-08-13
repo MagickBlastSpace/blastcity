@@ -14,15 +14,15 @@ export class Field extends Component {
 
     @property(Node)
     level: Node = null;
-    @property(Boosters)
-    boosters: Boosters = null;
     @property(StartBonuses)
     startBonuses: StartBonuses = null;
     @property(ButlersGift)
     butlersGift: ButlersGift = null;
+    @property([Boosters])
+    boosters: Boosters[] = [];
 
     @property([Node])
-    layersForCleanup: Node = [];
+    layersForCleanup: Node[] = [];
 
     @property
     numRows: number = 8;
@@ -143,17 +143,19 @@ export class Field extends Component {
             this.scheduleRespawn(0.2, true);
         });
 
-        this.boosters.node.on("extra_hit", (row, col, isBonusChain, delay) => {
-            this.extraHit(row, col, isBonusChain, delay);
-        });
-        this.boosters.node.on("respawn", (timeToRespawn) => {
-            this.scheduleRespawn(timeToRespawn, true);
-        });
-        this.boosters.node.on("shuffle", () => {
-            if(this.isClickAvailable && !this.isLevelComplete) {
-                this.shuffleTiles();
-            }
-        });
+        for(let i = 0; i < this.boosters.length; i++) {
+            this.boosters[i].node.on("extra_hit", (row, col, isBonusChain, delay) => {
+                this.extraHit(row, col, isBonusChain, delay);
+            });
+            this.boosters[i].node.on("respawn", (timeToRespawn) => {
+                this.scheduleRespawn(timeToRespawn, true);
+            });
+            this.boosters[i].node.on("shuffle", () => {
+                if(this.isClickAvailable && !this.isLevelComplete) {
+                    this.shuffleTiles();
+                }
+            });
+        }
 
         this.isSuperDiscoballMode = false;
 
@@ -1797,13 +1799,15 @@ export class Field extends Component {
 
         const tileComponent = tile.getComponent("TileBase");
 
-        if(this.boosters.isBoosterActive()) {
-            this.isClickAvailable = false;
-            this.boosters.useActiveBooster(this.tileArray, tileComponent.getRow(), tileComponent.getCol());
-
-            this.node.emit("game_state", this.tileArray, this.statusArray);
-
-            return;
+        for(let i = 0; i < this.boosters.length; i++) {
+            if(this.boosters[i].isBoosterActive()) {
+                this.isClickAvailable = false;
+                this.boosters[i].useActiveBooster(this.tileArray, tileComponent.getRow(), tileComponent.getCol());
+    
+                this.node.emit("game_state", this.tileArray, this.statusArray);
+    
+                return;
+            }
         }
 
         if(tileComponent.isSpecialTile()) {
