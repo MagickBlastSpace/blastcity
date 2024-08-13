@@ -5,7 +5,6 @@ import { UIFrameBase } from '../../UIFrameBase';
 import { EventBase } from '../../../game/events/EventBase';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
-import { ResolutionManager } from '../../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventSkyRace')
@@ -36,19 +35,6 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
 
     private isEventStarted = false;
     private isEventComplete = false;
-
-
-    onLoad() {
-        window.addEventListener('resize', this.onWindowResize.bind(this));
-    }
-
-    onDestroy() {
-        window.removeEventListener('resize', this.onWindowResize.bind(this));
-    }
-
-    onWindowResize() {
-        this.updateWidgetAlignment();
-    }
 
 
     start() {
@@ -96,14 +82,12 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
     show() {
         super.show();
 
-        this.updateWidgetAlignment();
-
         this.eventController.updateMultiplayerData();
     }
 
-    updateWidgetAlignment() {
-        this.frameWidget.left = ResolutionManager.instance.isPortraitOrientation() ? 0 : 700;
-        this.frameWidget.right = ResolutionManager.instance.isPortraitOrientation() ? 0 : 700;
+    updateWidgetAlignment(isPortrait) {
+        this.frameWidget.left = isPortrait ? 0 : 700;
+        this.frameWidget.right = isPortrait ? 0 : 700;
         
         this.frameWidget.updateAlignment();
     }

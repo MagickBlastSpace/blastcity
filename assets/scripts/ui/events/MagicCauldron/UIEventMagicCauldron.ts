@@ -6,7 +6,6 @@ import { UIEventMagicCauldronPredictionButton } from './UIEventMagicCauldronPred
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventMagicCauldronReward } from './UIEventMagicCauldronReward';
-import { ResolutionManager } from '../../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldron')
@@ -47,7 +46,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     private isEventComplete = false;
 
 
-    onLoad() {
+    /*onLoad() {
         window.addEventListener('resize', this.onWindowResize.bind(this));
     }
 
@@ -57,7 +56,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
     onWindowResize() {
         this.updateWidgetAlignment();
-    }
+    }*/
 
 
     start() {
@@ -148,15 +147,13 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     show() {
         super.show();
 
-        this.updateWidgetAlignment();
-
         this.refresh();
     }
 
-    updateWidgetAlignment() {
+    updateWidgetAlignment(isPortrait: boolean) {
         for(let i = 0; i < this.frameWidgets.length; i++) {
-            this.frameWidgets[i].left = ResolutionManager.instance.isPortraitOrientation() ? 0 : 700;
-            this.frameWidgets[i].right = ResolutionManager.instance.isPortraitOrientation() ? 0 : 700;
+            this.frameWidgets[i].left = isPortrait ? 0 : 700;
+            this.frameWidgets[i].right = isPortrait ? 0 : 700;
 
             this.frameWidgets[i].updateAlignment();
         }

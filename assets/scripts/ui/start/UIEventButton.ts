@@ -106,9 +106,9 @@ export class UIEventButton extends Component {
 
                 this.instantiatedNode.active = false;
 
-                this.eventPopup.show();
-
                 ResolutionManager.instance.addPopup(this.instantiatedNode);
+
+                this.eventPopup.show();
 
                 AssetsLoader.instance.stopLoading();
             });

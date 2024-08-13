@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, tween, Vec3 } from 'cc';
 import { UIFrameBase } from './UIFrameBase';
+import { ResolutionManager } from '../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIPopupFrameBase')
@@ -17,8 +18,10 @@ export class UIPopupFrameBase extends UIFrameBase {
         this.node.active = true;
         
         tween(this.contentNode)
-            //.to(0, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
             .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: 'backOut' })
+            .call(() => {
+                this.adjustResolution();
+            })
             .start();
     }
 
@@ -34,6 +37,10 @@ export class UIPopupFrameBase extends UIFrameBase {
 
     hideClean() {
         this.node.active = false;
+    }
+
+    adjustResolution() {
+        ResolutionManager.instance.adjustResolution();
     }
 }
 

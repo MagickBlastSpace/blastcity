@@ -1,4 +1,5 @@
 import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget } from 'cc';
+import { UIFrameBase } from '../ui/UIFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('ResolutionManager')
@@ -33,6 +34,8 @@ export class ResolutionManager extends Component {
     eventBtns: Node[] = [];
     @property([Node])
     popups: Node[] = [];
+    @property([UIFrameBase])
+    popupComponents: UIFrameBase[] = [];
 
     @property(Widget)
     mainBtns: Widget = null;
@@ -88,6 +91,8 @@ export class ResolutionManager extends Component {
 
 
     setLandscapeMode() {
+        this.orientation = "landscape";
+
         this.enableLandscapeNodes(true);
         this.enablePortraitNodes(false);
 
@@ -100,6 +105,9 @@ export class ResolutionManager extends Component {
         }
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(1, 1, 1));
+        }
+        for(let i = 0; i < this.popupComponents.length; i++) {
+            this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
         }
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].setScale(new Vec3(1.4, 1.4, 1.4));
@@ -118,11 +126,11 @@ export class ResolutionManager extends Component {
         }
 
         this.mainBtns.updateAlignment();
-
-        this.orientation = "landscape";
     }
 
     setPortraitMode() {
+        this.orientation = "portrait";
+
         this.enableLandscapeNodes(false);
         this.enablePortraitNodes(true);
 
@@ -135,6 +143,9 @@ export class ResolutionManager extends Component {
         }
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(2, 2, 1));
+        }
+        for(let i = 0; i < this.popupComponents.length; i++) {
+            this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
         }
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].setScale(new Vec3(2.2, 2.2, 2.2));
@@ -153,8 +164,6 @@ export class ResolutionManager extends Component {
         }
 
         this.mainBtns.updateAlignment();
-
-        this.orientation = "portrait";
     }
 
 
@@ -207,11 +216,10 @@ export class ResolutionManager extends Component {
     addPopup(popup: Node) {
         this.popups.push(popup);
 
-        if(this.isPortraitOrientation()) {
-            popup.setScale(new Vec3(2, 2, 1));
-        }
-        else {
-            popup.setScale(new Vec3(1, 1, 1));
+        let popupComponent = popup.getComponent("UIFrameBase");
+
+        if(popupComponent) {
+            this.popupComponents.push(popupComponent);
         }
     }
 }

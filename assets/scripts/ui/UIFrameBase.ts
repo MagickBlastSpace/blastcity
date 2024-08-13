@@ -14,6 +14,8 @@ export class UIFrameBase extends Component {
     hideClean() {
         this.hide();
     }
+
+    updateWidgetAlignment(isPortrait: boolean) {}
 }
 
 

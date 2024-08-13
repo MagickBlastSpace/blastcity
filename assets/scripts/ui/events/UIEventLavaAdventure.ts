@@ -1,7 +1,6 @@
 import { _decorator, Component, Node, Button, Label, tween, Vec3, Prefab, instantiate, Widget } from 'cc';
 import { UIEventPopupFrameBase } from './UIEventPopupFrameBase';
 import { UserData } from '../../data/UserData';
-import { ResolutionManager } from '../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventLavaAdventure')
@@ -50,19 +49,6 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
     private player_Y: number = -435;
 
     private isEventStarted = false;
-
-
-    onLoad() {
-        window.addEventListener('resize', this.onWindowResize.bind(this));
-    }
-
-    onDestroy() {
-        window.removeEventListener('resize', this.onWindowResize.bind(this));
-    }
-
-    onWindowResize() {
-        this.updateWidgetAlignment();
-    }
 
 
     start() {
@@ -152,14 +138,12 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
     show() {
         super.show();
 
-        this.updateWidgetAlignment();
-
         this.refresh();
     }
 
-    updateWidgetAlignment() {
-        this.frameWidget.left = ResolutionManager.instance.isPortraitOrientation() ? 0 : 700;
-        this.frameWidget.right = ResolutionManager.instance.isPortraitOrientation() ? 0 : 700;
+    updateWidgetAlignment(isPortrait) {
+        this.frameWidget.left = isPortrait ? 0 : 700;
+        this.frameWidget.right = isPortrait ? 0 : 700;
         
         this.frameWidget.updateAlignment();
     }
