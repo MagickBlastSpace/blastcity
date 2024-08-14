@@ -28,6 +28,8 @@ export class UIField extends Component {
     @property(Node)
     statusLayout: Node = null;
 
+    private highPriorityStatuses: string[] = ["dynamite", "bubble"];
+
 
     start() {
         this.field.on("refresh", (tiles, statuses) => this.refresh(tiles, statuses));
@@ -79,7 +81,7 @@ export class UIField extends Component {
         const statusComponent = status.getComponent("StatusBase");
         const tileUi = status.getComponent("UITile");
 
-        let layout = statusComponent.getStatusType().split("_")[0] === "dynamite" ? this.statusLayout : this.statusLayouts[statusComponent.getRow()];
+        let layout = this.highPriorityStatuses.includes(statusComponent.getStatusType().split("_")[0]) ? this.statusLayout : this.statusLayouts[statusComponent.getRow()];
 
         let posX = statusComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
