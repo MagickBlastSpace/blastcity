@@ -49,9 +49,13 @@ export class Rocket extends BonusTileBase {
 
         switch(this.tileType) {
             case 'rocket_vertical':
+                this.playAnimation("vertical", false);
+
                 this.colExtraHit(field, this.row, this.col);
                 break;
             case 'rocket_horizontal':
+                this.playAnimation("horizontal", false);
+
                 this.rowExtraHit(field, this.row, this.col);
                 break;
         }
@@ -79,6 +83,8 @@ export class Rocket extends BonusTileBase {
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
+        this.playAnimation("rocket", false);
+
         this.rowExtraHit(field, this.row, this.col);
         this.colExtraHit(field, this.row, this.col);
 
@@ -87,6 +93,8 @@ export class Rocket extends BonusTileBase {
 
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
+
+        this.playAnimation("bomb", false);
 
         this.rowExtraHit(field, this.row, this.col);
         this.rowExtraHit(field, this.row + 1, this.col);
@@ -102,6 +110,8 @@ export class Rocket extends BonusTileBase {
 
     getDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
+
+        this.playAnimation("discoball", true);
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;

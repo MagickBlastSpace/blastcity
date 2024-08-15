@@ -36,6 +36,8 @@ export class TileBase extends Component {
         this.currentTween = null;
 
         this.isSubscribed = false;
+
+        this.uiComponent = this.node.getComponent("UITile");
     }
 
 
@@ -94,6 +96,11 @@ export class TileBase extends Component {
     destroyTile(delay: number) {
         let uiComponent = this.node.getComponent("UITile");
         uiComponent.destroyTile(delay);
+    }
+
+    playAnimation(animation: string, isLooped: boolean) {
+        let uiComponent = this.node.getComponent("UITile");
+        uiComponent.playAnimation(animation, isLooped);
     }
 
     destroyClear() {

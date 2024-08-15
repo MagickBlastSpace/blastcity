@@ -47,8 +47,10 @@ export class UITile extends Component {
     @property(sp.Skeleton)
     spine: sp.Skeleton = null;
 
+    @property
+    destroyTime: number = 0.25;
+
     private fallTime: number = 0.35;
-    private destroyTime: number = 0.25;
 
     private isBlocked: boolean = false;
 
@@ -60,6 +62,10 @@ export class UITile extends Component {
 
     start() {
         this.isBlocked = false;
+
+        if (this.spine) {
+            this.spine.node.active = false;
+        }
     }
     
     init(posX: number, posY: number, layout: Node, isStatus: boolean, tileType: string) {
@@ -74,7 +80,6 @@ export class UITile extends Component {
         this.currentY = posY;
 
         this.destroyLayout = this.node.parent;
-        //this.destroyLayout = layout;
 
         if(this.content === null || this.content === undefined) {
             this.content = this.node;
@@ -148,23 +153,55 @@ export class UITile extends Component {
             this.particlesParent.setPosition(this.currentX, this.currentY);
         }
         
+        this.playAnimation("discoball", false);
+
+        this.scheduleOnce(() => {
+            tween(this.node).stop();
+
+            if(this.content) {
+                tween(this.content).stop();
+
+                tween(this.content)
+                    .parallel(
+                        tween().to(this.destroyTime, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' }),
+                        tween().to(this.destroyTime, { opacity: 0 }, { easing: 'linear' })
+                    )
+                    .call(() => this.node.destroy())
+                    .start();
+            }
+            else {
+                this.node.destroy();
+            }
+            
+        }, delay);
+    }
+
+    playAnimation(animation: string, isLooped: boolean) {
         try {
             if(this.spine) {
-                this.spine.setAnimation(0, 'animation', false);
+                const trackEntry = this.spine.getCurrent(0);
+                const isPlaying = trackEntry && !trackEntry.isComplete();
+                if (isPlaying) {
+                    console.log("Animation is playing");
+                    return;
+                }
+
+                const spineNode = this.spine.node;
+                spineNode.active = true;
+
+                this.destroyLayout.parent.addChild(spineNode);
+
+                spineNode.setPosition(this.currentX, this.currentY);
+
+                this.spine.setCompleteListener(() => {
+                    spineNode.destroy();
+                });
+                
+                this.spine.setAnimation(0, animation, isLooped);
             }
         } catch (error) {
             console.error('Error setting spine animation:', error);
         }
-
-        this.scheduleOnce(() => {
-            tween(this.content).stop();
-            tween(this.node).stop();
-
-            tween(this.content)
-                .to(this.destroyTime, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
-                .call(() => this.node.destroy())
-                .start();
-        }, delay);
     }
 
 
