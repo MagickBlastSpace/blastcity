@@ -58,6 +58,7 @@ export class UITile extends Component {
     private currentY: number = -1;
 
     private destroyLayout: Node = null;
+    private animationsLayout: Node = null;
 
 
     start() {
@@ -80,6 +81,7 @@ export class UITile extends Component {
         this.currentY = posY;
 
         this.destroyLayout = this.node.parent;
+        this.animationsLayout = this.destroyLayout.parent;
 
         if(this.content === null || this.content === undefined) {
             this.content = this.node;
@@ -189,7 +191,7 @@ export class UITile extends Component {
                 const spineNode = this.spine.node;
                 spineNode.active = true;
 
-                this.destroyLayout.parent.addChild(spineNode);
+                this.animationsLayout.addChild(spineNode);
 
                 spineNode.setPosition(this.currentX, this.currentY);
 
