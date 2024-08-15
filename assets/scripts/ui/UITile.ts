@@ -153,7 +153,7 @@ export class UITile extends Component {
             this.particlesParent.setPosition(this.currentX, this.currentY);
         }
         
-        this.playAnimation("discoball", false);
+        this.playAnimation("destroy", false);
 
         this.scheduleOnce(() => {
             tween(this.node).stop();
