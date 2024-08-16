@@ -150,13 +150,15 @@ export class Rocket extends BonusTileBase {
     }
 
     setDicoballComboAnimation(disco: Node) {
-        tween(this.node)
+        /*tween(this.node)
             .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
             .start();
 
         tween(disco)
             .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
-            .start();
+            .start();*/
+            
+        this.playAnimation("discoball", true);
     }
 }
 

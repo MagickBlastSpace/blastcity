@@ -160,6 +160,10 @@ export class UITile extends Component {
         this.playAnimation("destroy", false);
 
         this.scheduleOnce(() => {
+            if(this.isSpineDestroyScheduled) {
+                this.spine.node.destroy();
+            }
+            
             tween(this.node).stop();
 
             if(this.content) {
@@ -171,9 +175,6 @@ export class UITile extends Component {
                         tween().to(this.destroyTime, { opacity: 0 }, { easing: 'linear' })
                     )
                     .call(() => {
-                        if(this.isSpineDestroyScheduled) {
-                            this.spine.node.destroy();
-                        }
                         this.node.destroy()
                     })
                     .start();
