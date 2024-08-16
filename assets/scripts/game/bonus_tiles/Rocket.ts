@@ -47,15 +47,13 @@ export class Rocket extends BonusTileBase {
             return matches;
         }
 
+        this.playAnimation(this.tileType, false);
+
         switch(this.tileType) {
             case 'rocket_vertical':
-                this.playAnimation("vertical", false);
-
                 this.colExtraHit(field, this.row, this.col);
                 break;
             case 'rocket_horizontal':
-                this.playAnimation("horizontal", false);
-
                 this.rowExtraHit(field, this.row, this.col);
                 break;
         }
@@ -83,7 +81,7 @@ export class Rocket extends BonusTileBase {
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.playAnimation("rocket", false);
+        this.playAnimation("rocket_rocket", false);
 
         this.rowExtraHit(field, this.row, this.col);
         this.colExtraHit(field, this.row, this.col);
@@ -94,7 +92,7 @@ export class Rocket extends BonusTileBase {
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.playAnimation("bomb", false);
+        this.playAnimation("rocket_bomb", false);
 
         this.rowExtraHit(field, this.row, this.col);
         this.rowExtraHit(field, this.row + 1, this.col);
@@ -150,15 +148,13 @@ export class Rocket extends BonusTileBase {
     }
 
     setDicoballComboAnimation(disco: Node) {
-        /*tween(this.node)
-            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
-            .start();
+        let anim = this.tileType === "rocket_vertical" ? "rocket_discoball_vert" : "rocket_discoball_hor";
+        this.playAnimation(anim, true);
 
-        tween(disco)
-            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
-            .start();*/
-            
-        this.playAnimation("discoball", true);
+        let discoComp = disco.getComponent("Discoball");
+        if(discoComp) {
+            discoComp.activateIsolatedDiscoballAnimation();
+        }
     }
 }
 

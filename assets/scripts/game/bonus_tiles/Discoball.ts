@@ -119,6 +119,7 @@ export class Discoball extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
 
         this.activateDiscoballComboAnimation(field);
+        this.activateIsolatedDiscoballAnimation();
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
@@ -153,6 +154,7 @@ export class Discoball extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
 
         this.activateDiscoballComboAnimation(field);
+        this.activateIsolatedDiscoballAnimation();
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
@@ -174,16 +176,17 @@ export class Discoball extends BonusTileBase {
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
+        this.activateDiscoballComboAnimation(field);
+        this.playAnimation("discoball_discoball", false);
+
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
                 let isBonusChain = this.isChain(i, j);
                 this.node.emit("extra_hit", i, j, isBonusChain, 0);
-
+    
                 this.node.emit("goal", "discoball");
             }
         }
-
-        //this.setRespawnEvent(this.respawnDelay);
 
         return matches;
     }
@@ -243,8 +246,28 @@ export class Discoball extends BonusTileBase {
         let tileComp = tile.getComponent("BonusTileBase");
 
         if(tileComp) {
-            tileComp.playAnimation("discoball", true);
+            let tileType = tileComp.getTileType();
+            let anim = "";
+            switch(tileType) {
+                case "bomb":
+                    anim = "bomb_discoball";
+                    break;
+                case "rocket_vertical":
+                    anim = "rocket_discoball_vert";
+                    break;
+                case "rocket_horizontal":
+                    anim = "rocket_discoball_hor";
+                    break;
+                case "multi":
+                    anim = "destroy";
+                    break;
+            }
+            tileComp.playAnimation(anim, true);
         }
+    }
+
+    activateIsolatedDiscoballAnimation() {
+        this.playAnimation("discoball_color0", false);
     }
 }
 

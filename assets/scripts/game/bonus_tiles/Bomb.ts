@@ -86,7 +86,7 @@ export class Bomb extends BonusTileBase {
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        //this.playAnimation("rocket", false);
+        this.playAnimation("rocket_bomb", false);
 
         this.rowExtraHit(field, this.row, this.col);
         this.rowExtraHit(field, this.row + 1, this.col);
@@ -102,7 +102,7 @@ export class Bomb extends BonusTileBase {
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.playAnimation("bigbomb", false);
+        this.playAnimation("bomb_bomb", false);
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
@@ -179,15 +179,12 @@ export class Bomb extends BonusTileBase {
     }
 
     setDicoballComboAnimation(disco: Node) {
-        /*tween(this.node)
-            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
-            .start();
+        this.playAnimation("bomb_discoball", true);
 
-        tween(disco)
-            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
-            .start();*/
-
-        this.playAnimation("discoball", true);
+        let discoComp = disco.getComponent("Discoball");
+        if(discoComp) {
+            discoComp.activateIsolatedDiscoballAnimation();
+        }
     }
 }
 
