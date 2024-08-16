@@ -60,6 +60,8 @@ export class UITile extends Component {
     private destroyLayout: Node = null;
     private animationsLayout: Node = null;
 
+    private isSpineDestroyScheduled: boolean = false;
+
 
     start() {
         this.isBlocked = false;
@@ -168,11 +170,13 @@ export class UITile extends Component {
                         tween().to(this.destroyTime, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' }),
                         tween().to(this.destroyTime, { opacity: 0 }, { easing: 'linear' })
                     )
-                    .call(() => this.node.destroy())
+                    .call(() => {
+                        if(this.isSpineDestroyScheduled) {
+                            this.spine.node.destroy();
+                        }
+                        this.node.destroy()
+                    })
                     .start();
-            }
-            else {
-                this.node.destroy();
             }
             
         }, delay);
@@ -184,7 +188,7 @@ export class UITile extends Component {
                 const trackEntry = this.spine.getCurrent(0);
                 const isPlaying = trackEntry && !trackEntry.isComplete();
                 if (isPlaying) {
-                    console.log("Animation is playing");
+                    //console.log("Animation is playing");
                     return;
                 }
 
@@ -195,9 +199,14 @@ export class UITile extends Component {
 
                 spineNode.setPosition(this.currentX, this.currentY);
 
-                this.spine.setCompleteListener(() => {
-                    spineNode.destroy();
-                });
+                if(isLooped) {
+                    this.isSpineDestroyScheduled = isLooped;
+                }
+                else {
+                    this.spine.setCompleteListener(() => {
+                        spineNode.destroy();
+                    });
+                }
                 
                 this.spine.setAnimation(0, animation, isLooped);
             }

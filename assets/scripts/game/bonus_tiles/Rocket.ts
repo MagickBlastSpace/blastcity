@@ -111,8 +111,6 @@ export class Rocket extends BonusTileBase {
     getDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.playAnimation("discoball", true);
-
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 

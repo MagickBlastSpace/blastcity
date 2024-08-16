@@ -45,6 +45,8 @@ export class Bomb extends BonusTileBase {
     getBombMatches(field: Node[][], statuses: Node[][], row: number, col: number): Node[] {
         let matches = [];
 
+        this.playAnimation("bomb", false);
+
         const totalTime = this.respawnDelay / 2;
         const timeStep = totalTime / 9;
 
@@ -84,6 +86,8 @@ export class Bomb extends BonusTileBase {
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
+        //this.playAnimation("rocket", false);
+
         this.rowExtraHit(field, this.row, this.col);
         this.rowExtraHit(field, this.row + 1, this.col);
         this.rowExtraHit(field, this.row - 1, this.col);
@@ -97,6 +101,8 @@ export class Bomb extends BonusTileBase {
 
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
+
+        this.playAnimation("bigbomb", false);
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;

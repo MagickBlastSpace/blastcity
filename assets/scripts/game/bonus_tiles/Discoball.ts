@@ -117,6 +117,9 @@ export class Discoball extends BonusTileBase {
         tiles.push(this);
 
         const totalTime = this.timeBetweenTiles * tiles.length;
+
+        this.activateDiscoballComboAnimation(field);
+
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 const rocketString = Math.floor(Math.random() * 2) === 0 ? "rocket_vertical" : "rocket_horizontal";
@@ -149,6 +152,9 @@ export class Discoball extends BonusTileBase {
         tiles.push(this);
 
         const totalTime = this.timeBetweenTiles * tiles.length;
+
+        this.activateDiscoballComboAnimation(field);
+
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 this.changeTile(tiles[i], "bomb");
@@ -231,6 +237,16 @@ export class Discoball extends BonusTileBase {
 
     isChain(row: number, col: number) {
         return row !== this.row && col !== this.col && row !== this.row + 1 && row !== this.row - 1 && col !== this.col + 1 && col !== this.col - 1;
+    }
+
+
+    activateDiscoballComboAnimation(field: Node[][]) {
+        let tile = field[this.comboPosition.x][this.comboPosition.y];
+        let tileComp = tile.getComponent("BonusTileBase");
+
+        if(tileComp) {
+            tileComp.playAnimation("discoball", true);
+        }
     }
 }
 
