@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
 import { BonusTileBase } from './BonusTileBase';
+import { SpriteTileData } from '../Tile';
 const { ccclass, property } = _decorator;
 
 @ccclass('Discoball')
@@ -10,8 +11,16 @@ export class Discoball extends BonusTileBase {
     @property(SpriteFrame)
     super: SpriteFrame = null;
 
+    @property([SpriteTileData])
+    multiIcons: SpriteTileData[] = [];
+    @property([SpriteTileData])
+    superIcons: SpriteTileData[] = [];
+
     @property(Sprite)
     icon: Sprite = null;
+
+    private primaryColor: string = "";
+    private secondaryColor: string = "";
 
     
     init(row: number, col: number, tileType: string) {
@@ -267,7 +276,41 @@ export class Discoball extends BonusTileBase {
     }
 
     activateIsolatedDiscoballAnimation() {
-        this.playAnimation("discoball_color0", false);
+        if(this.tileType === "multi") {
+            let colorString = "0";
+            switch(this.primaryColor) {
+                case "yellow":
+                    colorString = "1";
+                    break;
+                case "red":
+                    colorString = "2";
+                    break;
+                case "blue":
+                    colorString = "3";
+                    break;
+                case "green":
+                    colorString = "4";
+                    break;
+                case "purple":
+                    colorString = "5";
+                    break;
+                case "orange":
+                    colorString = "6";
+                    break;
+            }
+            this.playAnimation("discoball_color" + colorString, false);
+        }
+    }
+
+
+    setColor(primaryColor: string, secondaryColor: string) {
+        this.primaryColor = primaryColor;
+        this.secondaryColor = secondaryColor;
+
+        if(this.tileType === "multi") {
+            this.icon.spriteFrame = this.multiIcons.find(i => i.id === primaryColor)?.icon;
+        }
+        
     }
 }
 

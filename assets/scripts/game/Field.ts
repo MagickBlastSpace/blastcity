@@ -74,6 +74,9 @@ export class Field extends Component {
     private specialPrefabs: SpecialPrefabData[] = [];
     private statusPrefabs: SpecialPrefabData[] = [];
 
+    private primaryColor: string = "";
+    private secondaryColor: string = "";
+
 
     onLoad() {
         this.isAssetsLoaded = false;
@@ -1400,6 +1403,8 @@ export class Field extends Component {
 
             SaveData.instance.saveLevelProgressData();
 
+            this.setPrimaryColors();
+
         }, this.fallTime);
     }
 
@@ -2317,6 +2322,68 @@ export class Field extends Component {
         }
 
         return false;
+    }
+
+
+    setPrimaryColors() {
+        let lastPrimaryCount = 0;
+        let lastSecondaryCount = 0;
+
+        let currentCount = 0;
+
+        for(let color = 0; color < this.availableColors.length; color++) {
+
+            currentCount = 0;
+
+            for(let i = 0; i < this.numRows; i++) {
+                for(let j = 0; j < this.numCols; j++) {
+                    const tile = this.tileArray[i][j];
+                    const status = this.statusArray[i][j];
+
+                    if(status !== null && status !== undefined) {
+                        const statusComp = status.getComponent("StatusBase");
+                        if(statusComp.isBlockingInteraction()) {
+                            continue;
+                        }
+                    }
+                    if(tile !== null && tile !== undefined) {
+                        const tileComp = tile.getComponent("TileBase");
+                        if(tileComp.getTileType() === this.availableColors[color]) {
+                            currentCount = currentCount + 1;
+                        }
+                    }
+                }
+            }
+
+            if(currentCount > lastPrimaryCount) {
+                lastSecondaryCount = lastPrimaryCount;
+                lastPrimaryCount = currentCount;
+
+                this.secondaryColor = this.primaryColor;
+                this.primaryColor = this.availableColors[color];
+            }
+            else if(currentCount > lastSecondaryCount) {
+                lastSecondaryCount = currentCount;
+                
+                this.secondaryColor = this.availableColors[color];
+            }
+        }
+
+        this.setDiscoballsColors();
+    }
+
+    setDiscoballsColors() {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                const tile = this.tileArray[i][j];
+                if(tile !== null && tile !== undefined) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.getTileType() === "multi") {
+                        tileComp.setColor(this.primaryColor, this.secondaryColor);
+                    }
+                }
+            }
+        }
     }
 }
 
