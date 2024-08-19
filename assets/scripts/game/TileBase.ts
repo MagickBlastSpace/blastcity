@@ -98,9 +98,9 @@ export class TileBase extends Component {
         uiComponent.destroyTile(delay);
     }
 
-    playAnimation(animation: string, isLooped: boolean) {
+    playAnimation(animation: string, isLooped: boolean, timeScale: number) {
         let uiComponent = this.node.getComponent("UITile");
-        uiComponent.playAnimation(animation, isLooped);
+        uiComponent.playAnimation(animation, isLooped, timeScale);
     }
 
     destroyClear() {

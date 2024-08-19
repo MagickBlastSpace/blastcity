@@ -128,10 +128,12 @@ export class Discoball extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
 
         this.activateDiscoballComboAnimation(field);
-        this.activateIsolatedDiscoballAnimation();
+        this.activateIsolatedDiscoballAnimation(2.0 / totalTime);
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
+                this.node.emit("render_line", this.node.position, tiles[i].node.position);
+
                 const rocketString = Math.floor(Math.random() * 2) === 0 ? "rocket_vertical" : "rocket_horizontal";
                 this.changeTile(tiles[i], rocketString);
             }, this.timeBetweenTiles * i);
@@ -140,6 +142,7 @@ export class Discoball extends BonusTileBase {
         this.scheduleOnce(() => {
             this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
             this.node.emit("activate_bonus_pool");
+            this.node.emit("clear_lines");
         }, totalTime);
 
         return matches;
@@ -163,10 +166,12 @@ export class Discoball extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
 
         this.activateDiscoballComboAnimation(field);
-        this.activateIsolatedDiscoballAnimation();
+        this.activateIsolatedDiscoballAnimation(2.0 / totalTime);
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
+                this.node.emit("render_line", this.node.position, tiles[i].node.position);
+
                 this.changeTile(tiles[i], "bomb");
             }, this.timeBetweenTiles * i);
         }
@@ -174,6 +179,7 @@ export class Discoball extends BonusTileBase {
         this.scheduleOnce(() => {
             this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
             this.node.emit("activate_bonus_pool");
+            this.node.emit("clear_lines");
         }, totalTime);
 
         return matches;
@@ -186,7 +192,7 @@ export class Discoball extends BonusTileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         this.activateDiscoballComboAnimation(field);
-        this.playAnimation("discoball_discoball", false);
+        this.playAnimation("discoball_discoball", false, 1);
 
         for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
@@ -271,11 +277,11 @@ export class Discoball extends BonusTileBase {
                     anim = "destroy";
                     break;
             }
-            tileComp.playAnimation(anim, true);
+            tileComp.playAnimation(anim, true, 1);
         }
     }
 
-    activateIsolatedDiscoballAnimation() {
+    activateIsolatedDiscoballAnimation(timeScale: number) {
         if(this.tileType === "multi") {
             let colorString = "0";
             switch(this.primaryColor) {
@@ -298,7 +304,10 @@ export class Discoball extends BonusTileBase {
                     colorString = "6";
                     break;
             }
-            this.playAnimation("discoball_color" + colorString, false);
+
+            let time = timeScale < 1 ? timeScale : 1;
+
+            this.playAnimation("discoball_color" + colorString, false, time);
         }
     }
 

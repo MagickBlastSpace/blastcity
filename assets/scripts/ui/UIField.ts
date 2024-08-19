@@ -1,4 +1,5 @@
-import { _decorator, Component, Node, Vec2 } from 'cc';
+import { _decorator, Component, Node, Vec3 } from 'cc';
+import { UIDiscoballLineRenderer } from './effects/UIDiscoballLineRenderer';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIField')
@@ -27,6 +28,9 @@ export class UIField extends Component {
     emptyTilesLayout: Node = null;
     @property(Node)
     statusLayout: Node = null;
+
+    @property(UIDiscoballLineRenderer)
+    lr: UIDiscoballLineRenderer = null;
 
     private highPriorityStatuses: string[] = ["dynamite", "bubble"];
 
@@ -69,6 +73,9 @@ export class UIField extends Component {
         posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
         tileUi.init(posX, posY, layout, false, tileType);
+
+        tile.on("render_line", (start, end) => this.renderLine(start, end));
+        tile.on("clear_lines", () => this.clearLines());
     }
 
     initStatus(status: Node, tileType: string) {
@@ -130,6 +137,15 @@ export class UIField extends Component {
                 tileUiComponent.moveTo(posX, posY, newLayout);
             }
         }
+    }
+
+
+    renderLine(start: Vec3, end: Vec3) {
+        this.lr.renderDiscoballLine(start, end);
+    }
+
+    clearLines() {
+        this.lr.clear();
     }
 }
 

@@ -45,7 +45,7 @@ export class Bomb extends BonusTileBase {
     getBombMatches(field: Node[][], statuses: Node[][], row: number, col: number): Node[] {
         let matches = [];
 
-        this.playAnimation("bomb", false);
+        this.playAnimation("bomb", false, 1);
 
         const totalTime = this.respawnDelay / 2;
         const timeStep = totalTime / 9;
@@ -86,7 +86,7 @@ export class Bomb extends BonusTileBase {
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.playAnimation("rocket_bomb", false);
+        this.playAnimation("rocket_bomb", false, 1);
 
         this.rowExtraHit(field, this.row, this.col);
         this.rowExtraHit(field, this.row + 1, this.col);
@@ -102,7 +102,7 @@ export class Bomb extends BonusTileBase {
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.playAnimation("bomb_bomb", false);
+        this.playAnimation("bomb_bomb", false, 1);
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
@@ -154,6 +154,8 @@ export class Bomb extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
+                this.node.emit("render_line", this.node.position, tiles[i].node.position);
+
                 this.changeTile(tiles[i]);
             }, this.timeBetweenTiles * i);
         }
@@ -163,9 +165,10 @@ export class Bomb extends BonusTileBase {
             this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
 
             this.node.emit("activate_bonus_pool");
+            this.node.emit("clear_lines");
         }, totalTime);
 
-        this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y]);
+        this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y], 2.0 / totalTime);
 
         return matches;
     }
@@ -178,12 +181,12 @@ export class Bomb extends BonusTileBase {
         this.node.emit("respawn", timeToRespawn);
     }
 
-    setDicoballComboAnimation(disco: Node) {
-        this.playAnimation("bomb_discoball", true);
+    setDicoballComboAnimation(disco: Node, timeScale: number) {
+        this.playAnimation("bomb_discoball", true, 1);
 
         let discoComp = disco.getComponent("Discoball");
         if(discoComp) {
-            discoComp.activateIsolatedDiscoballAnimation();
+            discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
     }
 }

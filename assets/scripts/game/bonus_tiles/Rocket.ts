@@ -47,7 +47,7 @@ export class Rocket extends BonusTileBase {
             return matches;
         }
 
-        this.playAnimation(this.tileType, false);
+        this.playAnimation(this.tileType, false, 1);
 
         switch(this.tileType) {
             case 'rocket_vertical':
@@ -81,7 +81,7 @@ export class Rocket extends BonusTileBase {
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.playAnimation("rocket_rocket", false);
+        this.playAnimation("rocket_rocket", false, 1);
 
         this.rowExtraHit(field, this.row, this.col);
         this.colExtraHit(field, this.row, this.col);
@@ -92,7 +92,7 @@ export class Rocket extends BonusTileBase {
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
-        this.playAnimation("rocket_bomb", false);
+        this.playAnimation("rocket_bomb", false, 1);
 
         this.rowExtraHit(field, this.row, this.col);
         this.rowExtraHit(field, this.row + 1, this.col);
@@ -121,6 +121,8 @@ export class Rocket extends BonusTileBase {
         const totalTime = this.timeBetweenTiles * tiles.length;
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
+                this.node.emit("render_line", this.node.position, tiles[i].node.position);
+
                 this.changeTile(tiles[i]);
             }, this.timeBetweenTiles * i);
         }
@@ -130,9 +132,10 @@ export class Rocket extends BonusTileBase {
             this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
 
             this.node.emit("activate_bonus_pool");
+            this.node.emit("clear_lines");
         }, totalTime);
 
-        this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y]);
+        this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y], 2.0 / totalTime);
 
         return matches;
     }
@@ -147,13 +150,13 @@ export class Rocket extends BonusTileBase {
         this.node.emit("respawn", timeToRespawn);
     }
 
-    setDicoballComboAnimation(disco: Node) {
+    setDicoballComboAnimation(disco: Node, timeScale: number) {
         let anim = this.tileType === "rocket_vertical" ? "rocket_discoball_vert" : "rocket_discoball_hor";
-        this.playAnimation(anim, true);
+        this.playAnimation(anim, true, 1);
 
         let discoComp = disco.getComponent("Discoball");
         if(discoComp) {
-            discoComp.activateIsolatedDiscoballAnimation();
+            discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
     }
 }

@@ -163,7 +163,7 @@ export class UITile extends Component {
             if(this.isSpineDestroyScheduled) {
                 this.spine.node.destroy();
             }
-            
+
             tween(this.node).stop();
 
             if(this.content) {
@@ -183,11 +183,11 @@ export class UITile extends Component {
         }, delay);
     }
 
-    playAnimation(animation: string, isLooped: boolean) {
+    playAnimation(animation: string, isLooped: boolean, timeScale: number) {
         try {
             if(this.spine) {
-                const trackEntry = this.spine.getCurrent(0);
-                const isPlaying = trackEntry && !trackEntry.isComplete();
+                let trackEntry = this.spine.getCurrent(0);
+                let isPlaying = trackEntry && !trackEntry.isComplete();
                 if (isPlaying) {
                     //console.log("Animation is playing");
                     return;
@@ -209,7 +209,8 @@ export class UITile extends Component {
                     });
                 }
                 
-                this.spine.setAnimation(0, animation, isLooped);
+                trackEntry = this.spine.setAnimation(0, animation, isLooped);
+                trackEntry.timeScale = timeScale;
             }
         } catch (error) {
             console.error('Error setting spine animation:', error);
