@@ -1199,7 +1199,7 @@ export class Field extends Component {
             this.bonusPool.push(tile);
         }
 
-        this.isClickAvailable = !isComboBonus;
+        this.isClickAvailable = !isComboBonus && choosenType !== "multi" && choosenType !== "super";
         
         if(matches.length >= 2 || isBonus) {
             matches.forEach(matchedTile => {
@@ -1223,7 +1223,7 @@ export class Field extends Component {
         }
 
         if(matches.length > 0 || isBonus) {
-            if(isComboBonus && isRespawn) {
+            if((isComboBonus || choosenType === "multi") && isRespawn) {
                 isRespawn = false;
             }
             this.spawnNewTiles(isRespawn, false);
@@ -2364,7 +2364,7 @@ export class Field extends Component {
             }
             else if(currentCount > lastSecondaryCount) {
                 lastSecondaryCount = currentCount;
-                
+
                 this.secondaryColor = this.availableColors[color];
             }
         }

@@ -15,6 +15,8 @@ export class BonusTileBase extends TileBase {
 
     private isActivated: boolean = false;
 
+    private disco_combo_time: number = 2;
+
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -224,6 +226,20 @@ export class BonusTileBase extends TileBase {
         super.destroyTile(delay);
         
         this.node.emit("goal", this.tileType);
+    }
+
+
+    renderLine(start: Node, end: Node) {
+        if(start === null || start === undefined || end === null || end === undefined) {
+            return;
+        }
+
+        try {
+            this.node.emit("render_line", start.position, end.position);
+        }
+        catch (error) {
+            console.log("Render Line Error: " + error);
+        }
     }
 }
 

@@ -160,7 +160,7 @@ export class UITile extends Component {
         this.playAnimation("destroy", false);
 
         this.scheduleOnce(() => {
-            if(this.isSpineDestroyScheduled) {
+            if(this.isSpineDestroyScheduled && this.spine !== null) {
                 this.spine.node.destroy();
             }
 
@@ -213,7 +213,7 @@ export class UITile extends Component {
                 trackEntry.timeScale = timeScale;
             }
         } catch (error) {
-            console.error('Error setting spine animation:', error);
+            //console.error('Error setting spine animation:', error);
         }
     }
 

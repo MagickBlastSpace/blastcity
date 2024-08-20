@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Bomb')
 export class Bomb extends BonusTileBase {
-    
+
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
     }
@@ -151,24 +151,27 @@ export class Bomb extends BonusTileBase {
             this.node.emit("goal", "discoball");
         }
         
-        const totalTime = this.timeBetweenTiles * tiles.length;
+        let totalTime = this.timeBetweenTiles * tiles.length;
+        totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
+
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.node.emit("render_line", this.node.position, tiles[i].node.position);
+                this.renderLine(field[this.comboPosition.x][this.comboPosition.y], tiles[i].node);
 
                 this.changeTile(tiles[i]);
             }, this.timeBetweenTiles * i);
         }
 
         this.scheduleOnce(() => {
+            this.node.emit("clear_lines");
+            
             this.node.emit("extra_hit", this.row, this.col, false, 0);
             this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
 
             this.node.emit("activate_bonus_pool");
-            this.node.emit("clear_lines");
         }, totalTime);
 
-        this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y], 2.0 / totalTime);
+        this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y], this.disco_combo_time / totalTime);
 
         return matches;
     }

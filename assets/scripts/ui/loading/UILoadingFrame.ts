@@ -28,7 +28,7 @@ export class UILoadingFrame extends Component {
                 this.scheduleNewTry();
             }
         } catch (error) {
-            console.error("Error initializing GamePush:", error);
+            //console.error("Error initializing GamePush:", error);
 
             this.scheduleNewTry();
         }

@@ -22,6 +22,8 @@ export class Discoball extends BonusTileBase {
     private primaryColor: string = "";
     private secondaryColor: string = "";
 
+    private disco_disco_time: number = 0.7;
+
     
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -61,29 +63,37 @@ export class Discoball extends BonusTileBase {
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        matches = this.getBiggestCommonTilesGroup(field, statuses);
-
-        if(this.tileType === "super") {
-            this.tileType = "multi";
-
-            this.scheduleOnce(() => {
-                this.node.emit("get_matches", this.node);
-            }, this.respawnDelay);
-
-            for(let i = 0; i < matches.length; i++) {
-                this.node.emit("goal", "discoball");
-            }
-
-            return matches;
-        }
+        let tiles = [];
+        tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
 
         this.isActivated = true;
 
-        for(let i = 0; i < matches.length; i++) {
+        for(let i = 0; i < tiles.length; i++) {
             this.node.emit("goal", "discoball");
         }
 
-        matches.push(this);
+        tiles.push(this);
+
+        let totalTime = this.timeBetweenTiles * tiles.length;
+        totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
+
+        this.activateIsolatedDiscoballAnimation(this.disco_combo_time / totalTime);
+
+        this.setRespawnEvent(totalTime);
+
+        for(let i = 0; i < tiles.length; i++) {
+            this.scheduleOnce(() => {
+                this.renderLine(this.node, tiles[i].node);
+            }, this.timeBetweenTiles * i);
+        }
+
+        this.scheduleOnce(() => {
+            this.node.emit("clear_lines");
+
+            for(let i = 0; i < tiles.length; i++) {
+                this.node.emit("extra_hit", tiles[i].getRow(), tiles[i].getCol(), false, 0);
+            }
+        }, totalTime - 0.05);
 
         return matches;
     }
@@ -123,16 +133,15 @@ export class Discoball extends BonusTileBase {
             this.node.emit("goal", "discoball");
         }
 
-        tiles.push(this);
-
-        const totalTime = this.timeBetweenTiles * tiles.length;
+        let totalTime = this.timeBetweenTiles * tiles.length;
+        totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
 
         this.activateDiscoballComboAnimation(field);
-        this.activateIsolatedDiscoballAnimation(2.0 / totalTime);
+        this.activateIsolatedDiscoballAnimation(this.disco_combo_time / totalTime);
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.node.emit("render_line", this.node.position, tiles[i].node.position);
+                this.renderLine(this.node, tiles[i].node);
 
                 const rocketString = Math.floor(Math.random() * 2) === 0 ? "rocket_vertical" : "rocket_horizontal";
                 this.changeTile(tiles[i], rocketString);
@@ -140,9 +149,12 @@ export class Discoball extends BonusTileBase {
         }
 
         this.scheduleOnce(() => {
-            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
-            this.node.emit("activate_bonus_pool");
             this.node.emit("clear_lines");
+
+            this.node.emit("extra_hit", this.row, this.col, false, 0);
+            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
+
+            this.node.emit("activate_bonus_pool");
         }, totalTime);
 
         return matches;
@@ -161,25 +173,27 @@ export class Discoball extends BonusTileBase {
             this.node.emit("goal", "discoball");
         }
 
-        tiles.push(this);
-
-        const totalTime = this.timeBetweenTiles * tiles.length;
+        let totalTime = this.timeBetweenTiles * tiles.length;
+        totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
 
         this.activateDiscoballComboAnimation(field);
         this.activateIsolatedDiscoballAnimation(2.0 / totalTime);
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.node.emit("render_line", this.node.position, tiles[i].node.position);
+                this.renderLine(this.node, tiles[i].node);
 
                 this.changeTile(tiles[i], "bomb");
             }, this.timeBetweenTiles * i);
         }
 
         this.scheduleOnce(() => {
-            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
-            this.node.emit("activate_bonus_pool");
             this.node.emit("clear_lines");
+            
+            this.node.emit("extra_hit", this.row, this.col, false, 0);
+            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
+
+            this.node.emit("activate_bonus_pool");
         }, totalTime);
 
         return matches;
@@ -194,14 +208,18 @@ export class Discoball extends BonusTileBase {
         this.activateDiscoballComboAnimation(field);
         this.playAnimation("discoball_discoball", false, 1);
 
-        for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
-                let isBonusChain = this.isChain(i, j);
-                this.node.emit("extra_hit", i, j, isBonusChain, 0);
-    
-                this.node.emit("goal", "discoball");
+        this.scheduleOnce(() => {
+            for(let i = 0; i < numRows; i++) {
+                for(let j = 0; j < numCols; j++) {
+                    let isBonusChain = this.isChain(i, j);
+                    this.node.emit("extra_hit", i, j, isBonusChain, 0);
+        
+                    this.node.emit("goal", "discoball");
+                }
             }
-        }
+        }, this.disco_disco_time);
+
+        this.setRespawnEvent(this.disco_disco_time);
 
         return matches;
     }
