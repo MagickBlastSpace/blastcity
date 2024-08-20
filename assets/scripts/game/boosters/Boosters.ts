@@ -20,6 +20,10 @@ export class Boosters extends Component {
 
     private respawnDelay: number = 0.35;
 
+    private timeArrow: number = 0;
+    private timeHammer: number = 0.34;
+    private timeCannon: number = 0.2;
+
 
     start() {
         this.hammer.node.on("activate", () => this.setActiveBooster("hammer"));
@@ -45,6 +49,8 @@ export class Boosters extends Component {
 
 
     setShuffleEvent() {
+        this.node.emit("booster_activation", "jesterhat", 4, 4);
+
         this.node.emit("shuffle");
 
         UserData.instance.subResource("jester", 1);
@@ -61,19 +67,31 @@ export class Boosters extends Component {
     useActiveBooster(field: Node[][], row: number, col: number) {
         switch(this.activeBooster) {
             case "hammer":
-                this.singleExtraHit(row, col);
+                this.node.emit("booster_activation", this.activeBooster, row, col);
+
+                this.scheduleOnce(() => {
+                    this.singleExtraHit(row, col);
+                }, this.timeHammer);
 
                 UserData.instance.subResource("hammer", 1);
 
                 break;
             case "arrow":
-                this.rowExtraHit(field, row, col);
+                this.node.emit("booster_activation", this.activeBooster, row, 4);
+
+                this.scheduleOnce(() => {
+                    this.rowExtraHit(field, row, col);
+                }, this.timeArrow);
 
                 UserData.instance.subResource("bow", 1);
 
                 break;
             case "cannon":
-                this.colExtraHit(field, row, col);
+                this.node.emit("booster_activation", this.activeBooster, 4, col);
+
+                this.scheduleOnce(() => {
+                    this.colExtraHit(field, row, col);
+                }, this.timeCannon);
 
                 UserData.instance.subResource("cannon", 1);
 

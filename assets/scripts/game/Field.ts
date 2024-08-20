@@ -158,6 +158,10 @@ export class Field extends Component {
                     this.shuffleTiles();
                 }
             });
+
+            this.boosters[i].node.on("booster_activation", (boosterType, row, col) => {
+                this.node.emit("booster", boosterType, row, col);
+            });
         }
 
         this.isSuperDiscoballMode = false;

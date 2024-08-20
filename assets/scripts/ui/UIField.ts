@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3 } from 'cc';
+import { _decorator, Component, Node, Vec3, sp } from 'cc';
 import { UIDiscoballLineRenderer } from './effects/UIDiscoballLineRenderer';
 const { ccclass, property } = _decorator;
 
@@ -32,6 +32,9 @@ export class UIField extends Component {
     @property(UIDiscoballLineRenderer)
     lr: UIDiscoballLineRenderer = null;
 
+    @property(sp.Skeleton)
+    boostersAnimation: sp.Skeleton = null;
+
     private highPriorityStatuses: string[] = ["dynamite", "bubble"];
 
 
@@ -39,6 +42,11 @@ export class UIField extends Component {
         this.field.on("refresh", (tiles, statuses) => this.refresh(tiles, statuses));
         this.field.on("init_tile", (tile, isStatus, tileType) => this.init(tile, isStatus, tileType));
         this.field.on("init_status", (status, tileType) => this.initStatus(status, tileType));
+        this.field.on("booster", (boosterType, row, col) => this.playBoosterAnimation(boosterType, row, col));
+
+        if (this.boostersAnimation) {
+            this.boostersAnimation.node.active = false;
+        }
     }
 
 
@@ -146,6 +154,29 @@ export class UIField extends Component {
 
     clearLines() {
         this.lr.clear();
+    }
+
+
+    playBoosterAnimation(boosterType: string, row: number, col: number) {
+        try {
+            if(this.boostersAnimation) {
+                const spineNode = this.boostersAnimation.node;
+                spineNode.active = true;
+
+                let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
+                let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
+
+                spineNode.setPosition(posX, posY);
+
+                this.boostersAnimation.setCompleteListener(() => {
+                    spineNode.active = false;
+                });
+
+                this.boostersAnimation.setAnimation(0, boosterType, false);
+            }
+        } catch (error) {
+            console.error('Error setting boosters spine animation:', error);
+        }
     }
 }
 

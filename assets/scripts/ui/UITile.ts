@@ -1,6 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, Color, Layers, BlockInputEvents } from 'cc';
-import { SpriteTileData } from '../game/Tile';
-import { Skeleton } from 'sp';
+import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp } from 'cc';
 const { ccclass, property } = _decorator;
 
 
