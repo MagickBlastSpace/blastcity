@@ -1015,13 +1015,7 @@ export class Field extends Component {
                             }
 
                             if(tileComp.getTileType() === "multi" || tileComp.getTileType() === "super") {
-                                let matches = tileComp.getMatches(this.tileArray, this.statusArray, true);
-        
-                                if(matches !== null && matches !== undefined) {
-                                    matches.forEach(matchedTile => {
-                                        this.giveDamage(matchedTile, tileComp.getTileType(), false, 0);
-                                    })
-                                }
+                                let matches = tileComp.getMatchesClear(this.tileArray, this.statusArray);
 
                                 return;
                             }
@@ -1049,13 +1043,7 @@ export class Field extends Component {
                                 }
 
                                 if(tileComp.getTileType() === "multi" || tileComp.getTileType() === "super") {
-                                    let matches = tileComp.getMatches(this.tileArray, this.statusArray, true);
-            
-                                    if(matches !== null && matches !== undefined) {
-                                        matches.forEach(matchedTile => {
-                                            this.giveDamage(matchedTile, tileComp.getTileType(), false, 0);
-                                        })
-                                    }
+                                    let matches = tileComp.getMatchesClear(this.tileArray, this.statusArray);
     
                                     return;
                                 }
