@@ -229,13 +229,9 @@ export class BonusTileBase extends TileBase {
     }
 
 
-    renderLine(start: Node, end: Node) {
-        if(start === null || start === undefined || end === null || end === undefined) {
-            return;
-        }
-
+    renderLine(start: Vec2, end: Vec2) {
         try {
-            this.node.emit("render_line", start.position, end.position);
+            this.node.emit("render_line", start, end);
         }
         catch (error) {
             console.log("Render Line Error: " + error);

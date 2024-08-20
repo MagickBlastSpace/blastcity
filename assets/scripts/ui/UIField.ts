@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, sp } from 'cc';
+import { _decorator, Component, Node, Vec2, Vec3, sp } from 'cc';
 import { UIDiscoballLineRenderer } from './effects/UIDiscoballLineRenderer';
 const { ccclass, property } = _decorator;
 
@@ -148,8 +148,14 @@ export class UIField extends Component {
     }
 
 
-    renderLine(start: Vec3, end: Vec3) {
-        this.lr.renderDiscoballLine(start, end);
+    renderLine(start: Vec2, end: Vec2) {
+        let start_pos_X = start.y * (this.tileSize + this.tileSpacing) + this.xOffset;
+        let start_pos_Y = start.x * (this.tileSize + this.tileSpacing) + this.xOffset;
+
+        let end_pos_X = end.y * (this.tileSize + this.tileSpacing) + this.xOffset;
+        let end_pos_Y = end.x * (this.tileSize + this.tileSpacing) + this.xOffset;
+
+        this.lr.renderDiscoballLine(new Vec3(start_pos_X, start_pos_Y, 0), new Vec3(end_pos_X, end_pos_Y, 0));
     }
 
     clearLines() {

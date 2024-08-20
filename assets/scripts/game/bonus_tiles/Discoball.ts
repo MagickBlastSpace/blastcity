@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Vec2 } from 'cc';
 import { BonusTileBase } from './BonusTileBase';
 import { SpriteTileData } from '../Tile';
 const { ccclass, property } = _decorator;
@@ -48,6 +48,32 @@ export class Discoball extends BonusTileBase {
     }
 
 
+    getMatchesClear(field: Node[][], statuses: Node[][]): Node[] {
+        if(this.isActivated) {
+            return;
+        }
+
+        let matches = [];
+        
+        let tiles = [];
+        tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
+
+        this.isActivated = true;
+
+        for(let i = 0; i < tiles.length; i++) {
+            this.node.emit("goal", "discoball");
+        }
+
+        tiles.push(this);
+
+        for(let i = 0; i < tiles.length; i++) {
+            this.node.emit("extra_hit", tiles[i].getRow(), tiles[i].getCol(), false, 0);
+        }
+
+        return matches;
+    }
+
+
     getMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
         if(this.isActivated) {
             return;
@@ -59,9 +85,6 @@ export class Discoball extends BonusTileBase {
             matches = this.getMatchesByCombo(field, statuses);
             return matches;
         }
-
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
 
         let tiles = [];
         tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
@@ -83,7 +106,12 @@ export class Discoball extends BonusTileBase {
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.renderLine(this.node, tiles[i].node);
+                try {
+                    this.renderLine(new Vec2(this.row, this.col), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+                }
+                catch (error) {
+                    console.log("Render Line Error: " + error);
+                }
             }, this.timeBetweenTiles * i);
         }
 
@@ -141,7 +169,12 @@ export class Discoball extends BonusTileBase {
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.renderLine(this.node, tiles[i].node);
+                try {
+                    this.renderLine(new Vec2(this.row, this.col), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+                }
+                catch (error) {
+                    console.log("Render Line Error: " + error);
+                }
 
                 const rocketString = Math.floor(Math.random() * 2) === 0 ? "rocket_vertical" : "rocket_horizontal";
                 this.changeTile(tiles[i], rocketString);
@@ -181,7 +214,12 @@ export class Discoball extends BonusTileBase {
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.renderLine(this.node, tiles[i].node);
+                try {
+                    this.renderLine(new Vec2(this.row, this.col), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+                }
+                catch (error) {
+                    console.log("Render Line Error: " + error);
+                }
 
                 this.changeTile(tiles[i], "bomb");
             }, this.timeBetweenTiles * i);
@@ -189,7 +227,7 @@ export class Discoball extends BonusTileBase {
 
         this.scheduleOnce(() => {
             this.node.emit("clear_lines");
-            
+
             this.node.emit("extra_hit", this.row, this.col, false, 0);
             this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
 

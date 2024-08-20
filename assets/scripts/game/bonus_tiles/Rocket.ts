@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3, SpriteFrame, Sprite } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, SpriteFrame, Sprite, Vec2} from 'cc';
 import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
@@ -123,7 +123,15 @@ export class Rocket extends BonusTileBase {
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
-                this.renderLine(field[this.comboPosition.x][this.comboPosition.y], tiles[i].node);
+                try {
+                    let comboComp = field[this.comboPosition.x][this.comboPosition.y].getComponent("TileBase");
+                    if(comboComp) {
+                        this.renderLine(new Vec2(comboComp.getRow(), comboComp.getCol()), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+                    }
+                }
+                catch (error) {
+                    console.log("Render Line Error: " + error);
+                }
 
                 this.changeTile(tiles[i]);
             }, this.timeBetweenTiles * i);
@@ -131,7 +139,7 @@ export class Rocket extends BonusTileBase {
 
         this.scheduleOnce(() => {
             this.node.emit("clear_lines");
-            
+
             this.node.emit("extra_hit", this.row, this.col, false, 0);
             this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
 
