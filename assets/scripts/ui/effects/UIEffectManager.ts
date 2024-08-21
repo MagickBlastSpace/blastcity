@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Prefab, Vec2, instantiate } from 'cc';
 import { ResolutionManager } from '../../utils/ResolutionManager';
+import { SpecialPrefabData } from '../../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEffectManager')
@@ -30,10 +31,14 @@ export class UIEffectManager extends Component {
     @property
     tileSize: number = 165;
 
+    @property([SpecialPrefabData])
+    specialPrefabs: SpecialPrefabData[] = [];
+
 
     start() {
         this.field.on("coin_reward", (row, col) => this.createEffectCoinReward(row, col));
-        this.field.on("extra_hit", (row, col) => this.createEffectExtraHit(row, col));
+
+        this.field.on("goal_effect", (spec, row, col) => this.createSpecGoalEffect(spec, row, col));
     }
 
     createEffectCoinReward(row: number, col: number) {
@@ -49,15 +54,24 @@ export class UIEffectManager extends Component {
         coinComp.init(new Vec2(posX, posY), targetPosition);
     }
 
-    createEffectExtraHit(row: number, col: number) {
-        /*const effect = instantiate(this.extraHit);
-        this.effectsLayer.addChild(effect);
-        const effectComp = effect.getComponent("UIExtraHitEffect");
+    createSpecGoalEffect(spec: string, row: number, col: number) {
+        console.log("Create special goal effect: " + spec + " at " + row + " " + col);
+        
+        const prefab = this.specialPrefabs.find(p => p.id === spec)?.prefab;
+        if(prefab === null) {
+            return;
+        }
+
+        const specNode = instantiate(prefab);
+        this.effectsLayer.addChild(specNode);
+        const specComp = specNode.getComponent("UISpecGoalEffect");
 
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        effectComp.init(new Vec2(posX, posY));*/
+        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
+
+        specComp.init(new Vec2(posX, posY), targetPosition);
     }
 }
 

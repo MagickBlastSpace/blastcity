@@ -22,6 +22,7 @@ export class Bottle extends SpecTileBase {
         this.node.emit("goal", "bottle"); //temp fpr version update
 
         this.node.emit("goal", "duck");
+        this.node.emit("goal_effect", "duck", this.row, this.col);
     }
 
     startInActionEffect(): boolean {

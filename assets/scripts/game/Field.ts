@@ -701,6 +701,9 @@ export class Field extends Component {
         tileNode.on("clear", () => {
             this.clearExtra();
         });
+        tileNode.on("goal_effect", (goalType, row, col) => {
+            this.node.emit("goal_effect", goalType, row, col);
+        });
 
         this.tileArray[row][col] = tileNode;
         if(isDoubleWidth || isTripleWidth) {
