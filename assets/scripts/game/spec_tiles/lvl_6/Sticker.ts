@@ -33,6 +33,8 @@ export class Sticker extends SpecTileBase {
         this.node.emit("goal", "balloon");
 
         this.node.emit("goal", "sticker");
+
+        this.playAnimation("balloon0", false, 1);
     }
 }
 

@@ -16,6 +16,8 @@ export class StickerYellow extends Sticker {
 
     startDestroyConsequences() {
         this.node.emit("goal", "colored_balloon");
+
+        this.playAnimation("balloon1", false, 1);
     }
 }
 
