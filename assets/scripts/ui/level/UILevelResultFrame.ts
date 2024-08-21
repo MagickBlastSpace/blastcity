@@ -23,6 +23,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     goldLabel: Label = null;
     @property(Label)
     levelLabel: Label = null;
+    @property(Label)
+    adLabel: Label = null;
 
     @property(Sprite)
     frame: Sprite = null;
@@ -44,6 +46,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
     @property(Button)
     playBtn: Button = null;
+    @property(Button)
+    showAdBtn: Button = null;
 
     @property(Node)
     progressLose: Node = null;
@@ -64,9 +68,13 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
     private isSuccess: boolean = false;
 
+    private difficulty: string = "";
+    private goldEarned: number = 0;
+
 
     start() {
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+        this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
 
         this.movesShop.node.on("buy", () => this.hide());
         this.movesShop.node.on("close", () => this.onPlayBtnClick());
@@ -89,18 +97,30 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
         this.movesShop.refresh();
 
+        this.goldEarned = goldEarned;
+
+        this.showAdBtn.node.active = false;
+
         try {
             let levelsCount = GameData.instance.levels.length;
             let completedLevelIndex = UserData.instance.getProgress() - 1;
             let levelData = GameData.instance.levels[completedLevelIndex % levelsCount];
 
+            this.difficulty = levelData.difficulty;
+
             if(levelData.difficulty === "hard") {
                 this.frame.spriteFrame = this.hard;
                 this.header.spriteFrame = this.header_hard;
+
+                this.showAdBtn.node.active = true;
+                this.adLabel.string = "x3";
             }
             else if(levelData.difficulty === "superhard") {
                 this.frame.spriteFrame = this.superHard;
                 this.header.spriteFrame = this.header_superHard;
+
+                this.showAdBtn.node.active = true;
+                this.adLabel.string = "x5";
             }
             else {
                 this.frame.spriteFrame = this.common;
@@ -123,7 +143,25 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
         this.hide();
 
-        //gamepush.ads.showFullscreen();
+        //gamepush.ads.showFullscreen(); //TBD conditions
+    }
+
+    async onShowAdBtnClick() {
+        const success = await gamepush.ads.showRewardedVideo();
+        if (success) {
+            this.getAdReward();
+
+            this.onPlayBtnClick();
+        }
+    }
+
+    getAdReward() {
+        if(this.difficulty === "hard") {
+            UserData.instance.addResource("gold", this.goldEarned * 2);
+        }
+        else if(this.difficulty === "superhard") {
+            UserData.instance.addResource("gold", this.goldEarned * 4);
+        }
     }
 }
 

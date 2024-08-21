@@ -21,8 +21,13 @@ export class UILoadingFrame extends Component {
         try {
             if(gamepush.player.ready) {
                 console.log("GamePush module is ready!");
-    
-                this.loadScene();
+
+                gamepush.ads.showPreloader();
+
+                gamepush.ads.on('preloader:close', (success) => {
+                    this.loadScene();
+                });
+
             }
             else {
                 this.scheduleNewTry();

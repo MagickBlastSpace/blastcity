@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Label, Button } from 'cc';
 import { MovesShopStageData } from '../../data/GameData';
 import { MovesShop } from '../../game/boosters/MovesShop';
@@ -13,6 +15,8 @@ export class UILevelMovesShop extends Component {
     @property(Button)
     buyBtn: Button = null;
     @property(Button)
+    showAdBtn: Button = null;
+    @property(Button)
     closeBtn: Button = null;
 
     @property(Label)
@@ -27,6 +31,7 @@ export class UILevelMovesShop extends Component {
 
     start() {
         this.buyBtn.node.on(Button.EventType.CLICK, this.onBuyBtnClick, this);
+        this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
     }
 
@@ -55,7 +60,8 @@ export class UILevelMovesShop extends Component {
                 }
             }
 
-            this.buyBtnLabel.string = this.data.price; 
+            this.buyBtnLabel.string = this.data.price;
+            this.showAdBtn.node.active = this.data.price === 0;
         }
         else {
             this.additinalStageDataLabel.string = "";
@@ -74,6 +80,13 @@ export class UILevelMovesShop extends Component {
         this.movesShop.buyStage();
 
         this.node.emit("buy");
+    }
+
+    async onShowAdBtnClick() {
+        const success = await gamepush.ads.showRewardedVideo();
+        if (success) {
+            this.onBuyBtnClick();
+        }
     }
 
     onCloseBtnClick() {
