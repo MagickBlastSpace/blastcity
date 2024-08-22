@@ -107,8 +107,24 @@ export class AdsTimer extends Component {
             case "3":
                 return this.gameplayTime > this.GAMEPLAY_TRESHOLD;
             case "4":
-                return this.levelsCounter >= 8;
+                let accountAge = gamepush.player.get('accountage');
+                let levelsThreshold = 8;
 
+                if(accountAge === 0) {
+                    this.levelsCounter = 0;
+                    return false;
+                }
+                else if(accountAge === 1) {
+                    levelsThreshold = 8;
+                }
+                else if(accountAge === 2) {
+                    levelsThreshold = 5;
+                }
+                else if(accountAge >= 3) {
+                    levelsThreshold = 3;
+                }
+
+                return this.levelsCounter >= levelsThreshold;
         }
 
         return false;
