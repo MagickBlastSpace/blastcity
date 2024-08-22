@@ -44,9 +44,7 @@ export class AdsTimer extends Component {
 
     update(dt: number) {
         if(this.adsType === "3") {
-            if(this.isGameplay) {
-                this.gameplayTime += dt;
-            }
+            this.gameplayTime += dt;
         }
 
         if(this.isMenu) {
