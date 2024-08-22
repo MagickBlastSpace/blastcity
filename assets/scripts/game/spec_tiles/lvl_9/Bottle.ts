@@ -27,6 +27,8 @@ export class Bottle extends SpecTileBase {
 
     startInActionEffect(): boolean {
         if(this.row === this.lowestRow) {
+            this.playAnimation("destroy", false, 1);
+            
             this.node.emit("destroy_tile", this.row, this.col);
 
             this.node.emit("respawn", 0.2);
