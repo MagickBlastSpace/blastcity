@@ -5,6 +5,7 @@ import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { UIEventButton } from './UIEventButton';
 import { Field } from '../../game/Field';
+import { AdsTimer } from '../../utils/AdsTimer';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -31,6 +32,9 @@ export class UIStartFrame extends UIFrameBase {
 
     @property(Field)
     field: Field = null;
+
+    @property(AdsTimer)
+    adsTimer: AdsTimer = null;
 
 
     start() {
@@ -93,6 +97,8 @@ export class UIStartFrame extends UIFrameBase {
         super.show();
 
         this.refresh();
+
+        this.adsTimer.startMenuTimer();
     }
 
 
@@ -125,6 +131,8 @@ export class UIStartFrame extends UIFrameBase {
             this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
 
             this.hide();
+
+            this.adsTimer.startGameplayTimer();
         }
         catch (error) {
             console.log(error);

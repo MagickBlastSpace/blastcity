@@ -143,7 +143,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
         this.hide();
 
-        //gamepush.ads.showFullscreen(); //TBD conditions
+        this.node.emit("level_close");
     }
 
     async onShowAdBtnClick() {
