@@ -16,6 +16,8 @@ export class BoxYellow extends Box {
 
     startDestroyConsequences() {
         this.node.emit("goal", "colored_box");
+
+        this.playAnimation("yellow", false, 1);
     }
 }
 

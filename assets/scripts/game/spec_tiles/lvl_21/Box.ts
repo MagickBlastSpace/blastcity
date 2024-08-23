@@ -32,6 +32,8 @@ export class Box extends SpecTileBase {
 
     startDestroyConsequences() {
         this.node.emit("goal", "box");
+
+        this.playAnimation("crate", false, 1);
     }
 }
 

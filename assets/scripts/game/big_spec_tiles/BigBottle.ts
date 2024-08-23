@@ -34,6 +34,7 @@ export class BigBottle extends BigTileBase {
         this.node.emit("goal", "big_bottle"); //temp for version update
 
         this.node.emit("goal", "big_duck");
+        this.node.emit("goal_effect", "big_duck", this.row, this.col);
     }
 
 

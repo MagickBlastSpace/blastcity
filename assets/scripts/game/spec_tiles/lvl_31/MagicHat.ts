@@ -68,6 +68,7 @@ export class MagicHat extends SpecTileBase {
         this.setAsDamaged();
         
         this.node.emit("goal", "magic_hat");
+        this.node.emit("goal_effect", "magic_hat", this.row, this.col);
     }
 
 

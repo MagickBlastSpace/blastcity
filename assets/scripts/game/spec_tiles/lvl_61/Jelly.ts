@@ -119,6 +119,8 @@ export class Jelly extends SpecTileBase {
 
     startDestroyConsequences() {
         this.node.emit("goal", "jelly");
+
+        this.playAnimation("destroy", false, 1);
     }
 }
 

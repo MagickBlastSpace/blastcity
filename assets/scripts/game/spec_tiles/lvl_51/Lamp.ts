@@ -45,6 +45,9 @@ export class Lamp extends SpecTileBase {
 
     startDestroyConsequences() {
         this.node.emit("goal", "lamp");
+        this.node.emit("goal_effect", "lamp", this.row, this.col);
+
+        this.playAnimation("destroy", false, 1);
     }
 
     clearExtra() {

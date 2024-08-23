@@ -70,6 +70,8 @@ export class Discoball extends BonusTileBase {
             this.node.emit("extra_hit", tiles[i].getRow(), tiles[i].getCol(), false, 0);
         }
 
+        this.setRespawnEvent(0.2);
+
         return matches;
     }
 
@@ -102,7 +104,7 @@ export class Discoball extends BonusTileBase {
 
         this.activateIsolatedDiscoballAnimation(this.disco_combo_time / totalTime);
 
-        this.setRespawnEvent(totalTime);
+        this.setRespawnEvent(totalTime + 0.05);
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
