@@ -42,7 +42,7 @@ export class Discoball extends BonusTileBase {
             this.getCombo(field);
         }
         
-        let tilesToDestroy = this.getMatchesByType(field, statuses);
+        let tilesToDestroy = isBlockingCombo ? this.getMatchesClear(field, statuses) : this.getMatchesByType(field, statuses);
 
         return tilesToDestroy;
     }
