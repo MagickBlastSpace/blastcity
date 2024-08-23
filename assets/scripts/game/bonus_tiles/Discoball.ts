@@ -53,6 +53,8 @@ export class Discoball extends BonusTileBase {
             return;
         }
 
+        this.activateFastAnimation();
+
         let matches = [];
         
         let tiles = [];
@@ -67,6 +69,13 @@ export class Discoball extends BonusTileBase {
         tiles.push(this);
 
         for(let i = 0; i < tiles.length; i++) {
+            try {
+                this.renderLine(new Vec2(this.row, this.col), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+            }
+            catch (error) {
+                console.log("Render Line Error: " + error);
+            }
+            
             this.node.emit("extra_hit", tiles[i].getRow(), tiles[i].getCol(), false, 0);
         }
 
@@ -366,6 +375,34 @@ export class Discoball extends BonusTileBase {
             let time = timeScale < 1 ? timeScale : 1;
 
             this.playAnimation("discoball_color" + colorString, false, time);
+        }
+    }
+
+    activateFastAnimation() {
+        if(this.tileType === "multi") {
+            let colorString = "0";
+            switch(this.primaryColor) {
+                case "yellow":
+                    colorString = "1";
+                    break;
+                case "red":
+                    colorString = "2";
+                    break;
+                case "blue":
+                    colorString = "3";
+                    break;
+                case "green":
+                    colorString = "4";
+                    break;
+                case "purple":
+                    colorString = "5";
+                    break;
+                case "orange":
+                    colorString = "6";
+                    break;
+            }
+
+            this.playAnimation("discoball_color" + colorString, false, 10);
         }
     }
 
