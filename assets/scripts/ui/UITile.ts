@@ -238,7 +238,7 @@ export class UITile extends Component {
                     }
                 }
                 else {
-                    console.log('Anim layout is missing.');
+                    //console.log('Anim layout is missing.');
                 }
                 
                 skeleton.setCompleteListener(() => {

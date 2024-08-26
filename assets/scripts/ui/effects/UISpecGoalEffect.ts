@@ -7,7 +7,7 @@ export class UISpecGoalEffect extends Component {
     @property(sp.Skeleton)
     spine: sp.Skeleton = null;
 
-    private lifeTime: number = 1.2;
+    private lifeTime: number = 0.6;
 
 
     init(startPosition: Vec2, targetPosition: Vec2) {
@@ -22,10 +22,10 @@ export class UISpecGoalEffect extends Component {
 
 
     playAnimation() {
-        console.log("Playing spec anim");
+        //console.log("Playing spec anim");
         try {
             if(this.spine) {
-                console.log("Success");;
+                //console.log("Success");
                 this.spine.setAnimation(0, "fly", true);
                 
                 this.scheduleOnce(() => {

@@ -69,6 +69,8 @@ export class UIEffectManager extends Component {
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
+        posY = spec === "duck" || spec === "big_duck" ? posY - this.tileSize : posY;
+
         let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
 
         specComp.init(new Vec2(posX, posY), targetPosition);
