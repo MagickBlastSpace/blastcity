@@ -51,6 +51,8 @@ export class EasterEgg extends SpecTileBase {
             this.changeColor = "random";
         }
 
+        this.playAnimation("egg0", false, 1);
+
         this.node.emit("change", this.row, this.col, "easteregg_" + this.changeColor);
     }
 
