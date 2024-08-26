@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, Vec2 } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame, Vec2, tween, Vec3 } from 'cc';
 import { BonusTileBase } from './BonusTileBase';
 import { SpriteTileData } from '../Tile';
 const { ccclass, property } = _decorator;
@@ -75,7 +75,7 @@ export class Discoball extends BonusTileBase {
             catch (error) {
                 console.log("Render Line Error: " + error);
             }
-            
+
             this.node.emit("extra_hit", tiles[i].getRow(), tiles[i].getCol(), false, 0);
         }
 
@@ -256,6 +256,7 @@ export class Discoball extends BonusTileBase {
 
         this.activateDiscoballComboAnimation(field);
         this.playAnimation("discoball_discoball", false, 1);
+        this.playHideAnimation(this.icon.node);
 
         this.scheduleOnce(() => {
             for(let i = 0; i < numRows; i++) {
@@ -342,10 +343,17 @@ export class Discoball extends BonusTileBase {
                     break;
                 case "multi":
                     anim = "destroy";
+                    this.playHideAnimation(tile);
                     break;
             }
             tileComp.playAnimation(anim, true, 1);
         }
+    }
+
+    playHideAnimation(nodeToHide: Node) {
+        tween(nodeToHide)
+            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+            .start();
     }
 
     activateIsolatedDiscoballAnimation(timeScale: number) {
