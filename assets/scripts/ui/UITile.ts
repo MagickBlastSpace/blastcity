@@ -252,6 +252,47 @@ export class UITile extends Component {
         }
     }
 
+    playAnimationsSequence(animations: string[], isGoal: boolean) {
+        try {
+            if(this.spine) {
+                let trackEntry = this.spine.getCurrent(0);
+                let isPlaying = trackEntry && !trackEntry.isComplete();
+                if (isPlaying) {
+                    //console.log("Animation is playing");
+                    return;
+                }
+
+                const spineNode = this.spine.node;
+                spineNode.active = true;
+
+                this.animationsLayout.addChild(spineNode);
+
+                spineNode.setPosition(this.currentX, this.currentY);
+
+                this.spine.setAnimation(0, animations[0], false);
+
+                for(let i = 1; i < animations.length; i++) {
+                    this.spine.addAnimation(0, animations[i], false, 0);
+                }
+
+                let goalEmitLayout = this.animationsLayout;
+
+                this.spine.setCompleteListener((trackEntry) => {
+                    if (trackEntry.animation.name === animations[animations.length - 1]) {
+                        spineNode.destroy();
+                    }
+                    else if(trackEntry.animation.name === animations[0]) {
+                        if(isGoal) {
+                            goalEmitLayout.emit("goal_effect_positioned", "goal_fly", this.currentX, this.currentY);
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error setting spine animations sequence:', error);
+        }
+    }
+
 
     changeChildNodeSizesProportionally(scaleFactorX: number, scaleFactorY: number) {
         if (this.node) {

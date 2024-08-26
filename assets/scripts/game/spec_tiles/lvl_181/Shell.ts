@@ -44,6 +44,9 @@ export class Shell extends SpecTileBase {
     }
 
     startDestroyConsequences() {
+        let isGoal = true;
+        this.playAnimationsSequence(["pearl", "end"], isGoal);
+
         this.node.emit("goal", "shell");
     }
 

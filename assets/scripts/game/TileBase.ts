@@ -109,6 +109,11 @@ export class TileBase extends Component {
         uiComponent.playAdditionalAnimation(skeleton, animation);
     }
 
+    playAnimationsSequence(animations: string[], isGoal: boolean) {
+        let uiComponent = this.node.getComponent("UITile");
+        uiComponent.playAnimationsSequence(animations, isGoal);
+    }
+
 
     destroyClear() {
         this.node.destroy();

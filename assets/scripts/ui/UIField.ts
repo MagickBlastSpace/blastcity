@@ -28,6 +28,8 @@ export class UIField extends Component {
     emptyTilesLayout: Node = null;
     @property(Node)
     statusLayout: Node = null;
+    @property(Node)
+    animationsLayout: Node = null;
 
     @property(UIDiscoballLineRenderer)
     lr: UIDiscoballLineRenderer = null;
@@ -43,6 +45,10 @@ export class UIField extends Component {
         this.field.on("init_tile", (tile, isStatus, tileType) => this.init(tile, isStatus, tileType));
         this.field.on("init_status", (status, tileType) => this.initStatus(status, tileType));
         this.field.on("booster", (boosterType, row, col) => this.playBoosterAnimation(boosterType, row, col));
+
+        this.animationsLayout.on("goal_effect_positioned", (goalType, x, y) => {
+            this.node.emit("goal_effect_positioned", goalType, x, y);
+        });
 
         if (this.boostersAnimation) {
             this.boostersAnimation.node.active = false;

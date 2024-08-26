@@ -39,6 +39,7 @@ export class UIEffectManager extends Component {
         this.field.on("coin_reward", (row, col) => this.createEffectCoinReward(row, col));
 
         this.field.on("goal_effect", (spec, row, col) => this.createSpecGoalEffect(spec, row, col));
+        this.field.on("goal_effect_positioned", (spec, x, y) => this.createSpecGoalEffectPositioned(spec, x, y));
     }
 
     createEffectCoinReward(row: number, col: number) {
@@ -68,6 +69,26 @@ export class UIEffectManager extends Component {
 
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
+
+        posY = spec === "duck" || spec === "big_duck" ? posY - this.tileSize : posY;
+
+        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
+
+        specComp.init(new Vec2(posX, posY), targetPosition);
+    }
+
+    createSpecGoalEffectPositioned(spec: string, x: number, y: number) {
+        const prefab = this.specialPrefabs.find(p => p.id === "goal_fly")?.prefab;
+        if(prefab === null) {
+            return;
+        }
+
+        const specNode = instantiate(prefab);
+        this.effectsLayer.addChild(specNode);
+        const specComp = specNode.getComponent("UISpecGoalEffect");
+
+        let posX = x;
+        let posY = y;
 
         posY = spec === "duck" || spec === "big_duck" ? posY - this.tileSize : posY;
 
