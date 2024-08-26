@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, sp } from 'cc';
 import { BigTileBase } from './BigTileBase';
 const { ccclass, property } = _decorator;
 
@@ -7,6 +7,9 @@ export class Jars extends BigTileBase {
 
     @property([Node])
     hps: Node[] = [];
+
+    @property([sp.Skeleton])
+    hps_anim: sp.Skeleton[] = [];
 
 
     init(row: number, col: number, tileType: string) {
@@ -46,7 +49,24 @@ export class Jars extends BigTileBase {
 
         for(let i = 0; i < this.strength && i < this.hps.length; i++) {
             this.hps[i].active = true;
+
+            if(this.hps_anim.length >= (i + 1)) {
+                let animName = "jars" + (Math.floor(Math.random() * 3) + 1);
+
+                this.playAdditionalAnimation(this.hps_anim[i], animName);
+            }
         }
+
+        if(this.hps_anim.length >= (this.strength + 1)) {
+            let animName = "destroy" + (Math.floor(Math.random() * 3) + 1);
+
+            this.playAdditionalAnimation(this.hps_anim[this.strength], animName);
+        }
+    }
+
+
+    startDestroyConsequences() {
+        this.playAnimation("destroy", false, 1);
     }
 }
 

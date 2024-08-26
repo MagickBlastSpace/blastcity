@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3 } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, sp } from 'cc';
 import { GoalData } from '../data/GameData';
 const { ccclass, property } = _decorator;
 
@@ -98,10 +98,17 @@ export class TileBase extends Component {
         uiComponent.destroyTile(delay);
     }
 
+
     playAnimation(animation: string, isLooped: boolean, timeScale: number) {
         let uiComponent = this.node.getComponent("UITile");
         uiComponent.playAnimation(animation, isLooped, timeScale);
     }
+
+    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string) {
+        let uiComponent = this.node.getComponent("UITile");
+        uiComponent.playAdditionalAnimation(skeleton, animation);
+    }
+
 
     destroyClear() {
         this.node.destroy();

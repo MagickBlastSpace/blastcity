@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, UITransform } from 'cc';
 const { ccclass, property } = _decorator;
 
 
@@ -212,6 +212,43 @@ export class UITile extends Component {
             }
         } catch (error) {
             //console.error('Error setting spine animation:', error);
+        }
+    }
+
+    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string) {
+        try {
+            if(skeleton) {
+                const spineNode = skeleton.node;
+                spineNode.active = true;
+
+                const currentWorldPosition = spineNode.getWorldPosition();
+                const newLocalPosition = new Vec3(this.currentX, this.currentY, 0);
+
+                if(this.animationsLayout) {
+                    const animationsLayoutTransform = this.animationsLayout.getComponent(UITransform);
+                    if (animationsLayoutTransform) {
+                        animationsLayoutTransform.convertToNodeSpaceAR(currentWorldPosition, newLocalPosition);
+
+                        this.animationsLayout.addChild(spineNode);
+
+                        spineNode.setPosition(newLocalPosition);
+                    } else {
+                        console.log('UITransform component is missing from animationsLayout.');
+                        //return;
+                    }
+                }
+                else {
+                    console.log('Anim layout is missing.');
+                }
+                
+                skeleton.setCompleteListener(() => {
+                    spineNode.active = false;
+                });
+
+                skeleton.setAnimation(0, animation, false);
+            }
+        } catch (error) {
+            console.error('Error setting additional spine animation:', error);
         }
     }
 
