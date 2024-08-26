@@ -351,7 +351,8 @@ export class Level extends Component {
 
 
     setExperimentCategory(category: string) {
-        this.isMovesUnlimited = category === "B";
+        //this.isMovesUnlimited = category === "B";
+        this.isMovesUnlimited = false;
 
         this.experimentCategory = category;
 
