@@ -26,6 +26,8 @@ export class Pinata extends SpecTileBase {
 
 
     startDestroyConsequences() {
+        this.playAnimation("destroy", false, 1);
+        
         this.node.emit("goal", "pinata");
     }
 }

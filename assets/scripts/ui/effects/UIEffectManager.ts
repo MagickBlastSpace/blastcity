@@ -55,9 +55,9 @@ export class UIEffectManager extends Component {
     }
 
     createSpecGoalEffect(spec: string, row: number, col: number) {
-        console.log("Create special goal effect: " + spec + " at " + row + " " + col);
+        //console.log("Create special goal effect: " + spec + " at " + row + " " + col);
 
-        const prefab = this.specialPrefabs.find(p => p.id === "duck")?.prefab;
+        const prefab = this.specialPrefabs.find(p => p.id === "goal_fly")?.prefab;
         if(prefab === null) {
             return;
         }

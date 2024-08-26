@@ -1,7 +1,7 @@
 [
   {
     "__type__": "cc.Prefab",
-    "_name": "Duck",
+    "_name": "GoalFlyEffect",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_native": "",
@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Duck",
+    "_name": "GoalFlyEffect",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -127,8 +127,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
-      "height": 100
+      "width": 374,
+      "height": 444
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -164,11 +164,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "b9e68d2e-3091-41f2-972d-1731a167a42b",
+      "__uuid__": "fc0a8040-9e95-415a-a355-40963f8da301",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "<None>",
+    "defaultAnimation": "fly",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,

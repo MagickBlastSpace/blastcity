@@ -558,7 +558,7 @@ export class Field extends Component {
     }
 
     spawnSpecialTile(row: number, col: number, tileId: string): Node {
-        console.log("Spawning special tile of type: " + tileId);
+        //console.log("Spawning special tile of type: " + tileId);
 
         if(tileId.split("_")[1] === "random") {
             let availableColors = this.getAvailableColors();
@@ -775,7 +775,7 @@ export class Field extends Component {
                 tileComponent = tile.getComponent("TileBase");
             }
             catch (error) {
-                console.log("Destroy Catch: " + error);
+                //console.log("Destroy Catch: " + error);
 
                 return;
             }
