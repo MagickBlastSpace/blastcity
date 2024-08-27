@@ -198,11 +198,16 @@ export class UITile extends Component {
 
                 spineNode.setPosition(this.currentX, this.currentY);
 
+                let goalEmitLayout = this.animationsLayout;
+
                 if(isLooped) {
                     this.isSpineDestroyScheduled = isLooped;
                 }
                 else {
                     this.spine.setCompleteListener(() => {
+                        if(animation === "goal") {
+                            goalEmitLayout.emit("goal_effect_positioned", "goal_fly", this.currentX, this.currentY);
+                        }
                         spineNode.destroy();
                     });
                 }
@@ -252,7 +257,7 @@ export class UITile extends Component {
         }
     }
 
-    playAnimationsSequence(animations: string[], isGoal: boolean) {
+    /*playAnimationsSequence(animations: string[], isGoal: boolean) {
         try {
             if(this.spine) {
                 let trackEntry = this.spine.getCurrent(0);
@@ -281,7 +286,7 @@ export class UITile extends Component {
                     if (trackEntry.animation.name === animations[animations.length - 1]) {
                         spineNode.destroy();
                     }
-                    else if(trackEntry.animation.name === animations[0]) {
+                    else if(trackEntry.animation.name === "goal") {
                         if(isGoal) {
                             goalEmitLayout.emit("goal_effect_positioned", "goal_fly", this.currentX, this.currentY);
                         }
@@ -291,7 +296,7 @@ export class UITile extends Component {
         } catch (error) {
             console.error('Error setting spine animations sequence:', error);
         }
-    }
+    }*/
 
 
     changeChildNodeSizesProportionally(scaleFactorX: number, scaleFactorY: number) {
