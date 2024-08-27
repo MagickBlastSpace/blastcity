@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, sp } from 'cc';
 import { BigTileBase } from './BigTileBase';
 const { ccclass, property } = _decorator;
 
@@ -7,6 +7,9 @@ export class Soda extends BigTileBase {
 
     @property([Node])
     hps: Node[] = [];
+
+    @property([sp.Skeleton])
+    hps_anim: sp.Skeleton[] = [];
 
 
     init(row: number, col: number, tileType: string) {
