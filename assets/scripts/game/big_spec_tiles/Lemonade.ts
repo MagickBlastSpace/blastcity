@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec2 } from 'cc';
+import { _decorator, Component, Node, Vec2, sp } from 'cc';
 import { BigTileBase } from './BigTileBase';
 const { ccclass, property } = _decorator;
 
@@ -15,6 +15,17 @@ export class Lemonade extends BigTileBase {
     yellowHp: Node = null;
     @property(Node)
     purpleHp: Node = null;
+
+    @property(sp.Skeleton)
+    redAnim: sp.Skeleton = null;
+    @property(sp.Skeleton)
+    blueAnim: sp.Skeleton = null;
+    @property(sp.Skeleton)
+    greenAnim: sp.Skeleton = null;
+    @property(sp.Skeleton)
+    yellowAnim: sp.Skeleton = null;
+    @property(sp.Skeleton)
+    purpleAnim: sp.Skeleton = null;
 
     @property(Vec2)
     red_Position_b: Vec2 = null;
@@ -66,6 +77,11 @@ export class Lemonade extends BigTileBase {
             this.blueHp.setPosition(this.blue_Position_b.x, this.blue_Position_b.y);
             this.greenHp.setPosition(this.green_Position_b.x, this.green_Position_b.y);
             this.yellowHp.setPosition(this.yellow_Position_b.x, this.yellow_Position_b.y);
+
+            this.redAnim.node.setPosition(this.red_Position_b.x, this.red_Position_b.y);
+            this.blueAnim.node.setPosition(this.blue_Position_b.x, this.blue_Position_b.y);
+            this.greenAnim.node.setPosition(this.green_Position_b.x, this.green_Position_b.y);
+            this.yellowAnim.node.setPosition(this.yellow_Position_b.x, this.yellow_Position_b.y);
         }
 
         if(!availableColors.includes("red")) {
@@ -144,11 +160,45 @@ export class Lemonade extends BigTileBase {
 
 
     refresh() {
-        this.redHp.active = this.strengthRed > 0;
-        this.blueHp.active = this.strengthBlue > 0;
-        this.greenHp.active = this.strengthGreen > 0;
-        this.yellowHp.active = this.strengthYellow > 0;
-        this.purpleHp.active = this.strengthPurple > 0;
+        if(this.redHp.active && this.strengthRed <= 0) {
+            this.redHp.active = false;
+
+            if(this.redAnim) {
+                this.playAdditionalAnimation(this.redAnim, "soda_red");
+            }
+        }
+
+        if(this.blueHp.active && this.strengthBlue <= 0) {
+            this.blueHp.active = false;
+
+            if(this.blueAnim) {
+                this.playAdditionalAnimation(this.blueAnim, "soda_blue");
+            }
+        }
+
+        if(this.greenHp.active && this.strengthGreen <= 0) {
+            this.greenHp.active = false;
+
+            if(this.greenAnim) {
+                this.playAdditionalAnimation(this.greenAnim, "soda_green");
+            }
+        }
+
+        if(this.yellowHp.active && this.strengthYellow <= 0) {
+            this.yellowHp.active = false;
+
+            if(this.yellowAnim) {
+                this.playAdditionalAnimation(this.yellowAnim, "soda_yellow");
+            }
+        }
+
+        if(this.purpleHp.active && this.strengthPurple <= 0) {
+            this.purpleHp.active = false;
+
+            if(this.purpleAnim) {
+                this.playAdditionalAnimation(this.purpleAnim, "soda_purple");
+            }
+        }
     }
 
 
@@ -212,6 +262,11 @@ export class Lemonade extends BigTileBase {
         this.strengthPurple = strength;
 
         this.refresh();
+    }
+
+
+    startDestroyConsequences() {
+        this.playAnimation("destroy", false, 1);
     }
 }
 
