@@ -61,6 +61,8 @@ export class SmallSafe extends SpecTileBase {
 
     startDestroyConsequences() {
         this.node.emit("goal", "small_safe");
+
+        this.playAnimation("goal", false, 1);
     }
 
 
