@@ -155,7 +155,7 @@ export class UITile extends Component {
             this.particlesParent.setPosition(this.currentX, this.currentY);
         }
         
-        this.playAnimation("destroy", false);
+        this.playAnimation("destroy", false, 1);
 
         this.scheduleOnce(() => {
             if(this.isSpineDestroyScheduled && this.spine !== null) {
@@ -222,35 +222,42 @@ export class UITile extends Component {
 
     playAdditionalAnimation(skeleton: sp.Skeleton, animation: string) {
         try {
-            if(skeleton) {
-                const spineNode = skeleton.node;
-                spineNode.active = true;
+            const spineNode = skeleton ? skeleton.node : this.spine.node;
+            spineNode.active = true;
 
-                const currentWorldPosition = spineNode.getWorldPosition();
-                const newLocalPosition = new Vec3(this.currentX, this.currentY, 0);
+            const currentWorldPosition = spineNode.getWorldPosition();
+            const newLocalPosition = new Vec3(this.currentX, this.currentY, 0);
 
-                if(this.animationsLayout) {
-                    const animationsLayoutTransform = this.animationsLayout.getComponent(UITransform);
-                    if (animationsLayoutTransform) {
-                        animationsLayoutTransform.convertToNodeSpaceAR(currentWorldPosition, newLocalPosition);
+            if(this.animationsLayout) {
+                const animationsLayoutTransform = this.animationsLayout.getComponent(UITransform);
+                if (animationsLayoutTransform) {
+                    animationsLayoutTransform.convertToNodeSpaceAR(currentWorldPosition, newLocalPosition);
 
-                        this.animationsLayout.addChild(spineNode);
+                    this.animationsLayout.addChild(spineNode);
 
-                        spineNode.setPosition(newLocalPosition);
-                    } else {
-                        console.log('UITransform component is missing from animationsLayout.');
-                        //return;
-                    }
+                    spineNode.setPosition(newLocalPosition);
+                } else {
+                    console.log('UITransform component is missing from animationsLayout.');
+                    //return;
                 }
-                else {
-                    //console.log('Anim layout is missing.');
-                }
+            }
+            else {
+                //console.log('Anim layout is missing.');
+            }
                 
+            if(skeleton) {
                 skeleton.setCompleteListener(() => {
                     spineNode.active = false;
                 });
-
+    
                 skeleton.setAnimation(0, animation, false);
+            }
+            else {
+                this.spine.setCompleteListener(() => {
+                    spineNode.active = false;
+                });
+
+                this.spine.setAnimation(0, animation, false);
             }
         } catch (error) {
             console.error('Error setting additional spine animation:', error);

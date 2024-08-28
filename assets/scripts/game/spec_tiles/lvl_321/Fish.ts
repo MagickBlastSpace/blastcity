@@ -74,6 +74,8 @@ export class Fish extends SpecTileBase {
         this.setAsDamaged();
 
         this.isGenerate = true;
+
+        this.playAdditionalAnimation(null, "activation");
     }
 
     startPreActionEffect(field: Node[][]): boolean {
