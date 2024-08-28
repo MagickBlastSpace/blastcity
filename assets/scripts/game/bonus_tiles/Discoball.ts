@@ -76,7 +76,7 @@ export class Discoball extends BonusTileBase {
                 console.log("Render Line Error: " + error);
             }
 
-            this.node.emit("extra_hit", tiles[i].getRow(), tiles[i].getCol(), false, 0);
+            this.node.emit("extra_hit_with_damage", tiles[i].getRow(), tiles[i].getCol());
         }
 
         this.setRespawnEvent(0.2);
@@ -130,7 +130,7 @@ export class Discoball extends BonusTileBase {
             this.node.emit("clear_lines");
 
             for(let i = 0; i < tiles.length; i++) {
-                this.node.emit("extra_hit", tiles[i].getRow(), tiles[i].getCol(), false, 0);
+                this.node.emit("extra_hit_with_damage", tiles[i].getRow(), tiles[i].getCol());
             }
         }, totalTime - 0.05);
 

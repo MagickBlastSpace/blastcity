@@ -682,6 +682,9 @@ export class Field extends Component {
         tileNode.on("extra_hit", (row, col, isBonusChain, delay) => {
             this.extraHit(row, col, isBonusChain, delay);
         });
+        tileNode.on("extra_hit_with_damage", (row, col) => {
+            this.extraHitWithDamage(row, col);
+        });
         tileNode.on("random_extra_hit", (except, except2) => {
             this.randomExtraHit(except, except2);
         });
@@ -1067,6 +1070,19 @@ export class Field extends Component {
         }
         else {
             this.giveStatusDamage(row, col, false);
+        }
+    }
+
+    extraHitWithDamage(row: number, col: number) {
+        if(row > this.numRows - 1 || col > this.numCols - 1 || row < 0 || col < 0) {
+            return;
+        }
+
+        let tile = this.tileArray[row][col];
+
+        if(tile !== null) {
+            const tileComp = tile.getComponent("TileBase");
+            this.giveDamage(tile, tileComp.getTileType(), false, 0);
         }
     }
 
