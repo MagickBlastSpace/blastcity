@@ -6,6 +6,8 @@ const { ccclass, property } = _decorator;
 export class Honey extends Box {
     startDestroyConsequences() {
         this.node.emit("goal", "honey");
+
+        this.playAnimation("honey", false, 1);
     }
 }
 
