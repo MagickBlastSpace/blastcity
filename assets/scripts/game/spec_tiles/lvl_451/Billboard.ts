@@ -85,7 +85,15 @@ export class Billboard extends SpecTileBase {
         this.strength--;
         this.node.emit("goal", "billboard");
 
+        this.playAdditionalAnimation(null, "bulb");
+
         this.refresh();
+    }
+
+    startDestroyConsequences() {
+        this.node.emit("goal", "small_safe");
+
+        this.playAnimation("destroy", false, 1);
     }
 
     setAsDamaged() {}
