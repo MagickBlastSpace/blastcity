@@ -164,7 +164,7 @@ export class Lemonade extends BigTileBase {
             this.redHp.active = false;
 
             if(this.redAnim) {
-                this.playAdditionalAnimation(this.redAnim, "soda_red");
+                this.playAdditionalAnimation(this.redAnim, "soda_red", null);
             }
         }
 
@@ -172,7 +172,7 @@ export class Lemonade extends BigTileBase {
             this.blueHp.active = false;
 
             if(this.blueAnim) {
-                this.playAdditionalAnimation(this.blueAnim, "soda_blue");
+                this.playAdditionalAnimation(this.blueAnim, "soda_blue", null);
             }
         }
 
@@ -180,7 +180,7 @@ export class Lemonade extends BigTileBase {
             this.greenHp.active = false;
 
             if(this.greenAnim) {
-                this.playAdditionalAnimation(this.greenAnim, "soda_green");
+                this.playAdditionalAnimation(this.greenAnim, "soda_green", null);
             }
         }
 
@@ -188,7 +188,7 @@ export class Lemonade extends BigTileBase {
             this.yellowHp.active = false;
 
             if(this.yellowAnim) {
-                this.playAdditionalAnimation(this.yellowAnim, "soda_yellow");
+                this.playAdditionalAnimation(this.yellowAnim, "soda_yellow", null);
             }
         }
 
@@ -196,7 +196,7 @@ export class Lemonade extends BigTileBase {
             this.purpleHp.active = false;
 
             if(this.purpleAnim) {
-                this.playAdditionalAnimation(this.purpleAnim, "soda_purple");
+                this.playAdditionalAnimation(this.purpleAnim, "soda_purple", null);
             }
         }
     }

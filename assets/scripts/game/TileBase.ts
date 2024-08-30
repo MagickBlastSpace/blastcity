@@ -104,9 +104,9 @@ export class TileBase extends Component {
         uiComponent.playAnimation(animation, isLooped, timeScale);
     }
 
-    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string) {
+    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string, disableNode: Node) {
         let uiComponent = this.node.getComponent("UITile");
-        uiComponent.playAdditionalAnimation(skeleton, animation);
+        uiComponent.playAdditionalAnimation(skeleton, animation, disableNode);
     }
 
     /*playAnimationsSequence(animations: string[], isGoal: boolean) {

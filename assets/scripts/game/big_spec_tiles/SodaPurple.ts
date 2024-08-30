@@ -16,10 +16,10 @@ export class SodaPurple extends Soda {
     refresh() {
         if(this.hps_anim.length >= (this.strength + 1) && this.hps.length >= (this.strength + 1)) {
             if(this.hps[this.strength].active) {
-                this.playAdditionalAnimation(this.hps_anim[this.strength], "soda_purple");
+                this.playAdditionalAnimation(this.hps_anim[this.strength], "soda_purple", null);
             }
         }
-        
+
         super.refresh();
     }
 }

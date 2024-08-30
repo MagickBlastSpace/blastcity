@@ -220,10 +220,14 @@ export class UITile extends Component {
         }
     }
 
-    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string) {
+    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string, disableNode: Node) {
         try {
             const spineNode = skeleton ? skeleton.node : this.spine.node;
             spineNode.active = true;
+
+            if(disableNode) {
+                disableNode.active = false;
+            }
 
             const currentWorldPosition = spineNode.getWorldPosition();
             const newLocalPosition = new Vec3(this.currentX, this.currentY, 0);
@@ -248,6 +252,10 @@ export class UITile extends Component {
             if(skeleton) {
                 skeleton.setCompleteListener(() => {
                     spineNode.active = false;
+
+                    if(disableNode) {
+                        disableNode.active = true;
+                    }
                 });
     
                 skeleton.setAnimation(0, animation, false);
@@ -255,6 +263,10 @@ export class UITile extends Component {
             else {
                 this.spine.setCompleteListener(() => {
                     spineNode.active = false;
+
+                    if(disableNode) {
+                        disableNode.active = true;
+                    }
                 });
 
                 this.spine.setAnimation(0, animation, false);

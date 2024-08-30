@@ -74,7 +74,7 @@ export class Pump extends SpecTileBase {
 
         this.setAsDamaged();
 
-        this.playAdditionalAnimation(null, "activation");
+        this.playAdditionalAnimation(null, "activation", this.icon.node);
     }
 
     startPreActionEffect(field: Node[][]): boolean {
