@@ -976,6 +976,8 @@ export class Field extends Component {
     activateBonusByIndex(index: number, byOrder: boolean) {
         if(index >= this.bonusPool.length) {
             this.scheduleRespawn(0, false);
+            this.scheduleRespawn(0.2, false);
+            
             return;
         }
 
@@ -987,7 +989,6 @@ export class Field extends Component {
         
         let isBonusDestroyed = this.findAndDestroyMatches(bonusTile, false);
 
-        
         if(!byOrder) {
             return;
         }
