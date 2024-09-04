@@ -46,7 +46,7 @@ export class UILeaderboardFrame extends UIFrameBase {
     show() {
         super.show();
 
-        this.showFrame(0);
+        this.showFrame(1);
     }
 
     hide() {
