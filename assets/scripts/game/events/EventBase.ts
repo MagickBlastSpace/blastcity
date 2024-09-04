@@ -156,6 +156,10 @@ export class EventBase extends Component {
         return false;
     }
 
+    isGamePushBased(): boolean {
+        return false;
+    }
+
 
     getLevelRequired(): number {
         return this.MIN_LEVEL_REQUIRED;

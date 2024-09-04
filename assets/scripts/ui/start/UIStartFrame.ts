@@ -6,6 +6,7 @@ import { SaveData } from '../../data/SaveData';
 import { UIEventButton } from './UIEventButton';
 import { Field } from '../../game/Field';
 import { AdsTimer } from '../../utils/AdsTimer';
+import { KingLeagueEvent } from '../../game/events/competitive/KingLeagueEvent';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -35,6 +36,9 @@ export class UIStartFrame extends UIFrameBase {
 
     @property(AdsTimer)
     adsTimer: AdsTimer = null;
+
+    @property(KingLeagueEvent)
+    kingLeague: KingLeagueEvent = null;
 
 
     start() {
@@ -90,8 +94,12 @@ export class UIStartFrame extends UIFrameBase {
 
 
     refresh() {
-        if(UserData.instance.getProgress() >= GameData.instance.getMaxProgress()) {
+        if(this.kingLeague.isKingLeagueMode()) {
             console.log("King League Mode");
+            
+            if(!this.kingLeague.getIsStarted()) {
+                this.openEventByName("KingLeague");
+            }
 
             let currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
             this.levelLabel.string = "Round " + currentLevelNumber;
@@ -150,6 +158,17 @@ export class UIStartFrame extends UIFrameBase {
         }
         catch (error) {
             console.log(error);
+        }
+    }
+
+
+    openEventByName(eventName: string) {
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            if(this.eventBtns[i].getEventName() === eventName) {
+                this.onEventBtnClick(i);
+
+                return;
+            }
         }
     }
 }

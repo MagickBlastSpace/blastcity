@@ -45,25 +45,31 @@ export class UIEventButton extends Component {
 
         this.node.active = this.eventController.isEventAvailable();
 
-        this.progressBar.progress = this.eventController.getTimeProgress();
+        if(this.progressBar) {
+            this.progressBar.progress = this.eventController.getTimeProgress();
+        }
     }
 
     setProgress() {
         if(!this.eventController.isEventAvailable()) {
-            tween(this.progressBar)
-                .to(0.8, { progress: 0 })
-                .call(() => this.setProgress())
-                .start();
-
+            if(this.progressBar) {
+                tween(this.progressBar)
+                    .to(0.8, { progress: 0 })
+                    .call(() => this.setProgress())
+                    .start();
+            }
+            
             return;
         }
 
         let eventProgress = this.eventController.getTimeProgress();
 
-        tween(this.progressBar)
-            .to(0.8, { progress: eventProgress })
-            .call(() => this.setProgress())
-            .start();
+        if(this.progressBar) {
+            tween(this.progressBar)
+                .to(0.8, { progress: eventProgress })
+                .call(() => this.setProgress())
+                .start();
+        }
     }
 
 
@@ -125,6 +131,11 @@ export class UIEventButton extends Component {
 
     onTouchStart(event: cc.Event.EventTouch) {
         this.node.emit("click", this.node);
+    }
+
+
+    getEventName(): string {
+        return this.eventName;
     }
 }
 
