@@ -15,6 +15,8 @@ export class UserData extends Component {
     private currentProgress: number = 0;
     private levelsCount: number = 0;
 
+    private kingLeagueProgress: number = 0;
+
     private Gold: number = 0;
 
     private StartBombs: number = 0;
@@ -86,26 +88,50 @@ export class UserData extends Component {
 
 
     addProgress() {
-        if(this.currentProgress < this.levelsCount - 1) {
+        if(this.currentProgress < GameData.instance.getMaxProgress()) {
             this.currentProgress++;
+
+            SaveData.instance.saveUserData();
+
+            gamepush.player.set('score', this.currentProgress);
+            gamepush.player.sync();
+
+            GameData.instance.updateLevelStage();
         }
 
-        SaveData.instance.saveUserData();
+        else {
+            this.kingLeagueProgress++;
 
-        gamepush.player.set('score', this.currentProgress);
-        gamepush.player.sync();
+            gamepush.player.set('score_king_league', this.kingLeagueProgress);
+            gamepush.player.sync();
+        }
     }
+
 
     getProgress(): number {
         return this.currentProgress;
+    }
+
+    getKingLeagueProgress(): number {
+        return this.kingLeagueProgress;
+    }
+
+    getLevelIndex(): number {
+
     }
 
     setProgress(progress: number) {
         this.currentProgress = progress;
     }
 
+    setKingLeagueProgress(progress: number) {
+        this.kingLeagueProgress = progress;
+    }
+
     setLevelsCount(levelsCount: number) {
         this.levelsCount = levelsCount;
+
+        console.log('Levels count:', levelsCount);
     }
 
 

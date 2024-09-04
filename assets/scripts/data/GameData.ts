@@ -378,23 +378,89 @@ export class GameData extends Component {
     @property([ShopItemData])
     shopItems: ShopItemData[] = [];
 
+    private levelStage: number = -1;
+    private maxProgress: number = 0;
+
     public static instance: GameData = null;
 
     onLoad() {
         GameData.instance = this;
+
+        this.levelStage = -1;
     }
 
     start() {
-        //this.loadLevelsFromDirectory("levels");
-
-        //this.loadLevels();
-
-        //this.tryLoadLevels();
-
         this.tryFetchVariables();
 
-        gamepush.variables.on('fetch', () => this.tryLoadLevels());
+        gamepush.variables.on('fetch', () => this.updateLevelStage());
         gamepush.variables.on('error:fetch', (error) => console.error(error));
+    }
+
+
+    updateLevelStage() {
+        let progress = gamepush.player.get('score');
+        let maxStages = gamepush.variables.get('max_stage');
+
+        let stagesAmount = 0;
+        let newStage = 0;
+
+        console.log("Max Stages: " + maxStages);
+
+        for(let i = 0; i <= maxStages; i++) {
+            let currentStageAmount = gamepush.variables.get('stage_count_' + i);
+
+            console.log("Stage Amount: " + i + " " + currentStageAmount);
+
+            stagesAmount += currentStageAmount;
+
+            if(stagesAmount <= progress) {
+                newStage = i + 1;
+            }
+        }
+
+        console.log("Current Stage: " + newStage);
+
+        this.maxProgress = stagesAmount;
+
+        console.log("Maximal Progress Value: " + this.maxProgress);
+
+        if(newStage > this.levelStage) {
+            this.node.emit("level_stage_update");
+
+            this.levelStage = newStage;
+
+            this.tryLoadLevels();
+        }
+    }
+
+
+    getCurrentLevel(): LevelData {
+        let progress = gamepush.player.get('score');
+
+        if(progress >= this.maxProgress) {
+            progress = gamepush.player.get('score_king_league');
+
+            let maxKingLeagueCount = gamepush.variables.get('stage_count_king_league');
+            progress = progress % maxKingLeagueCount;
+        }
+        else {
+            if(this.levelStage > 0) {
+                for(let i = this.levelStage - 1; i >= 0; i--) {
+                    let stageAmount = gamepush.variables.get('stage_count_' + i);
+    
+                    progress = progress - stageAmount;
+                }
+            }
+        }
+
+        let levelsCount = this.levels.length;
+        if(progress > levelsCount - 1) {
+            console.log("Progress Count Error: " + progress + " " + levelsCount);
+
+            progress = levelsCount - 1;
+        }
+
+        return this.levels[progress];
     }
 
 
@@ -429,8 +495,13 @@ export class GameData extends Component {
         if (gamepush.experiments.has('LDT', 'B')) {
             difficulty = 'B';
         }
+
+        let maxStages = gamepush.variables.get('max_stage');
+        let levelVariableName = this.levelStage > maxStages ? "levels_king_league" : "levels_" + difficulty + "_" + this.levelStage;
+
+        console.log("Loading Level Stage: " + levelVariableName);
         
-        this.loadLevelsFromURL(gamepush.variables.get("levels_" + difficulty));
+        this.loadLevelsFromURL(gamepush.variables.get(levelVariableName));
 
         this.node.emit("experiment", difficulty);
     }
@@ -573,6 +644,7 @@ export class GameData extends Component {
                 //console.log('Level data loaded:', fileName);
 
                 UserData.instance.setLevelsCount(this.levels.length);
+                console.log('Levels count:', this.levels.length);
                 Statistics.instance.init(this.levels);
 
                 this.node.emit("level_data", levelData);
@@ -602,6 +674,11 @@ export class GameData extends Component {
             console.error('Error parsing JSON:', error);
             return [];
         }
+    }
+
+
+    getMaxProgress(): number {
+        return this.maxProgress;
     }
 }
 

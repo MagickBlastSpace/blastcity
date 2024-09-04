@@ -54,6 +54,7 @@ export class UIStartFrame extends UIFrameBase {
         }
 
         GameData.instance.node.on("levels_loaded", () => this.unlockPlay());
+        GameData.instance.node.on("level_stage_update", () => this.lockPlay());
 
         this.playBtn.node.active = false;
 
@@ -89,8 +90,16 @@ export class UIStartFrame extends UIFrameBase {
 
 
     refresh() {
-        let currentLevelNumber = UserData.instance.getProgress() + 1;
-        this.levelLabel.string = "Level " + currentLevelNumber;
+        if(UserData.instance.getProgress() >= GameData.instance.getMaxProgress()) {
+            console.log("King League Mode");
+
+            let currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
+            this.levelLabel.string = "Round " + currentLevelNumber;
+        }
+        else {
+            let currentLevelNumber = UserData.instance.getProgress() + 1;
+            this.levelLabel.string = "Level " + currentLevelNumber;
+        }
     }
 
     show() {
@@ -109,6 +118,12 @@ export class UIStartFrame extends UIFrameBase {
     }
 
 
+    lockPlay() {
+        this.refresh();
+
+        this.playBtn.node.active = false;
+    }
+    
     unlockPlay() {
         this.refresh();
 
@@ -127,8 +142,7 @@ export class UIStartFrame extends UIFrameBase {
 
     onPlay() {
         try {
-            let levelsCount = GameData.instance.levels.length;
-            this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
+            this.field.spawnInitialBoard(GameData.instance.getCurrentLevel());
 
             this.hide();
 

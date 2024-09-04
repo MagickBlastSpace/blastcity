@@ -62,11 +62,15 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     }
 
     refresh() {
-        let levelsCount = GameData.instance.levels.length;
-        let levelData = GameData.instance.levels[UserData.instance.getProgress() % levelsCount];
+        let levelData = GameData.instance.getCurrentLevel();
 
         let currentLevelNumber = UserData.instance.getProgress() + 1;
         this.levelLabel.string = "Level " + currentLevelNumber;
+        
+        if(UserData.instance.getProgress() >= GameData.instance.getMaxProgress()) {
+            currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
+            this.levelLabel.string = "Round " + currentLevelNumber;
+        }
 
         this.difficultyLabel.string = levelData ? levelData.difficulty + " Difficulty" : "Common Difficulty";
 

@@ -122,8 +122,7 @@ export class Field extends Component {
     setAssetsAsLoaded() {
         this.isAssetsLoaded = true;
 
-        let levelsCount = GameData.instance.levels.length;  
-        this.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
+        this.spawnInitialBoard(GameData.instance.getCurrentLevel());
     }
 
     
@@ -176,11 +175,9 @@ export class Field extends Component {
                 console.log("Save Level Data Load Error: " + error);
 
                 console.log("Level Data Report: " + level.toJSON());
-
-                let levelsCount = GameData.instance.levels.length;
                 
                 this.scheduleOnce(() => {
-                    this.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
+                    this.spawnInitialBoard(GameData.instance.getCurrentLevel());
                 }, 0.5);
             }
         });
@@ -976,8 +973,8 @@ export class Field extends Component {
     activateBonusByIndex(index: number, byOrder: boolean) {
         if(index >= this.bonusPool.length) {
             this.scheduleRespawn(0, false);
-            this.scheduleRespawn(0.2, false);
-            
+            this.scheduleRespawn(0.2, false); //additional respawn to fix bug after complex combos
+
             return;
         }
 
