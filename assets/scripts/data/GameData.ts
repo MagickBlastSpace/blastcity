@@ -404,12 +404,12 @@ export class GameData extends Component {
         let stagesAmount = 0;
         let newStage = 0;
 
-        console.log("Max Stages: " + maxStages);
+        //console.log("Max Stages: " + maxStages);
 
         for(let i = 0; i <= maxStages; i++) {
             let currentStageAmount = gamepush.variables.get('stage_count_' + i);
 
-            console.log("Stage Amount: " + i + " " + currentStageAmount);
+            //console.log("Stage Amount: " + i + " " + currentStageAmount);
 
             stagesAmount += currentStageAmount;
 
@@ -418,11 +418,11 @@ export class GameData extends Component {
             }
         }
 
-        console.log("Current Stage: " + newStage);
+        //console.log("Current Stage: " + newStage);
 
         this.maxProgress = stagesAmount;
 
-        console.log("Maximal Progress Value: " + this.maxProgress);
+        //console.log("Maximal Progress Value: " + this.maxProgress);
 
         if(newStage > this.levelStage) {
             this.node.emit("level_stage_update");

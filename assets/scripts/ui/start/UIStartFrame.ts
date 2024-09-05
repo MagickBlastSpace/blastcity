@@ -62,7 +62,7 @@ export class UIStartFrame extends UIFrameBase {
 
         this.playBtn.node.active = false;
 
-        this.refresh();
+        //this.refresh();
 
         assetManager.loadBundle("big_graphics", (err, bundle) => {
             if (err) {

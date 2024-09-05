@@ -48,7 +48,8 @@ export class SaveData extends Component {
 
             energyAskTimestamp: UserData.instance.getEnergyAskTimestamp(),
 
-            friendsList: UserData.instance.getFriendsList()
+            friendsList: UserData.instance.getFriendsList(),
+            kingLeagueProgress: UserData.instance.getKingLeagueProgress()
         };
         
         cc.sys.localStorage.setItem('userData', JSON.stringify(userData));
@@ -73,9 +74,11 @@ export class SaveData extends Component {
             UserData.instance.setEnergyAskTimestamp(userData.energyAskTimestamp);
 
             UserData.instance.setFriendsList(userData.friendsList);
+            UserData.instance.setKingLeagueProgress(userData.kingLeagueProgress);
         } else {
             //console.log("No saved user data found");
             UserData.instance.setProgress(0);
+            UserData.instance.setKingLeagueProgress(0);
         }
 
         this.node.emit("user_data");
