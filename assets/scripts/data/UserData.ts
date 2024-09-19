@@ -49,6 +49,7 @@ export class UserData extends Component {
     
     start() {
         this.currentProgress = 0;
+        this.kingLeagueProgress = 0;
 
         this.Gold = 5000;
 
@@ -113,18 +114,26 @@ export class UserData extends Component {
     }
 
     getKingLeagueProgress(): number {
+        if (isNaN(this.kingLeagueProgress)) {
+            this.kingLeagueProgress = 0;
+        }
         return this.kingLeagueProgress;
     }
 
-    getLevelIndex(): number {
-
-    }
 
     setProgress(progress: number) {
         this.currentProgress = progress;
     }
 
     setKingLeagueProgress(progress: number) {
+        if (isNaN(progress)) {
+            console.error('Invalid progress value: Not a number');
+
+            this.kingLeagueProgress = 0;
+
+            return;
+        }
+
         this.kingLeagueProgress = progress;
     }
 

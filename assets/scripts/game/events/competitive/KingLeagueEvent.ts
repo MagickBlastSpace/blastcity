@@ -70,6 +70,11 @@ export class KingLeagueEvent extends CompetitiveEventBase {
         return  super.canParticipate() && hoursDiff > 1 && this.isKingLeagueMode();
     }
 
+    isEventAvailable(): boolean {
+        return super.isEventAvailable() && this.isKingLeagueMode();
+    }
+
+
     activateEvent() {
         if(!this.isEventAvailable() || this.isStarted || !this.canParticipate()) {
             return;
@@ -168,6 +173,9 @@ export class KingLeagueEvent extends CompetitiveEventBase {
             console.log('Error fetching leaderboard data:', error);
         }
     }
+
+
+
 }
 
 

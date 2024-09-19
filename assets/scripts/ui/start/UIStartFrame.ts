@@ -40,6 +40,8 @@ export class UIStartFrame extends UIFrameBase {
     @property(KingLeagueEvent)
     kingLeague: KingLeagueEvent = null;
 
+    private isLevelsLoaded: boolean = false;
+
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
@@ -97,7 +99,7 @@ export class UIStartFrame extends UIFrameBase {
         if(this.kingLeague.isKingLeagueMode()) {
             console.log("King League Mode");
             
-            if(!this.kingLeague.getIsStarted()) {
+            if(!this.kingLeague.getIsStarted() && this.isLevelsLoaded && this.kingLeague.canParticipate()) {
                 this.openEventByName("KingLeague");
             }
 
@@ -136,6 +138,8 @@ export class UIStartFrame extends UIFrameBase {
         this.refresh();
 
         this.playBtn.node.active = true;
+
+        this.isLevelsLoaded = true;
     }
 
 
