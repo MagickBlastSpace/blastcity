@@ -1,4 +1,4 @@
-import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget } from 'cc';
+import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget, Layout } from 'cc';
 import { UIFrameBase } from '../ui/UIFrameBase';
 const { ccclass, property } = _decorator;
 
@@ -40,7 +40,9 @@ export class ResolutionManager extends Component {
     @property(Widget)
     mainBtns: Widget = null;
     @property([Widget])
-    eventBtnsLayouts: Widget[] = [];
+    eventBtnsWidgets: Widget[] = [];
+    @property([Layout])
+    eventBtnsLs: Layout[] = [];
 
     @property(Widget)
     playBtn: Widget = null;
@@ -115,9 +117,15 @@ export class ResolutionManager extends Component {
             this.eventBtns[i].setScale(new Vec3(1.4, 1.4, 1.4));
         }
 
-        for(let i = 0; i < this.eventBtnsLayouts.length; i++) {
-            this.eventBtnsLayouts[i].top = 37.5;
-            this.eventBtnsLayouts[i].bottom = 37.5;
+        for(let i = 0; i < this.eventBtnsWidgets.length; i++) {
+            this.eventBtnsWidgets[i].top = 37.5;
+            this.eventBtnsWidgets[i].bottom = 37.5;
+        }
+
+        for(let i = 0; i < this.eventBtnsLs.length; i++) {
+            this.eventBtnsLs[i].spacingY = 25;
+
+            this.eventBtnsLs[i].updateLayout();
         }
 
         this.playBtn.bottom = 400;
@@ -156,9 +164,15 @@ export class ResolutionManager extends Component {
             this.eventBtns[i].setScale(new Vec3(2.2, 2.2, 2.2));
         }
 
-        for(let i = 0; i < this.eventBtnsLayouts.length; i++) {
-            this.eventBtnsLayouts[i].top = 300;
-            this.eventBtnsLayouts[i].bottom = 500;
+        for(let i = 0; i < this.eventBtnsWidgets.length; i++) {
+            this.eventBtnsWidgets[i].top = 300;
+            this.eventBtnsWidgets[i].bottom = 500;
+        }
+
+        for(let i = 0; i < this.eventBtnsLs.length; i++) {
+            this.eventBtnsLs[i].spacingY = 125;
+
+            this.eventBtnsLs[i].updateLayout();
         }
 
         this.playBtn.bottom = 800;

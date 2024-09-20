@@ -14,6 +14,9 @@ export class UIEventButton extends Component {
     @property(Label)
     timeLabel: Label = null;
 
+    @property(Label)
+    progressLabel: Label = null;
+
     @property(ProgressBar)
     progressBar: ProgressBar = null;
 
@@ -47,6 +50,10 @@ export class UIEventButton extends Component {
 
         if(this.progressBar) {
             this.progressBar.progress = this.eventController.getTimeProgress();
+        }
+
+        if(this.progressLabel) {
+            this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
         }
     }
 
