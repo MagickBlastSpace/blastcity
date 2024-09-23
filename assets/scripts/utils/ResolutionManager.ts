@@ -165,7 +165,7 @@ export class ResolutionManager extends Component {
         }
 
         for(let i = 0; i < this.eventBtnsWidgets.length; i++) {
-            this.eventBtnsWidgets[i].top = 300;
+            this.eventBtnsWidgets[i].top = 400;
             this.eventBtnsWidgets[i].bottom = 500;
         }
 
