@@ -7,6 +7,7 @@ import { UIEventButton } from './UIEventButton';
 import { Field } from '../../game/Field';
 import { AdsTimer } from '../../utils/AdsTimer';
 import { KingLeagueEvent } from '../../game/events/competitive/KingLeagueEvent';
+import { ResolutionManager } from '../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -104,11 +105,11 @@ export class UIStartFrame extends UIFrameBase {
             }
 
             let currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
-            this.levelLabel.string = "Round " + currentLevelNumber;
+            this.levelLabel.string = "Раунд " + currentLevelNumber;
         }
         else {
             let currentLevelNumber = UserData.instance.getProgress() + 1;
-            this.levelLabel.string = "Level " + currentLevelNumber;
+            this.levelLabel.string = "Уровень " + currentLevelNumber;
         }
     }
 
@@ -118,6 +119,8 @@ export class UIStartFrame extends UIFrameBase {
         this.refresh();
 
         this.adsTimer.startMenuTimer();
+
+        ResolutionManager.instance.adjustResolution();
     }
 
 
