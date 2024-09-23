@@ -25,6 +25,8 @@ export class UIStartFrame extends UIFrameBase {
     @property(Label)
     levelLabel: Label = null;
     @property(Label)
+    levelCountLabel: Label = null;
+    @property(Label)
     difficultyLabel: Label = null;
 
     @property(Sprite)
@@ -105,11 +107,13 @@ export class UIStartFrame extends UIFrameBase {
             }
 
             let currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
-            this.levelLabel.string = "Раунд " + currentLevelNumber;
+            this.levelLabel.string = "Раунд";
+            this.levelCountLabel.string = currentLevelNumber;
         }
         else {
             let currentLevelNumber = UserData.instance.getProgress() + 1;
-            this.levelLabel.string = "Уровень " + currentLevelNumber;
+            this.levelLabel.string = "Уровень";
+            this.levelCountLabel.string = currentLevelNumber;
         }
     }
 

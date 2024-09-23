@@ -28,6 +28,8 @@ export class ResolutionManager extends Component {
     @property(Node)
     goalsPortrait: Node = null;
 
+    @property(Node)
+    mainMenuBtns: Node = null;
     @property([Node])
     mainMenuScalableItems: Node[] = [];
     @property([Node])
@@ -37,8 +39,6 @@ export class ResolutionManager extends Component {
     @property([UIFrameBase])
     popupComponents: UIFrameBase[] = [];
 
-    @property(Widget)
-    mainBtns: Widget = null;
     @property([Widget])
     eventBtnsWidgets: Widget[] = [];
     @property([Layout])
@@ -100,10 +100,7 @@ export class ResolutionManager extends Component {
         this.enableLandscapeNodes(true);
         this.enablePortraitNodes(false);
 
-        this.mainBtns.left = 700;
-        this.mainBtns.right = 700;
-        this.mainBtns.bottom = 0;
-
+        this.mainMenuBtns.setScale(new Vec3(1, 1, 1));
         for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
             this.mainMenuScalableItems[i].setScale(new Vec3(1, 1, 1));
         }
@@ -137,8 +134,6 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.resources.length; i++) {
             this.resources[i].top = 250;
         }
-
-        this.mainBtns.updateAlignment();
     }
 
     setPortraitMode() {
@@ -147,10 +142,7 @@ export class ResolutionManager extends Component {
         this.enableLandscapeNodes(false);
         this.enablePortraitNodes(true);
 
-        this.mainBtns.left = 0;
-        this.mainBtns.right = 0;
-        this.mainBtns.bottom = 150;
-
+        this.mainMenuBtns.setScale(new Vec3(1.66, 1.66, 1));
         for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
             this.mainMenuScalableItems[i].setScale(new Vec3(2, 2, 1));
         }
@@ -185,7 +177,7 @@ export class ResolutionManager extends Component {
             this.resources[i].top = 400;
         }
 
-        this.mainBtns.updateAlignment();
+        //this.mainBtns.updateAlignment();
     }
 
 
