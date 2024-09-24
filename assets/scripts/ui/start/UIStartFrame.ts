@@ -8,6 +8,7 @@ import { Field } from '../../game/Field';
 import { AdsTimer } from '../../utils/AdsTimer';
 import { KingLeagueEvent } from '../../game/events/competitive/KingLeagueEvent';
 import { ResolutionManager } from '../../utils/ResolutionManager';
+import { UIChest } from '../chest/UIChest';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -21,6 +22,9 @@ export class UIStartFrame extends UIFrameBase {
 
     @property(UIFrameBase)
     briefingPopup: UIFrameBase = null;
+
+    @property(UIChest)
+    chest: UIChest = null;
 
     @property(Label)
     levelLabel: Label = null;
@@ -62,8 +66,8 @@ export class UIStartFrame extends UIFrameBase {
             this.eventBtns[i].node.on("play", () => this.onPlay());
         }
 
-        GameData.instance.node.on("levels_loaded", () => this.unlockPlay());
-        GameData.instance.node.on("level_stage_update", () => this.lockPlay());
+        GameData.instance.node.on("levels_loaded", () => this.lockPlay(false));
+        GameData.instance.node.on("level_stage_update", () => this.lockPlay(true));
 
         this.playBtn.node.active = false;
 
@@ -115,6 +119,8 @@ export class UIStartFrame extends UIFrameBase {
             this.levelLabel.string = "Уровень";
             this.levelCountLabel.string = currentLevelNumber;
         }
+
+        this.chest.refresh();
     }
 
     show() {
@@ -135,18 +141,14 @@ export class UIStartFrame extends UIFrameBase {
     }
 
 
-    lockPlay() {
+    lockPlay(isLock: boolean) {
         this.refresh();
 
-        this.playBtn.node.active = false;
-    }
-    
-    unlockPlay() {
-        this.refresh();
+        this.playBtn.node.active = !isLock;
 
-        this.playBtn.node.active = true;
-
-        this.isLevelsLoaded = true;
+        if(!isLock) {
+            this.isLevelsLoaded = true;
+        }
     }
 
 

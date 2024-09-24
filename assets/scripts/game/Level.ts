@@ -301,6 +301,18 @@ export class Level extends Component {
 
         UserData.instance.addResource("gold", totalReward);
 
+        switch(this.difficulty) {
+            case "common":
+                UserData.instance.addResource("stars", 1);
+                break;
+            case "hard":
+                UserData.instance.addResource("stars", 3);
+                break;
+            case "superhard":
+                UserData.instance.addResource("stars", 5);
+                break;
+        }
+
         this.node.emit("complete", true, totalReward);
         this.node.emit("complete_statistics", this.stats);
 

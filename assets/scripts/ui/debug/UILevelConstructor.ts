@@ -98,10 +98,14 @@ export class UILevelConstructor extends Component {
 
     clearLevelSave() {
         SaveData.instance.clearLevelProgress();
+
+        SaveData.instance.clearUserData(); //to rm
     }
 
     clearGlobalSave() {
         SaveData.instance.clearUserData();
+
+        SaveData.instance.clearLevelProgress(); //to rm
     }
 
     showLevelStats() {

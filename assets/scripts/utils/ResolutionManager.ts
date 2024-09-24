@@ -47,6 +47,8 @@ export class ResolutionManager extends Component {
     @property(Widget)
     playBtn: Widget = null;
     @property(Widget)
+    rewardBtn: Widget = null;
+    @property(Widget)
     kingLeagueBtn: Widget = null;
     @property([Widget])
     resources: Widget[] = [];
@@ -128,6 +130,9 @@ export class ResolutionManager extends Component {
         this.playBtn.bottom = 400;
         this.playBtn.center = 0;
 
+        this.rewardBtn.bottom = 400;
+        this.rewardBtn.center = 0;
+
         this.kingLeagueBtn.bottom = 750;
         this.kingLeagueBtn.center = 0;
 
@@ -169,6 +174,9 @@ export class ResolutionManager extends Component {
 
         this.playBtn.bottom = 800;
         this.playBtn.center = 0;
+
+        this.rewardBtn.bottom = 800;
+        this.rewardBtn.center = 0;
 
         this.kingLeagueBtn.bottom = 1500;
         this.kingLeagueBtn.center = 0;

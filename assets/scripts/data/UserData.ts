@@ -18,6 +18,7 @@ export class UserData extends Component {
     private kingLeagueProgress: number = 0;
 
     private Gold: number = 0;
+    private Stars: number = 0;
 
     private StartBombs: number = 0;
     private StartRockets: number = 0;
@@ -52,6 +53,7 @@ export class UserData extends Component {
         this.kingLeagueProgress = 0;
 
         this.Gold = 5000;
+        this.Stars = 0;
 
         const now = new Date();
         this.Bombs_EndTime = new Date(now);
@@ -64,7 +66,7 @@ export class UserData extends Component {
 
         SaveData.instance.loadUserData();
 
-        this.node.emit("resources_update", this.Gold);
+        this.node.emit("resources_update", this.Gold, this.Stars);
 
         if(gamepush.player.name === "") {
             this.playerName = "Player" + gamepush.player.id;
@@ -152,6 +154,10 @@ export class UserData extends Component {
             case "gold":
                 this.Gold += value;
                 break;
+            case "stars":
+                this.Stars += value;
+                this.node.emit("stars", value);
+                break;
 
             case "bomb":
                 this.StartBombs += value;
@@ -209,7 +215,7 @@ export class UserData extends Component {
                 break;
         }
 
-        this.node.emit("resources_update", this.Gold);
+        this.node.emit("resources_update", this.Gold, this.Stars);
 
         SaveData.instance.saveUserData();
     }
@@ -266,7 +272,7 @@ export class UserData extends Component {
                 break;
         }
 
-        this.node.emit("resources_update", this.Gold);
+        this.node.emit("resources_update", this.Gold, this.Stars);
 
         SaveData.instance.saveUserData();
     }
@@ -276,6 +282,8 @@ export class UserData extends Component {
         switch(resourceType) {
             case "gold":
                 return this.Gold;
+            case "stars":
+                return this.Stars;
 
             case "bomb":
                 return this.StartBombs;
@@ -306,6 +314,9 @@ export class UserData extends Component {
             case "gold":
                 this.Gold = value;
                 break;
+            case "stars":
+                this.Stars = value;
+                break;
 
             case "bomb":
                 this.StartBombs = value;
@@ -331,7 +342,7 @@ export class UserData extends Component {
                 break;
         }
 
-        this.node.emit("resources_update", this.Gold);
+        this.node.emit("resources_update", this.Gold, this.Stars);
     }
 
 

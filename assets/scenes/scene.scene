@@ -66,7 +66,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 3492
+      "__id__": 3502
     },
     "_id": "7b2dc026-88d5-4e1b-8f76-c916ba7bb4f8"
   },
@@ -43911,6 +43911,7 @@
       null
     ],
     "briefingPopup": null,
+    "chest": null,
     "levelLabel": null,
     "levelCountLabel": null,
     "difficultyLabel": null,
@@ -46826,7 +46827,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "9e633144-6c87-4992-a1b8-382000dd1e4f@f9941",
+      "__uuid__": "f2260a33-ecfc-47c5-9e8f-9a913c0e1ec8@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -49749,6 +49750,7 @@
     "goldLabel": {
       "__id__": 1828
     },
+    "starsLabel": null,
     "energyLabel": {
       "__id__": 1838
     },
@@ -79132,15 +79134,12 @@
     "level": {
       "__id__": 15
     },
-    "startBonuses": {
-      "__id__": 2277
-    },
-    "butlersGift": {
-      "__id__": 2253
-    },
+    "startBonuses": null,
+    "butlersGift": null,
     "movesShop": {
       "__id__": 15
     },
+    "chest": null,
     "statistics": {
       "__id__": 2907
     },
@@ -79505,6 +79504,7 @@
       null
     ],
     "playBtn": null,
+    "rewardBtn": null,
     "kingLeagueBtn": null,
     "resources": [
       null,
@@ -80308,6 +80308,21 @@
       },
       {
         "__id__": 3490
+      },
+      {
+        "__id__": 3492
+      },
+      {
+        "__id__": 3494
+      },
+      {
+        "__id__": 3496
+      },
+      {
+        "__id__": 3498
+      },
+      {
+        "__id__": 3500
       }
     ],
     "nestedPrefabInstanceRoots": [
@@ -86434,12 +86449,11 @@
   {
     "__type__": "cc.TargetOverrideInfo",
     "source": {
-      "__id__": 2913
+      "__id__": 1707
     },
     "sourceInfo": null,
     "propertyPath": [
-      "mainMenuScalableItems",
-      "3"
+      "chest"
     ],
     "target": {
       "__id__": 1378
@@ -86451,34 +86465,145 @@
   {
     "__type__": "cc.TargetInfo",
     "localID": [
+      "f0LdxmzbFKWpO1DI4JLqbw"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 2906
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "chest"
+    ],
+    "target": {
+      "__id__": 1378
+    },
+    "targetInfo": {
+      "__id__": 3493
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
       "00mkY1cGlGPqJ4bbwtP8Ac"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 2906
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "startBonuses"
+    ],
+    "target": {
+      "__id__": 1676
+    },
+    "targetInfo": {
+      "__id__": 3495
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "09O1tOQupGtqeawS5Lmou/"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 2906
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "butlersGift"
+    ],
+    "target": {
+      "__id__": 1676
+    },
+    "targetInfo": {
+      "__id__": 3497
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "99rErmRE1P/5aWqNBWwk1h"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 2913
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "rewardBtn"
+    ],
+    "target": {
+      "__id__": 1378
+    },
+    "targetInfo": {
+      "__id__": 3499
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "f1Am1q5/RDFJKf2ZZ1ZMw+"
+    ]
+  },
+  {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 2913
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "mainMenuScalableItems",
+      "3"
+    ],
+    "target": {
+      "__id__": 1378
+    },
+    "targetInfo": {
+      "__id__": 3501
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "5f7zw5OQNMKIetrElEPn38"
     ]
   },
   {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 3493
+      "__id__": 3503
     },
     "shadows": {
-      "__id__": 3494
+      "__id__": 3504
     },
     "_skybox": {
-      "__id__": 3495
+      "__id__": 3505
     },
     "fog": {
-      "__id__": 3496
+      "__id__": 3506
     },
     "octree": {
-      "__id__": 3497
+      "__id__": 3507
     },
     "skin": {
-      "__id__": 3498
+      "__id__": 3508
     },
     "lightProbeInfo": {
-      "__id__": 3499
+      "__id__": 3509
     },
     "postSettings": {
-      "__id__": 3500
+      "__id__": 3510
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false

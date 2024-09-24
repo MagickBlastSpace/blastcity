@@ -9,6 +9,8 @@ export class UIResources extends Component {
 
     @property(Label)
     goldLabel: Label = null;
+    @property(Label)
+    starsLabel: Label = null;
 
     @property(Label)
     energyLabel: Label = null;
@@ -24,9 +26,11 @@ export class UIResources extends Component {
 
 
     start() {
-        UserData.instance.node.on("resources_update", (gold) => this.refresh(gold));
+        UserData.instance.node.on("resources_update", (gold, stars) => this.refresh(gold, stars));
 
         this.energyLabel.string = gamepush.player.get('energy');
+        this.goldLabel.string = UserData.instance.getResource("gold");
+        this.starsLabel.string = UserData.instance.getResource("stars");
     }
 
     update(deltaTime: number) {
@@ -46,8 +50,9 @@ export class UIResources extends Component {
         this.energyLabel.string = gamepush.player.get('energy');
     }
 
-    refresh(gold: number) {
+    refresh(gold: number, stars: number) {
         this.goldLabel.string = gold;
+        this.starsLabel.string = stars;
 
         this.energyLabel.string = gamepush.player.get('energy');
     }

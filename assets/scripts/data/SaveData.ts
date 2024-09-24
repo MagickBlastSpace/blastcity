@@ -19,6 +19,8 @@ export class SaveData extends Component {
     @property(Node)
     movesShop: Node = null;
     @property(Node)
+    chest: Node = null;
+    @property(Node)
     statistics: Node = null;
     
     @property([Node])
@@ -36,6 +38,7 @@ export class SaveData extends Component {
         let userData = {
             progress: UserData.instance.getProgress(),
             gold: UserData.instance.getResource("gold"),
+            stars: UserData.instance.getResource("stars"),
 
             bomb: UserData.instance.getResource("bomb"),
             rocket: UserData.instance.getResource("rocket"),
@@ -61,6 +64,9 @@ export class SaveData extends Component {
         if (userData) {
             UserData.instance.setProgress(userData.progress);
             UserData.instance.setResource("gold", userData.gold);
+            if(userData.stars) {
+                UserData.instance.setResource("stars", userData.stars);
+            }
 
             UserData.instance.setResource("bomb", userData.bomb);
             UserData.instance.setResource("rocket", userData.rocket);
@@ -91,6 +97,7 @@ export class SaveData extends Component {
         cc.sys.localStorage.removeItem('statistics');
         cc.sys.localStorage.removeItem('startBonuses');
         cc.sys.localStorage.removeItem('butlersGift');
+        cc.sys.localStorage.removeItem('chest');
 
         for(let i = 0; i < this.events.length; i++) {
             let eventComp = this.events[i].getComponent("EventBase");
@@ -98,9 +105,9 @@ export class SaveData extends Component {
             cc.sys.localStorage.removeItem('event_' + eventComp.getEventId());
         }
 
-        gamepush.player.set('score_lightning', 0);
+        /*gamepush.player.set('score_lightning', 0);
         gamepush.player.set('score_kings_cup', 0);
-        gamepush.player.set('score_sky_race', 0);
+        gamepush.player.set('score_sky_race', 0);*/
         gamepush.player.sync();
     }
 
@@ -353,6 +360,32 @@ export class SaveData extends Component {
             butlersGiftComp.setIsGifted(butlersGiftData.isGifted);
         } else {
             //console.log("No saved butlers gift data found");
+        }
+    }
+
+
+    //Chest
+    saveChest() {
+        let chestComp = this.chest.getComponent("Chest");
+
+        let chestData = {
+            stage: chestComp.getStage(),
+            collectables: chestComp.getCollectables()
+        };
+        
+        cc.sys.localStorage.setItem('chest', JSON.stringify(chestData));
+    }
+
+
+    loadChest() {
+        var chestData = JSON.parse(cc.sys.localStorage.getItem('chest'));
+
+        if (chestData) {
+            let chestComp = this.chest.getComponent("Chest");
+            chestComp.setStage(chestData.stage);
+            chestComp.setCollectables(chestData.collectables);
+        } else {
+            //console.log("No saved start bonuses data found");
         }
     }
 
