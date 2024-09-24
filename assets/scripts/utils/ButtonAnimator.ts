@@ -6,6 +6,8 @@ export class ButtonAnimator extends Component {
 
     private startScale: Vec3;
 
+    private isPressTweening: boolean = false;
+    private isReleaseTweening: boolean = false;
 
     start() {
         const button = this.node.getComponent(Button);
@@ -20,17 +22,30 @@ export class ButtonAnimator extends Component {
     }
 
     onButtonPressed() {
+        if (this.isPressTweening || this.isReleaseTweening) return;
+
+        this.isPressTweening = true;
         this.startScale = new Vec3(this.node.scale.x, this.node.scale.y, this.node.scale.z);
 
         tween(this.node)
             .to(0.2, { scale: new Vec3(this.startScale.x * 1.1, this.startScale.y * 1.1, this.startScale.z) })
+            .call(() => {
+                this.isPressTweening = false;
+            })
             .start();
     }
 
     onButtonReleased() {
+        if (this.isReleaseTweening) return;
+
+        this.isReleaseTweening = true;
+
         tween(this.node)
             .to(0.2, { scale: new Vec3(this.startScale.x * 0.9, this.startScale.y * 0.9, this.startScale.z) })
             .to(0.2, { scale: new Vec3(this.startScale.x, this.startScale.y, this.startScale.z) })
+            .call(() => {
+                this.isReleaseTweening = false;
+            })
             .start();
     }
 }
