@@ -35,6 +35,8 @@ export class ResolutionManager extends Component {
     @property([Node])
     eventBtns: Node[] = [];
     @property([Node])
+    eventProgressBtns: Node[] = [];
+    @property([Node])
     popups: Node[] = [];
     @property([UIFrameBase])
     popupComponents: UIFrameBase[] = [];
@@ -115,6 +117,9 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].setScale(new Vec3(1.4, 1.4, 1.4));
         }
+        for(let i = 0; i < this.eventProgressBtns.length; i++) {
+            this.eventProgressBtns[i].setScale(new Vec3(1.4, 1.4, 1.4));
+        }
 
         for(let i = 0; i < this.eventBtnsWidgets.length; i++) {
             this.eventBtnsWidgets[i].top = 37.5;
@@ -160,9 +165,12 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].setScale(new Vec3(2.2, 2.2, 2.2));
         }
+        for(let i = 0; i < this.eventProgressBtns.length; i++) {
+            this.eventProgressBtns[i].setScale(new Vec3(3, 3, 3));
+        }
 
         for(let i = 0; i < this.eventBtnsWidgets.length; i++) {
-            this.eventBtnsWidgets[i].top = 400;
+            this.eventBtnsWidgets[i].top = 1000;
             this.eventBtnsWidgets[i].bottom = 500;
         }
 
