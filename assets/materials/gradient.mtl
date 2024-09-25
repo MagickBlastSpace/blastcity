@@ -11,11 +11,14 @@
   "_techIdx": 0,
   "_defines": [
     {
-      "USE_TEXTURE": true
+      "USE_TEXTURE": true,
+      "USE_VERTICAL": true
     }
   ],
   "_states": [
     {
+      "primitive": 8,
+      "stage": 200,
       "rasterizerState": {},
       "depthStencilState": {},
       "blendState": {
@@ -29,16 +32,16 @@
     {
       "startColor": {
         "__type__": "cc.Color",
-        "r": 255,
-        "g": 3,
-        "b": 3,
+        "r": 117,
+        "g": 139,
+        "b": 153,
         "a": 255
       },
       "endColor": {
         "__type__": "cc.Color",
-        "r": 3,
-        "g": 172,
-        "b": 131,
+        "r": 55,
+        "g": 78,
+        "b": 95,
         "a": 255
       }
     }
