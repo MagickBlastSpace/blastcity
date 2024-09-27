@@ -4,6 +4,7 @@ import { UIMainMenuFrame } from './UIMainMenuFrame';
 import { UIFrameBase } from '../UIFrameBase';
 import { AdsTimer } from '../../utils/AdsTimer';
 import { SaveData } from '../../data/SaveData';
+import { Chest } from '../../game/Chest';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -33,6 +34,8 @@ export class UIMainMenu extends UIFrameBase {
 
     @property(Node)
     startFrame: Node = null;
+    @property(Chest)
+    chest: Chest = null;
 
     @property(AdsTimer)
     adsTimer: AdsTimer = null;
@@ -55,6 +58,7 @@ export class UIMainMenu extends UIFrameBase {
         this.updateBackgroundGraphics();
 
         this.startFrame.on("play", () => this.play());
+        this.chest.node.on("chest_stage_complete", () => this.updateBackgroundGraphics());
     }
 
 
@@ -126,7 +130,9 @@ export class UIMainMenu extends UIFrameBase {
 
             console.log(`Successfully loaded bundle: big_graphics"`);
 
-            bundle.load("back/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+            let backIndex = this.chest.getStage() + 1;
+
+            bundle.load("back" + backIndex + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
                 if (err) {
                     console.error(`Failed to load prefab: background`, err);
                     return;

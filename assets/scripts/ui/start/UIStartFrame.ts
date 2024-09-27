@@ -55,6 +55,8 @@ export class UIStartFrame extends UIFrameBase {
         GameData.instance.node.on("level_stage_update", () => this.lockPlay(true));
 
         this.playBtn.node.active = false;
+
+        this.chest.node.on("complete", () => this.chestStageComplete());
     }
 
     onPlayBtnClick() {
@@ -141,6 +143,11 @@ export class UIStartFrame extends UIFrameBase {
                 return;
             }
         }
+    }
+
+
+    chestStageComplete() {
+        this.node.emit("chest_stage_complete");
     }
 }
 

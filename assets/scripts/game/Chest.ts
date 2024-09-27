@@ -47,6 +47,8 @@ export class Chest extends Component {
             SaveData.instance.saveChest();
 
             this.node.emit("refresh");
+
+            this.node.emit("complete");
         }
     }
 
