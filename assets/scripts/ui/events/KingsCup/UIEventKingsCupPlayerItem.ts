@@ -10,6 +10,8 @@ export class UIEventKingsCupPlayerItem extends UIEventSkyRacePlayerItem {
 
 
     init(index: number) {
+        this.index = index - 1;
+
         this.indexLabel.string = index;
     }
 }

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, ScrollView } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { PlayerEventData } from '../../data/EventData';
 import { Net } from '../../net/Net';
@@ -21,6 +21,9 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
 
     @property([PlayerEventData])
     teams: PlayerEventData[] = [];
+
+    @property(ScrollView)
+    scroll: ScrollView = null;
 
 
     start() {}
@@ -47,6 +50,10 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
                 this.teams.push(data);
 
                 this.updateTeams();
+
+                if (this.scroll) {
+                    this.scroll.scrollToTop(0.1, true);
+                }
     
             } catch (error) {
                 console.log('Error fetching clans leaderboard data:', error);

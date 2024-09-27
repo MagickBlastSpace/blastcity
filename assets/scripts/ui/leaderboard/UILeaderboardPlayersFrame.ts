@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate} from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, ScrollView} from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UILeaderboardPlayerItem } from './UILeaderboardPlayerItem';
 import { PlayerEventData } from '../../data/EventData';
@@ -14,6 +14,9 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
     itemPrefab: Prefab = null;
     @property(Node)
     itemsLayout: Node = null;
+
+    @property(ScrollView)
+    scroll: ScrollView = null;
 
 
     start() {}
@@ -47,6 +50,10 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
     
                 this.items[i].init(i + 1);
                 this.items[i].refresh(members[i]);
+            }
+
+            if (this.scroll) {
+                this.scroll.scrollToTop(0.1, true);
             }
     
         } catch (error) {
