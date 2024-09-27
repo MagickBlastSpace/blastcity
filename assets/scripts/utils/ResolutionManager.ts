@@ -30,8 +30,14 @@ export class ResolutionManager extends Component {
 
     @property(Node)
     mainMenuBtns: Node = null;
+
     @property([Node])
     mainMenuScalableItems: Node[] = [];
+    @property([Node])
+    leaderboardScalableItems: Node[] = [];
+    @property([Node])
+    clansScalableItems: Node[] = [];
+
     @property([Node])
     eventBtns: Node[] = [];
     @property([Node])
@@ -45,6 +51,8 @@ export class ResolutionManager extends Component {
     eventBtnsWidgets: Widget[] = [];
     @property([Layout])
     eventBtnsLs: Layout[] = [];
+    @property(Widget)
+    mainMenuBtnsWidget: Widget = null;
 
     @property(Widget)
     playBtn: Widget = null;
@@ -108,6 +116,12 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
             this.mainMenuScalableItems[i].setScale(new Vec3(1, 1, 1));
         }
+        for(let i = 0; i < this.leaderboardScalableItems.length; i++) {
+            this.leaderboardScalableItems[i].setScale(new Vec3(1, 1, 1));
+        }
+        for(let i = 0; i < this.clansScalableItems.length; i++) {
+            this.clansScalableItems[i].setScale(new Vec3(1, 1, 1));
+        }
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(1, 1, 1));
         }
@@ -144,6 +158,8 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.resources.length; i++) {
             this.resources[i].top = 250;
         }
+
+        this.mainMenuBtnsWidget.bottom = 0;
     }
 
     setPortraitMode() {
@@ -155,6 +171,12 @@ export class ResolutionManager extends Component {
         this.mainMenuBtns.setScale(new Vec3(1.66, 1.66, 1));
         for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
             this.mainMenuScalableItems[i].setScale(new Vec3(2, 2, 1));
+        }
+        for(let i = 0; i < this.leaderboardScalableItems.length; i++) {
+            this.leaderboardScalableItems[i].setScale(new Vec3(1.5, 1.5, 1));
+        }
+        for(let i = 0; i < this.clansScalableItems.length; i++) {
+            this.clansScalableItems[i].setScale(new Vec3(1.5, 1.5, 1));
         }
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(2, 2, 1));
@@ -192,6 +214,8 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.resources.length; i++) {
             this.resources[i].top = 400;
         }
+
+        this.mainMenuBtnsWidget.bottom = 0;
 
         //this.mainBtns.updateAlignment();
     }
