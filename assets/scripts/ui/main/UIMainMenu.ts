@@ -58,7 +58,7 @@ export class UIMainMenu extends UIFrameBase {
         this.updateBackgroundGraphics();
 
         this.startFrame.on("play", () => this.play());
-        this.chest.node.on("chest_stage_complete", () => this.updateBackgroundGraphics());
+        this.chest.node.on("complete", () => this.updateBackgroundGraphics());
     }
 
 
