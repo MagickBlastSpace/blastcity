@@ -1,10 +1,13 @@
-import { _decorator, Component, Node, Button } from 'cc';
+import { _decorator, Component, Node, Button, assetManager, Sprite, SpriteFrame } from 'cc';
 import { UIMainMenuButton } from './UIMainMenuButton';
 import { UIMainMenuFrame } from './UIMainMenuFrame';
+import { UIFrameBase } from '../UIFrameBase';
+import { AdsTimer } from '../../utils/AdsTimer';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
-export class UIMainMenu extends Component {
+export class UIMainMenu extends UIFrameBase {
 
     @property(Button)
     shopBtn: Button = null;
@@ -17,14 +20,29 @@ export class UIMainMenu extends Component {
     @property(Button)
     tbd2Btn: Button = null;
 
+    @property(Sprite)
+    background: Sprite = null;
+    @property(Sprite)
+    background_1: Sprite = null;
+
     @property([UIMainMenuButton])
     buttonsUi: UIMainMenuButton[] = [];
 
     @property([UIMainMenuFrame])
     framesUi: UIMainMenuFrame[] = [];
 
+    @property(Node)
+    startFrame: Node = null;
+
+    @property(AdsTimer)
+    adsTimer: AdsTimer = null;
+
 
     start() {
+        SaveData.instance.loadLevelProgressData();
+        SaveData.instance.loadStartBonusesData();
+        SaveData.instance.loadButlersGiftData();
+
         this.shopBtn.node.on(Button.EventType.CLICK, this.onBtnShopClick, this);
         this.clanBtn.node.on(Button.EventType.CLICK, this.onBtnClanClick, this);
         this.playBtn.node.on(Button.EventType.CLICK, this.onBtnPlayClick, this);
@@ -33,6 +51,25 @@ export class UIMainMenu extends Component {
 
         this.setAllBtnsPassive();
         this.onBtnPlayClick();
+
+        this.updateBackgroundGraphics();
+
+        this.startFrame.on("play", () => this.play());
+    }
+
+
+    show() {
+        super.show();
+
+        this.onBtnPlayClick();
+
+        this.adsTimer.startMenuTimer();
+    }
+
+    play() {
+        this.hide();
+
+        this.adsTimer.startGameplayTimer();
     }
 
 
@@ -77,6 +114,30 @@ export class UIMainMenu extends Component {
         for(let i = 0; i < this.framesUi.length; i++) {
             this.framesUi[i].hide();
         }
+    }
+
+
+    updateBackgroundGraphics() {
+        assetManager.loadBundle("big_graphics", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: big_graphics`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: big_graphics"`);
+
+            bundle.load("back/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: background`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: background`);
+
+                this.background.spriteFrame = spriteFrame;
+                this.background_1.spriteFrame = spriteFrame;
+            });
+        });
     }
 }
 

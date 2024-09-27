@@ -1,11 +1,10 @@
-import { _decorator, Component, Node, Button, Label, Sprite, SpriteFrame, assetManager } from 'cc';
+import { _decorator, Component, Node, Button, Label } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { UIEventButton } from './UIEventButton';
 import { Field } from '../../game/Field';
-import { AdsTimer } from '../../utils/AdsTimer';
 import { KingLeagueEvent } from '../../game/events/competitive/KingLeagueEvent';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UIChest } from '../chest/UIChest';
@@ -30,19 +29,9 @@ export class UIStartFrame extends UIFrameBase {
     levelLabel: Label = null;
     @property(Label)
     levelCountLabel: Label = null;
-    @property(Label)
-    difficultyLabel: Label = null;
-
-    @property(Sprite)
-    background: Sprite = null;
-    @property(Sprite)
-    background_1: Sprite = null;
 
     @property(Field)
     field: Field = null;
-
-    @property(AdsTimer)
-    adsTimer: AdsTimer = null;
 
     @property(KingLeagueEvent)
     kingLeague: KingLeagueEvent = null;
@@ -57,10 +46,6 @@ export class UIStartFrame extends UIFrameBase {
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
-        SaveData.instance.loadLevelProgressData();
-        SaveData.instance.loadStartBonusesData();
-        SaveData.instance.loadButlersGiftData();
-
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].node.on("click", () => this.onEventBtnClick(i), this);
             this.eventBtns[i].node.on("play", () => this.onPlay());
@@ -70,29 +55,6 @@ export class UIStartFrame extends UIFrameBase {
         GameData.instance.node.on("level_stage_update", () => this.lockPlay(true));
 
         this.playBtn.node.active = false;
-
-        //this.refresh();
-
-        assetManager.loadBundle("big_graphics", (err, bundle) => {
-            if (err) {
-                console.error(`Failed to load bundle: big_graphics`, err);
-                return;
-            }
-
-            console.log(`Successfully loaded bundle: big_graphics"`);
-
-            bundle.load("back/spriteFrame", SpriteFrame, (err, spriteFrame) => {
-                if (err) {
-                    console.error(`Failed to load prefab: background`, err);
-                    return;
-                }
-
-                console.log(`Successfully loaded prefab: background`);
-
-                this.background.spriteFrame = spriteFrame;
-                this.background_1.spriteFrame = spriteFrame;
-            });
-        });
     }
 
     onPlayBtnClick() {
@@ -121,16 +83,14 @@ export class UIStartFrame extends UIFrameBase {
         }
 
         this.chest.refresh();
+
+        ResolutionManager.instance.adjustResolution();
     }
 
     show() {
         super.show();
 
         this.refresh();
-
-        this.adsTimer.startMenuTimer();
-
-        ResolutionManager.instance.adjustResolution();
     }
 
 
@@ -165,9 +125,7 @@ export class UIStartFrame extends UIFrameBase {
         try {
             this.field.spawnInitialBoard(GameData.instance.getCurrentLevel());
 
-            this.hide();
-
-            this.adsTimer.startGameplayTimer();
+            this.node.emit("play");
         }
         catch (error) {
             console.log(error);

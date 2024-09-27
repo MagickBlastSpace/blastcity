@@ -1,8 +1,6 @@
 declare const gamepush: any;
 
 import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame } from 'cc';
-import { UIStartFrame } from '../start/UIStartFrame';
-import { UIFrameBase } from '../UIFrameBase';
 import { UILevelMovesShop } from './UILevelMovesShop';
 import { SaveData } from '../../data/SaveData';
 import { ButlersGift } from '../../game/boosters/ButlersGift';
@@ -10,6 +8,7 @@ import { Level } from '../../game/Level';
 import { UserData } from '../../data/UserData';
 import { GameData } from '../../data/GameData';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { UIMainMenu } from '../main/UIMainMenu';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -54,8 +53,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     @property(Node)
     commonMovesShopPanel: Node = null;
 
-    @property(UIStartFrame)
-    startFrame: UIStartFrame = null;
+    @property(UIMainMenu)
+    mainFrame: UIMainMenu = null;
 
     @property(UILevelMovesShop)
     movesShop: UILevelMovesShop = null;
@@ -139,7 +138,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
             this.level.fail();
         }
 
-        this.startFrame.show();
+        this.mainFrame.show();
 
         this.hide();
 
