@@ -82,9 +82,12 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     refresh(isSuccess: boolean, goldEarned: number) {
         this.isSuccess = isSuccess;
 
-        let currentLevelNumber = UserData.instance.getProgress();
+        let isKingLeague = this.isKingLeagueMode();
 
-        this.levelLabel.string = isSuccess ? "Level " + currentLevelNumber : "Continue?";
+        let currentLevelNumber = isKingLeague ? UserData.instance.getKingLeagueProgress(): UserData.instance.getProgress();
+        let lvlString = isKingLeague ? "Round " + currentLevelNumber : "Level " + currentLevelNumber;
+
+        this.levelLabel.string = isSuccess ? lvlString : "Continue?";
 
         this.resultLabel.string = isSuccess ? "Level Complete" : "Level Failed";
         this.buttonLabel.string = isSuccess ? "Next" : "Replay";
@@ -101,9 +104,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.showAdBtn.node.active = false;
 
         try {
-            let levelsCount = GameData.instance.levels.length;
-            let completedLevelIndex = UserData.instance.getProgress() - 1;
-            let levelData = GameData.instance.levels[completedLevelIndex % levelsCount];
+            let levelData = GameData.instance.getLastLevel();
 
             this.difficulty = levelData.difficulty;
 
@@ -161,6 +162,11 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         else if(this.difficulty === "superhard") {
             UserData.instance.addResource("gold", this.goldEarned * 4);
         }
+    }
+
+
+    isKingLeagueMode(): boolean {
+        return UserData.instance.getProgress() >= GameData.instance.getMaxProgress();
     }
 }
 

@@ -381,6 +381,8 @@ export class GameData extends Component {
     private levelStage: number = -1;
     private maxProgress: number = 0;
 
+    private lastLevel: LevelData;
+
     public static instance: GameData = null;
 
     onLoad() {
@@ -460,7 +462,17 @@ export class GameData extends Component {
             progress = levelsCount - 1;
         }
 
+        this.lastLevel = this.levels[progress];
+
         return this.levels[progress];
+    }
+
+    getLastLevel(): LevelData {
+        if(this.lastLevel) {
+            return this.lastLevel;
+        }
+
+        return this.getCurrentLevel();
     }
 
 
