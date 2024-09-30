@@ -66,8 +66,6 @@ export class UIStartFrame extends UIFrameBase {
 
     refresh() {
         if(this.kingLeague.isKingLeagueMode()) {
-            console.log("King League Mode");
-            
             if(!this.kingLeague.getIsStarted() && this.isLevelsLoaded && this.kingLeague.canParticipate()) {
                 this.openEventByName("KingLeague");
             }
@@ -108,6 +106,14 @@ export class UIStartFrame extends UIFrameBase {
 
         if(!isLock) {
             this.isLevelsLoaded = true;
+
+            if(this.kingLeague.isKingLeagueMode()) {
+                console.log("King League Mode");
+
+                if(!this.kingLeague.getIsStarted() && this.kingLeague.canParticipate()) {
+                    this.openEventByName("KingLeague");
+                }
+            }
         }
     }
 

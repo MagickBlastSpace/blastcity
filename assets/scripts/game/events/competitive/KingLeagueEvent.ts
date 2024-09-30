@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { CompetitiveEventBase } from './CompetitiveEventBase';
 import { EventRewardData, PlayerEventData } from '../../../data/EventData';
@@ -67,7 +69,8 @@ export class KingLeagueEvent extends CompetitiveEventBase {
         const timeDiffInMillis = this.endTime.getTime() - now.getTime();
         const hoursDiff = timeDiffInMillis / (1000 * 60 * 60);
 
-        return  super.canParticipate() && hoursDiff > 1 && this.isKingLeagueMode();
+        //return  super.canParticipate() && hoursDiff > 1 && this.isKingLeagueMode();
+        return  super.canParticipate() && this.isKingLeagueMode();
     }
 
     isEventAvailable(): boolean {
@@ -84,6 +87,10 @@ export class KingLeagueEvent extends CompetitiveEventBase {
         this.isComplete = false;
 
         this.currentStep = 0;
+        UserData.instance.setKingLeagueProgress(0);
+
+        gamepush.player.set('score_king_league', 0);
+        gamepush.player.sync();
 
         this.lastAttemptTimestamp = Date.now();
 
