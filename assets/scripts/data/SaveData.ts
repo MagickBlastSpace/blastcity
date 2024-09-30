@@ -62,7 +62,7 @@ export class SaveData extends Component {
         var userData = JSON.parse(cc.sys.localStorage.getItem('userData'));
 
         if (userData) {
-            UserData.instance.setProgress(userData.progress);
+            UserData.instance.setProgress(gamepush.player.get('score'));
             UserData.instance.setResource("gold", userData.gold);
             if(userData.stars) {
                 UserData.instance.setResource("stars", userData.stars);
@@ -80,11 +80,11 @@ export class SaveData extends Component {
             UserData.instance.setEnergyAskTimestamp(userData.energyAskTimestamp);
 
             UserData.instance.setFriendsList(userData.friendsList);
-            UserData.instance.setKingLeagueProgress(userData.kingLeagueProgress);
-        } else {
-            //console.log("No saved user data found");
-            UserData.instance.setProgress(0);
-            UserData.instance.setKingLeagueProgress(0);
+            UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
+        }
+        else {
+            UserData.instance.setProgress(gamepush.player.get('score'));
+            UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
         }
 
         this.node.emit("user_data");
@@ -105,9 +105,9 @@ export class SaveData extends Component {
             cc.sys.localStorage.removeItem('event_' + eventComp.getEventId());
         }
 
-        /*gamepush.player.set('score_lightning', 0);
-        gamepush.player.set('score_kings_cup', 0);
-        gamepush.player.set('score_sky_race', 0);*/
+        gamepush.player.set('score', 0); //599 for last
+        gamepush.player.set('score_king_league', 0);
+
         gamepush.player.sync();
     }
 
