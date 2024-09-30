@@ -152,7 +152,7 @@ export class ResolutionManager extends Component {
         this.rewardBtn.bottom = 400;
         this.rewardBtn.center = 0;
 
-        this.kingLeagueBtn.bottom = 750;
+        this.kingLeagueBtn.bottom = 970;
         this.kingLeagueBtn.center = 0;
 
         for(let i = 0; i < this.resources.length; i++) {
@@ -208,7 +208,7 @@ export class ResolutionManager extends Component {
         this.rewardBtn.bottom = 800;
         this.rewardBtn.center = 0;
 
-        this.kingLeagueBtn.bottom = 1500;
+        this.kingLeagueBtn.bottom = 2400;
         this.kingLeagueBtn.center = 0;
 
         for(let i = 0; i < this.resources.length; i++) {
