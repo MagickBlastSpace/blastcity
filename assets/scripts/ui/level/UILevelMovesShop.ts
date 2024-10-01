@@ -37,8 +37,6 @@ export class UILevelMovesShop extends Component {
 
     refresh() {
         if(this.movesShop.isMovesShopAvailable()) {
-            this.buyBtn.node.active = true;
-
             this.data = this.movesShop.getStageData();
 
             const totalMoves = this.movesShop.getTotalMovesCount();
@@ -61,6 +59,8 @@ export class UILevelMovesShop extends Component {
             }
 
             this.buyBtnLabel.string = this.data.price;
+
+            this.buyBtn.node.active = this.data.price > 0;
             this.showAdBtn.node.active = this.data.price === 0;
         }
         else {
