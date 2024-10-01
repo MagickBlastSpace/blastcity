@@ -77,6 +77,8 @@ export class Field extends Component {
     private primaryColor: string = "";
     private secondaryColor: string = "";
 
+    private savedLevelData: LevelData;
+
 
     onLoad() {
         this.isAssetsLoaded = false;
@@ -121,6 +123,12 @@ export class Field extends Component {
 
     setAssetsAsLoaded() {
         this.isAssetsLoaded = true;
+
+        if(this.savedLevelData) {
+            this.spawnInitialBoard(this.savedLevelData);
+
+            return;
+        }
 
         this.spawnInitialBoard(GameData.instance.getCurrentLevel());
     }
@@ -190,6 +198,8 @@ export class Field extends Component {
         }
 
         if(!this.isAssetsLoaded) {
+            this.savedLevelData = level;
+
             AssetsLoader.instance.loadGameplayAssets();
 
             return;
@@ -345,6 +355,8 @@ export class Field extends Component {
         }
 
         this.isCompleteScheduled = false;
+
+        this.savedLevelData = new LevelData();
     }
 
     restoreSpecTilesState(specs: SpecialTileStateData[]) {

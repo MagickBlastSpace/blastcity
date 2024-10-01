@@ -42,9 +42,7 @@ export class UIMainMenu extends UIFrameBase {
 
 
     start() {
-        SaveData.instance.loadLevelProgressData();
-        SaveData.instance.loadStartBonusesData();
-        SaveData.instance.loadButlersGiftData();
+        SaveData.instance.node.on("level_progress_loaded", () => this.play());
 
         this.shopBtn.node.on(Button.EventType.CLICK, this.onBtnShopClick, this);
         this.clanBtn.node.on(Button.EventType.CLICK, this.onBtnClanClick, this);
@@ -59,6 +57,10 @@ export class UIMainMenu extends UIFrameBase {
 
         this.startFrame.on("play", () => this.play());
         this.chest.node.on("complete", () => this.updateBackgroundGraphics());
+
+        SaveData.instance.loadStartBonusesData();
+        SaveData.instance.loadButlersGiftData();
+        SaveData.instance.loadLevelProgressData();
     }
 
 

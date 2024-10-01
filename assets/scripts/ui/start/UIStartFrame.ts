@@ -41,7 +41,7 @@ export class UIStartFrame extends UIFrameBase {
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
-        SaveData.instance.node.on("level_progress_loaded", () => this.hide());
+        
         this.briefingPopup.node.on("play", () => this.onPlay());
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
