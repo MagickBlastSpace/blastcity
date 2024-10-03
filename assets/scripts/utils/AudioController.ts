@@ -54,6 +54,10 @@ export class AudioController extends Component {
 
                 console.log(`Successfully loaded sound`);
 
+                if (this.soundtrackSource.playing) {
+                    this.soundtrackSource.stop();
+                }
+
                 this.soundtrackSource.clip = audio;
 
                 this.soundtrackSource.play();

@@ -10,6 +10,9 @@ export class UIPopupFrameBase extends UIFrameBase {
     @property(Node)
     contentNode: Node = null;
 
+    @property
+    disablePopupSound: boolean = false;
+
     
     show() {
         if(!this.node.active) {
@@ -25,7 +28,9 @@ export class UIPopupFrameBase extends UIFrameBase {
             })
             .start();
 
-        AudioController.instance.playPopup();
+        if(!this.disablePopupSound) {
+            AudioController.instance.playPopup();
+        }
     }
 
 
@@ -37,7 +42,9 @@ export class UIPopupFrameBase extends UIFrameBase {
             })
             .start();
 
-        AudioController.instance.playPopup();
+        if(!this.disablePopupSound) {
+            AudioController.instance.playPopup();
+        }
     }
 
     hideClean() {
