@@ -60,7 +60,7 @@ export class UIMainMenu extends UIFrameBase {
 
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
-        SaveData.instance.loadLevelProgressData();
+        //SaveData.instance.loadLevelProgressData();
     }
 
 

@@ -3,6 +3,7 @@ declare const gamepush: any;
 import { _decorator, Component, Node, Vec2, Prefab } from 'cc';
 import { UserData } from './UserData';
 import { Statistics } from './Statistics';
+import { SaveData } from './SaveData';
 const { ccclass, property } = _decorator;
 
 
@@ -553,6 +554,8 @@ export class GameData extends Component {
     
                     // Emit event indicating levels are loaded
                     this.node.emit("levels_loaded");
+
+                    SaveData.instance.loadLevelProgressData();
     
                     resolve();
                 } catch (error) {
