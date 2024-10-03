@@ -16,6 +16,9 @@ export class UIStartBonusItem extends Component {
     @property(SpriteFrame)
     inactive: SpriteFrame = null;
 
+    @property(Node)
+    activeState: Node = null;
+
     @property([SpriteTileData])
     commonIcons: SpriteTileData[] = [];
 
@@ -65,6 +68,8 @@ export class UIStartBonusItem extends Component {
     
     setActiveState(isActive: boolean) {
         this.frame.spriteFrame = isActive ? this.active : this.inactive;
+
+        this.activeState.active = isActive;
     }
 
 

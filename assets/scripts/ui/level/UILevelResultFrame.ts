@@ -15,8 +15,6 @@ const { ccclass, property } = _decorator;
 export class UILevelResultFrame extends UIPopupFrameBase {
 
     @property(Label)
-    resultLabel: Label = null;
-    @property(Label)
     buttonLabel: Label = null;
     @property(Label)
     goldLabel: Label = null;
@@ -89,9 +87,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
         this.levelLabel.string = isSuccess ? lvlString : "Continue?";
 
-        this.resultLabel.string = isSuccess ? "Level Complete" : "Level Failed";
-        this.buttonLabel.string = isSuccess ? "Next" : "Replay";
-        this.goldLabel.string = goldEarned > 0 ? "Gold earned: " + goldEarned : "";
+        this.buttonLabel.string = isSuccess ? "Continue" : "Replay";
+        this.goldLabel.string = "x" + goldEarned;
 
         this.movesShop.node.active = !isSuccess;
         this.progressLose.active = !isSuccess && this.butlersGift.getStreak() > 0;
