@@ -5,6 +5,7 @@ import { UIFrameBase } from '../UIFrameBase';
 import { AdsTimer } from '../../utils/AdsTimer';
 import { SaveData } from '../../data/SaveData';
 import { Chest } from '../../game/Chest';
+import { AudioController } from '../../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -40,6 +41,9 @@ export class UIMainMenu extends UIFrameBase {
     @property(AdsTimer)
     adsTimer: AdsTimer = null;
 
+    @property(AudioController)
+    audio: AudioController = null;
+
 
     start() {
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
@@ -61,6 +65,8 @@ export class UIMainMenu extends UIFrameBase {
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
         //SaveData.instance.loadLevelProgressData();
+
+        this.audio.playMainMenuSoundtrack();
     }
 
 
@@ -70,12 +76,16 @@ export class UIMainMenu extends UIFrameBase {
         this.onBtnPlayClick();
 
         this.adsTimer.startMenuTimer();
+
+        this.audio.playMainMenuSoundtrack();
     }
 
     play() {
         this.hide();
 
         this.adsTimer.startGameplayTimer();
+
+        this.audio.playGameplaySoundtrack();
     }
 
 
