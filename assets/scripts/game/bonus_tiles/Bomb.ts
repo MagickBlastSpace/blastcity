@@ -87,6 +87,7 @@ export class Bomb extends BonusTileBase {
         let matches = [];
 
         this.playAnimation("rocket_bomb", false, 1);
+        this.playComboSound();
 
         this.rowExtraHit(field, this.row, this.col);
         this.rowExtraHit(field, this.row + 1, this.col);
@@ -103,6 +104,7 @@ export class Bomb extends BonusTileBase {
         let matches = [];
 
         this.playAnimation("bomb_bomb", false, 1);
+        this.playComboSound();
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
@@ -180,6 +182,8 @@ export class Bomb extends BonusTileBase {
         }, totalTime);
 
         this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y], this.disco_combo_time / totalTime);
+
+        this.playComboSound();
 
         return matches;
     }

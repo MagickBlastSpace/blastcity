@@ -284,6 +284,12 @@ export class TileBase extends Component {
     clearTiles() {
         this.node.emit("clear");
     }
+
+
+    playSound(soundIndex: number) {
+        let uiComponent = this.node.getComponent("UITile");
+        uiComponent.playAdditionalSound(soundIndex);
+    }
 }
 
 

@@ -237,6 +237,11 @@ export class BonusTileBase extends TileBase {
             console.log("Render Line Error: " + error);
         }
     }
+
+
+    playComboSound() {
+        this.playSound(0);
+    }
 }
 
 

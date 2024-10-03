@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, UITransform } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, UITransform, AudioClip, AudioSource } from 'cc';
 const { ccclass, property } = _decorator;
 
 
@@ -47,6 +47,14 @@ export class UITile extends Component {
 
     @property
     destroyTime: number = 0.25;
+
+    @property(AudioSource)
+    source: AudioSource = null!
+
+    @property([AudioClip])
+    destroyAudios: AudioClip[] = [];
+    @property([AudioClip])
+    additionalAudios: AudioClip[] = [];
 
     private fallTime: number = 0.35;
 
@@ -156,6 +164,7 @@ export class UITile extends Component {
         }
         
         this.playAnimation("destroy", false, 1);
+        this.playDestroySound();
 
         this.scheduleOnce(() => {
             if(this.isSpineDestroyScheduled && this.spine !== null) {
@@ -354,6 +363,40 @@ export class UITile extends Component {
         }
 
         node.layer = layer;
+    }
+
+
+    playDestroySound() {
+        if (!this.source) {
+            return;
+        }
+
+        if (this.source.playing) {
+            return;
+        }
+
+        if (this.destroyAudios.length > 0) {
+            const randomIndex = Math.floor(Math.random() * this.destroyAudios.length);
+            const randomClip = this.destroyAudios[randomIndex];
+
+            this.source.playOneShot(randomClip);
+        } else {
+            console.error("No audio clips available in destroyAudios array.");
+        }
+    }
+
+    playAdditionalSound(soundIndex: number) {
+        if (!this.source) {
+            return;
+        }
+        
+        if (this.additionalAudios.length > soundIndex) {
+            const clip = this.additionalAudios[soundIndex];
+
+            this.source.playOneShot(clip);
+        } else {
+            console.error("No audio clips available in additionalAudios array.");
+        }
     }
 }
 
