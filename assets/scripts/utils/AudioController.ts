@@ -7,7 +7,23 @@ export class AudioController extends Component {
     @property(AudioSource)
     public soundtrackSource: AudioSource = null!
 
+    @property(AudioSource)
+    public uiSource: AudioSource = null!
 
+    @property(AudioClip)
+    public click: AudioClip = null!
+    @property(AudioClip)
+    public popup: AudioClip = null!
+
+    public static instance: AudioController = null;
+
+
+    onLoad() {
+        AudioController.instance = this;
+    }
+
+
+    /*Music*/
     playMainMenuSoundtrack() {
         this.playMusic("main");
     }
@@ -21,7 +37,7 @@ export class AudioController extends Component {
         if (this.soundtrackSource.playing) {
             this.soundtrackSource.stop();
         }
-        
+
         assetManager.loadBundle("music", (err, bundle) => {
             if (err) {
                 console.error(`Failed to load bundle: music`, err);
@@ -43,6 +59,16 @@ export class AudioController extends Component {
                 this.soundtrackSource.play();
             });
         });
+    }
+
+
+    /*UI*/
+    playClick() {
+        this.uiSource.playOneShot(this.click, 1);
+    }
+
+    playPopup() {
+        this.uiSource.playOneShot(this.popup, 1);
     }
 }
 

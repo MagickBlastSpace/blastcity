@@ -41,9 +41,6 @@ export class UIMainMenu extends UIFrameBase {
     @property(AdsTimer)
     adsTimer: AdsTimer = null;
 
-    @property(AudioController)
-    audio: AudioController = null;
-
 
     start() {
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
@@ -66,7 +63,7 @@ export class UIMainMenu extends UIFrameBase {
         SaveData.instance.loadButlersGiftData();
         //SaveData.instance.loadLevelProgressData();
 
-        this.audio.playMainMenuSoundtrack();
+        AudioController.instance.playMainMenuSoundtrack();
     }
 
 
@@ -77,7 +74,7 @@ export class UIMainMenu extends UIFrameBase {
 
         this.adsTimer.startMenuTimer();
 
-        this.audio.playMainMenuSoundtrack();
+        AudioController.instance.playMainMenuSoundtrack();
     }
 
     play() {
@@ -85,7 +82,7 @@ export class UIMainMenu extends UIFrameBase {
 
         this.adsTimer.startGameplayTimer();
 
-        this.audio.playGameplaySoundtrack();
+        AudioController.instance.playGameplaySoundtrack();
     }
 
 

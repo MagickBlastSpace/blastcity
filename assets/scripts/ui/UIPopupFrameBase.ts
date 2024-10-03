@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, tween, Vec3 } from 'cc';
 import { UIFrameBase } from './UIFrameBase';
 import { ResolutionManager } from '../utils/ResolutionManager';
+import { AudioController } from '../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIPopupFrameBase')
@@ -23,6 +24,8 @@ export class UIPopupFrameBase extends UIFrameBase {
                 this.adjustResolution();
             })
             .start();
+
+        AudioController.instance.playPopup();
     }
 
 
@@ -33,6 +36,8 @@ export class UIPopupFrameBase extends UIFrameBase {
                 this.node.active = false;
             })
             .start();
+
+        AudioController.instance.playPopup();
     }
 
     hideClean() {

@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Button, tween, Vec3 } from 'cc';
+import { AudioController } from './AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('ButtonAnimator')
@@ -33,6 +34,8 @@ export class ButtonAnimator extends Component {
                 this.isPressTweening = false;
             })
             .start();
+
+        AudioController.instance.playClick();
     }
 
     onButtonReleased() {
