@@ -37,3 +37,11 @@ export class ClanMemberData {
 }
 
 
+@ccclass('ClanLeaderboardData')
+export class ClanLeaderboardData {
+    @property(ClanData)
+    clanData: ClanData;
+
+    @property
+    score = 0;
+}

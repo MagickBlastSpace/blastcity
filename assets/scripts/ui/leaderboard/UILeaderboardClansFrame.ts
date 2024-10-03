@@ -4,6 +4,7 @@ import { PlayerEventData } from '../../data/EventData';
 import { Net } from '../../net/Net';
 import { UILeaderboardClanItem } from './UILeaderboardClanItem';
 import { Clans } from '../../game/Clans';
+import { ClanLeaderboardData } from '../../data/ClanData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardClansFrame')
@@ -19,8 +20,8 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
     @property(Clans)
     clans: Clans = null;
 
-    @property([PlayerEventData])
-    teams: PlayerEventData[] = [];
+    @property([ClanLeaderboardData])
+    teams: ClanLeaderboardData[] = [];
 
     @property(ScrollView)
     scroll: ScrollView = null;
@@ -35,16 +36,16 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
         let clansData = this.clans.getAllClans();
 
         for(let i = 0; i < clansData.length; i++) {
-            let data = new PlayerEventData();
-            data.playerName = clansData[i].clanName;
-            data.progressValue = 0;
+            let data = new ClanLeaderboardData();
+            data.clanData = clansData[i];
+            data.score = 0;
 
             try {
                 const result = await Net.instance.fetchScoreLeaderboardData("clan", "clan_" + clansData[i].clanId);
                 const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
     
                 for(let i = 0; i < players.length; i++) {
-                    data.progressValue += players[i].score;
+                    data.score += players[i].score;
                 }
 
                 this.teams.push(data);
@@ -63,7 +64,7 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
 
 
     updateTeams() {
-        this.teams.sort((a, b) => b.progressValue - a.progressValue);
+        this.teams.sort((a, b) => b.score - a.score);
 
         for(let i = 0; i < this.teams.length; i++) {
             if(i >= this.items.length) {
@@ -75,8 +76,10 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
                 this.items.push(item);
             }
 
-            this.items[i].init(i + 1);
-            this.items[i].refresh(this.teams[i]);
+            this.items[i].setIndex(i);
+            this.items[i].setScore(this.teams[i].score);
+
+            this.items[i].init(this.teams[i].clanData);
         }
     }
 

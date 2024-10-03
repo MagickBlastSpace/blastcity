@@ -59,10 +59,13 @@
       },
       {
         "__id__": 66
+      },
+      {
+        "__id__": 68
       }
     ],
     "_prefab": {
-      "__id__": 68
+      "__id__": 70
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -889,7 +892,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 200.4299774169922,
+      "width": 81.08000183105469,
       "height": 109.65
     },
     "_anchorPoint": {
@@ -925,7 +928,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "123",
+    "_string": "0",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 110,
@@ -1694,20 +1697,21 @@
     "__prefab": {
       "__id__": 67
     },
-    "playerName": {
+    "nameLabel": {
       "__id__": 23
     },
-    "progressLabel": {
-      "__id__": 35
+    "membersCountLabel": {
+      "__id__": 53
     },
-    "slider": null,
-    "isPlayer": {
+    "clickBtn": {
+      "__id__": 68
+    },
+    "isJoined": {
       "__id__": 2
     },
-    "rewardsLayout": null,
-    "rewardsPlayerLayout": null,
-    "rewardIcon": null,
-    "rewardIcons": [],
+    "scoreLabel": {
+      "__id__": 35
+    },
     "placeIcon": {
       "__id__": 17
     },
@@ -1725,16 +1729,67 @@
         "__expectedType__": "cc.SpriteFrame"
       }
     ],
-    "takeRewardBtn": null,
-    "indexLabel": {
-      "__id__": 11
-    },
-    "clanLabel": null,
     "_id": ""
   },
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "5f/i+0IR1EBr/J+fGAB9NE"
+  },
+  {
+    "__type__": "cc.Button",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 69
+    },
+    "clickEvents": [],
+    "_interactable": true,
+    "_transition": 0,
+    "_normalColor": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_hoverColor": {
+      "__type__": "cc.Color",
+      "r": 211,
+      "g": 211,
+      "b": 211,
+      "a": 255
+    },
+    "_pressedColor": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_disabledColor": {
+      "__type__": "cc.Color",
+      "r": 124,
+      "g": 124,
+      "b": 124,
+      "a": 255
+    },
+    "_normalSprite": null,
+    "_hoverSprite": null,
+    "_pressedSprite": null,
+    "_disabledSprite": null,
+    "_duration": 0.1,
+    "_zoomScale": 1.2,
+    "_target": null,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "e9FJv66ENGs68ObtUwwtmv"
   },
   {
     "__type__": "cc.PrefabInfo",
