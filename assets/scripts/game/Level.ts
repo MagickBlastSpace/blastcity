@@ -328,6 +328,8 @@ export class Level extends Component {
         SaveData.instance.saveStatistics();
 
         this.node.emit("fail");
+
+        UserData.instance.subResource("energy", 1);
     }
 
 

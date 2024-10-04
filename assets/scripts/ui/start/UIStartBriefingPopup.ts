@@ -101,8 +101,6 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
                 this.refillEnergyPopup.show();
                 return;
             }
-        
-            UserData.instance.subResource("energy", 1);
         }
         
         this.hide();
