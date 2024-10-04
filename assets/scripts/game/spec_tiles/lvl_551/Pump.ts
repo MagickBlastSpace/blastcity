@@ -80,6 +80,8 @@ export class Pump extends SpecTileBase {
     startPreActionEffect(field: Node[][]): boolean {
         if(this.isDamaged && this.goalCount > 0) {
             this.node.emit("special", "balloon");
+
+            this.playGenerateSound();
         }
 
         return false;
@@ -106,6 +108,8 @@ export class Pump extends SpecTileBase {
         this.isInactive = true;
 
         this.icon.spriteFrame = this.inactive;
+
+        this.playInactiveSound();
     }
 
 
@@ -119,6 +123,15 @@ export class Pump extends SpecTileBase {
         if(this.goalCount <= 0) {
             this.setInactiveState();
         }
+    }
+
+
+    playInactiveSound() {
+        this.playSound(1);
+    }
+
+    playGenerateSound() {
+        this.playSound(0);
     }
 }
 

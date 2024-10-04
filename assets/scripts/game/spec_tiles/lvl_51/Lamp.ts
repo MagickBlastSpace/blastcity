@@ -26,6 +26,10 @@ export class Lamp extends SpecTileBase {
         if(!this.isDamaged) {
             this.strength--;
             this.setAsDamaged();
+
+            if(this.strength > 0) {
+                this.playDamageSound();
+            }
         }
 
         this.refresh();
@@ -52,6 +56,11 @@ export class Lamp extends SpecTileBase {
 
     clearExtra() {
         this.isDamaged = false;
+    }
+
+
+    playDamageSound() {
+        this.playSound(0);
     }
 }
 

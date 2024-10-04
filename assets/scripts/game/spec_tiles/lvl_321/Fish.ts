@@ -81,6 +81,8 @@ export class Fish extends SpecTileBase {
     startPreActionEffect(field: Node[][]): boolean {
         if(this.isGenerate && this.goalCount > 0) {
             this.node.emit("status", "bubble");
+
+            this.playGenerateSound();
         }
 
         return false;
@@ -106,6 +108,8 @@ export class Fish extends SpecTileBase {
         this.isInactive = true;
         
         this.icon.spriteFrame = this.inactive;
+
+        this.playInactiveSound();
     }
 
 
@@ -130,6 +134,15 @@ export class Fish extends SpecTileBase {
         if(this.goalCount <= 0) {
             this.setInactiveState();
         }
+    }
+
+
+    playInactiveSound() {
+        this.playSound(1);
+    }
+
+    playGenerateSound() {
+        this.playSound(0);
     }
 }
 

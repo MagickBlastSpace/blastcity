@@ -61,12 +61,22 @@ export class Jars extends BigTileBase {
             let animName = "destroy" + (Math.floor(Math.random() * 3) + 1);
 
             this.playAdditionalAnimation(this.hps_anim[this.strength], animName, null);
+
+            if(this.strength > 0) {
+                this.playDamageSound();
+            }
         }
     }
 
 
     startDestroyConsequences() {
         this.playAnimation("destroy", false, 1);
+    }
+
+
+    playDamageSound() {
+        let soundIndex = this.strength % 2;
+        this.playSound(soundIndex);
     }
 }
 

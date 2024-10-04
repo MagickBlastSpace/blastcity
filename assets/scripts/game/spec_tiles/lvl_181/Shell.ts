@@ -28,6 +28,10 @@ export class Shell extends SpecTileBase {
         if(!this.isDamaged || (this.extraDamageAvailable && damageType === "bonus")) {
             this.strength--;
             this.setAsDamaged();
+
+            if(this.strength > 0) {
+                this.playSwitchSound();
+            }
         }
         this.refresh();
     }
@@ -54,14 +58,21 @@ export class Shell extends SpecTileBase {
             return;
         }
         
-        if(!this.isDamaged) {
+        if(!this.isDamaged && this.strength < 2) {
             this.strength = 2;
             this.refresh();
+
+            this.playSwitchSound();
         }
     }
 
     clearExtra() {
         this.extraDamageAvailable = true;
+    }
+
+
+    playSwitchSound() {
+        this.playSound(0);
     }
 }
 

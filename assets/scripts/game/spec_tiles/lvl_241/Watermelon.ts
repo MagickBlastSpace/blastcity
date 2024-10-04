@@ -26,9 +26,11 @@ export class Watermelon extends Lamp {
         switch(this.strength) {
             case 1:
                 this.picture.spriteFrame = this.hp1;
+                this.playDamageSound_2();
                 break;
             case 2:
                 this.picture.spriteFrame = this.hp2;
+                this.playDamageSound();
                 break;
             case 3:
                 this.picture.spriteFrame = this.hp3;
@@ -38,6 +40,11 @@ export class Watermelon extends Lamp {
 
     startDestroyConsequences() {
         this.node.emit("goal", "watermelon");
+    }
+
+
+    playDamageSound_2() {
+        this.playSound(1);
     }
 }
 

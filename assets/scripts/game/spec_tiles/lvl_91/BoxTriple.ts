@@ -33,14 +33,20 @@ export class BoxTriple extends Box {
         switch(this.strength) {
             case 1:
                 this.picture.spriteFrame = this.hp1;
+                this.playDamageSound();
                 break;
             case 2:
                 this.picture.spriteFrame = this.hp2;
+                this.playDamageSound();
                 break;
             case 3:
                 this.picture.spriteFrame = this.hp3;
                 break;
         }
+    }
+
+    playDamageSound() {
+        this.playSound(0);
     }
 }
 

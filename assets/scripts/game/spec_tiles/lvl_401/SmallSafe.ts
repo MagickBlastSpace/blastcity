@@ -51,6 +51,8 @@ export class SmallSafe extends SpecTileBase {
     startInActionEffect(field: Node[][], statuses: Node[][], isBlockingAction: boolean): boolean {
         if(!isBlockingAction) {
             this.isClosed = !this.isClosed;
+
+            this.playSwitchSound();
         }
         
         this.refresh();
@@ -77,6 +79,11 @@ export class SmallSafe extends SpecTileBase {
         this.isClosed = index === 1;
 
         this.refresh();
+    }
+
+
+    playSwitchSound() {
+        this.playSound(0);
     }
 }
 

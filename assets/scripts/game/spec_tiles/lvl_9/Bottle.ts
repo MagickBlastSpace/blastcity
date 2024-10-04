@@ -6,11 +6,14 @@ const { ccclass, property } = _decorator;
 export class Bottle extends SpecTileBase {
 
     private lowestRow: number = 0;
+    private lastRow: number = 0;
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
         this.isShifts = true;
+
+        this.lastRow = row;
     }
 
 
@@ -26,6 +29,12 @@ export class Bottle extends SpecTileBase {
     }
 
     startInActionEffect(): boolean {
+        if(this.row < this.lastRow) {
+            this.playFallSound();
+
+            this.lastRow = this.row;
+        }
+        
         if(this.row === this.lowestRow) {
             this.playAnimation("destroy", false, 1);
             
@@ -68,6 +77,11 @@ export class Bottle extends SpecTileBase {
         }
 
         return lowestRow;
+    }
+
+
+    playFallSound() {
+        this.playSound(0);
     }
 }
 

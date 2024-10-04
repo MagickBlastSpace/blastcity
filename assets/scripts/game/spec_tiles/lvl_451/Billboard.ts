@@ -86,12 +86,13 @@ export class Billboard extends SpecTileBase {
         this.node.emit("goal", "billboard");
 
         this.playAdditionalAnimation(null, "bulb", null);
+        this.playDamageSound();
 
         this.refresh();
     }
 
     startDestroyConsequences() {
-        this.node.emit("goal", "small_safe");
+        //this.node.emit("goal", "small_safe");
 
         this.playAnimation("destroy", false, 1);
     }
@@ -284,6 +285,11 @@ export class Billboard extends SpecTileBase {
         this.background_upper.active = false;
         this.background_right.active = false;
         this.background_upper_right.active = false;
+    }
+
+
+    playDamageSound() {
+        this.playSound(0);
     }
 }
 

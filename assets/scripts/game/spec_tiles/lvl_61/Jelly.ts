@@ -64,6 +64,8 @@ export class Jelly extends SpecTileBase {
 
         this.node.emit("goal_inc", "jelly");
 
+        this.playSpawnSound();
+
         return true;
     }
 
@@ -121,6 +123,11 @@ export class Jelly extends SpecTileBase {
         this.node.emit("goal", "jelly");
 
         this.playAnimation("destroy", false, 1);
+    }
+
+
+    playSpawnSound() {
+        this.playSound(0);
     }
 }
 

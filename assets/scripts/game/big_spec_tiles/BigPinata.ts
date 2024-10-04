@@ -49,9 +49,11 @@ export class BigPinata extends BigTileBase {
         switch(this.strength) {
             case 1:
                 this.picture.spriteFrame = this.hp1;
+                this.playDamageSound();
                 break;
             case 2:
                 this.picture.spriteFrame = this.hp2;
+                this.playDamageSound_2();
                 break;
             case 3:
                 this.picture.spriteFrame = this.hp3;
@@ -67,6 +69,15 @@ export class BigPinata extends BigTileBase {
 
     clearExtra() {
         this.isDamaged = false;
+    }
+
+
+    playDamageSound() {
+        this.playSound(0);
+    }
+
+    playDamageSound_2() {
+        this.playSound(1);
     }
 }
 

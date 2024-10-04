@@ -48,11 +48,19 @@ export class Soda extends BigTileBase {
         super.setAsDamaged();
 
         this.node.emit("goal", "lemonade");
+
+        if(this.strength > 0) {
+            this.playDamageSound();
+        }
     }
 
 
     clearExtra() {
         this.isDamaged = false;
+    }
+
+    playDamageSound() {
+        this.playSound(0);
     }
 }
 

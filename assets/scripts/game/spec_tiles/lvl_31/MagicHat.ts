@@ -69,6 +69,10 @@ export class MagicHat extends SpecTileBase {
         
         this.node.emit("goal", "magic_hat");
         this.node.emit("goal_effect", "magic_hat", this.row, this.col);
+
+        if(this.goalCount > 0) {
+            this.playGoalSound();
+        }
     }
 
 
@@ -92,6 +96,8 @@ export class MagicHat extends SpecTileBase {
         this.isInactive = true;
         this.inactiveState.active = true;
         this.activeState.active = false;
+
+        this.playInactiveSound();
     }
 
     clearExtra() {
@@ -109,6 +115,15 @@ export class MagicHat extends SpecTileBase {
         if(this.goalCount <= 0) {
             this.setInactiveState();
         }
+    }
+
+
+    playInactiveSound() {
+        this.playSound(1);
+    }
+
+    playGoalSound() {
+        this.playSound(0);
     }
 }
 

@@ -6,6 +6,8 @@ const { ccclass, property } = _decorator;
 export class BigBottle extends BigTileBase {
 
     private lowestRow: number = 0;
+    private lastRow: number = 0;
+    
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -21,6 +23,12 @@ export class BigBottle extends BigTileBase {
     }
 
     startInActionEffect(): boolean {
+        if(this.row < this.lastRow) {
+            this.playFallSound();
+
+            this.lastRow = this.row;
+        }
+
         if(this.row === this.lowestRow) {
             this.node.emit("destroy_tile", this.row, this.col);
 
@@ -72,6 +80,11 @@ export class BigBottle extends BigTileBase {
         }
 
         return lowestRow;
+    }
+
+
+    playFallSound() {
+        this.playSound(0);
     }
 }
 

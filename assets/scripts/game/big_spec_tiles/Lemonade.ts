@@ -147,6 +147,10 @@ export class Lemonade extends BigTileBase {
             }
             this.setAsDamaged();
         }
+
+        if(this.isDamaged && !this.isReadyToDestroy()) {
+            this.playDamageSound();
+        }
         
         this.refresh();
     }
@@ -267,6 +271,11 @@ export class Lemonade extends BigTileBase {
 
     startDestroyConsequences() {
         this.playAnimation("destroy", false, 1);
+    }
+
+
+    playDamageSound() {
+        this.playSound(0);
     }
 }
 
