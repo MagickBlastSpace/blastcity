@@ -2159,6 +2159,8 @@ export class Field extends Component {
         this.scheduleOnce(() => {
             this.checkForPotentialBonuses();
         }, this.swapTime + stepTime * (swapsCount + 1));
+
+        this.node.emit("shuffle");
     }
 
 

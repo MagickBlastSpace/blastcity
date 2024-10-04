@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec2, Vec3, sp } from 'cc';
+import { _decorator, Component, Node, Vec2, Vec3, sp, AudioSource, AudioClip } from 'cc';
 import { UIDiscoballLineRenderer } from './effects/UIDiscoballLineRenderer';
 const { ccclass, property } = _decorator;
 
@@ -37,6 +37,12 @@ export class UIField extends Component {
     @property(sp.Skeleton)
     boostersAnimation: sp.Skeleton = null;
 
+    @property(AudioSource)
+    source: AudioSource = null!
+
+    @property([AudioClip])
+    audios: AudioClip[] = [];
+
     private highPriorityStatuses: string[] = ["dynamite", "bubble"];
 
 
@@ -45,6 +51,7 @@ export class UIField extends Component {
         this.field.on("init_tile", (tile, isStatus, tileType) => this.init(tile, isStatus, tileType));
         this.field.on("init_status", (status, tileType) => this.initStatus(status, tileType));
         this.field.on("booster", (boosterType, row, col) => this.playBoosterAnimation(boosterType, row, col));
+        this.field.on("shuffle", () => this.playShuffleSound());
 
         this.animationsLayout.on("goal_effect_positioned", (goalType, x, y) => {
             this.node.emit("goal_effect_positioned", goalType, x, y);
@@ -185,10 +192,58 @@ export class UIField extends Component {
                 });
 
                 this.boostersAnimation.setAnimation(0, boosterType, false);
+
+                this.playBoosterSound(boosterType);
             }
         } catch (error) {
             console.error('Error setting boosters spine animation:', error);
         }
+    }
+
+
+    playSound(soundIndex: number) {
+        if (!this.source) {
+            return;
+        }
+        
+        if (this.audios.length > soundIndex) {
+            const clip = this.audios[soundIndex];
+
+            this.source.playOneShot(clip);
+        } else {
+            console.error("No audio clips available in audios array.");
+        }
+    }
+
+    playBoosterSound(booster: string) {
+        switch(booster) {
+            case "hammer":
+                this.playHammerSound();
+                break;
+            case "bow":
+                this.playBowSound();
+                break;
+            case "cannon":
+                this.playCannonSound();
+                break;
+        }
+    }
+
+
+    playHammerSound() {
+        this.playSound(0);
+    }
+
+    playBowSound() {
+        this.playSound(1);
+    }
+    
+    playCannonSound() {
+        this.playSound(2);
+    }
+    
+    playShuffleSound() {
+        this.playSound(3);
     }
 }
 
