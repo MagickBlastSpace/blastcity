@@ -118,6 +118,12 @@ export class StatusBase extends Component {
     getCustomParameter(): number {
         return 0;
     }
+
+
+    playSound(soundIndex: number) {
+        let uiComponent = this.node.getComponent("UITile");
+        uiComponent.playAdditionalSound(soundIndex);
+    }
 }
 
 

@@ -15,6 +15,8 @@ export class Jail extends StatusBase {
 
     getDamage() {
         this.setAsDamaged();
+
+        this.playDamageSound();
     }
 
     isReadyToDestroy(): boolean {
@@ -23,6 +25,10 @@ export class Jail extends StatusBase {
 
     startDestroyConsequences() {
         this.node.emit("goal", "jail");
+    }
+
+    playDamageSound() {
+        this.playSound(0);
     }
 }
 

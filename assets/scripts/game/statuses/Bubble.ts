@@ -15,6 +15,8 @@ export class Bubble extends StatusBase {
 
     getDamage() {
         this.setAsDamaged();
+
+        this.playDamageSound();
     }
 
     isReadyToDestroy(): boolean {
@@ -23,6 +25,11 @@ export class Bubble extends StatusBase {
 
     startDestroyConsequences() {
         this.node.emit("goal", "bubble");
+    }
+
+
+    playDamageSound() {
+        this.playSound(0);
     }
 }
 
