@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Sprite, Label, SpriteFrame } from 'cc';
 import { SpriteTileData } from '../../game/Tile';
 import { UserData } from '../../data/UserData';
+import { AudioController } from '../../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartBonusItem')
@@ -59,6 +60,8 @@ export class UIStartBonusItem extends Component {
 
     onClick(event: cc.Event.EventTouch): void {
         this.node.emit("activate", this.bonusName);
+
+        AudioController.instance.playClick();
     }
 
 

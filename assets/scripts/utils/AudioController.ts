@@ -15,6 +15,20 @@ export class AudioController extends Component {
     @property(AudioClip)
     public popup: AudioClip = null!
 
+    @property(AudioClip)
+    public levelComplete: AudioClip = null!
+    @property(AudioClip)
+    public levelResult: AudioClip = null!
+
+    @property(AudioClip)
+    public hammer: AudioClip = null!
+    @property(AudioClip)
+    public bow: AudioClip = null!
+    @property(AudioClip)
+    public cannon: AudioClip = null!
+    @property(AudioClip)
+    public shuffle: AudioClip = null!
+
     public static instance: AudioController = null;
 
 
@@ -73,6 +87,32 @@ export class AudioController extends Component {
 
     playPopup() {
         this.uiSource.playOneShot(this.popup, 1);
+    }
+
+    
+    /*Gameplay*/
+    playLevelComplete() {
+        this.uiSource.playOneShot(this.levelComplete, 1);
+    }
+
+    playLevelResult() {
+        this.uiSource.playOneShot(this.levelResult, 1);
+    }
+
+    playHammerSound() {
+        this.uiSource.playOneShot(this.hammer, 1);
+    }
+
+    playBowSound() {
+        this.uiSource.playOneShot(this.bow, 1);
+    }
+    
+    playCannonSound() {
+        this.uiSource.playOneShot(this.cannon, 1);
+    }
+    
+    playShuffleSound() {
+        this.uiSource.playOneShot(this.shuffle, 1);
     }
 }
 

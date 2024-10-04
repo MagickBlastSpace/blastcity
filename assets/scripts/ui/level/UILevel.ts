@@ -4,6 +4,7 @@ import { UILevelGoal } from './UILevelGoal';
 import { UIFrameBase } from '../UIFrameBase';
 import { SaveData } from '../../data/SaveData';
 import { Level } from '../../game/Level';
+import { AudioController } from '../../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevel')
@@ -108,12 +109,16 @@ export class UILevel extends UIFrameBase {
     showResult(isSuccess: boolean, goldEarned: number) {
         this.levelResult.show();
         this.levelResult.refresh(isSuccess, goldEarned);
+
+        AudioController.instance.playLevelResult();
     }
 
     showLevelCompletePopup() {
         this.setRewardingMode();
 
         this.levelCompletePopup.show();
+
+        AudioController.instance.playLevelComplete();
     }
 
 

@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, Vec2, Vec3, sp, AudioSource, AudioClip } from 'cc';
+import { _decorator, Component, Node, Vec2, Vec3, sp } from 'cc';
 import { UIDiscoballLineRenderer } from './effects/UIDiscoballLineRenderer';
+import { AudioController } from '../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIField')
@@ -36,12 +37,6 @@ export class UIField extends Component {
 
     @property(sp.Skeleton)
     boostersAnimation: sp.Skeleton = null;
-
-    @property(AudioSource)
-    source: AudioSource = null!
-
-    @property([AudioClip])
-    audios: AudioClip[] = [];
 
     private highPriorityStatuses: string[] = ["dynamite", "bubble"];
 
@@ -201,49 +196,22 @@ export class UIField extends Component {
     }
 
 
-    playSound(soundIndex: number) {
-        if (!this.source) {
-            return;
-        }
-        
-        if (this.audios.length > soundIndex) {
-            const clip = this.audios[soundIndex];
-
-            this.source.playOneShot(clip);
-        } else {
-            console.error("No audio clips available in audios array.");
-        }
-    }
-
     playBoosterSound(booster: string) {
         switch(booster) {
             case "hammer":
-                this.playHammerSound();
+                AudioController.instance.playHammerSound();
                 break;
             case "bow":
-                this.playBowSound();
+                AudioController.instance.playBowSound();
                 break;
             case "cannon":
-                this.playCannonSound();
+                AudioController.instance.playCannonSound();
                 break;
         }
     }
 
-
-    playHammerSound() {
-        this.playSound(0);
-    }
-
-    playBowSound() {
-        this.playSound(1);
-    }
-    
-    playCannonSound() {
-        this.playSound(2);
-    }
-    
     playShuffleSound() {
-        this.playSound(3);
+        AudioController.instance.playShuffleSound();
     }
 }
 
