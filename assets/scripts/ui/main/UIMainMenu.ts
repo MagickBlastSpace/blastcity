@@ -152,7 +152,7 @@ export class UIMainMenu extends UIFrameBase {
 
             console.log(`Successfully loaded bundle: big_graphics"`);
 
-            let backIndex = this.chest.getStage() + 2;
+            let backIndex = this.chest.getStage() + 1;
 
             bundle.load("back" + backIndex + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
                 if (err) {
