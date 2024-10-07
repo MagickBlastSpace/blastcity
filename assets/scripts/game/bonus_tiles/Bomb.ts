@@ -1,9 +1,16 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2 } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, Vec2, Sprite } from 'cc';
 import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Bomb')
 export class Bomb extends BonusTileBase {
+
+    @property(Sprite)
+    icon: Sprite = null;
+
+    private bombCombo_Delay: number = 0.3;
+    private rocketCombo_Delay: number = 0.3;
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -88,14 +95,20 @@ export class Bomb extends BonusTileBase {
 
         this.playAnimation("rocket_bomb", false, 1);
         this.playComboSound();
+        this.playHideAnimation(this.icon.node);
+        this.hideCombinationNode(field);
 
-        this.rowExtraHit(field, this.row, this.col);
-        this.rowExtraHit(field, this.row + 1, this.col);
-        this.rowExtraHit(field, this.row - 1, this.col);
+        this.scheduleOnce(() => {
+            this.rowExtraHit(field, this.row, this.col);
+            this.rowExtraHit(field, this.row + 1, this.col);
+            this.rowExtraHit(field, this.row - 1, this.col);
 
-        this.colExtraHit(field, this.row, this.col);
-        this.colExtraHit(field, this.row, this.col + 1);
-        this.colExtraHit(field, this.row, this.col - 1);
+            this.colExtraHit(field, this.row, this.col);
+            this.colExtraHit(field, this.row, this.col + 1);
+            this.colExtraHit(field, this.row, this.col - 1);
+
+            this.setRespawnEvent(0);
+        }, this.rocketCombo_Delay);
 
         return matches;
     }
@@ -105,6 +118,8 @@ export class Bomb extends BonusTileBase {
 
         this.playAnimation("bomb_bomb", false, 1);
         this.playComboSound();
+        this.playHideAnimation(this.icon.node);
+        this.hideCombinationNode(field);
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
@@ -114,29 +129,33 @@ export class Bomb extends BonusTileBase {
 
         let counter = 0;
 
-        for(let i = this.row - 3; i <= this.row + 3; i++) {
-            for(let j = this.col - 3; j <= this.col + 3; j++) {
-                let isBonusChain = true;
-                if(i === this.row && j === this.col) {
-                    isBonusChain = false;
-                }
-                else if(i > this.row - 2 && i < this.row + 2 && j > this.col - 2 && j < this.col + 2) {
-                    if(i > 0 && i < numRows && j > 0 && j < numCols) {
-                        let tile = field[i][j];
-                        if(tile !== null && tile !== undefined) {
-                            const tileComp = tile.getComponent("TileBase");
-                            if(tileComp.getTileType() === this.tileType) {
-                                isBonusChain = false;
+        this.scheduleOnce(() => {
+            for(let i = this.row - 3; i <= this.row + 3; i++) {
+                for(let j = this.col - 3; j <= this.col + 3; j++) {
+                    let isBonusChain = true;
+                    if(i === this.row && j === this.col) {
+                        isBonusChain = false;
+                    }
+                    else if(i > this.row - 2 && i < this.row + 2 && j > this.col - 2 && j < this.col + 2) {
+                        if(i > 0 && i < numRows && j > 0 && j < numCols) {
+                            let tile = field[i][j];
+                            if(tile !== null && tile !== undefined) {
+                                const tileComp = tile.getComponent("TileBase");
+                                if(tileComp.getTileType() === this.tileType) {
+                                    isBonusChain = false;
+                                }
                             }
                         }
                     }
+    
+                    this.node.emit("extra_hit", i, j, isBonusChain, timeStep * counter);
+    
+                    counter = counter + 1;
                 }
-
-                this.node.emit("extra_hit", i, j, isBonusChain, timeStep * counter);
-
-                counter = counter + 1;
             }
-        }
+
+            this.setRespawnEvent(timeStep * counter);
+        }, this.bombCombo_Delay);
 
         return matches;
     }
@@ -203,6 +222,18 @@ export class Bomb extends BonusTileBase {
         if(discoComp) {
             discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
+    }
+
+
+    hideCombinationNode(field: Node[][]) {
+        let tile = field[this.comboPosition.x][this.comboPosition.y];
+        this.playHideAnimation(tile);
+    }
+
+    playHideAnimation(nodeToHide: Node) {
+        tween(nodeToHide)
+            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+            .start();
     }
 }
 

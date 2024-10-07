@@ -13,6 +13,8 @@ export class Rocket extends BonusTileBase {
     @property(Sprite)
     icon: Sprite = null;
 
+    private bombCombo_Delay: number = 0.3;
+
     
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -95,14 +97,20 @@ export class Rocket extends BonusTileBase {
 
         this.playAnimation("rocket_bomb", false, 1);
         this.playComboSound();
+        this.playHideAnimation(this.icon.node);
+        this.hideCombinationNode(field);
 
-        this.rowExtraHit(field, this.row, this.col);
-        this.rowExtraHit(field, this.row + 1, this.col);
-        this.rowExtraHit(field, this.row - 1, this.col);
+        this.scheduleOnce(() => {
+            this.rowExtraHit(field, this.row, this.col);
+            this.rowExtraHit(field, this.row + 1, this.col);
+            this.rowExtraHit(field, this.row - 1, this.col);
 
-        this.colExtraHit(field, this.row, this.col);
-        this.colExtraHit(field, this.row, this.col + 1);
-        this.colExtraHit(field, this.row, this.col - 1);
+            this.colExtraHit(field, this.row, this.col);
+            this.colExtraHit(field, this.row, this.col + 1);
+            this.colExtraHit(field, this.row, this.col - 1);
+
+            this.setRespawnEvent(0);
+        }, this.bombCombo_Delay);
 
         return matches;
     }
@@ -173,6 +181,18 @@ export class Rocket extends BonusTileBase {
         if(discoComp) {
             discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
+    }
+
+
+    hideCombinationNode(field: Node[][]) {
+        let tile = field[this.comboPosition.x][this.comboPosition.y];
+        this.playHideAnimation(tile);
+    }
+
+    playHideAnimation(nodeToHide: Node) {
+        tween(nodeToHide)
+            .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+            .start();
     }
 }
 

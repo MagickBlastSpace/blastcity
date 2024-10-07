@@ -1218,12 +1218,13 @@ export class Field extends Component {
         }
 
         let isComboBonus = this.isComboBonus(choosenTile);
+        let isAnimatedCombo = this.isAnimatedCombo(choosenTile);
 
         if(isComboBonus && (choosenType === "multi" || choosenType === "super")) {
             this.bonusPool.push(tile);
         }
 
-        this.isClickAvailable = !isComboBonus && choosenType !== "multi" && choosenType !== "super";
+        this.isClickAvailable = !isComboBonus && choosenType !== "multi" && choosenType !== "super" && !isAnimatedCombo;
         
         if(matches.length >= 2 || isBonus) {
             matches.forEach(matchedTile => {
@@ -1247,7 +1248,7 @@ export class Field extends Component {
         }
 
         if(matches.length > 0 || isBonus) {
-            if((isComboBonus || choosenType === "multi") && isRespawn) {
+            if((isComboBonus || choosenType === "multi" || isAnimatedCombo) && isRespawn) {
                 isRespawn = false;
             }
             this.spawnNewTiles(isRespawn, false);
@@ -1268,6 +1269,21 @@ export class Field extends Component {
             }
             else if(tile.getTileType() === "multi") {
                 if(tile.getComboName() === "bomb" || tile.getComboName() === "rocket_vertical" || tile.getComboName() === "rocket_horizontal") {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    isAnimatedCombo(tile: TileBase): boolean {
+        if(tile.isBonusTile()) {
+            if(tile.getTileType() === "bomb") {
+                if(tile.getComboName() === "bomb" || tile.getComboName() === "rocket_horizontal" || tile.getComboName() === "rocket_vertical")
+                return true;
+            }
+            else if(tile.getTileType() === "rocket_horizontal" || tile.getTileType() === "rocket_vertical") {
+                if(tile.getComboName() === "bomb") {
                     return true;
                 }
             }
