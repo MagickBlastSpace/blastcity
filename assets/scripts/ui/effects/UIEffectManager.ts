@@ -1,6 +1,7 @@
-import { _decorator, Component, Node, Prefab, Vec2, instantiate } from 'cc';
+import { _decorator, Component, Node, Prefab, Vec2, instantiate, Vec3, UITransform } from 'cc';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { SpecialPrefabData } from '../../data/GameData';
+import { UILevelGoal } from '../level/UILevelGoal';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEffectManager')
@@ -17,10 +18,10 @@ export class UIEffectManager extends Component {
     @property(Node)
     field: Node = null;
 
-    @property(Vec2)
-    goalsPosition: Vec2 = null;
-    @property(Vec2)
-    goalsPosition_Portrait: Vec2 = null;
+    @property([UILevelGoal])
+    goalsPositions: UILevelGoal[] = [];
+    @property([UILevelGoal])
+    goalsPositions_Portrait: UILevelGoal[] = [];
 
     @property
     tileSpacing: number = 0;
@@ -50,14 +51,15 @@ export class UIEffectManager extends Component {
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
+        let portraitGoalPosition = this.findGoalPosition(this.goalsPositions_Portrait, "coin");
+        let landscapeGoalPosition = this.findGoalPosition(this.goalsPositions, "coin");
+
+        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? portraitGoalPosition : landscapeGoalPosition;
 
         coinComp.init(new Vec2(posX, posY), targetPosition);
     }
 
     createSpecGoalEffect(spec: string, row: number, col: number) {
-        //console.log("Create special goal effect: " + spec + " at " + row + " " + col);
-
         const prefab = this.specialPrefabs.find(p => p.id === "goal_fly")?.prefab;
         if(prefab === null) {
             return;
@@ -72,7 +74,10 @@ export class UIEffectManager extends Component {
 
         posY = spec === "duck" || spec === "big_duck" ? posY - this.tileSize : posY;
 
-        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
+        let portraitGoalPosition = this.findGoalPosition(this.goalsPositions_Portrait, spec);
+        let landscapeGoalPosition = this.findGoalPosition(this.goalsPositions, spec);
+
+        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? portraitGoalPosition : landscapeGoalPosition;
 
         specComp.init(new Vec2(posX, posY), targetPosition);
     }
@@ -92,9 +97,45 @@ export class UIEffectManager extends Component {
 
         posY = spec === "duck" || spec === "big_duck" ? posY - this.tileSize : posY;
 
-        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? this.goalsPosition_Portrait : this.goalsPosition;
+        let portraitGoalPosition = this.findGoalPosition(this.goalsPositions_Portrait, spec);
+        let landscapeGoalPosition = this.findGoalPosition(this.goalsPositions, spec);
+
+        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? portraitGoalPosition : landscapeGoalPosition;
 
         specComp.init(new Vec2(posX, posY), targetPosition);
+    }
+
+
+    findGoalPosition(goals: UILevelGoal[], goalId: string): Vec2 {
+        if (goals.length === 0) {
+            return new Vec2();
+        }
+        
+        let worldPos = goals[0].getPosition();
+        
+        for (let i = 0; i < goals.length; i++) {
+            if (goalId === goals[i].getGoalId()) {
+                worldPos = goals[i].getPosition();
+                
+                const uiTransform = this.node.getComponent(UITransform);
+                if (uiTransform) {
+                    const localPos = uiTransform.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
+                    return new Vec2(localPos.x, localPos.y);
+                } else {
+                    console.error("UITransform component missing on this node");
+                    return new Vec2();
+                }
+            }
+        }
+        
+        const uiTransform = this.node.getComponent(UITransform);
+        if (uiTransform) {
+            const localPos = uiTransform.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
+            return new Vec2(localPos.x, localPos.y);
+        } else {
+            console.error("UITransform component missing on this node");
+            return new Vec2();
+        }
     }
 }
 
