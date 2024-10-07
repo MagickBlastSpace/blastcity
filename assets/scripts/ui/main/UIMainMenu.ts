@@ -6,6 +6,7 @@ import { AdsTimer } from '../../utils/AdsTimer';
 import { SaveData } from '../../data/SaveData';
 import { Chest } from '../../game/Chest';
 import { AudioController } from '../../utils/AudioController';
+import { UISettingsFrame } from '../start/UISettingsFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -21,6 +22,9 @@ export class UIMainMenu extends UIFrameBase {
     tbdBtn: Button = null;
     @property(Button)
     tbd2Btn: Button = null;
+
+    @property(Button)
+    settingsBtn: Button = null;
 
     @property(Sprite)
     background: Sprite = null;
@@ -38,6 +42,9 @@ export class UIMainMenu extends UIFrameBase {
     @property(Chest)
     chest: Chest = null;
 
+    @property(UISettingsFrame)
+    settingsFrame: UISettingsFrame = null;
+
     @property(AdsTimer)
     adsTimer: AdsTimer = null;
 
@@ -50,6 +57,8 @@ export class UIMainMenu extends UIFrameBase {
         this.playBtn.node.on(Button.EventType.CLICK, this.onBtnPlayClick, this);
         this.tbdBtn.node.on(Button.EventType.CLICK, this.onBtnTbdClick, this);
         this.tbd2Btn.node.on(Button.EventType.CLICK, this.onBtnTbd2Click, this);
+
+        this.settingsBtn.node.on(Button.EventType.CLICK, this.onSettingsBtnClick, this);
 
         this.setAllBtnsPassive();
         this.onBtnPlayClick();
@@ -114,6 +123,10 @@ export class UIMainMenu extends UIFrameBase {
         this.buttonsUi[index].setActiveIcon(true);
 
         this.framesUi[index].show();
+    }
+
+    onSettingsBtnClick() {
+        this.settingsFrame.show();
     }
 
 
