@@ -168,7 +168,9 @@ export class UITile extends Component {
 
         this.scheduleOnce(() => {
             if(this.isSpineDestroyScheduled && this.spine !== null) {
-                this.spine.node.destroy();
+                try {
+                    this.spine.node.destroy();
+                } catch {}
             }
 
             tween(this.node).stop();
@@ -195,10 +197,16 @@ export class UITile extends Component {
             if(this.spine) {
                 let trackEntry = this.spine.getCurrent(0);
                 let isPlaying = trackEntry && !trackEntry.isComplete();
+
                 if (isPlaying) {
                     //console.log("Animation is playing");
-                    return;
+                    let isLoop = trackEntry.loop;
+                    if(!isLoop) {
+                        return;
+                    }
                 }
+
+                this.isSpineDestroyScheduled = isLooped;
 
                 const spineNode = this.spine.node;
                 spineNode.active = true;
@@ -209,10 +217,7 @@ export class UITile extends Component {
 
                 let goalEmitLayout = this.animationsLayout;
 
-                if(isLooped) {
-                    this.isSpineDestroyScheduled = isLooped;
-                }
-                else {
+                if(!isLooped) {
                     this.spine.setCompleteListener(() => {
                         if(animation === "goal") {
                             goalEmitLayout.emit("goal_effect_positioned", "goal_fly", this.currentX, this.currentY);
@@ -389,7 +394,7 @@ export class UITile extends Component {
         if (!this.source) {
             return;
         }
-        
+
         if (this.additionalAudios.length > soundIndex) {
             const clip = this.additionalAudios[soundIndex];
 

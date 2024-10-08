@@ -17,6 +17,8 @@ export class BonusTileBase extends TileBase {
 
     private disco_combo_time: number = 2;
 
+    private isBonusPoolState: boolean = false;
+
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -91,12 +93,14 @@ export class BonusTileBase extends TileBase {
 
         for(let j = col; j < numCols; j++) {
             let isBonusChain = this.isCombo() ? j !== col && j !== col + 1 && j !== col - 1 : j !== col;
+            isBonusChain = isBonusChain && !this.isBonusPoolState;
 
             this.node.emit("extra_hit", row, j, isBonusChain, totalTime / numCols * (j - col));
         }
 
         for(let j = col - 1; j >= 0; j--) {
             let isBonusChain = this.isCombo() ? j !== col && j !== col + 1 && j !== col - 1 : j !== col;
+            isBonusChain = isBonusChain && !this.isBonusPoolState;
 
             this.node.emit("extra_hit", row, j, isBonusChain, totalTime / numCols * (col - j));
         }
@@ -111,12 +115,14 @@ export class BonusTileBase extends TileBase {
 
         for(let j = row; j < numRows; j++) {
             let isBonusChain = this.isCombo() ? j !== row && j !== row + 1 && j !== row - 1 : j !== row;
+            isBonusChain = isBonusChain && !this.isBonusPoolState;
 
             this.node.emit("extra_hit", j, col, isBonusChain, totalTime / numRows * (j - row));
         }
 
         for(let j = row - 1; j >= 0; j--) {
             let isBonusChain = this.isCombo() ? j !== row && j !== row + 1 && j !== row - 1 : j !== row;
+            isBonusChain = isBonusChain && !this.isBonusPoolState;
 
             this.node.emit("extra_hit", j, col, isBonusChain, totalTime / numRows * (row - j));
         }
@@ -242,6 +248,9 @@ export class BonusTileBase extends TileBase {
     playComboSound() {
         this.playSound(0);
     }
+
+
+    setBonusPoolAnimation() {}
 }
 
 

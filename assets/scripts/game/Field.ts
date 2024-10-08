@@ -621,6 +621,9 @@ export class Field extends Component {
         }
 
         this.bonusPool.push(spawnedTile);
+
+        let tileComp = spawnedTile.getComponent("BonusTileBase");
+        tileComp.setBonusPoolAnimation();
     }
 
 
@@ -1433,7 +1436,7 @@ export class Field extends Component {
                 return;
             }
             
-            if(!isRespawn || this.isBonusPoolActivated || this.bonusPool > 0) {
+            if(!isRespawn || this.isBonusPoolActivated || this.bonusPool.length > 0) {
                 return;
             }
 

@@ -15,6 +15,8 @@ export class Rocket extends BonusTileBase {
 
     private bombCombo_Delay: number = 0.3;
 
+    private isBonusPoolState: boolean = false;
+
     
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -181,6 +183,16 @@ export class Rocket extends BonusTileBase {
         if(discoComp) {
             discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
+    }
+
+    setBonusPoolAnimation() {
+        this.isBonusPoolState = true;
+
+        let anim = this.tileType === "rocket_vertical" ? "rocket_discoball_vert" : "rocket_discoball_hor";
+        
+        this.scheduleOnce(() => {
+            this.playAnimation(anim, true, 1);
+        }, 0.2);
     }
 
 

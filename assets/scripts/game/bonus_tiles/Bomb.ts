@@ -11,6 +11,8 @@ export class Bomb extends BonusTileBase {
     private bombCombo_Delay: number = 0.3;
     private rocketCombo_Delay: number = 0.3;
 
+    private isBonusPoolState: boolean = false;
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -61,7 +63,8 @@ export class Bomb extends BonusTileBase {
         
         for(let i = this.row - 1; i <= this.row + 1; i++) {
             for(let j = this.col - 1; j <= this.col + 1; j++) {
-                let isBonusChain = i !== this.row || j !== this.col; 
+                let isBonusChain = i !== this.row || j !== this.col
+                isBonusChain = isBonusChain && !this.isBonusPoolState; 
                 
                 this.node.emit("extra_hit", i, j, isBonusChain, timeStep * counter);
 
@@ -222,6 +225,14 @@ export class Bomb extends BonusTileBase {
         if(discoComp) {
             discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
+    }
+
+    setBonusPoolAnimation() {
+        this.isBonusPoolState = true;
+
+        this.scheduleOnce(() => {
+            this.playAnimation("bomb_discoball", true, 1);
+        }, 0.2);
     }
 
 
