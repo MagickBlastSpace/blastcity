@@ -1,6 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
 import { Booster } from './Booster';
 import { UserData } from '../../data/UserData';
+import { UIBoosterActivationFrame } from '../../ui/game/UIBoosterActivationFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('Boosters')
@@ -13,6 +14,9 @@ export class Boosters extends Component {
     cannon: Booster = null;
     @property(Booster)
     jester: Booster = null;
+
+    @property(UIBoosterActivationFrame)
+    activationFrame: UIBoosterActivationFrame = null;
 
     private activeBooster: string = "";
 
@@ -29,14 +33,19 @@ export class Boosters extends Component {
         this.hammer.node.on("activate", () => this.setActiveBooster("hammer"));
         this.arrow.node.on("activate", () => this.setActiveBooster("arrow"));
         this.cannon.node.on("activate", () => this.setActiveBooster("cannon"));
-        this.jester.node.on("activate", () => this.setShuffleEvent());
+        this.jester.node.on("activate", () => this.setActiveBooster("jester"));
+
+        this.deactivateAll();
+
+        this.activationFrame.node.on("shuffle", this.setShuffleEvent());
+        this.activationFrame.node.on("deactivate", this.deactivateAll());
     }
 
 
     setActiveBooster(booster: string) {
         this.activeBooster = this.activeBooster !== booster ? booster : "";
 
-        this.refresh();
+        this.activationFrame.refresh(this.activeBooster);
     }
 
     getActiveBooster(): string {
@@ -54,13 +63,15 @@ export class Boosters extends Component {
         this.node.emit("shuffle");
 
         UserData.instance.subResource("jester", 1);
+
+        this.deactivateAll();
     }
 
 
-    refresh() {
-        this.hammer.setActiveState(this.activeBooster === "hammer");
-        this.arrow.setActiveState(this.activeBooster === "arrow");
-        this.cannon.setActiveState(this.activeBooster === "cannon");
+    deactivateAll() {
+        this.activeBooster = "";
+
+        this.activationFrame.refresh(this.activeBooster);
     }
 
 
@@ -98,8 +109,7 @@ export class Boosters extends Component {
                 break;
         }
 
-        this.activeBooster = "";
-        this.refresh();
+        this.deactivateAll();
     }
 
 
