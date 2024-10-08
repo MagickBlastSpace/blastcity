@@ -79,6 +79,10 @@ export class Discoball extends BonusTileBase {
             this.node.emit("extra_hit_with_damage", tiles[i].getRow(), tiles[i].getCol());
         }
 
+        this.scheduleOnce(() => {
+            this.node.emit("clear_lines");
+        }, 0.2);
+
         this.setRespawnEvent(0.2);
 
         return matches;
