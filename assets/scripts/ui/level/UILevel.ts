@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, SpriteFrame, Button } from 'cc';
 import { GoalData } from '../../data/GameData';
 import { UILevelGoal } from './UILevelGoal';
 import { UIFrameBase } from '../UIFrameBase';
@@ -44,6 +44,16 @@ export class UILevel extends UIFrameBase {
     @property(SpriteFrame)
     superHard: SpriteFrame = null;
 
+    @property(Button)
+    settingsBtn_Portrait: Button = null;
+    @property(Button)
+    settingsBtn_Landscape: Button = null;
+
+    @property(UIFrameBase)
+    settings_Portrait: UIFrameBase = null;
+    @property(UIFrameBase)
+    settings_Landscape: UIFrameBase = null;
+
     private isRewarding: boolean = false;
     private rewardGoal: GoalData = null;
 
@@ -56,6 +66,9 @@ export class UILevel extends UIFrameBase {
         this.level.on("reward_move", () => this.addReward());
 
         SaveData.instance.node.on("level_progress_loaded", () => this.refreshAll());
+
+        this.settingsBtn_Portrait.node.on(Button.EventType.CLICK, this.onSettingsPortraitClick, this);
+        this.settingsBtn_Landscape.node.on(Button.EventType.CLICK, this.onSettingsLandscapeClick, this);
     }
 
     init() {
@@ -145,6 +158,15 @@ export class UILevel extends UIFrameBase {
         rewardGoals.push(this.rewardGoal);
 
         this.refreshGoals(rewardGoals);
+    }
+
+
+    onSettingsPortraitClick() {
+        this.settings_Portrait.show();
+    }
+
+    onSettingsLandscapeClick() {
+        this.settings_Landscape.show();
     }
 }
 

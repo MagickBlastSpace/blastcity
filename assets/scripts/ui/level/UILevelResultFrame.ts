@@ -143,6 +143,19 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.node.emit("level_close");
     }
 
+    fail() {
+        SaveData.instance.clearLevelProgress();
+
+        this.butlersGift.clearStreak();
+        this.level.fail();
+
+        this.mainFrame.show();
+
+        this.hide();
+
+        this.node.emit("level_close");
+    }
+
     async onShowAdBtnClick() {
         const success = await gamepush.ads.showRewardedVideo();
         if (success) {

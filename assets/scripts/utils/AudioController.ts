@@ -31,6 +31,10 @@ export class AudioController extends Component {
 
     public static instance: AudioController = null;
 
+    private isMusic: boolean = true;
+    private isSfx: boolean = true;
+    private isVibration: boolean = true;
+
 
     onLoad() {
         AudioController.instance = this;
@@ -74,7 +78,9 @@ export class AudioController extends Component {
 
                 this.soundtrackSource.clip = audio;
 
-                this.soundtrackSource.play();
+                if(this.isMusicEnabled()) {
+                    this.soundtrackSource.play();
+                }
             });
         });
     }
@@ -82,37 +88,105 @@ export class AudioController extends Component {
 
     /*UI*/
     playClick() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
         this.uiSource.playOneShot(this.click, 1);
     }
 
     playPopup() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
         this.uiSource.playOneShot(this.popup, 1);
     }
 
     
     /*Gameplay*/
     playLevelComplete() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
         this.uiSource.playOneShot(this.levelComplete, 1);
     }
 
     playLevelResult() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
         this.uiSource.playOneShot(this.levelResult, 1);
     }
 
     playHammerSound() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
         this.uiSource.playOneShot(this.hammer, 1);
     }
 
     playBowSound() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
         this.uiSource.playOneShot(this.bow, 1);
     }
     
     playCannonSound() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
         this.uiSource.playOneShot(this.cannon, 1);
     }
     
     playShuffleSound() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
         this.uiSource.playOneShot(this.shuffle, 1);
+    }
+
+
+    /*Settings Switcher*/
+    switchMusic() {
+        this.isMusic = !this.isMusic;
+
+        if(this.isMusicEnabled()) {
+            if (this.soundtrackSource.playing) {
+                this.soundtrackSource.stop();
+            }
+        }
+        else {
+            this.soundtrackSource.play();
+        }
+    }
+
+    switchSfx() {
+        this.isSfx = !this.isSfx;
+    }
+
+    switchVibration() {
+        this.isVibration = !this.isVibration;
+    }
+
+
+    isMusicEnabled(): boolean {
+        return this.isMusic;
+    }
+
+    isSfxEnabled(): boolean {
+        return this.isSfx;
+    }
+
+    isVibrationEnabled(): boolean {
+        return this.isVibration;
     }
 }
 

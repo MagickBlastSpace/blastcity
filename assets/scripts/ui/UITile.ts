@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, UITransform, AudioClip, AudioSource } from 'cc';
+import { AudioController } from '../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 
@@ -372,6 +373,10 @@ export class UITile extends Component {
 
 
     playDestroySound() {
+        if(!AudioController.instance.isSfxEnabled()) {
+            return;
+        }
+
         if (!this.source) {
             return;
         }
@@ -391,6 +396,10 @@ export class UITile extends Component {
     }
 
     playAdditionalSound(soundIndex: number) {
+        if(!AudioController.instance.isSfxEnabled()) {
+            return;
+        }
+        
         if (!this.source) {
             return;
         }
