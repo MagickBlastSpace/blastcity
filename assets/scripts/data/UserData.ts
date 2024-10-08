@@ -41,6 +41,8 @@ export class UserData extends Component {
 
     private friendsList: number[] = [];
 
+    private overMaxEnergy: number = 15;
+
     public static instance: UserData = null;
 
 
@@ -209,8 +211,10 @@ export class UserData extends Component {
                 break;
 
             case "energy":
-                gamepush.player.add('energy', value);
-                gamepush.player.sync();
+                if(gamepush.player.get('energy') < this.overMaxEnergy) {
+                    gamepush.player.add('energy', value);
+                    gamepush.player.sync();
+                }
 
                 break;
         }

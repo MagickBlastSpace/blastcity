@@ -46,7 +46,7 @@ export class UIResources extends Component {
         
         let energySeconds = gamepush.player.get('energy:secondsLeft');
 
-        this.energyTimer.string = energySeconds <= 0 ? "" : this.getSecondsLeftHuman();
+        this.energyTimer.string = energySeconds <= 0 ? "MAX" : this.getSecondsLeftHuman();
         this.energyLabel.string = gamepush.player.get('energy');
     }
 
