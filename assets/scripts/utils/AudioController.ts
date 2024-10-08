@@ -158,7 +158,7 @@ export class AudioController extends Component {
     switchMusic() {
         this.isMusic = !this.isMusic;
 
-        if(this.isMusicEnabled()) {
+        if(!this.isMusicEnabled()) {
             if (this.soundtrackSource.playing) {
                 this.soundtrackSource.stop();
             }
