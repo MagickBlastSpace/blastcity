@@ -103,6 +103,8 @@ export class Discoball extends BonusTileBase {
         this.isActivated = true;
 
         for(let i = 0; i < tiles.length; i++) {
+            tiles[i].startShake();
+
             this.node.emit("goal", "discoball");
         }
 

@@ -403,6 +403,28 @@ export class UITile extends Component {
             console.error("No audio clips available in additionalAudios array.");
         }
     }
+
+
+    startShake() {
+        const shakeAmount = 10;
+        const shakeDuration = 0.05;
+
+        if(this.content) {
+            tween(this.content).stop();
+
+            tween(this.content)
+                .repeatForever(
+                    tween()
+                        .by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
+                        .by(shakeDuration, { position: new Vec3(-shakeAmount * 2, 0, 0) })
+                        .by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
+                        .by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) })
+                        .by(shakeDuration, { position: new Vec3(0, -shakeAmount * 2, 0) })
+                        .by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) })
+                )
+                .start();
+        }
+    }
 }
 
 

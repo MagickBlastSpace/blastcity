@@ -29,7 +29,7 @@ export class UIDiscoballLine extends Component {
     
         cc.tween(this.line.node)
             .to(flyDuration / 2, { width: maxDistance, position: startPos.clone().add(endPos).multiplyScalar(0.5) })
-            .to(flyDuration / 2, { width: 0, position: endPos })
+            //.to(flyDuration / 2, { width: 0, position: endPos })
             .start();
     }
 }
