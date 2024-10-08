@@ -1440,6 +1440,10 @@ export class Field extends Component {
                 return;
             }
 
+            if(this.isCompleteScheduled) {
+                this.node.emit("complete", this.countBonusGold());
+            }
+
             this.checkSpecTilesInActionEffect(isBlockingInactionEffect);
             
             this.checkForPotentialBonuses();
@@ -2187,8 +2191,6 @@ export class Field extends Component {
         this.isLevelComplete = true;
 
         this.levelCompletePoints = moves;
-
-        //change goal to reward UI
     }
     
     completeLevel() {
@@ -2206,14 +2208,20 @@ export class Field extends Component {
 
         for(let i = 0; i < totalSpawns; i++) {
             this.scheduleOnce(() => {
-                this.spawnRandomRocket(availableTiles[i].x, availableTiles[i].y);
+                let isBonusPool = true;
+
+                const tileType = Math.floor(Math.random() * 2);
+                let bonusId = tileType === 0 ? "rocket_vertical" : "rocket_horizontal";
+
+                this.spawnBonusTile(availableTiles[i].x, availableTiles[i].y, bonusId, isBonusPool);
+
                 this.node.emit("move");
                 this.node.emit("coin_reward", availableTiles[i].x, availableTiles[i].y);
             }, timeBetweenTiles * i);
         }
 
         this.scheduleOnce(() => {
-            this.node.emit("complete", this.countBonusGold());
+            this.activateBonusPool();
         }, totalTime);
     }
 
