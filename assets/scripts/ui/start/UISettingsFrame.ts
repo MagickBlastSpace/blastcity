@@ -1,6 +1,7 @@
-import { _decorator, Component, Node, Slider, AudioSource, Button } from 'cc';
+import { _decorator, Component, Node, Slider, AudioSource, Button, Toggle } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { AudioController } from '../../utils/AudioController';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UISettingsFrame')
@@ -21,6 +22,9 @@ export class UISettingsFrame extends UIPopupFrameBase {
     @property(Button)
     closeBtn: Button = null;
 
+    @property(Toggle)
+    devModeToggle: Toggle = null;
+
 
     start() {
         this.musicSlider.progress = this.musicAudioSource.volume;
@@ -30,6 +34,11 @@ export class UISettingsFrame extends UIPopupFrameBase {
         this.sfxSlider.node.on('slide', this.onSfxVolumeChanged, this);
 
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        const isDevMode = UserData.instance.isDevMode();
+        this.devModeToggle.isChecked = isDevMode;
+
+        this.devModeToggle.node.on('toggle', this.onToggleDevMode, this);
     }
 
     onMusicVolumeChanged(slider: Slider) {
@@ -50,6 +59,11 @@ export class UISettingsFrame extends UIPopupFrameBase {
 
     onCloseBtnClick() {
         this.hide();
+    }
+
+    onToggleDevMode(toggle: Toggle) {
+        UserData.instance.setDevMode(toggle.isChecked);
+        console.log('Developer mode is now:', toggle.isChecked);
     }
 }
 

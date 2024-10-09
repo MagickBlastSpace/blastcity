@@ -45,6 +45,8 @@ export class UserData extends Component {
 
     public static instance: UserData = null;
 
+    private isDev: boolean = false;
+
 
     onLoad() {
         UserData.instance = this;
@@ -508,6 +510,15 @@ export class UserData extends Component {
 
     setFriendsList(list: number[]) {
         this.friendsList = list;
+    }
+
+
+    setDevMode(isDev: boolean) {
+        this.isDev = isDev;
+    }
+
+    isDevMode(): boolean {
+        return this.isDev;
     }
 }
 

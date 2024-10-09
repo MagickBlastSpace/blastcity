@@ -37,6 +37,8 @@ export class UIStartBonusItem extends Component {
     @property(Label)
     timeLabel: Label = null;
 
+    private count: number = 0;
+
 
     onLoad() {
         this.node.on(cc.Node.EventType.TOUCH_END, this.onClick, this);
@@ -59,6 +61,10 @@ export class UIStartBonusItem extends Component {
     }
 
     onClick(event: cc.Event.EventTouch): void {
+        if(this.count <= 0 && !UserData.instance.isDevMode()) {
+            return;
+        }
+
         this.node.emit("activate", this.bonusName);
 
         AudioController.instance.playClick();
@@ -77,7 +83,8 @@ export class UIStartBonusItem extends Component {
 
 
     updateCount() {
-        this.countLabel.string = UserData.instance.getResource(this.bonusName);
+        this.count = UserData.instance.getResource(this.bonusName);
+        this.countLabel.string = count;
     }
 }
 

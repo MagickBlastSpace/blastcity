@@ -14,6 +14,8 @@ export class Booster extends Component {
     @property
     boosterName: string = "";
 
+    private count: number = 0;
+
 
     onLoad() {
         this.node.on(cc.Node.EventType.TOUCH_END, this.onClick, this);
@@ -26,6 +28,10 @@ export class Booster extends Component {
     }
 
     onClick(event: cc.Event.EventTouch): void {
+        if(this.count <= 0 && !UserData.instance.isDevMode()) {
+            return;
+        }
+        
         this.node.emit("activate");
     }
 
@@ -36,7 +42,8 @@ export class Booster extends Component {
 
 
     updateCount() {
-        this.countLabel.string = UserData.instance.getResource(this.boosterName);
+        this.count = UserData.instance.getResource(this.boosterName);
+        this.countLabel.string = count;
     }
 }
 
