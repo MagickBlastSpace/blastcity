@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, assetManager, AssetManager, Prefab } from 'cc';
 import { Field } from '../game/Field';
 import { UIAssetsLoadingFrame } from '../ui/loading/UIAssetsLoadingFrame';
+import { LevelData } from '../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('AssetsLoader')
@@ -22,6 +23,8 @@ export class AssetsLoader extends Component {
 
     private fieldComp: Field = null;
 
+    private currentSpecs: string[] = [];
+
 
     onLoad() {
         AssetsLoader.instance = this;
@@ -32,6 +35,34 @@ export class AssetsLoader extends Component {
     }
 
 
+    initGameplay(level: LevelData) {
+        this.currentSpecs = [];
+
+        for(let i = 0; i < level.specialTiles.length; i++) {
+            let spec = level.specialTiles[i].id;
+
+            if(!this.currentSpecs.includes(spec)) {
+                this.currentSpecs.push(spec);
+            }
+        }
+
+        for(let i = 0; i < level.statuses.length; i++) {
+            let spec = level.statuses[i].id;
+
+            if(!this.currentSpecs.includes(spec)) {
+                this.currentSpecs.push(spec);
+            }
+        }
+
+        for(let i = 0; i < level.goals.length; i++) {
+            let spec = level.goals[i].id;
+
+            if(!this.currentSpecs.includes(spec)) {
+                this.currentSpecs.push(spec);
+            }
+        }
+    }
+    
     loadGameplayAssets() {
         this.startLoading();
 
@@ -151,24 +182,30 @@ export class AssetsLoader extends Component {
 
             assets.forEach(assetInfo => {
                 const prefabPath = assetInfo.path;
+                const prefabName = prefabPath.toLowerCase();
 
-                bundle!.load(prefabPath, Prefab, (err, prefab) => {
-                    if (err) {
-                        console.error(`Failed to load prefab: ${prefabPath}`, err);
-                        return;
-                    }
-
-                    console.log(`Successfully loaded prefab: ${prefabPath}`);
-
-                    if(isStatus) {
-                        this.fieldComp.addStatusPrefab(prefab, prefabPath.toLowerCase());
-                    }
-                    else {
-                        this.fieldComp.addSpecialPrefab(prefab, prefabPath.toLowerCase());
-                    }
-
+                if(this.currentSpecs.includes(prefabName)) {
+                    bundle!.load(prefabPath, Prefab, (err, prefab) => {
+                        if (err) {
+                            console.error(`Failed to load prefab: ${prefabPath}`, err);
+                            return;
+                        }
+    
+                        console.log(`Successfully loaded prefab: ${prefabPath}`);
+    
+                        if(isStatus) {
+                            this.fieldComp.addStatusPrefab(prefab, prefabName);
+                        }
+                        else {
+                            this.fieldComp.addSpecialPrefab(prefab, prefabName);
+                        }
+    
+                        this.checkLoadCompletion();
+                    });
+                }
+                else {
                     this.checkLoadCompletion();
-                });
+                }
             });
         });
     }

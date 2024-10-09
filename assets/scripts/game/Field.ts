@@ -200,6 +200,7 @@ export class Field extends Component {
         if(!this.isAssetsLoaded) {
             this.savedLevelData = level;
 
+            AssetsLoader.instance.initGameplay(level);
             AssetsLoader.instance.loadGameplayAssets();
 
             return;
@@ -2437,6 +2438,20 @@ export class Field extends Component {
                 }
             }
         }
+    }
+
+
+    unloadAssets() {
+        this.isAssetsLoaded = false;
+
+        this.tilePrefab = null;
+        this.emptyPrefab = null;
+        this.bombPrefab = null;
+        this.rocketPrefab = null;
+        this.discoballPrefab = null;
+    
+        this.specialPrefabs = [];
+        this.statusPrefabs = [];
     }
 }
 

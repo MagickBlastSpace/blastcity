@@ -9,6 +9,7 @@ import { UserData } from '../../data/UserData';
 import { GameData } from '../../data/GameData';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIMainMenu } from '../main/UIMainMenu';
+import { Field } from '../../game/Field';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -62,6 +63,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
     @property(Level)
     level: Level = null;
+    @property(Field)
+    field: Field = null;
 
     private isSuccess: boolean = false;
 
@@ -141,6 +144,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.hide();
 
         this.node.emit("level_close");
+
+        this.field.unloadAssets();
     }
 
     fail() {
@@ -154,6 +159,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.hide();
 
         this.node.emit("level_close");
+
+        this.field.unloadAssets();
     }
 
     async onShowAdBtnClick() {
