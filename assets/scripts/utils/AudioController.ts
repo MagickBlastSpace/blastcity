@@ -10,24 +10,16 @@ export class AudioController extends Component {
     @property(AudioSource)
     public uiSource: AudioSource = null!
 
-    @property(AudioClip)
-    public click: AudioClip = null!
-    @property(AudioClip)
-    public popup: AudioClip = null!
+    private click: AudioClip = null!
+    private popup: AudioClip = null!
 
-    @property(AudioClip)
-    public levelComplete: AudioClip = null!
-    @property(AudioClip)
-    public levelResult: AudioClip = null!
+    private levelComplete: AudioClip = null!
+    private levelResult: AudioClip = null!
 
-    @property(AudioClip)
-    public hammer: AudioClip = null!
-    @property(AudioClip)
-    public bow: AudioClip = null!
-    @property(AudioClip)
-    public cannon: AudioClip = null!
-    @property(AudioClip)
-    public shuffle: AudioClip = null!
+    private hammer: AudioClip = null!
+    private bow: AudioClip = null!
+    private cannon: AudioClip = null!
+    private shuffle: AudioClip = null!
 
     public static instance: AudioController = null;
 
@@ -38,6 +30,104 @@ export class AudioController extends Component {
 
     onLoad() {
         AudioController.instance = this;
+    }
+
+    start() {
+        this.loadSoundsAssets();
+    }
+
+
+    /*Assets Management*/
+    loadSoundsAssets() {
+        this.loadUiSounds();
+        this.loadGameplaySounds();
+    }
+
+
+    loadUiSounds() {
+        assetManager.loadBundle("sounds_ui", (err, bundle) => {
+            if (err) {
+                return;
+            }
+
+            bundle.load("click", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.click = audio;
+            });
+
+            bundle.load("popup", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.popup = audio;
+            });
+        });
+    }
+
+    loadGameplaySounds() {
+        assetManager.loadBundle("sounds_boosters", (err, bundle) => {
+            if (err) {
+                return;
+            }
+
+            bundle.load("hammer", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.hammer = audio;
+            });
+
+            bundle.load("bow", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.bow = audio;
+            });
+
+            bundle.load("cannon", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.cannon = audio;
+            });
+
+            bundle.load("shuffle", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.shuffle = audio;
+            });
+        });
+
+        assetManager.loadBundle("sounds_level", (err, bundle) => {
+            if (err) {
+                return;
+            }
+
+            bundle.load("level_complete", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.levelComplete = audio;
+            });
+
+            bundle.load("level_result", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.levelResult = audio;
+            });
+        });
     }
 
 
