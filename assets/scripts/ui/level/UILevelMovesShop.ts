@@ -4,6 +4,7 @@ import { _decorator, Component, Node, Label, Button } from 'cc';
 import { MovesShopStageData } from '../../data/GameData';
 import { MovesShop } from '../../game/boosters/MovesShop';
 import { Level } from '../../game/Level';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelMovesShop')
@@ -25,6 +26,8 @@ export class UILevelMovesShop extends Component {
     additinalStageDataLabel: Label = null;
     @property(Label)
     buyBtnLabel: Label = null;
+    @property(Label)
+    goldLabel: Label = null;
 
     private data: MovesShopStageData = null;
 
@@ -36,6 +39,8 @@ export class UILevelMovesShop extends Component {
     }
 
     refresh() {
+        this.goldLabel.string = UserData.instance.getResource("gold");
+
         if(this.movesShop.isMovesShopAvailable()) {
             this.data = this.movesShop.getStageData();
 
