@@ -114,6 +114,11 @@ export class TileBase extends Component {
         uiComponent.startShake();
     }
 
+    stopShake() {
+        let uiComponent = this.node.getComponent("UITile");
+        uiComponent.stopShake();
+    }
+
     /*playAnimationsSequence(animations: string[], isGoal: boolean) {
         let uiComponent = this.node.getComponent("UITile");
         uiComponent.playAnimationsSequence(animations, isGoal);

@@ -138,6 +138,11 @@ export class AdsTimer extends Component {
             gamepush.ads.showFullscreen();
         }
     }
+
+
+    isGameplayActive(): boolean {
+        return this.isGameplay;
+    }
 }
 
 

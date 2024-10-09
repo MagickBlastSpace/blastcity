@@ -69,6 +69,9 @@ export class UITile extends Component {
 
     private isSpineDestroyScheduled: boolean = false;
 
+    private originalContentPos: Vec2;
+    private shakeTween: any = null;
+
 
     start() {
         this.isBlocked = false;
@@ -417,11 +420,9 @@ export class UITile extends Component {
     startShake() {
         const shakeAmount = 10;
         const shakeDuration = 0.05;
-
-        if(this.content) {
-            tween(this.content).stop();
-
-            tween(this.content)
+    
+        if (this.content && !this.shakeTween) {
+            this.shakeTween = tween(this.content)
                 .repeatForever(
                     tween()
                         .by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
@@ -432,6 +433,18 @@ export class UITile extends Component {
                         .by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) })
                 )
                 .start();
+        }
+    }
+
+    stopShake() {
+        if (this.content && this.shakeTween) {
+            this.shakeTween.stop();
+    
+            this.shakeTween = null;
+
+            if(this.originalContentPos && !this.originalContentPos === undefined) {
+                this.content.setPosition(new Vec3(this.originalContentPos.x, this.originalContentPos.y, 0));
+            }
         }
     }
 }
