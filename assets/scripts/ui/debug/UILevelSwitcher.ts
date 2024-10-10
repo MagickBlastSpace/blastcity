@@ -61,6 +61,7 @@ export class UILevelSwitcher extends Component {
         this.items.push(level);
 
         item.on("click", (levelData) => {
+            this.field.unloadAssets();
             this.field.spawnInitialBoard(levelData);
             this.scrollView.active = false;
         });

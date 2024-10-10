@@ -66,6 +66,47 @@ export class AssetsLoader extends Component {
             this.currentSpecs.push("coin");
         }
 
+        for(let i = 0; i < level.startPool.length; i++) {
+            if(!this.currentSpecs.includes(level.startPool[i])) {
+                this.currentSpecs.push(level.startPool[i]);
+            }
+        }
+
+        for(let i = 0; i < level.spawnPools.length; i++) {
+            for(let j = 0; j < level.spawnPools[i].length; j++) {
+                if(!this.currentSpecs.includes(level.spawnPools[i][j])) {
+                    this.currentSpecs.push(level.spawnPools[i][j]);
+                }
+            }
+        }
+
+        if(this.currentSpecs.includes("easteregg")) {
+            if(!this.currentSpecs.includes("easteregg_blue")) {
+                this.currentSpecs.push("easteregg_blue");
+            }
+            if(!this.currentSpecs.includes("easteregg_green")) {
+                this.currentSpecs.push("easteregg_green");
+            }
+            if(!this.currentSpecs.includes("easteregg_yellow")) {
+                this.currentSpecs.push("easteregg_yellow");
+            }
+            if(!this.currentSpecs.includes("easteregg_red")) {
+                this.currentSpecs.push("easteregg_red");
+            }
+            if(!this.currentSpecs.includes("easteregg_purple")) {
+                this.currentSpecs.push("easteregg_purple");
+            }
+            if(!this.currentSpecs.includes("easteregg_orange")) {
+                this.currentSpecs.push("easteregg_orange");
+            }
+        }
+
+        if(this.currentSpecs.includes("honey_jar")) {
+            if(!this.currentSpecs.includes("honey")) {
+                this.currentSpecs.push("honey");
+            }
+        }
+
         this.gamplayAssetsCounter = 0;
     }
     

@@ -36,9 +36,6 @@ export class Boosters extends Component {
         this.jester.node.on("activate", () => this.setActiveBooster("jester"));
 
         this.deactivateAll();
-
-        this.activationFrame.node.on("shuffle", this.setShuffleEvent());
-        this.activationFrame.node.on("deactivate", this.deactivateAll());
     }
 
 
