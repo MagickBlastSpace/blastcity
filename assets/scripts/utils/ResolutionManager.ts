@@ -242,23 +242,26 @@ export class ResolutionManager extends Component {
             this.field.setScale(new Vec3(1.2, 1.2, 1));
         }
         else if(ratio > 0.8) {
-            this.field.setScale(new Vec3(1.7, 1.7, 1));
+            this.field.setScale(new Vec3(1.5, 1.5, 1));
 
             this.boostersPortrait.setScale(new Vec3(1.4, 1.4, 1));
-            this.goalsPortrait.setScale(new Vec3(1, 1, 1));
-        }
-        else if(ratio > 0.72) {
-            this.field.setScale(new Vec3(1.9, 1.9, 1));
-
-            this.boostersPortrait.setScale(new Vec3(1.6, 1.6, 1));
-            this.goalsPortrait.setScale(new Vec3(1.5, 1.5, 1));
-        }
-        else {
-            this.field.setScale(new Vec3(2.2, 2.2, 1));
-
-            this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
             this.goalsPortrait.setScale(new Vec3(1.7, 1.7, 1));
         }
+        else if(ratio > 0.72) {
+            this.field.setScale(new Vec3(1.8, 1.8, 1));
+
+            this.boostersPortrait.setScale(new Vec3(1.6, 1.6, 1));
+            this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+        }
+        else {
+            this.field.setScale(new Vec3(1.8, 1.8, 1));
+
+            this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
+            this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+        }
+
+        let fieldComp = this.field.getComponent("Field");
+        fieldComp.centrate();
     }
 
 

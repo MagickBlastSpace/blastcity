@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, Vec2 } from 'cc';
+import { ResolutionManager } from './ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('Centraitor')
@@ -15,6 +16,8 @@ export class Centraitor extends Component {
     private numRows: number = 0;
     private numCols: number = 0;
 
+    private portraitOffset_Y: number = -200;
+
 
     start() {
         this.field.on("centrate", (tiles) => this.centrateField(tiles));
@@ -30,9 +33,13 @@ export class Centraitor extends Component {
         let rightEmptySpaces = this.countRightEmptySpaces(field);
 
         //console.log(upperEmptySpaces + "-" + bottomEmptySpaces + "-" + leftEmptySpaces + "-" + rightEmptySpaces);
+        let scaleX = this.field.scale.x;
+        let scaleY = this.field.scale.y;
 
-        let moveY = (upperEmptySpaces - bottomEmptySpaces) * this.tileSize / 2;
-        let moveX = (rightEmptySpaces - leftEmptySpaces) * this.tileSize / 2;
+        let moveY = (upperEmptySpaces - bottomEmptySpaces) * this.tileSize * scaleX / 2;
+        let moveX = (rightEmptySpaces - leftEmptySpaces) * this.tileSize * scaleY / 2;
+
+        moveY = ResolutionManager.instance.isPortraitOrientation() ? moveY + this.portraitOffset_Y : moveY;
 
         this.move(this.startPosition.x + moveX, this.startPosition.y + moveY);
 

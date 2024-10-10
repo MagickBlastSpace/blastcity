@@ -2453,6 +2453,11 @@ export class Field extends Component {
         this.specialPrefabs = [];
         this.statusPrefabs = [];
     }
+
+
+    centrate() {
+        this.node.emit("centrate", this.tileArray);
+    }
 }
 
 
