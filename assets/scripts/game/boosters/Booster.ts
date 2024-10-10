@@ -31,7 +31,7 @@ export class Booster extends Component {
         if(this.count <= 0 && !UserData.instance.isDevMode()) {
             return;
         }
-        
+
         this.node.emit("activate");
     }
 
@@ -43,7 +43,7 @@ export class Booster extends Component {
 
     updateCount() {
         this.count = UserData.instance.getResource(this.boosterName);
-        this.countLabel.string = count;
+        this.countLabel.string = this.count;
     }
 }
 

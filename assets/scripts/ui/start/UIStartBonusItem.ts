@@ -84,7 +84,7 @@ export class UIStartBonusItem extends Component {
 
     updateCount() {
         this.count = UserData.instance.getResource(this.bonusName);
-        this.countLabel.string = count;
+        this.countLabel.string = this.count;
     }
 }
 
