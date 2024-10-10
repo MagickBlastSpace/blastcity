@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame, assetManager, sp } from 'cc';
 import { UILevelMovesShop } from './UILevelMovesShop';
 import { SaveData } from '../../data/SaveData';
 import { ButlersGift } from '../../game/boosters/ButlersGift';
@@ -10,6 +10,7 @@ import { GameData } from '../../data/GameData';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIMainMenu } from '../main/UIMainMenu';
 import { Field } from '../../game/Field';
+import { ResolutionManager } from '../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -66,12 +67,21 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     @property(Field)
     field: Field = null;
 
+    @property(sp.Skeleton)
+    animationFireworks: sp.Skeleton = null;
+    @property(sp.Skeleton)
+    animationEffect: sp.Skeleton = null;
+
     private isSuccess: boolean = false;
 
     private difficulty: string = "";
     private goldEarned: number = 0;
 
 
+    onLoad() {
+        //this.loadAssets();
+    }
+    
     start() {
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
         this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
@@ -102,6 +112,14 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.goldEarned = goldEarned;
 
         this.showAdBtn.node.active = false;
+
+        if(isSuccess) {
+            let isPortrait = ResolutionManager.instance.isPortraitOrientation();
+            let fireworksName = isPortrait ? "vertical" : "horizontal";
+
+            this.animationFireworks.setAnimation(0, fireworksName, false);
+            this.animationEffect.setAnimation(0, 'animation', true);
+        }
 
         try {
             let levelData = GameData.instance.getLastLevel();
@@ -184,6 +202,33 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
     isKingLeagueMode(): boolean {
         return UserData.instance.getProgress() >= GameData.instance.getMaxProgress();
+    }
+
+
+    loadAssets() {
+        assetManager.loadBundle("animations_effect", (err, bundle) => {
+            if (err) {
+                return;
+            }
+
+            bundle.load("effect", sp.SkeletonData, (err, anim) => {
+                if (err) {
+                    console.log("Effect load error");
+                    return;
+                }
+
+                this.animationEffect.skeletonData = anim;
+            });
+
+            bundle.load("fireworks", sp.SkeletonData, (err, anim) => {
+                if (err) {
+                    console.log("fireworks load error");
+                    return;
+                }
+
+                this.animationFireworks.skeletonData = anim;
+            });
+        });
     }
 }
 
