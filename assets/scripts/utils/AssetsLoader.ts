@@ -65,6 +65,8 @@ export class AssetsLoader extends Component {
         if(level.difficulty === "bonus") {
             this.currentSpecs.push("coin");
         }
+
+        this.gamplayAssetsCounter = 0;
     }
     
     loadGameplayAssets() {

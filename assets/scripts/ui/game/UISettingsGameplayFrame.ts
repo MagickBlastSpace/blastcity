@@ -48,6 +48,8 @@ export class UISettingsGameplayFrame extends UIPopupFrameBase {
 
     onExitBtnClick() {
         this.levelResult.fail();
+
+        this.hide();
     }
 
 
