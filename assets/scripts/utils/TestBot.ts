@@ -202,6 +202,7 @@ export class TestBot extends Component {
             return;
         }
 
+        this.fieldComp.unloadAssets();
         this.fieldComp.spawnInitialBoard(GameData.instance.levels[this.currentLevelIndex]);
 
         this.currentIteration++;

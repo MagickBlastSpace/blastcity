@@ -67,6 +67,8 @@ export class UILevelConstructor extends Component {
 
     onPlayBtnClick() {
         try {
+            this.field.unloadAssets();
+            
             const levelData = LevelData.fromJSON(this.inputField.string);
             
             this.field.spawnInitialBoard(levelData);
