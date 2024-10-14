@@ -123,7 +123,12 @@ export class UILevel extends UIFrameBase {
         this.levelResult.show();
         this.levelResult.refresh(isSuccess, goldEarned);
 
-        AudioController.instance.playLevelResult();
+        if(isSuccess) {
+            AudioController.instance.playWin();
+        }
+        else {
+            AudioController.instance.playLose();
+        }
     }
 
     showLevelCompletePopup() {

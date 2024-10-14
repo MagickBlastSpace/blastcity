@@ -14,7 +14,8 @@ export class AudioController extends Component {
     private popup: AudioClip = null!
 
     private levelComplete: AudioClip = null!
-    private levelResult: AudioClip = null!
+    private win: AudioClip = null!
+    private lose: AudioClip = null!
 
     private hammer: AudioClip = null!
     private bow: AudioClip = null!
@@ -120,12 +121,20 @@ export class AudioController extends Component {
                 this.levelComplete = audio;
             });
 
-            bundle.load("level_result", AudioClip, (err, audio) => {
+            bundle.load("win", AudioClip, (err, audio) => {
                 if (err) {
                     return;
                 }
 
-                this.levelResult = audio;
+                this.win = audio;
+            });
+
+            bundle.load("lose", AudioClip, (err, audio) => {
+                if (err) {
+                    return;
+                }
+
+                this.lose = audio;
             });
         });
     }
@@ -203,12 +212,20 @@ export class AudioController extends Component {
         this.uiSource.playOneShot(this.levelComplete, 1);
     }
 
-    playLevelResult() {
+    playWin() {
         if(!this.isSfxEnabled()) {
             return;
         }
 
-        this.uiSource.playOneShot(this.levelResult, 1);
+        this.uiSource.playOneShot(this.win, 1);
+    }
+
+    playLose() {
+        if(!this.isSfxEnabled()) {
+            return;
+        }
+
+        this.uiSource.playOneShot(this.lose, 1);
     }
 
     playHammerSound() {
