@@ -984,6 +984,11 @@ export class Field extends Component {
 
             this.spawnNewTiles(false, true);
         }
+        else {
+            if(this.isCompleteScheduled) {
+                this.node.emit("complete", this.countBonusGold());
+            }
+        }
     }
 
     activateBonusByIndex(index: number, byOrder: boolean) {
