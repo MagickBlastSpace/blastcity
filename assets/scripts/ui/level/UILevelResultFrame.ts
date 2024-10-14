@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame, assetManager, sp } from 'cc';
+import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame, assetManager, sp, Texture2D } from 'cc';
 import { UILevelMovesShop } from './UILevelMovesShop';
 import { SaveData } from '../../data/SaveData';
 import { ButlersGift } from '../../game/boosters/ButlersGift';
@@ -52,6 +52,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     progressLose: Node = null;
     @property(Node)
     commonMovesShopPanel: Node = null;
+    @property(Node)
+    winPanel: Node = null;
 
     @property(UIMainMenu)
     mainFrame: UIMainMenu = null;
@@ -106,6 +108,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.movesShop.node.active = !isSuccess;
         this.progressLose.active = !isSuccess && this.butlersGift.getStreak() > 0;
         this.commonMovesShopPanel.active = !isSuccess && this.butlersGift.getStreak() === 0;
+        this.winPanel.active = isSuccess;
 
         this.movesShop.refresh();
 
@@ -117,8 +120,12 @@ export class UILevelResultFrame extends UIPopupFrameBase {
             let isPortrait = ResolutionManager.instance.isPortraitOrientation();
             let fireworksName = isPortrait ? "vertical" : "horizontal";
 
-            this.animationFireworks.setAnimation(0, fireworksName, false);
-            this.animationEffect.setAnimation(0, 'animation', true);
+            if(this.animationFireworks.skeletonData) {
+                this.animationFireworks.setAnimation(0, fireworksName, false);
+            }
+            if(this.animationEffect.skeletonData) {
+                this.animationEffect.setAnimation(0, 'animation', true);
+            }
         }
 
         try {
@@ -205,7 +212,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     }
 
 
-    loadAssets() {
+    /*loadAssets() {
         assetManager.loadBundle("animations_effect", (err, bundle) => {
             if (err) {
                 return;
@@ -229,7 +236,79 @@ export class UILevelResultFrame extends UIPopupFrameBase {
                 this.animationFireworks.skeletonData = anim;
             });
         });
-    }
+    }*/
+
+    /*loadAssets() {
+        assetManager.loadBundle("animations_effect", (err, bundle) => {
+            if (err) {
+                console.error("Failed to load asset bundle:", err);
+                return;
+            }
+    
+            bundle.load('effect.atlas', (err, atlasText) => {
+                if (err) {
+                    console.error("Failed to load atlas:", err);
+                    return;
+                }
+    
+                bundle.load('effect', (err, skeletonJson: sp.TextAsset) => {
+                    if (err) {
+                        console.error("Failed to load skeleton json:", err);
+                        return;
+                    }
+    
+                    bundle.load('effect/texture', (err, textureAsset: Texture2D) => {
+                        if (err) {
+                            console.error("Failed to load texture:", err);
+                            return;
+                        }
+    
+                        const skeletonData = new sp.SkeletonData();
+                        skeletonData.skeletonJson = skeletonJson;
+                        skeletonData.atlasText = atlasText;
+                        skeletonData.textures = [textureAsset];
+                        skeletonData.textureNames = ['effect.png'];
+    
+                        if (this.animationEffect) {
+                            this.animationEffect.skeletonData = skeletonData;
+                        }
+                    });
+                });
+            });
+
+
+            bundle.load('firework.atlas', (err, atlasText) => {
+                if (err) {
+                    console.error("Failed to load atlas:", err);
+                    return;
+                }
+    
+                bundle.load('firework', (err, skeletonJson) => {
+                    if (err) {
+                        console.error("Failed to load skeleton json:", err);
+                        return;
+                    }
+    
+                    bundle.load('firework/texture', (err, textureAsset: Texture2D) => {
+                        if (err) {
+                            console.error("Failed to load texture:", err);
+                            return;
+                        }
+    
+                        const skeletonData = new sp.SkeletonData();
+                        skeletonData.skeletonJson = skeletonJson;
+                        skeletonData.atlasText = atlasText;
+                        skeletonData.textures = [textureAsset];
+                        skeletonData.textureNames = ['firework.png'];
+    
+                        if (this.animationFireworks) {
+                            this.animationFireworks.skeletonData = skeletonData;
+                        }
+                    });
+                });
+            });
+        });
+    }*/
 }
 
 
