@@ -38,7 +38,6 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     }
 
 
-
     canParticipate(): boolean {
         const now = new Date();
         const timeDiffInMillis = this.endTime.getTime() - now.getTime();
@@ -97,6 +96,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         else {
             SaveData.instance.saveEvent(this.eventId);
         }
+
+        this.node.emit("progress", 1);
     }
 
 

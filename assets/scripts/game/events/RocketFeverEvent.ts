@@ -48,6 +48,7 @@ export class RocketFeverEvent extends WeeklyEventBase {
         this.checkStageCompletion();
 
         this.node.emit("refresh");
+        this.node.emit("progress", statistics.rocketsDestroyed);
     }
 
     checkStageCompletion() {
@@ -129,13 +130,10 @@ export class RocketFeverEvent extends WeeklyEventBase {
         super.activateEvent();
 
         if(!this.isEventAvailable()) {
-            //console.log("Unable to start Rocket Fever");
             return;
         }
 
         this.currentStage = 0;
-
-        //console.log("Rocket Fever started");
 
         SaveData.instance.saveEvent(this.eventId);
     }

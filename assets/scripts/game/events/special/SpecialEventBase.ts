@@ -43,6 +43,8 @@ export class SpecialEventBase extends WeeklyEventBase {
         this.collectable = this.collectable + 1;
 
         SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("progress", 1);
     }
 
 

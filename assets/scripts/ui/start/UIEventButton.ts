@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, ProgressBar, tween, assetManager, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Node, Label, ProgressBar, tween, assetManager, Prefab, instantiate, Vec2, Vec3, UITransform } from 'cc';
 import { EventBase } from '../../game/events/EventBase';
 import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 import { AssetsLoader } from '../../utils/AssetsLoader';
@@ -143,6 +143,30 @@ export class UIEventButton extends Component {
 
     getEventName(): string {
         return this.eventName;
+    }
+
+    getEventId(): string {
+        return this.eventController.getEventId();
+    }
+
+    getPosition(): Vec2 {
+        let worldPosition = new Vec3(0, 0, 0);
+        
+        const parent = this.node.parent;
+        const uiTransform = this.node.getComponent(UITransform);
+        
+        if (parent && uiTransform) {
+            const parentUITransform = parent.getComponent(UITransform);
+            if (parentUITransform) {
+                worldPosition = parentUITransform.convertToWorldSpaceAR(new Vec3(this.node.position.x, this.node.position.y, 0));
+            } else {
+                console.error("UITransform component is missing on parent node");
+            }
+        } else {
+            console.error("UITransform component is missing on this node or node has no parent");
+        }
+    
+        return new Vec2(worldPosition.x, worldPosition.y);
     }
 }
 

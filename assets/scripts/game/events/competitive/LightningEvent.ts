@@ -103,6 +103,8 @@ export class LightningEvent extends KingsCupEvent {
         Net.instance.publishScore(this.eventId, "lightning_" + this.multiplayerChannelId, this.collectables);
 
         SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("progress", 1);
     }
 
 

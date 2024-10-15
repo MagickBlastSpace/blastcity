@@ -125,6 +125,8 @@ export class KingLeagueEvent extends CompetitiveEventBase {
         Net.instance.publishScore(this.eventId, "week_" + this.getWeekNumber(this.startTime), this.currentStep);
 
         SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("progress", 1);
     }
 
     restartEvent() {

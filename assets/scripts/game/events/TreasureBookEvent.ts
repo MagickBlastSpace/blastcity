@@ -20,6 +20,8 @@ export class TreasureBookEvent extends RocketFeverEvent {
         this.collectedRockets = this.collectedRockets + statistics.redDestroyed;
 
         this.checkStageCompletion();
+
+        this.node.emit("progress", statistics.redDestroyed);
     }
 }
 

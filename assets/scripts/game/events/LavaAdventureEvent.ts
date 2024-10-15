@@ -119,6 +119,8 @@ export class LavaAdventureEvent extends EventBase {
         else {
             SaveData.instance.saveEvent(this.eventId);
         }
+
+        this.node.emit("progress", 1);
     }
 
     private handleLevelFail() {

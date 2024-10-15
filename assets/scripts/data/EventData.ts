@@ -107,3 +107,12 @@ export class PlayerEventData {
     clanName = "";
 }
 
+
+@ccclass('EventProgressData')
+export class EventProgressData {
+    @property
+    eventName = 0;
+    @property
+    progress = 0;
+}
+

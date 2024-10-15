@@ -173,6 +173,8 @@ export class KingsCupEvent extends WeeklyContestEvent {
         Net.instance.publishScore(this.eventId, "kings_cup_" + this.multiplayerChannelId, this.currentStep);
 
         SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("progress", 1);
     }
 
 

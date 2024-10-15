@@ -8,6 +8,8 @@ import { Field } from '../../game/Field';
 import { KingLeagueEvent } from '../../game/events/competitive/KingLeagueEvent';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UIChest } from '../chest/UIChest';
+import { EventsController } from '../../game/events/EventsController';
+import { UIStartFrameEffects } from '../effects/UIStartFrameEffects';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -36,6 +38,11 @@ export class UIStartFrame extends UIFrameBase {
     @property(KingLeagueEvent)
     kingLeague: KingLeagueEvent = null;
 
+    @property(EventsController)
+    eventsController: EventsController = null;
+    @property(UIStartFrameEffects)
+    effectsManager: UIStartFrameEffects = null;
+
     private isLevelsLoaded: boolean = false;
 
 
@@ -55,6 +62,8 @@ export class UIStartFrame extends UIFrameBase {
         GameData.instance.node.on("level_stage_update", () => this.lockPlay(true));
 
         this.playBtn.node.active = false;
+
+        this.effectsManager.setEventBtns(this.eventBtns);
     }
 
     onPlayBtnClick() {
@@ -89,6 +98,9 @@ export class UIStartFrame extends UIFrameBase {
         super.show();
 
         this.refresh();
+
+        this.effectsManager.initEventsProgressEffects(this.eventsController.getProgressData());
+        this.eventsController.clearProgressData();
     }
 
 

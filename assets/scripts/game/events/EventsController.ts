@@ -1,6 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { EventBase } from './EventBase';
-import { InitEventData } from '../../data/EventData';
+import { EventProgressData, InitEventData } from '../../data/EventData';
 import { SaveData } from '../../data/SaveData';
 import { Net } from '../../net/Net';
 const { ccclass, property } = _decorator;
@@ -13,6 +13,9 @@ export class EventsController extends Component {
 
     @property([InitEventData])
     eventsData: InitEventData[] = [];
+
+    private progressQueue: EventProgressData[] = [];
+
 
     start() {
         this.init();
@@ -29,10 +32,30 @@ export class EventsController extends Component {
             }
 
             SaveData.instance.loadEvent(eventComp.getEventId());
+
+            this.events[i].on("progress", (count) => this.handleEventProgress(eventComp.getEventId(), count));
         }
 
         Net.instance.requestEventsChannels();
         Net.instance.requestClansChannels();
+    }
+
+
+    handleEventProgress(eventName: string, progressCount: number) {
+        let progressData = new EventProgressData();
+
+        progressData.eventName = eventName;
+        progressData.progress = progressCount;
+
+        this.progressQueue.push(progressData);
+    }
+
+    getProgressData(): EventProgressData[] {
+        return this.progressQueue;
+    }
+
+    clearProgressData() {
+        this.progressQueue = [];
     }
 }
 

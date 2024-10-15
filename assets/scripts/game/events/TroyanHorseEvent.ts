@@ -39,6 +39,8 @@ export class TroyanHorseEvent extends TeamTreasureEvent {
         this.currentStep = this.currentStep + 1;
 
         SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("progress", 1);
     }
 
 

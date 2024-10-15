@@ -58,6 +58,8 @@ export class TeamBattleEvent extends TeamEventBase {
         Net.instance.publishScore(this.eventId, this.eventId + "_" + this.clans.getClanId() + "_" + this.getWeekNumber(this.startTime), this.currentStep);
 
         SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("progress", earnedPoints);
     }
 
 
