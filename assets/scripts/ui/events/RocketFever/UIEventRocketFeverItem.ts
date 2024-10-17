@@ -63,6 +63,7 @@ export class UIEventRocketFeverItem extends Component {
         if(data.rewards.length > 0) {
             if(data.rewards[0].gold > 0) {
                 this.rewardIcon.spriteFrame = this.gold;
+                this.rewardLabel.string = data.rewards[0].gold;
             }
 
             if(data.rewards[0].startBonus_Bomb > 0) {
