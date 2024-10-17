@@ -4,6 +4,7 @@ import { RocketFeverEvent } from '../../../game/events/RocketFeverEvent';
 import { UIEventRocketFeverItem } from './UIEventRocketFeverItem';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
+import { UIEventRocketFeverRewardIcon } from './UIEventRocketFeverRewardIcon';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventRocketFever')
@@ -38,15 +39,8 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
     @property(Node)
     infoContainer: Node = null;
 
-    @property(Vec3)
-    positionTimer_Start: Vec3 = null;
-    @property(Vec3)
-    positionTimer_Active: Vec3 = null;
-
-    @property(Vec3)
-    positionProgress_Start: Vec3 = null;
-    @property(Vec3)
-    positionProgress_Active: Vec3 = null;
+    @property(UIEventRocketFeverRewardIcon)
+    rewardIcon: UIEventRocketFeverRewardIcon;
 
     private items: [UIEventRocketFeverItem] = [];
 
@@ -88,8 +82,6 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
         this.isEventStarted = this.eventController.getIsStarted();
         this.isEventComplete = this.eventController.getIsComplete();
 
-        //this.progressBar.node.active = this.isEventStarted && !this.isEventComplete;
-
         if(this.isEventStarted && !this.isEventComplete) {
             this.infoContainer.active = false;
             this.rewardsContainer.active = true;
@@ -97,18 +89,6 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
 
             this.infoLabel.string = "";
-
-            tween(this.progressBar)
-                .to(0.8, { progress: this.eventController.getCollectable() / this.eventController.getCurrentStageStep() })
-                .start();
-
-            tween(this.timerContainer)
-                .to(0.2, { position: this.positionTimer_Active })
-                .start();
-
-            tween(this.progressContainer)
-                .to(0.2, { position: this.positionProgress_Active })
-                .start();
         }
         else if(this.isEventComplete) {
             this.infoContainer.active = true;
@@ -117,18 +97,6 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.progressLabel.string = "0/0";
 
             this.infoLabel.string = "Event Complete";
-
-            tween(this.progressBar)
-                .to(0.8, { progress: 0 })
-                .start();
-
-            tween(this.timerContainer)
-                .to(0.2, { position: this.positionTimer_Start })
-                .start();
-
-            tween(this.progressContainer)
-                .to(0.2, { position: this.positionProgress_Start })
-                .start();
         }
         else if(!this.eventController.isRequiredLevelReached()) {
             this.infoContainer.active = true;
@@ -137,18 +105,6 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.progressLabel.string = "0/0";
 
             this.infoLabel.string = "Required Level " + this.eventController.getLevelRequired();
-
-            tween(this.progressBar)
-                .to(0.8, { progress: 0 })
-                .start();
-
-            tween(this.timerContainer)
-                .to(0.2, { position: this.positionTimer_Start })
-                .start();
-
-            tween(this.progressContainer)
-                .to(0.2, { position: this.positionProgress_Start })
-                .start();
         }
         else {
             this.infoContainer.active = true;
@@ -157,18 +113,6 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.progressLabel.string = "0/0";
 
             this.infoLabel.string = "Collect rockets to win rewards";
-
-            tween(this.progressBar)
-                .to(0.8, { progress: 0 })
-                .start();
-            
-            tween(this.timerContainer)
-                .to(0.2, { position: this.positionTimer_Start })
-                .start();
-
-            tween(this.progressContainer)
-                .to(0.2, { position: this.positionProgress_Start })
-                .start();
         }
         
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
@@ -178,6 +122,8 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
         for(let i = 0; i < data.length && i < this.items.length; i++) {
             this.items[i].refresh(i + 1, data[i], this.eventController.getCurrentStage());
         }
+
+        this.rewardIcon.refresh(data[this.eventController.getCurrentStage()]);
     }
 
 

@@ -35,6 +35,18 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
 
     refresh() {}
 
+    hide() {
+        super.hide();
+
+        this.node.emit("hide");
+    }
+
+    hideClean() {
+        super.hideClean();
+
+        this.node.emit("hide");
+    }
+
 
     private setWidgetsTargetToMainCanvas() {
         const canvasNode = find('Canvas');

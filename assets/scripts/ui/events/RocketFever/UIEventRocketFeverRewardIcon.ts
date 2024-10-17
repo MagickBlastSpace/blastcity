@@ -1,15 +1,10 @@
-import { _decorator, Component, Node, Label, Sprite, SpriteFrame, sp } from 'cc';
+import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
 import { RocketFeverEventData } from '../../../data/EventData';
 const { ccclass, property } = _decorator;
 
-@ccclass('UIEventRocketFeverItem')
-export class UIEventRocketFeverItem extends Component {
-
-    @property(Label)
-    numberLabel: Label = null;
-    @property(Label)
-    rewardLabel: Label = null;
-
+@ccclass('UIEventRocketFeverRewardIcon')
+export class UIEventRocketFeverRewardIcon extends Component {
+    
     @property(Sprite)
     rewardIcon: Sprite = null;
 
@@ -34,32 +29,8 @@ export class UIEventRocketFeverItem extends Component {
     @property(SpriteFrame)
     lives: SpriteFrame = null;
 
-    @property(Node)
-    complete: Node = null;
-    @property(Node)
-    current: Node = null;
-    @property(Node)
-    locked: Node = null;
 
-    @property(Sprite)
-    numberIcon: Sprite = null;
-
-    @property(SpriteFrame)
-    complete_number: SpriteFrame = null;
-    @property(SpriteFrame)
-    current_number: SpriteFrame = null;
-    @property(SpriteFrame)
-    next_number: SpriteFrame = null;
-
-    @property(sp.Skeleton)
-    spine: sp.Skeleton = null;
-
-
-    refresh(stageNumber: number, data: RocketFeverEventData, currentStage: number) {
-        this.numberLabel.string = stageNumber;
-
-        this.rewardLabel.string = "";
-
+    refresh(data: RocketFeverEventData) {
         if(data.rewards.length > 0) {
             if(data.rewards[0].gold > 0) {
                 this.rewardIcon.spriteFrame = this.gold;
@@ -90,41 +61,20 @@ export class UIEventRocketFeverItem extends Component {
 
             if(data.rewards[0].bomb_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.bomb;
-                this.rewardLabel.string = data.rewards[0].bomb_Minutes + " Min";
             }
             if(data.rewards[0].rocket_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.rocket;
-                this.rewardLabel.string = data.rewards[0].rocket_Minutes + " Min";
             }
             if(data.rewards[0].discoball_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.discoball;
-                this.rewardLabel.string = data.rewards[0].discoball_Minutes + " Min";
             }
 
             if(data.rewards[0].endlessLives_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.lives;
-                this.rewardLabel.string = data.rewards[0].endlessLives_Minutes + " Min";
             }
             if(data.rewards[0].modifierX2_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.x2;
-                this.rewardLabel.string = data.rewards[0].modifierX2_Minutes + " Min";
             }
-        }
-
-        this.complete.active = currentStage >= stageNumber;
-        this.locked.active = currentStage < stageNumber - 1;
-        this.current.active = currentStage === stageNumber - 1;
-
-        if(currentStage >= stageNumber) {
-            this.numberIcon.spriteFrame = this.complete_number;
-        }
-        else if(currentStage === stageNumber - 1) {
-            this.numberIcon.spriteFrame = this.current_number;
-
-            this.spine.setAnimation(0, "animation", true);
-        }
-        else {
-            this.numberIcon.spriteFrame = this.next_number;
         }
     }
 }

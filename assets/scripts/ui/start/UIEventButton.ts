@@ -23,6 +23,9 @@ export class UIEventButton extends Component {
     @property
     eventName: string = "";
 
+    @property
+    isPortraitVersionAvailable: boolean = false;
+
     @property(Node)
     popupLayout: Node = null;
 
@@ -98,7 +101,9 @@ export class UIEventButton extends Component {
 
             console.log(`Successfully loaded bundle: events"`);
 
-            bundle.load(this.eventName, Prefab, (err, prefab) => {
+            let bundleToLoad = ResolutionManager.instance.isPortraitOrientation() && this.isPortraitVersionAvailable ? this.eventName + "_portrait" : this.eventName;
+
+            bundle.load(bundleToLoad, Prefab, (err, prefab) => {
                 if (err) {
                     console.error(`Failed to load prefab: ${this.eventName}`, err);
                     return;
@@ -110,6 +115,10 @@ export class UIEventButton extends Component {
 
                 this.instantiatedNode.on("play", () => {
                     this.node.emit("play");
+                });
+
+                this.instantiatedNode.on("hide", () => {
+                    this.eventPopup = null;
                 });
 
                 this.popupLayout.addChild(this.instantiatedNode);
@@ -132,6 +141,8 @@ export class UIEventButton extends Component {
     hideClean() {
         if(this.eventPopup) {
             this.eventPopup.hideClean();
+
+            this.eventPopup = null;
         }
     }
 
