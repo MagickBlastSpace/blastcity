@@ -87,6 +87,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.rewardsContainer.active = true;
 
             this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
+            this.progressBar.progress = this.eventController.getTimeProgress();
 
             this.infoLabel.string = "";
         }

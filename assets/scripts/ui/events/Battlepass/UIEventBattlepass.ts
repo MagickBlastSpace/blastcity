@@ -1,0 +1,112 @@
+import { _decorator, Component, Node, Prefab, ProgressBar, Button, Label, instantiate } from 'cc';
+import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
+import { UIEventBattlepassItem } from './UIEventBattlepassItem';
+import { UserData } from '../../../data/UserData';
+const { ccclass, property } = _decorator;
+
+@ccclass('UIEventBattlepass')
+export class UIEventBattlepass extends UIEventPopupFrameBase {
+
+    @property(Button)
+    activateBtn: Button = null;
+    @property(Button)
+    closeBtn: Button = null;
+
+    @property(Label)
+    progressLabel: Label = null;
+    @property(Label)
+    timeLabel: Label = null;
+    @property(Label)
+    stageLabel: Label = null;
+
+    @property(ProgressBar)
+    progressBar: ProgressBar = null;
+
+    @property(Prefab)
+    itemPrefab: Prefab = null;
+    @property(Node)
+    itemsLayout: Node = null;
+
+    @property(Node)
+    bonusSafe: Node = null;
+
+    private items: [UIEventBattlepassItem] = [];
+
+
+    start() {
+        this.activateBtn.node.on(Button.EventType.CLICK, this.onActivateBtnClick, this);
+        this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        let data = this.eventController.getData();
+
+        for(let i = 0; i < data.length; i++) {
+            const itemNode = instantiate(this.itemPrefab);
+            this.itemsLayout.addChild(itemNode);
+            const item = itemNode.getComponent('UIEventBattlepassItem');
+
+            itemNode.on("take", (stageIndex) => {
+                this.eventController.takeReward(stageIndex - 1);
+            });
+            itemNode.on("take_premium", (stageIndex) => {
+                this.eventController.takeReward_Premium(stageIndex - 1);
+            });
+
+            this.items.push(item);
+        }
+
+        for(let i = 0; i < data.length && i < this.items.length; i++) {
+            this.items[i].refresh(i + 1, data[i], this.eventController.getCurrentStage());
+            this.items[i].refreshAvailability(this.eventController.isRewardTaken(i), this.eventController.isRewardTaken_Premium(i));
+        }
+
+        this.itemsLayout.addChild(this.bonusSafe);
+    }
+
+    update(deltaTime: number) {
+        if(!this.isInited) {
+            return;
+        }
+        
+        this.timeLabel.string = this.eventController.getRemainingTimeString();
+    }
+
+
+    refresh() {
+        this.eventController.refresh();
+
+        this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
+        
+        this.activateBtn.node.active = !UserData.instance.getIsPremium();
+
+        let data = this.eventController.getData();
+
+        for(let i = 0; i < data.length && i < this.items.length; i++) {
+            this.items[i].refresh(i + 1, data[i], this.eventController.getCurrentStage());
+            this.items[i].refreshAvailability(this.eventController.isRewardTaken(i), this.eventController.isRewardTaken_Premium(i));
+        }
+
+        this.stageLabel.string = this.eventController.getCurrentStage() + 1;
+
+        this.progressBar.progress = this.eventController.getTimeProgress();
+    }
+
+
+    show() {
+        super.show();
+
+        this.refresh();
+    }
+
+
+    onActivateBtnClick() {
+        UserData.instance.buyPremium();
+
+        this.refresh();
+    }
+
+    onCloseBtnClick() {
+        this.hide();
+    }
+}
+
+

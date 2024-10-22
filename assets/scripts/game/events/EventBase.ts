@@ -224,13 +224,13 @@ export class EventBase extends Component {
     setMultiplayerChannel(id: number) {}
 
 
-    private applyRewards(rewards: EventRewardData[]) {
+    applyRewards(rewards: EventRewardData[]) {
         for(let i = 0; i < rewards.length; i++) {
             this.applyReward(rewards[i]);
         }
     }
 
-    private applyReward(reward: EventRewardData) {
+    applyReward(reward: EventRewardData) {
         UserData.instance.addResource("gold", reward.gold);
 
             UserData.instance.addResource("bomb", reward.startBonus_Bomb);

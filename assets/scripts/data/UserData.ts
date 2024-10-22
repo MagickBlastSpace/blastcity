@@ -47,6 +47,8 @@ export class UserData extends Component {
 
     private isDev: boolean = false;
 
+    private isPremium: boolean = false;
+
 
     onLoad() {
         UserData.instance = this;
@@ -519,6 +521,21 @@ export class UserData extends Component {
 
     isDevMode(): boolean {
         return this.isDev;
+    }
+
+
+    setIsPremium(isPremium: boolean): boolean {
+        this.isPremium = isPremium;
+    }
+
+    getIsPremium(): boolean {
+        return this.isPremium;
+    }
+
+    buyPremium() {
+        this.isPremium = true;
+
+        this.node.emit("premium_purchase");
     }
 }
 
