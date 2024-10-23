@@ -84,6 +84,24 @@ export class BattlepassEvent extends RocketFeverEvent {
         this.node.emit("progress", earnedPoints);
     }
 
+    checkStageCompletion() {
+        if(this.eventData.length <= this.currentStage) {
+            this.handleEventCompletion();
+            return;
+        }
+
+        if(this.collectedRockets >= this.eventData[this.currentStage].stageStep) {
+            this.collectedRockets = this.collectedRockets - this.eventData[this.currentStage].stageStep;
+
+            this.currentStage = this.currentStage + 1;
+
+            this.checkStageCompletion();
+        }
+        else {
+            SaveData.instance.saveEvent(this.eventId);
+        }
+    }
+
 
     applyRewards(rewards: EventRewardData[]) {
         if(UserData.instance.getIsPremium()) {
@@ -100,11 +118,11 @@ export class BattlepassEvent extends RocketFeverEvent {
 
 
     onPremiumPurchase() {
-        for(let i = 0; i <= this.currentStage; i++) {
+        /*for(let i = 0; i <= this.currentStage; i++) {
             if(i < this.eventData.length) {
                 this.applyRewards(this.eventData[i].rewards);
             }
-        }
+        }*/
     }
 
 
