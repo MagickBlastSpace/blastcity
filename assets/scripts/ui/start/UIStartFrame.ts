@@ -126,6 +126,10 @@ export class UIStartFrame extends UIFrameBase {
                     this.openEventByName("KingLeague");
                 }
             }
+
+            if(UserData.instance.getProgress() === 0) {
+                this.onPlay();
+            }
         }
     }
 
