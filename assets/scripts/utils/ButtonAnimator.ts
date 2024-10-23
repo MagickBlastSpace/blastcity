@@ -11,13 +11,9 @@ export class ButtonAnimator extends Component {
     private isReleaseTweening: boolean = false;
 
     start() {
-        const button = this.node.getComponent(Button);
-
-        if (button) {
-            this.node.on(Node.EventType.TOUCH_START, this.onButtonPressed, this);
-            this.node.on(Node.EventType.TOUCH_END, this.onButtonReleased, this);
-            this.node.on(Node.EventType.TOUCH_CANCEL, this.onButtonReleased, this);
-        }
+        this.node.on(Node.EventType.TOUCH_START, this.onButtonPressed, this);
+        this.node.on(Node.EventType.TOUCH_END, this.onButtonReleased, this);
+        this.node.on(Node.EventType.TOUCH_CANCEL, this.onButtonReleased, this);
 
         this.startScale = new Vec3(this.node.scale.x, this.node.scale.y, this.node.scale.z);
     }

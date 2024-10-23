@@ -66,8 +66,6 @@ export class UIStartBonusItem extends Component {
         }
 
         this.node.emit("activate", this.bonusName);
-
-        AudioController.instance.playClick();
     }
 
 
