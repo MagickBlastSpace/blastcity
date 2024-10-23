@@ -36,6 +36,11 @@ export class UIResources extends Component {
     update(deltaTime: number) {
         this.endlessLivesTimer.string = UserData.instance.getRemainingTimeString("endless_lives");
 
+        let energySeconds = gamepush.player.get('energy:secondsLeft');
+
+        this.energyTimer.string = energySeconds <= 0 ? "MAX" : this.getSecondsLeftHuman();
+        this.energyLabel.string = gamepush.player.get('energy');
+
         if(this.endlessLivesTimer.string !== "") {
             this.endlessLivesPanel.active = true;
 
@@ -43,11 +48,6 @@ export class UIResources extends Component {
         }
 
         this.endlessLivesPanel.active = false;
-        
-        let energySeconds = gamepush.player.get('energy:secondsLeft');
-
-        this.energyTimer.string = energySeconds <= 0 ? "MAX" : this.getSecondsLeftHuman();
-        this.energyLabel.string = gamepush.player.get('energy');
     }
 
     refresh(gold: number, stars: number) {

@@ -39,6 +39,9 @@ export class UserData extends Component {
     private energyAskTimestamp: number = 0;
     private energyAskDelay_Hours: number = 4;
 
+    private energyMax_Free: number = 5;
+    private energyMax_Premium: number = 8;
+
     private friendsList: number[] = [];
 
     private overMaxEnergy: number = 15;
@@ -69,6 +72,8 @@ export class UserData extends Component {
         this.Modifier_x2_EndTime = new Date(now);
         this.energyAskTimestamp = 0;
         this.friendsList = [];
+
+        gamepush.player.set('energy:max', this.energyMax_Free);
 
         SaveData.instance.loadUserData();
 
@@ -534,6 +539,8 @@ export class UserData extends Component {
 
     buyPremium() {
         this.isPremium = true;
+
+        gamepush.player.set('energy:max', this.energyMax_Premium);
 
         this.node.emit("premium_purchase");
     }
