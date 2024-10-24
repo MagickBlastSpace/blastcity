@@ -20,6 +20,9 @@ export class UIButlersGift extends Component {
     @property(ButlersGift)
     butlersGift: ButlersGift = null;
 
+    @property(Node)
+    unavailable: Node = null;
+
 
     start() {
         this.butlersGift.node.on("refresh", () => this.refresh());
@@ -37,6 +40,8 @@ export class UIButlersGift extends Component {
         tween(this.progressBar)
             .to(0.8, { progress: streak / maxStreak })
             .start();
+
+        this.unavailable.active = !this.butlersGift.isAvailable();
     }
 }
 
