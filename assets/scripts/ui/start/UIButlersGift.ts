@@ -41,7 +41,9 @@ export class UIButlersGift extends Component {
             .to(0.8, { progress: streak / maxStreak })
             .start();
 
-        this.unavailable.active = !this.butlersGift.isAvailable();
+        if(this.unavailable) {
+            this.unavailable.active = !this.butlersGift.isAvailable();
+        }
     }
 }
 

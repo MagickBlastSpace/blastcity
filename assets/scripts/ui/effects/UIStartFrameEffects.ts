@@ -12,6 +12,9 @@ export class UIStartFrameEffects extends Component {
     @property(Node)
     effectsLayer: Node = null;
 
+    @property(Node)
+    playBtn: Node = null;
+
     @property([UIEventButton])
     eventBtns: UIEventButton[] = [];
 
@@ -22,35 +25,32 @@ export class UIStartFrameEffects extends Component {
 
 
     initEventsProgressEffects(data: EventProgressData[]) {
-        let timeBetweenEffects = 0.08;
+        let timeBetweenEffects = 0.8;
         let totalTime = 0;
 
         for(let i = 0; i < data.length; i++) {
 
+            let event = data[i].eventName;
+            let eventPos = this.findEventPosition(event);
+            let startPos = this.findStartPosition();
+
             this.scheduleOnce(() => {
-                for(let j = 0; j < data[i].progress; j++) {
-                    let event = data[i].eventName;
-                    let eventPos = this.findEventPosition(event);
-    
-                    this.scheduleOnce(() => {
-                        this.createProgressEffect(event, eventPos);
-                    }, timeBetweenEffects * j);
-                }
-                
+                this.createProgressEffect(event, eventPos, startPos, data[i].progress);
             }, totalTime);
 
-            totalTime += timeBetweenEffects * data[i].progress;
+            totalTime += timeBetweenEffects;
         }
     }
 
 
-    createProgressEffect(event: string, eventPos: Vec2) {
+    createProgressEffect(event: string, eventPos: Vec2, startPos: Vec2, count: number) {
         const item = instantiate(this.eventProgressItem);
         this.effectsLayer.addChild(item);
         const itemComp = item.getComponent("UIEventProgressEffect");
         itemComp.setIcon(event);
+        itemComp.setCount(count);
 
-        itemComp.init(new Vec2(0, 0), eventPos);
+        itemComp.init(startPos, eventPos);
     }
 
 
@@ -84,6 +84,27 @@ export class UIStartFrameEffects extends Component {
             console.error("UITransform component missing on this node");
             return new Vec2();
         }
+    }
+
+    findStartPosition(): Vec2 {
+        let worldPosition = new Vec3(0, 0, 0);
+    
+        const uiTransform = this.playBtn.getComponent(UITransform);
+        if (uiTransform) {
+            worldPosition = uiTransform.convertToWorldSpaceAR(new Vec3(0, 0, 0));
+        } else {
+            console.error("UITransform component is missing on the playBtn node");
+        }
+
+        const localUiTransform = this.node.getComponent(UITransform);
+        if (localUiTransform) {
+            const localPos = localUiTransform.convertToNodeSpaceAR(new Vec3(worldPosition.x, worldPosition.y, 0));
+            return new Vec2(localPos.x, localPos.y);
+        } else {
+            console.error("UITransform component missing on this node");
+        }
+    
+        return new Vec2(worldPosition.x, worldPosition.y);
     }
 }
 
