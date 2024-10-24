@@ -17,6 +17,11 @@ export class UISettingsGameplayFrame extends UIPopupFrameBase {
     @property(Button)
     exitBtn: Button = null;
 
+    @property(Node)
+    musicOff: Node = null;
+    @property(Node)
+    sfxOff: Node = null;
+
     @property(UILevelResultFrame)
     levelResult: UILevelResultFrame = null;
 
@@ -54,7 +59,8 @@ export class UISettingsGameplayFrame extends UIPopupFrameBase {
 
 
     refresh() {
-        //TBD
+        this.musicOff.active = !AudioController.instance.isMusicEnabled();
+        this.sfxOff.active = !AudioController.instance.isSfxEnabled();
     }
 }
 
