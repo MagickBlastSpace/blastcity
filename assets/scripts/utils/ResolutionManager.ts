@@ -60,8 +60,6 @@ export class ResolutionManager extends Component {
     rewardBtn: Widget = null;
     @property(Widget)
     kingLeagueBtn: Widget = null;
-    @property(Widget)
-    battlepassBtn: Widget = null;
     @property([Widget])
     resources: Widget[] = [];
 
@@ -157,9 +155,6 @@ export class ResolutionManager extends Component {
         this.kingLeagueBtn.bottom = 970;
         this.kingLeagueBtn.center = 0;
 
-        this.battlepassBtn.bottom = 1150;
-        this.battlepassBtn.center = 0;
-
         for(let i = 0; i < this.resources.length; i++) {
             this.resources[i].top = 250;
         }
@@ -215,10 +210,6 @@ export class ResolutionManager extends Component {
 
         this.kingLeagueBtn.bottom = 2400;
         this.kingLeagueBtn.center = 0;
-
-        this.battlepassBtn.bottom = 3000;
-        this.battlepassBtn.center = 0;
-
 
         for(let i = 0; i < this.resources.length; i++) {
             this.resources[i].top = 400;

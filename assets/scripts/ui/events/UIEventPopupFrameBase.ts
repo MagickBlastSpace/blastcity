@@ -62,6 +62,15 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
 
         console.log('Widget target set to main Canvas successfully');
     }
+
+
+    adjustResolution() {
+        super.adjustResolution();
+
+        for(let i = 0; i < this.widgets.length; i++) {
+            this.widgets[i].updateAlignment();
+        }
+    }
 }
 
 
