@@ -15,7 +15,7 @@ export class ButlersGift extends Component {
 
     private isGifted: boolean = false;
 
-    private LEVEL_REQUIRED: number = 30;
+    private LEVEL_REQUIRED: number = 0; //30
 
     private levelComp: Level = null;
 
@@ -29,9 +29,9 @@ export class ButlersGift extends Component {
 
 
     updateProgress(isWin: boolean) {
-        if(this.levelComp.getExperimentCategory() === "B") {
+        /*if(this.levelComp.getExperimentCategory() === "B") {
             return;
-        }
+        }*/
         
         if(UserData.instance.getProgress() + 1 < this.LEVEL_REQUIRED) {
             return;
