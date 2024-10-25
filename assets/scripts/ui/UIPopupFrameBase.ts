@@ -45,10 +45,14 @@ export class UIPopupFrameBase extends UIFrameBase {
         if(!this.disablePopupSound) {
             AudioController.instance.playPopup();
         }
+
+        this.node.emit("hide");
     }
 
     hideClean() {
         this.node.active = false;
+
+        this.node.emit("hide");
     }
 
     adjustResolution() {

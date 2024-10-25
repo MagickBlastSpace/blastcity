@@ -12,7 +12,12 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
     @property(EventBase)
     eventController: EventBase = null;
 
+    @property([UIPopupFrameBase])
+    infoPopups: UIPopupFrameBase[] = [];
+
     private isInited: boolean = false;
+
+    private currentTutorialPage: number = 0;
 
 
     onLoad() {
@@ -30,21 +35,23 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
         this.isInited = true;
 
         this.refresh();
+
+        for(let i = 0; i < this.infoPopups.length; i++) {
+            this.infoPopups[i].node.on("hide", () => this.showNextTutorialPage());
+        }
     }
 
 
     refresh() {}
 
-    hide() {
-        super.hide();
+    show() {
+        super.show();
 
-        this.node.emit("hide");
-    }
+        if(this.infoPopups.length > 0 && !this.eventController.getIsTutorialComplete()) {
+            this.currentTutorialPage = 0;
 
-    hideClean() {
-        super.hideClean();
-
-        this.node.emit("hide");
+            this.showNextTutorialPage();
+        }
     }
 
 
@@ -70,6 +77,19 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
         for(let i = 0; i < this.widgets.length; i++) {
             this.widgets[i].updateAlignment();
         }
+    }
+
+
+    showNextTutorialPage() {
+        if(this.currentTutorialPage > this.infoPopups.length - 1) {
+            this.eventController.completeTutorial();
+
+            return;
+        }
+
+        this.infoPopups[this.currentTutorialPage].show();
+
+        this.currentTutorialPage = this.currentTutorialPage + 1;
     }
 }
 

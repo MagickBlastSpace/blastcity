@@ -16,6 +16,8 @@ export class EventBase extends Component {
 
     private lastAttemptTimestamp: number = 0;
 
+    private isTutorialComplete: boolean = false;
+
     @property
     MIN_LEVEL_REQUIRED = 0;
     @property
@@ -223,6 +225,14 @@ export class EventBase extends Component {
 
     setMultiplayerChannel(id: number) {}
 
+    getIsTutorialComplete(): boolean {
+        return this.isTutorialComplete;
+    }
+
+    setIsTutorialComplete(isTutorialComplete: boolean): boolean {
+        this.isTutorialComplete = isTutorialComplete;
+    }
+
 
     applyRewards(rewards: EventRewardData[]) {
         for(let i = 0; i < rewards.length; i++) {
@@ -233,20 +243,27 @@ export class EventBase extends Component {
     applyReward(reward: EventRewardData) {
         UserData.instance.addResource("gold", reward.gold);
 
-            UserData.instance.addResource("bomb", reward.startBonus_Bomb);
-            UserData.instance.addResource("rocket", reward.startBonus_Rocket);
-            UserData.instance.addResource("discoball", reward.startBonus_Discoball);
+        UserData.instance.addResource("bomb", reward.startBonus_Bomb);
+        UserData.instance.addResource("rocket", reward.startBonus_Rocket);
+        UserData.instance.addResource("discoball", reward.startBonus_Discoball);
 
-            UserData.instance.addResource("hammer", reward.booster_Hammer);
-            UserData.instance.addResource("bow", reward.booster_Bow);
-            UserData.instance.addResource("cannon", reward.booster_Cannon);
-            UserData.instance.addResource("jester", reward.booster_Jester);
+        UserData.instance.addResource("hammer", reward.booster_Hammer);
+        UserData.instance.addResource("bow", reward.booster_Bow);
+        UserData.instance.addResource("cannon", reward.booster_Cannon);
+        UserData.instance.addResource("jester", reward.booster_Jester);
 
-            UserData.instance.addResource("bomb_minutes", reward.bomb_Minutes);
-            UserData.instance.addResource("rocket_minutes", reward.rocket_Minutes);
-            UserData.instance.addResource("discoball_minutes", reward.discoball_Minutes);
-            UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
-            UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
+        UserData.instance.addResource("bomb_minutes", reward.bomb_Minutes);
+        UserData.instance.addResource("rocket_minutes", reward.rocket_Minutes);
+        UserData.instance.addResource("discoball_minutes", reward.discoball_Minutes);
+        UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
+        UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
+    }
+
+
+    completeTutorial() {
+        this.isTutorialComplete = true;
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 }
 

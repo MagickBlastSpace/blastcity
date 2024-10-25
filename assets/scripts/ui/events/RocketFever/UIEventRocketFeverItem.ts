@@ -122,7 +122,9 @@ export class UIEventRocketFeverItem extends Component {
         else if(currentStage === stageNumber - 1) {
             this.numberIcon.spriteFrame = this.current_number;
 
-            this.spine.setAnimation(0, "animation", true);
+            /*if(this.spine) {
+                this.spine.setAnimation(0, "animation", true);
+            }*/
         }
         else {
             this.numberIcon.spriteFrame = this.next_number;
