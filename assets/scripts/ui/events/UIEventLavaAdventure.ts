@@ -35,6 +35,9 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
     @property(Node)
     player: Node = null;
 
+    @property([Node])
+    stgPositions: Node[] = [];
+
     @property(Prefab)
     playerPrefab: Prefab = null;
 
@@ -76,7 +79,7 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
             return;
         }
 
-        this.destroyAllPlayers();
+        //this.destroyAllPlayers();
 
         this.eventController.refresh();
 
@@ -90,24 +93,11 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
 
             let playersCount = this.eventController.getCollectable();
             this.playersLabel.string = playersCount + "/100";
-
-            for(let i = 0; i < playersCount; i++) {
-                const newPlayerNode = instantiate(this.playerPrefab);
-                this.player.addChild(newPlayerNode);
-            }
-
-            let bckg_Y = this.bckg_start_Y - (this.bckg_total_length / (this.eventController.getTotalSteps() - 1) * this.eventController.getCurrentStage());
-
-            this.background.setPosition(0, this.bckg_start_Y);
-
-            tween(this.background)
-                .to(0.5, { position: new Vec3(0, bckg_Y, 0) })
-                .start();
-
-            let player_X = this.eventController.getCurrentStage() % 2 === 0 ? this.player_start_X : this.player_end_X;
+            
+            let playerPos = this.stgPositions[this.eventController.getCurrentStage()].position;
 
             tween(this.player)
-                .to(0.5, { position: new Vec3(player_X, this.player_Y, 0) })
+                .to(0.5, { position: playerPos })
                 .start();
         }
 
