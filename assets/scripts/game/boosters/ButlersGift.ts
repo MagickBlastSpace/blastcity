@@ -8,7 +8,7 @@ const { ccclass, property } = _decorator;
 export class ButlersGift extends Component {
 
     @property(Node)
-    level: Node = null;
+    level: Node;
 
     private streak: number = 0;
     private maxStreak: number = 3;

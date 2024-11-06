@@ -18,7 +18,7 @@ export class UIButlersGift extends Component {
     progressBar: ProgressBar = null;
 
     @property(ButlersGift)
-    butlersGift: ButlersGift = null;
+    butlersGift: ButlersGift;
 
     @property(Node)
     unavailable: Node = null;

@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Slider, AudioSource, Button, Toggle } from
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { AudioController } from '../../utils/AudioController';
 import { UserData } from '../../data/UserData';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UISettingsFrame')
@@ -25,6 +26,14 @@ export class UISettingsFrame extends UIPopupFrameBase {
     @property(Toggle)
     devModeToggle: Toggle = null;
 
+    @property(Button)
+    langBtn_Ru: Button = null;
+    @property(Button)
+    langBtn_En: Button = null;
+
+    @property(Localization)
+    localization: Localization;
+
 
     start() {
         this.musicSlider.progress = this.musicAudioSource.volume;
@@ -39,6 +48,9 @@ export class UISettingsFrame extends UIPopupFrameBase {
         this.devModeToggle.isChecked = isDevMode;
 
         this.devModeToggle.node.on('toggle', this.onToggleDevMode, this);
+
+        this.langBtn_Ru.node.on(Button.EventType.CLICK, this.onLangBtnClickRu, this);
+        this.langBtn_En.node.on(Button.EventType.CLICK, this.onLangBtnClickEn, this);
     }
 
     onMusicVolumeChanged(slider: Slider) {
@@ -64,6 +76,15 @@ export class UISettingsFrame extends UIPopupFrameBase {
     onToggleDevMode(toggle: Toggle) {
         UserData.instance.setDevMode(toggle.isChecked);
         console.log('Developer mode is now:', toggle.isChecked);
+    }
+
+
+    onLangBtnClickRu() {
+        this.localization.setLanguage("ru");
+    }
+
+    onLangBtnClickEn() {
+        this.localization.setLanguage("en");
     }
 }
 
