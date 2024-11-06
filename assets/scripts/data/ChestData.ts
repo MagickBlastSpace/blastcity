@@ -41,6 +41,9 @@ export class ChestData {
     @property
     stageStep = 0;
 
+    @property
+    level = 0;
+
     @property([ChestRewardData])
     rewards: ChestRewardData[] = [];
 }

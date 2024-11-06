@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, ProgressBar, Label, Button, Vec3 } from 'cc';
 import { Chest } from '../../game/Chest';
 import { ResolutionManager } from '../../utils/ResolutionManager';
+import { GameData } from '../../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIChest')
@@ -29,6 +30,8 @@ export class UIChest extends Component {
         this.rewardBtn.node.on(Button.EventType.CLICK, this.onRewardBtnClick, this);
 
         this.refresh();
+
+        GameData.instance.node.on("levels_loaded", () => this.refresh());
     }
 
     refresh() {

@@ -440,6 +440,10 @@ export class GameData extends Component {
     getCurrentLevel(): LevelData {
         let progress = gamepush.player.get('score');
 
+        return this.getLevelDataByNumber(progress);
+    }
+
+    getLevelDataByNumber(progress: number): LevelData {
         if(progress >= this.maxProgress) {
             progress = gamepush.player.get('score_king_league');
 
@@ -474,6 +478,10 @@ export class GameData extends Component {
         }
 
         return this.getCurrentLevel();
+    }
+
+    getLevels() {
+        return this.levels;
     }
 
 
