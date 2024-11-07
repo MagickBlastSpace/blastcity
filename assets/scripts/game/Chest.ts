@@ -18,6 +18,8 @@ export class Chest extends Component {
 
     private isComplete: boolean = false;
 
+    private pickedRewards: number[] = [];
+
 
     onLoad() {
         this.stage = 0;
@@ -25,16 +27,18 @@ export class Chest extends Component {
     }
 
     start() {
+        SaveData.instance.loadChest();
+
         UserData.instance.node.on("stars", (value) => this.updateStageData(true));
         GameData.instance.node.on("levels_loaded", () => this.updateStageData(false));
-
-        //SaveData.instance.loadChest();
     }
 
 
     completeStage() {
         if(this.isComplete) {
             this.applyRewards(this.data[this.stage].rewards);
+
+            this.pickedRewards.push(this.stage);
 
             if(this.stage < this.data.length - 1) {
                 this.stage = this.stage + 1;
@@ -85,6 +89,23 @@ export class Chest extends Component {
 
     getData(): ChestData[] {
         return this.data;
+    }
+
+
+    getPickedRewards(): number[] {
+        return this.pickedRewards;
+    }
+
+    setPickedRewards(rewards: number[]) {
+        this.pickedRewards = [];
+
+        if(!rewards || rewards === undefined) {
+            return;
+        }
+
+        for(let i = 0; i < rewards.length; i++) {
+            this.pickedRewards.push(rewards[i]);
+        }
     }
 
 
@@ -204,9 +225,20 @@ export class Chest extends Component {
         */
         else {
             if(progress >= this.data[this.stage].level) {
-                this.isComplete = true;
+                if(!this.pickedRewards.includes(this.stage)) {
+                    this.isComplete = true;
+                }
+                else {
+                    if(this.stage < this.data.length - 1) {
+                        this.stage = this.stage + 1;
+                    }
 
-                SaveData.instance.saveChest();
+                    SaveData.instance.saveChest();
+
+                    this.updateStageData(updateComplete);
+
+                    return;
+                }
             }
 
             let startLevel = 0;

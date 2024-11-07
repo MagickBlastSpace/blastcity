@@ -370,7 +370,8 @@ export class SaveData extends Component {
 
         let chestData = {
             stage: chestComp.getStage(),
-            collectables: chestComp.getCollectables()
+            //collectables: chestComp.getCollectables()
+            pickedRewards: chestComp.getPickedRewards()
         };
         
         cc.sys.localStorage.setItem('chest', JSON.stringify(chestData));
@@ -383,7 +384,8 @@ export class SaveData extends Component {
         if (chestData) {
             let chestComp = this.chest.getComponent("Chest");
             chestComp.setStage(chestData.stage);
-            chestComp.setCollectables(chestData.collectables);
+            //chestComp.setCollectables(chestData.collectables);
+            chestComp.setPickedRewards(chestData.pickedRewards);
         } else {
             //console.log("No saved start bonuses data found");
         }
