@@ -14,6 +14,11 @@ export class Localization extends Component {
         i18n.init(langId);
         i18n.updateSceneRenderers();
     }
+
+
+    getLabelByKey(key: string): string {
+        return i18n.t(key);
+    }
 }
 
 

@@ -8,6 +8,7 @@ import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIEventMinified } from '../events/UIEventMinified';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartBriefingPopup')
@@ -51,6 +52,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     @property([UIEventMinified])
     minifiedEvents: UIEventMinified[] = [];
 
+    @property(Localization)
+    l10n: Localization;
+
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
@@ -69,26 +73,32 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         let levelData = GameData.instance.getCurrentLevel();
 
         let currentLevelNumber = UserData.instance.getProgress() + 1;
-        this.levelLabel.string = "Level " + currentLevelNumber;
+        this.levelLabel.string = this.l10n.getLabelByKey("StartFrame.Level") + " " + currentLevelNumber;
         
         if(UserData.instance.getProgress() >= GameData.instance.getMaxProgress()) {
             currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
-            this.levelLabel.string = "Round " + currentLevelNumber;
+            this.levelLabel.string = this.l10n.getLabelByKey("StartFrame.Level") + " " + currentLevelNumber;
         }
 
-        this.difficultyLabel.string = levelData ? levelData.difficulty + " Difficulty" : "Common Difficulty";
+        //this.difficultyLabel.string = levelData ? levelData.difficulty + " Difficulty" : "Common Difficulty";
 
         if(levelData.difficulty === "hard") {
             this.frame.spriteFrame = this.hard;
             this.header.spriteFrame = this.header_hard;
+
+            this.difficultyLabel.string = this.l10n.getLabelByKey("StartFrame.Difficulty_Hard") + " " + this.l10n.getLabelByKey("StartFrame.Difficulty");
         }
         else if(levelData.difficulty === "superhard") {
             this.frame.spriteFrame = this.superHard;
             this.header.spriteFrame = this.header_superHard;
+
+            this.difficultyLabel.string = this.l10n.getLabelByKey("StartFrame.Difficulty_Superhard") + " " + this.l10n.getLabelByKey("StartFrame.Difficulty");
         }
         else {
             this.frame.spriteFrame = this.common;
             this.header.spriteFrame = this.header_common;
+
+            this.difficultyLabel.string = this.l10n.getLabelByKey("StartFrame.Difficulty_Common") + " " + this.l10n.getLabelByKey("StartFrame.Difficulty");
         }
 
         for(let i = 0; i < this.minifiedEvents.length; i++) {
