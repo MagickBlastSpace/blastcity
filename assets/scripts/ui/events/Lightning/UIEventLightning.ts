@@ -14,6 +14,8 @@ export class UIEventLightning extends UIEventPopupFrameBase {
     @property(Button)
     closeBtn: Button = null;
     @property(Button)
+    closeBtn_Duplicate: Button = null;
+    @property(Button)
     takeRewardBtn: Button = null;
 
     @property(Label)
@@ -46,6 +48,7 @@ export class UIEventLightning extends UIEventPopupFrameBase {
     start() {
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
 
         this.eventController.node.on("refresh", () => this.refresh());
@@ -98,7 +101,6 @@ export class UIEventLightning extends UIEventPopupFrameBase {
     show() {
         super.show();
 
-        //this.refresh();
         this.eventController.updateMultiplayerData();
     }
 

@@ -7,6 +7,7 @@ import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { UIEventMinified } from '../events/UIEventMinified';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartBriefingPopup')
@@ -47,6 +48,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     @property(UIFrameBase)
     refillEnergyPopup: UIFrameBase = null;
 
+    @property([UIEventMinified])
+    minifiedEvents: UIEventMinified[] = [];
+
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
@@ -85,6 +89,10 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         else {
             this.frame.spriteFrame = this.common;
             this.header.spriteFrame = this.header_common;
+        }
+
+        for(let i = 0; i < this.minifiedEvents.length; i++) {
+            this.minifiedEvents[i].updateData();
         }
     }
 
