@@ -33,17 +33,18 @@ export class UIEventMinified extends Component {
     }
 
     update(deltaTime: number) {
-        this.node.active = this.eventController.isEventAvailable();
+        this.node.active = this.eventController.isEventAvailable() && this.eventController.canParticipate();
     }
 
     
     refresh() {
         let isEventStarted = this.eventController.getIsStarted();
         let isEventComplete = this.eventController.getIsComplete();
+        let isRewardAvailable = this.eventController.isRewardAvailable();
 
-        this.playersContainer.active = isEventStarted;
-        this.startContainer.active = !isEventStarted;
-        this.rewardContainer.active = isEventComplete;
+        this.playersContainer.active = isEventStarted && !isEventComplete;
+        this.startContainer.active = !isEventStarted && !isEventComplete;
+        this.rewardContainer.active = isRewardAvailable;
 
         let data = this.eventController.sortPlayersByProgress();
 
@@ -74,7 +75,7 @@ export class UIEventMinified extends Component {
     onTakeRewardBtnClick() {
         this.eventController.takeReward();
 
-        this.refresh();
+        this.updateData();
     }
 }
 
