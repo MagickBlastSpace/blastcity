@@ -89,10 +89,10 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
     }
 
     updateWidgetAlignment(isPortrait) {
-        this.frameWidget.left = isPortrait ? 0 : 700;
-        this.frameWidget.right = isPortrait ? 0 : 700;
+        /*this.frameWidget.left = isPortrait ? 0 : 650;
+        this.frameWidget.right = isPortrait ? 0 : 650;
         
-        this.frameWidget.updateAlignment();
+        this.frameWidget.updateAlignment();*/
     }
 
 

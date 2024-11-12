@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Widget, find, Canvas } from 'cc';
+import { _decorator, Component, Node, Widget, find, Canvas, Button } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { EventBase } from '../../game/events/EventBase';
 const { ccclass, property } = _decorator;
@@ -14,6 +14,9 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
 
     @property([UIPopupFrameBase])
     infoPopups: UIPopupFrameBase[] = [];
+
+    @property(Button)
+    infoBtn: Button = null;
 
     private isInited: boolean = false;
 
@@ -38,6 +41,10 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
 
         for(let i = 0; i < this.infoPopups.length; i++) {
             this.infoPopups[i].node.on("hide", () => this.showNextTutorialPage());
+        }
+
+        if(this.infoBtn && this.infoBtn !== undefined) {
+            this.infoBtn.node.on(Button.EventType.CLICK, this.onInfoBtnClick, this);
         }
     }
 
@@ -90,6 +97,14 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
         this.infoPopups[this.currentTutorialPage].show();
 
         this.currentTutorialPage = this.currentTutorialPage + 1;
+    }
+
+    onInfoBtnClick() {
+        if(this.infoPopups.length > 0) {
+            this.currentTutorialPage = 0;
+
+            this.showNextTutorialPage();
+        }
     }
 }
 

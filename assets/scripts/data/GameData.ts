@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Vec2, Prefab } from 'cc';
+import { _decorator, Component, Node, Vec2, Prefab, Color  } from 'cc';
 import { UserData } from './UserData';
 import { Statistics } from './Statistics';
 import { SaveData } from './SaveData';
@@ -104,6 +104,22 @@ export class ShopItemData {
 
     @property
     price = 0;
+}
+
+
+@ccclass('SpriteColorData')
+export class SpriteColorData {
+    @property
+    cid = '';
+
+    @property
+    r = 0;
+    @property
+    g = 0;
+    @property
+    b = 0;
+    @property
+    a = 0;
 }
 
 

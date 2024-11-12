@@ -125,11 +125,26 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             this.items[i].refresh(color);
         }
 
+        let poolIterationIndex = 0;
         for(let i = 0; i < this.hints.length; i++) {
             this.hints[i].node.active = i < poolSize;
 
             let color = i < hints.length ? hints[i] : "undefined";
             this.hints[i].refresh(color);
+
+            if(color === "undefined") {
+                let hintColor = pool[poolIterationIndex];
+                for(let j = poolIterationIndex; j < pool.length; j++) {
+                    if(hints.includes(hintColor)) {
+                        poolIterationIndex = poolIterationIndex + 1;
+
+                        hintColor = pool[poolIterationIndex];
+                    }
+                }
+                this.hints[i].setColor(hintColor);
+
+                poolIterationIndex = poolIterationIndex + 1;
+            }
         }
 
         for(let i = 0; i < this.predictionBtns.length; i++) {
@@ -152,10 +167,10 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
     updateWidgetAlignment(isPortrait: boolean) {
         for(let i = 0; i < this.frameWidgets.length; i++) {
-            this.frameWidgets[i].left = isPortrait ? 0 : 700;
-            this.frameWidgets[i].right = isPortrait ? 0 : 700;
+            /*this.frameWidgets[i].left = isPortrait ? 0 : 650;
+            this.frameWidgets[i].right = isPortrait ? 0 : 650;
 
-            this.frameWidgets[i].updateAlignment();
+            this.frameWidgets[i].updateAlignment();*/
         }
     }
 
