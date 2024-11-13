@@ -58,6 +58,8 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
         this.predictions.push(prediction);
 
+        this.fillPredictionsHints();
+
         this.node.emit("refresh");
 
         if(this.poolToPredict.length === 0) {
@@ -142,7 +144,21 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
         this.predictions = [];
 
+        this.fillPredictionsHints();
+
         SaveData.instance.saveEvent(this.eventId);
+    }
+
+    private fillPredictionsHints() {
+        if(this.predictions.length < this.hints.length) {
+            let nextColor = this.hints[this.predictions.length];
+
+            if(nextColor !== "undefined") {
+                this.predictions.push(nextColor);
+
+                this.fillPredictionsHints();
+            }
+        }
     }
 
 

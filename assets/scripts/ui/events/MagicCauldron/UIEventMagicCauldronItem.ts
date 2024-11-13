@@ -37,7 +37,6 @@ export class UIEventMagicCauldronItem extends Component {
             }
                 
             this.icon.spriteFrame = null;
-            //this.indicator.spriteFrame = null;
 
             return;
         }

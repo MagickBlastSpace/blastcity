@@ -97,7 +97,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             let curLvl = this.eventController.getCurrentStage() + 1;
             this.reqLabel.string = "";
             this.collectablesCount.string = this.eventController.getCollectable();
-            this.levelIndex = curLvl;
+            this.levelIndex.string = curLvl;
 
             tween(this.progressBar)
                 .to(0.8, { progress: this.eventController.getCurrentStage() / this.eventController.getTotalLevels() })
@@ -126,9 +126,18 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             this.items[i].node.active = i < poolSize;
 
             let color = i < predictions.length ? predictions[i] : "none";
+
+            if(color === "none") {
+                if(i < hints.length) {
+                    if(hints[i] !== "undefined") {
+                        color = hints[i];
+                    }
+                }
+            }
+            
             this.items[i].refresh(color);
 
-            this.items[i].setIndicator(false);
+            this.items[i].setIndicator(hints.includes(color));
         }
 
         let poolIterationIndex = 0;
@@ -159,6 +168,9 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             this.predictionBtns[i].node.active = i < poolSize;
 
             let color = i < pool.length ? pool[i] : "undefined";
+
+            this.predictionBtns[i].node.active = !hints.includes(color);
+
             this.predictionBtns[i].refresh(color, predictions);
         }
 
@@ -169,7 +181,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     stageEnd() {
         let hints = this.eventController.getSpecialHints();
 
-        let timeStep = 0.1;
+        let timeStep = 0.2;
         let totalTime = timeStep * hints.length;
 
         for(let i = 0; i < hints.length && i < this.items.length; i++) {
@@ -180,7 +192,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
         this.scheduleOnce(() => {
             this.refresh();
-        }, totalTime);
+        }, totalTime + 0.5);
     }
 
 
