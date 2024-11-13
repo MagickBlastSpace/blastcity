@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Prefab, ProgressBar, Button, Label, instan
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventBattlepassItem } from './UIEventBattlepassItem';
 import { UserData } from '../../../data/UserData';
+import { UIEventBattlepassBonusBank } from './UIEventBattlepassBonusBank';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventBattlepass')
@@ -29,6 +30,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     @property(Node)
     bonusSafe: Node = null;
+    @property(UIEventBattlepassBonusBank)
+    bonusSafeComp: UIEventBattlepassBonusBank;
 
     private items: [UIEventBattlepassItem] = [];
 
@@ -60,6 +63,10 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         }
 
         this.itemsLayout.addChild(this.bonusSafe);
+
+        this.bonusSafe.on("take", () => {
+            this.eventController.takeBonusBank();
+        });
     }
 
     update(deltaTime: number) {
@@ -74,9 +81,11 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     refresh() {
         this.eventController.refresh();
 
+        let isPrem = UserData.instance.getIsPremium();
+
         this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
         
-        this.activateBtn.node.active = !UserData.instance.getIsPremium();
+        this.activateBtn.node.active = !isPrem;
 
         let data = this.eventController.getData();
 
@@ -88,6 +97,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.stageLabel.string = this.eventController.getCurrentStage() + 1;
 
         this.progressBar.progress = this.eventController.getTimeProgress();
+
+        this.bonusSafeComp.refresh(isPrem, this.eventController.getIsBankTakeAvailable(), this.eventController.getBonusBank());
     }
 
 
