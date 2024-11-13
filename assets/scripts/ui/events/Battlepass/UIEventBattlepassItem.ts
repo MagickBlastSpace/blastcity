@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Sprite, Button } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, Button, SpriteFrame } from 'cc';
 import { UIEventRocketFeverItem } from '../RocketFever/UIEventRocketFeverItem';
 import { RocketFeverEventData } from '../../../data/EventData';
 import { UserData } from '../../../data/UserData';
@@ -12,6 +12,9 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
     @property(Sprite)
     rewardIcon_Premium: Sprite = null;
+
+    @property([SpriteFrame])
+    chestsIcons: SpriteFrame[] = [];
 
     @property(Node)
     complete_Premium: Node = null;
@@ -57,25 +60,32 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
             if(data.rewards[1].startBonus_Bomb > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.bomb;
+                this.rewardLabel_Premium.string = data.rewards[1].startBonus_Bomb;
             }
             if(data.rewards[1].startBonus_Rocket > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.rocket;
+                this.rewardLabel_Premium.string = data.rewards[1].startBonus_Rocket;
             }
             if(data.rewards[1].startBonus_Discoball > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.discoball;
+                this.rewardLabel_Premium.string = data.rewards[1].startBonus_Discoball;
             }
 
             if(data.rewards[1].booster_Hammer > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.hammer;
+                this.rewardLabel_Premium.string = data.rewards[1].booster_Hammer;
             }
             if(data.rewards[1].booster_Bow > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.bow;
+                this.rewardLabel_Premium.string = data.rewards[1].booster_Bow;
             }
             if(data.rewards[1].booster_Cannon > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.cannon;
+                this.rewardLabel_Premium.string = data.rewards[1].booster_Cannon;
             }
             if(data.rewards[1].booster_Jester > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.jester;
+                this.rewardLabel_Premium.string = data.rewards[1].booster_Jester;
             }
 
             if(data.rewards[1].bomb_Minutes > 0) {
@@ -99,6 +109,16 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
                 this.rewardIcon_Premium.spriteFrame = this.x2;
                 this.rewardLabel_Premium.string = data.rewards[1].modifierX2_Minutes + " Min";
             }
+        }
+
+        if(stageNumber % 5 === 0 && stageNumber > 0) {
+            let chestIndex = stageNumber / 5;
+
+            this.rewardIcon_Premium.spriteFrame = chestIndex < this.chestsIcons.length ? this.chestsIcons[chestIndex] : this.chestsIcons[this.chestsIcons.length - 1];
+
+            this.rewardIcon.spriteFrame = this.chestsIcons[0];
+            this.rewardLabel.string = "";
+            this.rewardLabel_Premium.string = "";
         }
     }
 

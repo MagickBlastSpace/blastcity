@@ -68,25 +68,32 @@ export class UIEventRocketFeverItem extends Component {
 
             if(data.rewards[0].startBonus_Bomb > 0) {
                 this.rewardIcon.spriteFrame = this.bomb;
+                this.rewardLabel.string = data.rewards[0].gold;
             }
             if(data.rewards[0].startBonus_Rocket > 0) {
                 this.rewardIcon.spriteFrame = this.rocket;
+                this.rewardLabel.string = data.rewards[0].startBonus_Rocket;
             }
             if(data.rewards[0].startBonus_Discoball > 0) {
                 this.rewardIcon.spriteFrame = this.discoball;
+                this.rewardLabel.string = data.rewards[0].startBonus_Discoball;
             }
 
             if(data.rewards[0].booster_Hammer > 0) {
                 this.rewardIcon.spriteFrame = this.hammer;
+                this.rewardLabel.string = data.rewards[0].booster_Hammer;
             }
             if(data.rewards[0].booster_Bow > 0) {
                 this.rewardIcon.spriteFrame = this.bow;
+                this.rewardLabel.string = data.rewards[0].booster_Bow;
             }
             if(data.rewards[0].booster_Cannon > 0) {
                 this.rewardIcon.spriteFrame = this.cannon;
+                this.rewardLabel.string = data.rewards[0].booster_Cannon;
             }
             if(data.rewards[0].booster_Jester > 0) {
                 this.rewardIcon.spriteFrame = this.jester;
+                this.rewardLabel.string = data.rewards[0].booster_Jester;
             }
 
             if(data.rewards[0].bomb_Minutes > 0) {
