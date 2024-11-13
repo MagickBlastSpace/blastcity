@@ -25,6 +25,8 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     timeLabel: Label = null;
     @property(Label)
     collectablesCount: Label = null;
+    @property(Label)
+    levelIndex: Label = null;
 
     @property(Node)
     minigameContainer: Node = null;
@@ -64,6 +66,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
 
         this.eventController.node.on("refresh", () => this.refresh());
+        this.eventController.node.on("stage_end", () => this.stageEnd());
 
         this.refresh();
 
@@ -94,9 +97,10 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             let curLvl = this.eventController.getCurrentStage() + 1;
             this.reqLabel.string = "";
             this.collectablesCount.string = this.eventController.getCollectable();
+            this.levelIndex = curLvl;
 
             tween(this.progressBar)
-                .to(0.8, { progress: curLvl / this.eventController.getTotalLevels() })
+                .to(0.8, { progress: this.eventController.getCurrentStage() / this.eventController.getTotalLevels() })
                 .start();
         }
         else if(this.isEventComplete) {
@@ -123,6 +127,8 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
             let color = i < predictions.length ? predictions[i] : "none";
             this.items[i].refresh(color);
+
+            this.items[i].setIndicator(false);
         }
 
         let poolIterationIndex = 0;
@@ -131,6 +137,8 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
             let color = i < hints.length ? hints[i] : "undefined";
             this.hints[i].refresh(color);
+
+            this.hints[i].setIndicator(color !== "undefined");
 
             if(color === "undefined") {
                 let hintColor = pool[poolIterationIndex];
@@ -156,6 +164,23 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
         let rewardData = this.eventController.getReward();
         this.reward.refresh(rewardData);
+    }
+
+    stageEnd() {
+        let hints = this.eventController.getSpecialHints();
+
+        let timeStep = 0.1;
+        let totalTime = timeStep * hints.length;
+
+        for(let i = 0; i < hints.length && i < this.items.length; i++) {
+            this.scheduleOnce(() => {
+                this.items[i].setIndicator(hints[i] !== "undefined");
+            }, timeStep * i);
+        }
+
+        this.scheduleOnce(() => {
+            this.refresh();
+        }, totalTime);
     }
 
 

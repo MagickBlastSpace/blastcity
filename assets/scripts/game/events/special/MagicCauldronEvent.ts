@@ -104,6 +104,8 @@ export class MagicCauldronEvent extends SpecialEventBase {
             }
         }
 
+        this.node.emit("stage_end");
+
         return isPredicted;
     }
 
@@ -139,8 +141,6 @@ export class MagicCauldronEvent extends SpecialEventBase {
         }
 
         this.predictions = [];
-
-        this.node.emit("refresh");
 
         SaveData.instance.saveEvent(this.eventId);
     }

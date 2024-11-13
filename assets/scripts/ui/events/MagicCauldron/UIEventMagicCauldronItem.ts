@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Sprite, tween, Vec3, Color } from 'cc';
+import { _decorator, Component, Node, Sprite, tween, Vec3, Color, SpriteFrame } from 'cc';
 import { SpriteTileData } from '../../../game/Tile';
 import { SpriteColorData } from '../../../data/GameData';
 const { ccclass, property } = _decorator;
@@ -15,12 +15,20 @@ export class UIEventMagicCauldronItem extends Component {
     @property([SpriteColorData])
     colorsData: SpriteColorData[] = [];
 
+    @property(Sprite)
+    indicator: Sprite = null;
+
+    @property(SpriteFrame)
+    active: SpriteFrame = null;
+    @property(SpriteFrame)
+    passive: SpriteFrame = null;
+
 
     refresh(color: string) {
         if(color === "none") {
             if(this.icon.spriteFrame !== null) {
-                tween(this.node).stop();
-                tween(this.node)
+                tween(this.icon.node).stop();
+                tween(this.icon.node)
                     .to(0.3, { scale: new Vec3(0, 0, 0) }, { easing: 'backIn' })
                     .call(() => {
                         this.icon.spriteFrame = null;
@@ -29,11 +37,13 @@ export class UIEventMagicCauldronItem extends Component {
             }
                 
             this.icon.spriteFrame = null;
+            //this.indicator.spriteFrame = null;
+
             return;
         }
 
-        tween(this.node).stop();
-        tween(this.node)
+        tween(this.icon.node).stop();
+        tween(this.icon.node)
             .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: 'backOut' })
             .start();
 
@@ -46,6 +56,10 @@ export class UIEventMagicCauldronItem extends Component {
         if(colorData && colorData !== undefined) {
             this.icon.color = new Color(colorData.r, colorData.g, colorData.b, colorData.a);
         }
+    }
+
+    setIndicator(isActive: boolean) {
+        this.indicator.spriteFrame = isActive ? this.active : this.passive;
     }
 }
 
