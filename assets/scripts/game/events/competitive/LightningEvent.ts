@@ -123,7 +123,7 @@ export class LightningEvent extends KingsCupEvent {
             return;
         }
 
-        UserData.instance.addResource("gold", this.REWARD_COINS);
+        this.applyReward(this.rewards[0]);
 
         this.collectables = 0;
 

@@ -1,8 +1,9 @@
 import { _decorator, Component, Node } from 'cc';
 import { EventBase } from './EventBase';
-import { EventProgressData, InitEventData } from '../../data/EventData';
+import { EventProgressData, EventRewardData, InitEventData } from '../../data/EventData';
 import { SaveData } from '../../data/SaveData';
 import { Net } from '../../net/Net';
+import { UIPopupReward } from '../../ui/UIPopupReward';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventsController')
@@ -13,6 +14,9 @@ export class EventsController extends Component {
 
     @property([InitEventData])
     eventsData: InitEventData[] = [];
+
+    @property(UIPopupReward)
+    rewardPopup: UIPopupReward;
 
     private progressQueue: EventProgressData[] = [];
 
@@ -34,6 +38,7 @@ export class EventsController extends Component {
             SaveData.instance.loadEvent(eventComp.getEventId());
 
             this.events[i].on("progress", (count) => this.handleEventProgress(eventComp.getEventId(), count));
+            this.events[i].on("reward", (data) => this.handleEventReward(data));
         }
 
         Net.instance.requestEventsChannels();
@@ -56,6 +61,13 @@ export class EventsController extends Component {
 
     clearProgressData() {
         this.progressQueue = [];
+    }
+
+
+    handleEventReward(data: EventRewardData) {
+        this.rewardPopup.show();
+
+        this.rewardPopup.init(data);
     }
 }
 

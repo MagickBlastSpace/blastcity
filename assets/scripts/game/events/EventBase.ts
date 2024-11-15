@@ -257,6 +257,8 @@ export class EventBase extends Component {
         UserData.instance.addResource("discoball_minutes", reward.discoball_Minutes);
         UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
         UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
+
+        this.node.emit("reward", reward);
     }
 
 
