@@ -148,6 +148,8 @@ export class BattlepassEvent extends RocketFeverEvent {
     takeReward(index: number) {
         if(!this.takenRewards.includes(index)) {
             this.takenRewards.push(index);
+
+            this.applyReward(this.eventData[index].rewards[0]);
         }
 
         this.node.emit("refresh");
@@ -156,6 +158,8 @@ export class BattlepassEvent extends RocketFeverEvent {
     takeReward_Premium(index: number) {
         if(!this.takenRewards_Premium.includes(index)) {
             this.takenRewards_Premium.push(index);
+
+            this.applyReward(this.eventData[index].rewards[1]);
         }
 
         this.node.emit("refresh");
