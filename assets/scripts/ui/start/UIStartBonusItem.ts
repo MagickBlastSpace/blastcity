@@ -61,7 +61,7 @@ export class UIStartBonusItem extends Component {
     }
 
     onClick(event: cc.Event.EventTouch): void {
-        if(this.count <= 0 && !UserData.instance.isDevMode()) {
+        if(this.count <= 0 && !UserData.instance.isDevMode() && this.timeLabel === "") {
             return;
         }
 

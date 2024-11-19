@@ -240,19 +240,19 @@ export class UserData extends Component {
                 break;
 
             case "bomb":
-                if(this.StartBombs >= value) {
+                if(this.StartBombs >= value && this.getRemainingTimeString("bomb") === "") {
                     this.StartBombs -= value;
                 }
 
                 break;
             case "rocket":
-                if(this.StartRockets >= value) {
+                if(this.StartRockets >= value && this.getRemainingTimeString("rocket") === "") {
                     this.StartRockets -= value;
                 }
 
                 break;
             case "discoball":
-                if(this.StartDiscoballs >= value) {
+                if(this.StartDiscoballs >= value && this.getRemainingTimeString("discoball") === "") {
                     this.StartDiscoballs -= value;
                 }
                 break;
