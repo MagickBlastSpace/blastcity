@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Label, Sprite, SpriteFrame, Button } from 'cc';
 import { EventRewardData } from '../data/EventData';
 import { UIPopupFrameBase } from './UIPopupFrameBase';
+import { ShopItemData } from '../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIPopupReward')
@@ -29,6 +30,8 @@ export class UIPopupReward extends UIPopupFrameBase {
     x2: SpriteFrame = null;
     @property(SpriteFrame)
     lives: SpriteFrame = null;
+    @property(SpriteFrame)
+    battlepass: SpriteFrame = null;
 
     @property(Label)
     rewardLabel: Label = null;
@@ -151,6 +154,85 @@ export class UIPopupReward extends UIPopupFrameBase {
     }
 
 
+    init(data: ShopItemData) {
+        this.rewardsPool = [];
+        this.rewardIndex = 0;
+
+        if(data) {
+            if(data.gold > 0) {
+                let newData = new EventRewardData();
+                newData.gold = data.gold;
+
+                this.rewardsPool.push(newData);
+            }
+
+            if(data.bonuses_Minutes > 0) {
+                let newData = new EventRewardData();
+                newData.bomb_Minutes = data.bonuses_Minutes;
+                this.rewardsPool.push(newData);
+
+                newData = new EventRewardData();
+                newData.rocket_Minutes = data.bonuses_Minutes;
+                this.rewardsPool.push(newData);
+
+                newData = new EventRewardData();
+                newData.discoball_Minutes = data.bonuses_Minutes;
+                this.rewardsPool.push(newData);
+            }
+            
+            if(data.booster_Hammer > 0) {
+                let newData = new EventRewardData();
+                newData.booster_Hammer = data.booster_Hammer;
+
+                this.rewardsPool.push(newData);
+            }
+            if(data.booster_Bow > 0) {
+                let newData = new EventRewardData();
+                newData.booster_Bow = data.booster_Bow;
+
+                this.rewardsPool.push(newData);
+            }
+            if(data.booster_Cannon > 0) {
+                let newData = new EventRewardData();
+                newData.booster_Cannon = data.booster_Cannon;
+
+                this.rewardsPool.push(newData);
+            }
+            if(data.booster_Jester > 0) {
+                let newData = new EventRewardData();
+                newData.booster_Jester = data.booster_Jester;
+
+                this.rewardsPool.push(newData);
+            }
+
+            if(data.endlessLives_Minutes > 0) {
+                let newData = new EventRewardData();
+                newData.endlessLives_Minutes = data.endlessLives_Minutes;
+
+                this.rewardsPool.push(newData);
+            }
+        }
+
+        this.tapBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        this.showNext();
+    }
+
+    init_Battlepass() {
+        this.rewardsPool = [];
+        this.rewardIndex = 0;
+
+        let newData = new EventRewardData();
+        newData.battlepass = 1;
+
+        this.rewardsPool.push(newData);
+
+        this.tapBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        this.showNext();
+    }
+
+
     /*show() {
         super.show();
 
@@ -170,6 +252,7 @@ export class UIPopupReward extends UIPopupFrameBase {
             return;
         }
 
+        this.hideClean();
         this.show();
         
         this.rewardLabel.string = "";
@@ -185,32 +268,32 @@ export class UIPopupReward extends UIPopupFrameBase {
 
             if(data.startBonus_Bomb > 0) {
                 this.rewardIcon.spriteFrame = this.bomb;
-                this.rewardLabel.string = "x1";
+                this.rewardLabel.string = "x" + data.startBonus_Bomb;
             }
             if(data.startBonus_Rocket > 0) {
                 this.rewardIcon.spriteFrame = this.rocket;
-                this.rewardLabel.string = "x1";
+                this.rewardLabel.string = "x" + data.startBonus_Rocket;
             }
             if(data.startBonus_Discoball > 0) {
                 this.rewardIcon.spriteFrame = this.discoball;
-                this.rewardLabel.string = "x1";
+                this.rewardLabel.string = "x" + data.startBonus_Discoball;
             }
 
             if(data.booster_Hammer > 0) {
                 this.rewardIcon.spriteFrame = this.hammer;
-                this.rewardLabel.string = "x1";
+                this.rewardLabel.string = "x" + data.booster_Hammer;
             }
             if(data.booster_Bow > 0) {
                 this.rewardIcon.spriteFrame = this.bow;
-                this.rewardLabel.string = "x1";
+                this.rewardLabel.string = "x" + data.booster_Bow;
             }
             if(data.booster_Cannon > 0) {
                 this.rewardIcon.spriteFrame = this.cannon;
-                this.rewardLabel.string = "x1";
+                this.rewardLabel.string = "x" + data.booster_Cannon;
             }
             if(data.booster_Jester > 0) {
                 this.rewardIcon.spriteFrame = this.jester;
-                this.rewardLabel.string = "x1";
+                this.rewardLabel.string = "x" + data.booster_Jester;
             }
 
             if(data.bomb_Minutes > 0) {
@@ -233,6 +316,11 @@ export class UIPopupReward extends UIPopupFrameBase {
             if(data.modifierX2_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.x2;
                 this.rewardLabel.string = data.modifierX2_Minutes + " Min";
+            }
+
+            if(data.battlepass > 0) {
+                this.rewardIcon.spriteFrame = this.battlepass;
+                this.rewardLabel.string = "";
             }
         }
 

@@ -37,6 +37,9 @@ export class EventRewardData {
     rocket_Minutes = 0;
     @property
     discoball_Minutes = 0;
+
+    @property
+    battlepass = 0;
 }
 
 

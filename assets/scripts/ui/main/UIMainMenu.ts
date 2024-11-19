@@ -7,6 +7,8 @@ import { SaveData } from '../../data/SaveData';
 import { Chest } from '../../game/Chest';
 import { AudioController } from '../../utils/AudioController';
 import { UISettingsFrame } from '../start/UISettingsFrame';
+import { UserData } from '../../data/UserData';
+import { UIPopupReward } from '../UIPopupReward';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -48,9 +50,13 @@ export class UIMainMenu extends UIFrameBase {
     @property(AdsTimer)
     adsTimer: AdsTimer = null;
 
+    @property(UIPopupReward)
+    rewardPopup: UIPopupReward;
+
 
     start() {
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
+        UserData.instance.node.on("premium_purchase", () => this.showPremiumPurchase());
 
         this.shopBtn.node.on(Button.EventType.CLICK, this.onBtnShopClick, this);
         this.clanBtn.node.on(Button.EventType.CLICK, this.onBtnClanClick, this);
@@ -166,6 +172,13 @@ export class UIMainMenu extends UIFrameBase {
                 this.background_1.spriteFrame = spriteFrame;
             });
         });
+    }
+
+
+    showPremiumPurchase() {
+        this.rewardPopup.show();
+
+        this.rewardPopup.init_Battlepass();
     }
 }
 

@@ -4,6 +4,7 @@ import { GameData, ShopItemData } from '../../data/GameData';
 import { Shop } from '../../game/Shop';
 import { UIFrameBase } from '../UIFrameBase';
 import { UserData } from '../../data/UserData';
+import { UIPopupReward } from '../UIPopupReward';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIShopFrame')
@@ -30,6 +31,9 @@ export class UIShopFrame extends UIFrameBase {
     @property(Node)
     showHiddenItem: Node = null;
 
+    @property(UIPopupReward)
+    rewardPopup: UIPopupReward;
+
     private isHiddenState: boolean = true;
 
 
@@ -45,6 +49,8 @@ export class UIShopFrame extends UIFrameBase {
 
             this.bundles[i].node.on("buy", (itemData) => this.buy(itemData));
         }
+
+        this.shop.node.on("buy", (itemData) => this.showRewardPopup(itemData));
 
         this.bpActivateBtn.node.on(Button.EventType.CLICK, this.onBpActivateClick, this);
         this.showHiddenBtn.node.on(Button.EventType.CLICK, this.onShowHiddenClick, this);
@@ -86,6 +92,13 @@ export class UIShopFrame extends UIFrameBase {
         this.isHiddenState = false;
 
         this.refresh();
+    }
+
+
+    showRewardPopup(data: ShopItemData) {
+        this.rewardPopup.show();
+
+        this.rewardPopup.init(data);
     }
 }
 
