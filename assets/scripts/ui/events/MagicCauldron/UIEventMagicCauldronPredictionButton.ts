@@ -16,6 +16,8 @@ export class UIEventMagicCauldronPredictionButton extends Component {
 
     private currentColor: string = "";
 
+    private isClickAvailable: boolean = true;
+
 
     start() {
         this.makeMoveBtn.node.on(Button.EventType.CLICK, this.onMakeMoveBtnClick, this);
@@ -38,13 +40,22 @@ export class UIEventMagicCauldronPredictionButton extends Component {
             
             tween(this.node)
                 .to(0.3, { scale: new Vec3(1, 1, 1) }, { easing: 'backIn' })
+                .call(() => {
+                    this.isClickAvailable = true;
+                })
                 .start();
         }
     }
 
 
     onMakeMoveBtnClick() {
+        if(!this.isClickAvailable) {
+            return;
+        }
+
         this.node.emit("move", this.currentColor);
+
+        this.isClickAvailable = false;
     }
 }
 
