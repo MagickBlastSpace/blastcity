@@ -154,7 +154,7 @@ export class UIPopupReward extends UIPopupFrameBase {
     }
 
 
-    init(data: ShopItemData) {
+    init_Shop(data: ShopItemData) {
         this.rewardsPool = [];
         this.rewardIndex = 0;
 

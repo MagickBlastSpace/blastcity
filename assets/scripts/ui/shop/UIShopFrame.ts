@@ -98,7 +98,7 @@ export class UIShopFrame extends UIFrameBase {
     showRewardPopup(data: ShopItemData) {
         this.rewardPopup.show();
 
-        this.rewardPopup.init(data);
+        this.rewardPopup.init_Shop(data);
     }
 }
 
