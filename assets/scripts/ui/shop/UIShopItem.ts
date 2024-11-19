@@ -8,6 +8,23 @@ export class UIShopItem extends Component {
     @property(Label)
     priceLabel: Label = null;
 
+    @property(Label)
+    gold: Label = null;
+
+    @property(Label)
+    hammer: Label = null;
+    @property(Label)
+    arrow: Label = null;
+    @property(Label)
+    cannon: Label = null;
+    @property(Label)
+    jester: Label = null;
+
+    @property(Label)
+    startBonuses: Label = null;
+    @property(Label)
+    lives: Label = null;
+
     @property(Button)
     buyBtn: Button = null;
 
@@ -22,6 +39,32 @@ export class UIShopItem extends Component {
         this.itemData = data;
 
         this.priceLabel.string = data.price + " Rub";
+
+        if(this.gold) {
+            this.gold.string = data.gold;
+        }
+        
+        if(this.hammer) {
+            this.hammer.string = "x" + data.booster_Hammer;
+        }
+        if(this.arrow) {
+            this.arrow.string = "x" + data.booster_Bow;
+        }
+        if(this.cannon) {
+            this.cannon.string = "x" + data.booster_Cannon;
+        }
+        if(this.jester) {
+            this.jester.string = "x" + data.booster_Jester;
+        }
+
+        if(this.startBonuses) {
+            let hours = data.bonuses_Minutes / 60;
+            this.startBonuses.string = hours + "h";
+        }
+        if(this.lives) {
+            let hours = data.endlessLives_Minutes / 60;
+            this.lives.string = hours + "h";
+        }
     }
 
 

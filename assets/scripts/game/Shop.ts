@@ -18,6 +18,12 @@ export class Shop extends Component {
         UserData.instance.addResource("jester", data.booster_Jester);
 
         UserData.instance.addResource("endless_lives_minutes", data.endlessLives_Minutes);
+
+        UserData.instance.addResource("bomb_minutes", data.bonuses_Minutes);
+        UserData.instance.addResource("rocket_minutes", data.bonuses_Minutes);
+        UserData.instance.addResource("discoball_minutes", data.bonuses_Minutes);
+
+        this.node.emit("buy", data);
     }
 }
 

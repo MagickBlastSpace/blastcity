@@ -101,6 +101,8 @@ export class ShopItemData {
 
     @property
     endlessLives_Minutes = 0;
+    @property
+    bonuses_Minutes = 0;
 
     @property
     price = 0;
@@ -394,6 +396,8 @@ export class GameData extends Component {
 
     @property([ShopItemData])
     shopItems: ShopItemData[] = [];
+    @property([ShopItemData])
+    shopBundles: ShopItemData[] = [];
 
     private levelStage: number = -1;
     private maxProgress: number = 0;
