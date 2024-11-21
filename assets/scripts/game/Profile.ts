@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, SpriteFrame } from 'cc';
 const { ccclass, property } = _decorator;
 
@@ -18,6 +20,11 @@ export class Profile extends Component {
     private colorId: number = 0;
     private badgeId: number = 0;
 
+
+    start() {
+        this.setAvatarId(gamepush.player.get('avatar_id'));
+        this.setFrameId(gamepush.player.get('frame_id'));
+    }
 
     getAvatars(): SpriteFrame[] {
         return this.avatars;
@@ -55,18 +62,32 @@ export class Profile extends Component {
 
     setAvatarId(id: number) {
         this.avatarId = id;
+
+        gamepush.player.set('avatar_id', this.avatarId);
+        gamepush.player.sync();
+
+        this.node.emit("refresh");
     }
 
     setFrameId(id: number) {
         this.frameId = id;
+
+        gamepush.player.set('frame_id', this.frameId);
+        gamepush.player.sync();
+
+        this.node.emit("refresh");
     }
 
     setColorId(id: number) {
         this.colorId = id;
+
+        this.node.emit("refresh");
     }
 
     setBadgeId(id: number) {
         this.badgeId = id;
+
+        this.node.emit("refresh");
     }
 
 

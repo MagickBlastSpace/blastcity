@@ -142,6 +142,8 @@ export class UIMainMenu extends UIFrameBase {
     }
 
     onProfileBtnClick() {
+        this.profilePopup.init(UserData.instance.getPlayerId());
+        
         this.profilePopup.show();
     }
 

@@ -1,15 +1,227 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Button } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { UIProfileChangeItem } from './UIProfileChangeItem';
+import { Profile } from '../../game/Profile';
+import { UIProfileSavePopup } from './UIProfileSavePopup';
+import { UITab } from '../main/UITab';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIProfileChangePopup')
 export class UIProfileChangePopup extends UIPopupFrameBase {
-    start() {
 
+    @property([UIProfileChangeItem])
+    items_Avatar: UIProfileChangeItem[] = [];
+    @property([UIProfileChangeItem])
+    items_Frame: UIProfileChangeItem[] = [];
+    @property([UIProfileChangeItem])
+    items_Color: UIProfileChangeItem[] = [];
+    @property([UIProfileChangeItem])
+    items_Badge: UIProfileChangeItem[] = [];
+
+    @property(Profile)
+    profile: Profile;
+
+    @property(UIProfileSavePopup)
+    savePopup: UIProfileSavePopup;
+
+    @property(Button)
+    closeBtn: Button = null;
+    @property(Button)
+    saveBtn: Button = null;
+
+    @property([UITab])
+    tabs: UITab = [];
+    @property([Node])
+    frames: Node[] = [];
+
+    private avatarIndexValue: number = 0;
+    private frameIndexValue: number = 0;
+    private colorIndexValue: number = 0;
+    private badgeIndexValue: number = 0;
+
+    private isUpdated: boolean = false;
+
+
+    start() {
+        this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        this.saveBtn.node.on(Button.EventType.CLICK, this.onSaveBtnClick, this);
+
+        for(let i = 0; i < this.tabs.length; i++) {
+            this.tabs[i].node.on("tab", (index) => this.showFrame(index));
+        }
+
+        let avatars = this.profile.getAvatars();
+
+        for(let i = 0; i < this.items_Avatar.length; i++) {
+            if(i >= avatars.length) {
+                this.items_Avatar[i].node.active = false;
+            }
+            else {
+                this.items_Avatar[i].init("avatar", avatars[i]);
+                this.items_Avatar[i].node.on("click", () => {
+                    this.avatarIndexValue = i;
+
+                    this.isUpdated = true;
+
+                    this.refresh();
+                });
+            }
+        }
+
+        let frames = this.profile.getFrames();
+
+        for(let i = 0; i < this.items_Frame.length; i++) {
+            if(i >= frames.length) {
+                this.items_Frame[i].node.active = false;
+            }
+            else {
+                this.items_Frame[i].init("frame", frames[i]);
+                this.items_Frame[i].node.on("click", () => {
+                    this.frameIndexValue = i;
+
+                    this.isUpdated = true;
+
+                    this.refresh();
+                });
+            }
+        }
+
+        let colors = this.profile.getColors();
+
+        for(let i = 0; i < this.items_Color.length; i++) {
+            if(i >= colors.length) {
+                this.items_Color[i].node.active = false;
+            }
+            else {
+                //this.items_Color[i].init(colors[i]);
+                this.items_Color[i].node.on("click", () => {
+                    this.colorIndexValue = i;
+
+                    this.isUpdated = true;
+
+                    this.refresh();
+                });
+            }
+        }
+
+        let badges = this.profile.getBadges();
+
+        for(let i = 0; i < this.items_Badge.length; i++) {
+            if(i >= badges.length) {
+                this.items_Badge[i].node.active = false;
+            }
+            else {
+                this.items_Badge[i].init("badge", badges[i]);
+                this.items_Badge[i].node.on("click", () => {
+                    this.badgeIndexValue = i;
+
+                    this.isUpdated = true;
+
+                    this.refresh();
+                });
+            }
+        }
+
+
+        this.savePopup.node.on("save", () => {
+            this.save();
+
+            this.hide();
+        });
     }
 
-    update(deltaTime: number) {
-        
+    
+    show() {
+        super.show();
+
+        this.isUpdated = false;
+
+        this.showFrame(0);
+
+        this.refresh();
+    }
+
+
+    refresh() {
+        this.setAllInactive();
+
+        this.items_Avatar[this.avatarIndexValue].setActive(true);
+        this.items_Frame[this.frameIndexValue].setActive(true);
+        this.items_Color[this.colorIndexValue].setActive(true);
+        this.items_Badge[this.badgeIndexValue].setActive(true);
+    }
+
+    setAllInactive() {
+        for(let i = 0; i < this.items_Avatar.length; i++) {
+            this.items_Avatar[i].setActive(false);
+        }
+
+        for(let i = 0; i < this.items_Frame.length; i++) {
+            this.items_Frame[i].setActive(false);
+        }
+
+        for(let i = 0; i < this.items_Color.length; i++) {
+            this.items_Color[i].setActive(false);
+        }
+
+        for(let i = 0; i < this.items_Badge.length; i++) {
+            this.items_Badge[i].setActive(false);
+        }
+    }
+
+
+    onCloseBtnClick() {
+        if(this.isUpdated) {
+            this.savePopup.show();
+
+            return;
+        }
+
+        this.hide();
+    }
+
+    onSaveBtnClick() {
+        this.save();
+    }
+
+
+    save() {
+        this.profile.setAvatarId(this.avatarIndexValue);
+        this.profile.setFrameId(this.frameIndexValue);
+        this.profile.setColorId(this.colorIndexValue);
+        this.profile.setBadgeId(this.badgeIndexValue);
+
+        this.isUpdated = false;
+    }
+
+
+    hide() {
+        super.hide();
+
+        this.hideAllFrames();
+    }
+
+
+    showFrame(index: number) {
+        this.setAllBtnsPassive();
+        this.hideAllFrames();
+
+        this.tabs[index].setActiveIcon(true);
+
+        this.frames[index].active = true;
+    }
+
+
+    setAllBtnsPassive() {
+        for(let i = 0; i < this.tabs.length; i++) {
+            this.tabs[i].setActiveIcon(false);
+        }
+    }
+
+    hideAllFrames() {
+        for(let i = 0; i < this.frames.length; i++) {
+            this.frames[i].active = false;
+        }
     }
 }
 

@@ -51,6 +51,10 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.changeBtn.node.on(Button.EventType.CLICK, this.onChangeBtnClick, this);
 
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        this.profile.node.on("refresh", () => {
+            this.refresh();
+        });
     }
 
 
@@ -84,8 +88,11 @@ export class UIProfilePopup extends UIPopupFrameBase {
                 this.clanName.string = players[0].state["clanname"];
                 this.score.string = "Level " + players[0].state["score"];
 
-                this.avatar.spriteFrame = this.profile.getAvatarById(players[0].state["avatar_id"]);
-                this.frame.spriteFrame = this.profile.getAvatarById(players[0].state["frame_id"]);
+                let isMe = this.playerId === UserData.instance.getPlayerId();
+                if(!isMe) {
+                    this.avatar.spriteFrame = this.profile.getAvatarById(players[0].state["avatar_id"]);
+                    this.frame.spriteFrame = this.profile.getAvatarById(players[0].state["frame_id"]);
+                }
             }
         } catch (error) {
             console.log('Error fetching player profile:', error);
@@ -100,6 +107,11 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.removeFromFriendsBtn.node.active = isFriend && !isMe;
         this.openChatBtn.node.active = !isMe;
         this.changeBtn.node.active = isMe;
+
+        if(isMe) {
+            this.avatar.spriteFrame = this.profile.getCurrentAvatar();
+            this.frame.spriteFrame = this.profile.getCurrentFrame();
+        }
     }
 
 
