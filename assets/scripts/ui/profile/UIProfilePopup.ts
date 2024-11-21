@@ -1,9 +1,11 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label, Button } from 'cc';
+import { _decorator, Component, Node, Label, Button, Sprite } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { Net } from '../../net/Net';
 import { UserData } from '../../data/UserData';
+import { UIProfileChangePopup } from './UIProfileChangePopup';
+import { Profile } from '../../game/Profile';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIProfilePopup')
@@ -22,9 +24,22 @@ export class UIProfilePopup extends UIPopupFrameBase {
     removeFromFriendsBtn: Button = null;
     @property(Button)
     openChatBtn: Button = null;
+    @property(Button)
+    changeBtn: Button = null;
 
     @property(Button)
     closeBtn: Button = null;
+
+    @property(Sprite)
+    avatar: Sprite = null;
+    @property(Sprite)
+    frame: Sprite = null;
+
+    @property(Profile)
+    profile: Profile;
+
+    @property(UIProfileChangePopup)
+    profileChangePopup: UIProfileChangePopup;
 
     private playerId: number = 0;
 
@@ -33,6 +48,7 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.addToFriendsBtn.node.on(Button.EventType.CLICK, this.onAddBtnClick, this);
         this.removeFromFriendsBtn.node.on(Button.EventType.CLICK, this.onRemoveBtnClick, this);
         this.openChatBtn.node.on(Button.EventType.CLICK, this.onOpenChatBtnClick, this);
+        this.changeBtn.node.on(Button.EventType.CLICK, this.onChangeBtnClick, this);
 
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
     }
@@ -67,6 +83,9 @@ export class UIProfilePopup extends UIPopupFrameBase {
                 this.playerName.string = players[0].state["name"];
                 this.clanName.string = players[0].state["clanname"];
                 this.score.string = "Level " + players[0].state["score"];
+
+                this.avatar.spriteFrame = this.profile.getAvatarById(players[0].state["avatar_id"]);
+                this.frame.spriteFrame = this.profile.getAvatarById(players[0].state["frame_id"]);
             }
         } catch (error) {
             console.log('Error fetching player profile:', error);
@@ -80,6 +99,7 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.addToFriendsBtn.node.active = !isFriend && !isMe;
         this.removeFromFriendsBtn.node.active = isFriend && !isMe;
         this.openChatBtn.node.active = !isMe;
+        this.changeBtn.node.active = isMe;
     }
 
 
@@ -108,6 +128,10 @@ export class UIProfilePopup extends UIPopupFrameBase {
         gamepush.channels.openPersonalChat({
             playerId: this.playerId,
         });
+    }
+
+    onChangeBtnClick() {
+        this.profileChangePopup.show();
     }
 
 

@@ -9,6 +9,7 @@ import { AudioController } from '../../utils/AudioController';
 import { UISettingsFrame } from '../start/UISettingsFrame';
 import { UserData } from '../../data/UserData';
 import { UIPopupReward } from '../UIPopupReward';
+import { UIProfilePopup } from '../profile/UIProfilePopup';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -27,6 +28,8 @@ export class UIMainMenu extends UIFrameBase {
 
     @property(Button)
     settingsBtn: Button = null;
+    @property(Button)
+    profileBtn: Button = null;
 
     @property(Sprite)
     background: Sprite = null;
@@ -52,6 +55,8 @@ export class UIMainMenu extends UIFrameBase {
 
     @property(UIPopupReward)
     rewardPopup: UIPopupReward;
+    @property(UIProfilePopup)
+    profilePopup: UIProfilePopup;
 
 
     start() {
@@ -65,6 +70,7 @@ export class UIMainMenu extends UIFrameBase {
         this.tbd2Btn.node.on(Button.EventType.CLICK, this.onBtnTbd2Click, this);
 
         this.settingsBtn.node.on(Button.EventType.CLICK, this.onSettingsBtnClick, this);
+        this.profileBtn.node.on(Button.EventType.CLICK, this.onProfileBtnClick, this);
 
         this.setAllBtnsPassive();
         this.onBtnPlayClick();
@@ -133,6 +139,10 @@ export class UIMainMenu extends UIFrameBase {
 
     onSettingsBtnClick() {
         this.settingsFrame.show();
+    }
+
+    onProfileBtnClick() {
+        this.profilePopup.show();
     }
 
 
