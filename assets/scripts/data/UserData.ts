@@ -544,6 +544,14 @@ export class UserData extends Component {
 
         this.node.emit("premium_purchase");
     }
+
+
+    updateName(newName: string) {
+        this.playerName = newName;
+        
+        gamepush.player.set('name', newName);
+        gamepush.player.sync();
+    }
 }
 
 

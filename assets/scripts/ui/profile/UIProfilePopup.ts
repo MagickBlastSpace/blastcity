@@ -55,6 +55,10 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.profile.node.on("refresh", () => {
             this.refresh();
         });
+
+        this.profileChangePopup.node.on("refresh", () => {
+            this.refresh();
+        });
     }
 
 

@@ -1,9 +1,10 @@
-import { _decorator, Component, Node, Button } from 'cc';
+import { _decorator, Component, Node, Button, EditBox, Label } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIProfileChangeItem } from './UIProfileChangeItem';
 import { Profile } from '../../game/Profile';
 import { UIProfileSavePopup } from './UIProfileSavePopup';
 import { UITab } from '../main/UITab';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIProfileChangePopup')
@@ -29,6 +30,19 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
     @property(Button)
     saveBtn: Button = null;
 
+    @property(Button)
+    changeNameBtn: Button = null;
+    @property(Button)
+    saveNameBtn: Button = null;
+
+    @property(Node)
+    inputNameContainer: Node = null;
+    @property(EditBox)
+    inputName: EditBox = null;
+
+    @property(Label)
+    playerName: Label = null;
+
     @property([UITab])
     tabs: UITab = [];
     @property([Node])
@@ -40,11 +54,15 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
     private badgeIndexValue: number = 0;
 
     private isUpdated: boolean = false;
+    private isNameUpdated: boolean = false;
 
 
     start() {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         this.saveBtn.node.on(Button.EventType.CLICK, this.onSaveBtnClick, this);
+
+        this.changeNameBtn.node.on(Button.EventType.CLICK, this.onChangeNameBtnClick, this);
+        this.saveNameBtn.node.on(Button.EventType.CLICK, this.onSaveNameBtnClick, this);
 
         for(let i = 0; i < this.tabs.length; i++) {
             this.tabs[i].node.on("tab", (index) => this.showFrame(index));
@@ -149,6 +167,8 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.items_Frame[this.frameIndexValue].setActive(true);
         this.items_Color[this.colorIndexValue].setActive(true);
         this.items_Badge[this.badgeIndexValue].setActive(true);
+
+        this.playerName.string = UserData.instance.getPlayerName();
     }
 
     setAllInactive() {
@@ -171,7 +191,7 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
 
 
     onCloseBtnClick() {
-        if(this.isUpdated) {
+        if(this.isUpdated || this.isNameUpdated) {
             this.savePopup.show();
 
             return;
@@ -190,6 +210,12 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.profile.setFrameId(this.frameIndexValue);
         this.profile.setColorId(this.colorIndexValue);
         this.profile.setBadgeId(this.badgeIndexValue);
+
+        if(this.isNameUpdated) {
+            UserData.instance.updateName(this.playerName.string);
+
+            this.isNameUpdated = false;
+        }
 
         this.isUpdated = false;
     }
@@ -222,6 +248,25 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         for(let i = 0; i < this.frames.length; i++) {
             this.frames[i].active = false;
         }
+    }
+
+
+    onChangeNameBtnClick() {
+        this.inputNameContainer.active = true;
+
+        this.inputName.string = UserData.instance.getPlayerName();
+    }
+
+    onSaveNameBtnClick() {
+        if(this.inputName.string !== "") {
+            this.isNameUpdated = true;
+
+            this.playerName.string = this.inputName.string;
+
+            this.node.emit("refresh");
+        }
+        
+        this.inputNameContainer.active = false;
     }
 }
 
