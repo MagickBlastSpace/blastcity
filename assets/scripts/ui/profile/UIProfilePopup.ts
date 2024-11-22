@@ -17,6 +17,8 @@ export class UIProfilePopup extends UIPopupFrameBase {
     playerName: Label = null;
     @property(Label)
     score: Label = null;
+    @property(Label)
+    registerDate: Label = null;
 
     @property(Button)
     addToFriendsBtn: Button = null;
@@ -90,7 +92,8 @@ export class UIProfilePopup extends UIPopupFrameBase {
             if(players.length > 0) {
                 this.playerName.string = players[0].state["name"];
                 this.clanName.string = players[0].state["clanname"];
-                this.score.string = "Level " + players[0].state["score"];
+                this.score.string = players[0].state["score"];
+                this.registerDate.string = players[0].state["registration_date"];
 
                 let isMe = this.playerId === UserData.instance.getPlayerId();
                 if(!isMe) {

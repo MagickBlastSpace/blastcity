@@ -11,6 +11,7 @@ export class UserData extends Component {
     private playerName: string = "";
     private clanName: string = "";
     private playerId: number = 0;
+    private registerDate: string = "";
 
     private currentProgress: number = 0;
     private levelsCount: number = 0;
@@ -78,6 +79,27 @@ export class UserData extends Component {
         SaveData.instance.loadUserData();
 
         this.node.emit("resources_update", this.Gold, this.Stars);
+
+        if(gamepush.player.get("registration_date") === "") {
+            console.log("register date init: ");
+
+            const now = new Date();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const year = now.getFullYear().toString();
+
+            const formattedDate = `${month}/${year}`;
+            this.registerDate = formattedDate;
+
+            gamepush.player.set('registration_date', this.registerDate);
+            gamepush.player.sync();
+        }
+        else {
+            console.log("register date load: ");
+
+            this.registerDate = gamepush.player.get("registration_date");
+        }
+
+        console.log("register date: " + this.registerDate);
 
         if(gamepush.player.name === "") {
             this.playerName = "Player" + gamepush.player.id;
@@ -548,7 +570,7 @@ export class UserData extends Component {
 
     updateName(newName: string) {
         this.playerName = newName;
-        
+
         gamepush.player.set('name', newName);
         gamepush.player.sync();
     }
