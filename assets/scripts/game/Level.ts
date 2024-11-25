@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { GameData, GoalData, LevelData } from '../data/GameData';
 import { UserData } from '../data/UserData';
@@ -315,6 +317,10 @@ export class Level extends Component {
 
         this.node.emit("complete", true, totalReward);
         this.node.emit("complete_statistics", this.stats);
+
+        if(this.stats.fails === 0) {
+            gamepush.player.add('stat_win', 1);
+        }
 
         SaveData.instance.clearLevelProgress();
     }

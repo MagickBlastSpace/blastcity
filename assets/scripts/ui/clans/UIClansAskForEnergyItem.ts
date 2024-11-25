@@ -43,6 +43,8 @@ export class UIClansAskForEnergyItem extends Component {
             tags: ['energy'],
         });
 
+        gamepush.player.add('stat_energy_given', 1);
+
         this.node.destroy();
     }
 }

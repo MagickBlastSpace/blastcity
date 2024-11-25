@@ -118,6 +118,8 @@ export class UserData extends Component {
         gamepush.channels.on('event:message', (message) => {
             if(message.target === "PERSONAL" && message.tags.includes("energy")) {
                 this.addResource("energy", 1);
+
+                gamepush.player.add('stat_energy_recieved', 1);
             }
         });
     }

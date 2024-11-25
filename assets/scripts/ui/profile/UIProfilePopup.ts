@@ -20,6 +20,13 @@ export class UIProfilePopup extends UIPopupFrameBase {
     @property(Label)
     registerDate: Label = null;
 
+    @property(Label)
+    stat_win: Label = null;
+    @property(Label)
+    stat_energy_recieved: Label = null;
+    @property(Label)
+    stat_energy_given: Label = null;
+
     @property(Button)
     addToFriendsBtn: Button = null;
     @property(Button)
@@ -94,6 +101,10 @@ export class UIProfilePopup extends UIPopupFrameBase {
                 this.clanName.string = players[0].state["clanname"];
                 this.score.string = players[0].state["score"];
                 this.registerDate.string = players[0].state["registration_date"];
+
+                this.stat_win.string = players[0].state["stat_win"];
+                this.stat_energy_given.string = players[0].state["stat_energy_given"];
+                this.stat_energy_recieved.string = players[0].state["stat_energy_recieved"];
 
                 let isMe = this.playerId === UserData.instance.getPlayerId();
                 if(!isMe) {
