@@ -20,6 +20,13 @@ export class Profile extends Component {
     private colorId: number = 0;
     private badgeId: number = 0;
 
+    public static instance: Profile = null;
+
+
+    onLoad() {
+        Profile.instance = this;
+    }
+
 
     start() {
         this.setAvatarId(gamepush.player.get('avatar_id'));

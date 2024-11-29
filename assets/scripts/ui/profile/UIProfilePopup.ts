@@ -109,7 +109,7 @@ export class UIProfilePopup extends UIPopupFrameBase {
                 let isMe = this.playerId === UserData.instance.getPlayerId();
                 if(!isMe) {
                     this.avatar.spriteFrame = this.profile.getAvatarById(players[0].state["avatar_id"]);
-                    this.frame.spriteFrame = this.profile.getAvatarById(players[0].state["frame_id"]);
+                    this.frame.spriteFrame = this.profile.getFrameById(players[0].state["frame_id"]);
                 }
             }
         } catch (error) {

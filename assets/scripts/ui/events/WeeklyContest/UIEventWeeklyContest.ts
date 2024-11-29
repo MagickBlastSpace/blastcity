@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Node, Label, Prefab, instantiate, Button } from 'cc';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventWeeklyContestPlayerItem } from './UIEventWeeklyContestPlayerItem';
 const { ccclass, property } = _decorator;
@@ -21,6 +21,12 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
 
     start() {
         this.eventController.node.on("refresh", () => this.refresh());
+
+        this.init(this.eventController);
+
+        for(let i = 0; i < this.items.length; i++) {
+            this.items[i].node.on("profile", (data) => this.showProfile(data));
+        }
     }
 
     update(deltaTime: number) {
@@ -62,6 +68,11 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
 
     getRemainingTimeString(): string {
         return this.eventController.getRemainingTimeString();
+    }
+
+
+    showProfile(playerId: number) {
+        this.node.emit("profile", playerId);
     }
 }
 

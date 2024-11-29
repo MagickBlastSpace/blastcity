@@ -39,7 +39,7 @@ export class UILeaderboardFrame extends UIFrameBase {
             return;
         }
 
-        //this.timeLabel.string = this.weeklyContest.getRemainingTimeString();
+        this.timeLabel.string = this.weeklyContest.getRemainingTimeString();
     }
 
     
