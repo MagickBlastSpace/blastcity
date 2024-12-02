@@ -3,6 +3,7 @@ declare const gamepush: any;
 import { _decorator, Component, Node } from 'cc';
 import { GameData } from './GameData';
 import { SaveData } from './SaveData';
+import { CollectionEvent } from '../game/events/special/CollectionEvent';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserData')
@@ -52,6 +53,9 @@ export class UserData extends Component {
     private isDev: boolean = false;
 
     private isPremium: boolean = false;
+
+    @property(CollectionEvent)
+    collections: CollectionEvent;
 
 
     onLoad() {
@@ -575,6 +579,13 @@ export class UserData extends Component {
 
         gamepush.player.set('name', newName);
         gamepush.player.sync();
+    }
+
+
+    openCardsPack(type: number): string[] {
+        let newCards = this.collections.openCardsPackage(type);
+
+        return newCards;
     }
 }
 

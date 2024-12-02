@@ -40,6 +40,11 @@ export class EventRewardData {
 
     @property
     battlepass = 0;
+
+    @property
+    cardsPack = 0;
+    @property
+    cards = [];
 }
 
 

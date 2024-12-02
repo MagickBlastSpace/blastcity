@@ -109,6 +109,10 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
                 this.rewardIcon_Premium.spriteFrame = this.x2;
                 this.rewardLabel_Premium.string = data.rewards[1].modifierX2_Minutes + " Min";
             }
+            if(data.rewards[1].cardsPack > 0) {
+                this.rewardIcon_Premium.spriteFrame = this.cards;
+                this.rewardLabel_Premium.string = "";
+            }
         }
 
         if(stageNumber % 5 === 0 && stageNumber > 0) {

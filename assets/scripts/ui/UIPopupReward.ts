@@ -35,6 +35,9 @@ export class UIPopupReward extends UIPopupFrameBase {
     @property(SpriteFrame)
     battlepass: SpriteFrame = null;
 
+    @property(SpriteFrame)
+    cards_stub: SpriteFrame = null;
+
     @property([Label])
     rewardLabels: Label[] = [];
 
@@ -117,6 +120,12 @@ export class UIPopupReward extends UIPopupFrameBase {
             if(data.modifierX2_Minutes > 0) {
                 let newData = new EventRewardData();
                 newData.modifierX2_Minutes = data.modifierX2_Minutes;
+
+                this.rewardsPool.push(newData);
+            }
+            if(data.cards.length > 0) {
+                let newData = new EventRewardData();
+                newData.cards = data.cards;
 
                 this.rewardsPool.push(newData);
             }
@@ -402,6 +411,21 @@ export class UIPopupReward extends UIPopupFrameBase {
                 this.rewardLabels[this.itemIndex].string = "";
 
                 this.itemIndex = this.itemIndex + 1;
+            }
+
+            if(data.cards.length) {
+                for(let i = 0; i < data.cards.length; i++) {
+                    if(this.itemIndex >= this.rewardNodes.length || this.itemIndex >= this.rewardLabels.length || this.itemIndex >= this.rewardIcons.length) {
+                        return;
+                    }
+    
+                    this.rewardNodes[this.itemIndex].active = true;
+    
+                    this.rewardIcons[this.itemIndex].spriteFrame = this.cards_stub;
+                    this.rewardLabels[this.itemIndex].string = "";
+    
+                    this.itemIndex = this.itemIndex + 1;
+                }
             }
         }
     }

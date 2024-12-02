@@ -258,6 +258,11 @@ export class EventBase extends Component {
         UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
         UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
 
+        let cards = UserData.instance.openCardsPack(reward.cardsPack);
+        for(let i = 0; i < cards.length; i++) {
+            reward.cards.push(cards[i]);
+        }
+
         this.node.emit("reward", reward);
     }
 

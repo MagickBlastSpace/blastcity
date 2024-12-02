@@ -38,35 +38,37 @@ export class CollectionEvent extends SpecialEventBase {
     }
 
 
-    openCardsPackage(type: string) {
+    openCardsPackage(type: number): string[] {
         let newCards = [];
 
         switch(type) {
-            case "1":
+            case 0:
+                break;
+            case 1:
                 for(let i = 0; i < 2; i++) {
                     newCards.push(this.getRandomCard());
                 }
                 break;
 
-            case "2":
+            case 2:
                 for(let i = 0; i < 3; i++) {
                     newCards.push(this.getRandomCard());
                 }
                 break;
 
-            case "3":
+            case 3:
                 for(let i = 0; i < 4; i++) {
                     newCards.push(this.getRandomCard());
                 }
                 break;
 
-            case "4":
+            case 4:
                 for(let i = 0; i < 6; i++) {
                     newCards.push(this.getRandomCard());
                 }
                 break;
 
-            case "5": //one should be unique TBD
+            case 5: //one should be unique TBD
                 for(let i = 0; i < 6; i++) {
                     newCards.push(this.getRandomCard());
                 }
@@ -76,6 +78,8 @@ export class CollectionEvent extends SpecialEventBase {
         this.applyNewCards(newCards);
 
         SaveData.instance.saveEvent(this.eventId);
+
+        return newCards;
     }
 
 
@@ -88,8 +92,6 @@ export class CollectionEvent extends SpecialEventBase {
                 this.collectedCards.push(cards[i]);
             }
         }
-
-        //show feedback ui
     }
 
 
