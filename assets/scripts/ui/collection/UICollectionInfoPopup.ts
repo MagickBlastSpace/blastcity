@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, tween } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { CollectionData } from '../../data/CollectionData';
 import { UICollectionCard } from './UICollectionCard';
@@ -19,6 +19,9 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     @property([UICollectionCard])
     cards: UICollectionCard[] = [];
 
+    @property(ProgressBar)
+    progressBar: ProgressBar = null;
+
 
     start() {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
@@ -34,6 +37,14 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
             let duplicates = controller.getDuplicatesCountById(data.cards[i].id);
 
             this.cards[i].init(data.id, data.cards[i], isCollected, duplicates);
+        }
+
+        let progressValue = controller.getProgressByCollectionId(data.id) / data.cards.length;
+        
+        if(this.progressBar) {
+            tween(this.progressBar)
+                .to(0.8, { progress: progressValue })
+                .start();
         }
     }
 

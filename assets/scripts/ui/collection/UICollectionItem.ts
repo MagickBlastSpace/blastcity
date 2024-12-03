@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Button, assetManager, SpriteFrame, Sprite } from 'cc';
+import { _decorator, Component, Node, Label, Button, assetManager, SpriteFrame, Sprite, ProgressBar, tween } from 'cc';
 import { CollectionData } from '../../data/CollectionData';
 const { ccclass, property } = _decorator;
 
@@ -17,6 +17,9 @@ export class UICollectionItem extends Component {
     @property(Sprite)
     image: Sprite = null;
 
+    @property(ProgressBar)
+    progressBar: ProgressBar = null;
+
     private data: CollectionData;
 
 
@@ -31,6 +34,14 @@ export class UICollectionItem extends Component {
         this.progress.string = progress + "/" + data.cards.length;
 
         this.data = data;
+
+        let progressValue = progress / data.cards.length;
+        
+        if(this.progressBar) {
+            tween(this.progressBar)
+                .to(0.8, { progress: progressValue })
+                .start();
+        }
 
         assetManager.loadBundle("covers", (err, bundle) => {
             if (err) {

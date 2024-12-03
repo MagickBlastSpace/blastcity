@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, Label, instantiate } from 'cc';
+import { _decorator, Component, Node, Prefab, Label, instantiate, ProgressBar, tween } from 'cc';
 import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 import { UICollectionItem } from './UICollectionItem';
 import { CollectionData } from '../../data/CollectionData';
@@ -10,6 +10,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
     @property(Label)
     timeLabel: Label = null;
+    @property(Label)
+    progress: Label = null;
 
     @property([UICollectionItem])
     items: UICollectionItem[] = [];
@@ -22,6 +24,9 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
     @property(UIFrameBase)
     collectionInfoPopup: UIFrameBase;
+
+    @property(ProgressBar)
+    progressBar: ProgressBar = null;
 
 
     start() {
@@ -60,6 +65,16 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
             }
 
             this.items[i].refresh(data[i], this.eventController.getProgressByCollectionId(data[i].id));
+        }
+
+        this.progress.string = this.eventController.getCollectedCardsCount() + "/" + this.eventController.getTotalCardsCount();
+
+        let progressValue = this.eventController.getTotalProgressValue();
+
+        if(this.progressBar) {
+            tween(this.progressBar)
+                .to(0.8, { progress: progressValue })
+                .start();
         }
     }
 

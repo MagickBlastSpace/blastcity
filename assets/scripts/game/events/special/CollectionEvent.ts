@@ -220,6 +220,10 @@ export class CollectionEvent extends SpecialEventBase {
         return "";
     }
 
+    getTotalProgressValue(): number {
+        return this.getCollectedCardsCount() / this.getTotalCardsCount();
+    }
+
 
     /*Save*/
     getSpecialPool(): string[] {
