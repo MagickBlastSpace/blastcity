@@ -587,6 +587,10 @@ export class UserData extends Component {
 
         return newCards;
     }
+
+    getCollectionIdByCard(id: string): string {
+        return this.collections.findCollectionIdByCard(id);
+    }
 }
 
 

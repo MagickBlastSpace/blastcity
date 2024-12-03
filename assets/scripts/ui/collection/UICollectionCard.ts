@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, assetManager, SpriteFrame, Sprite } from 'cc';
 import { CollectionCardData } from '../../data/CollectionData';
 const { ccclass, property } = _decorator;
 
@@ -12,6 +12,26 @@ export class UICollectionCard extends Component {
 
     @property([Node])
     stars: Node[] = [];
+    @property([Sprite])
+    starsImg: Sprite[] = [];
+
+    @property(SpriteFrame)
+    star_block: SpriteFrame = null;
+    @property(SpriteFrame)
+    star_active: SpriteFrame = null;
+
+    @property(Sprite)
+    cardShirt: Sprite = null;
+
+    @property(SpriteFrame)
+    card_block: SpriteFrame = null;
+    @property(SpriteFrame)
+    card_active: SpriteFrame = null;
+
+    @property(SpriteFrame)
+    card_block_gold: SpriteFrame = null;
+    @property(SpriteFrame)
+    card_active_gold: SpriteFrame = null;
 
     @property(Node)
     unlocked: Node = null;
@@ -19,8 +39,11 @@ export class UICollectionCard extends Component {
     @property(Label)
     duplicates: Label = null;
 
+    @property(Sprite)
+    image: Sprite = null;
+
     
-    init(data: CollectionCardData, isCollected: boolean, duplicates: number) {
+    init(collectionId: string, data: CollectionCardData, isCollected: boolean, duplicates: number) {
         this.name_.string = data.name_;
         this.nameDuplicate.string = data.name_;
 
@@ -30,7 +53,44 @@ export class UICollectionCard extends Component {
 
         this.unlocked.active = isCollected;
 
+        for(let i = 0; i < this.starsImg.length; i++) {
+            this.starsImg[i].spriteFrame = isCollected ? this.star_active : this.star_block;
+        }
+
+        if(isCollected && data.type === "gold") {
+            this.cardShirt.spriteFrame = this.card_active_gold;
+        }
+        else if(!isCollected && data.type === "gold") {
+            this.cardShirt.spriteFrame = this.card_block_gold;
+        }
+        else if(isCollected) {
+            this.cardShirt.spriteFrame = this.card_active;
+        }
+        else {
+            this.cardShirt.spriteFrame = this.card_block;
+        }
+
         this.duplicates.string = "+" + duplicates;
+
+        assetManager.loadBundle(collectionId, (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: ` + collectionId, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: ` + collectionId);
+
+            bundle.load(data.id + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: ` + data.id, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: ` + data.id);
+
+                this.image.spriteFrame = spriteFrame;
+            });
+        });
     }
 }
 

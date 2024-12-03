@@ -33,7 +33,7 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
             let isCollected = controller.isCollected(data.cards[i].id);
             let duplicates = controller.getDuplicatesCountById(data.cards[i].id);
 
-            this.cards[i].init(data.cards[i], isCollected, duplicates);
+            this.cards[i].init(data.id, data.cards[i], isCollected, duplicates);
         }
     }
 

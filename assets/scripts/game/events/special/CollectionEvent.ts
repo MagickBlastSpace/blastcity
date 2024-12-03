@@ -208,9 +208,21 @@ export class CollectionEvent extends SpecialEventBase {
         return this.collectedCards.includes(id);
     }
 
+    findCollectionIdByCard(id: string): string {
+        for(let i = 0; i < this.eventData.length; i++) {
+            for(let j = 0; j < this.eventData[i].cards.length; j++) {
+                if(this.eventData[i].cards[j].id === id) {
+                    return this.eventData[i].id;
+                }
+            }
+        }
+
+        return "";
+    }
+
 
     /*Save*/
-    getSpecialPool(): stirng[] {
+    getSpecialPool(): string[] {
         return this.collectedCards;
     }
 
@@ -222,7 +234,7 @@ export class CollectionEvent extends SpecialEventBase {
         this.collectedCards = pool;
     }
 
-    getSpecialPredictions(): stirng[] {
+    getSpecialPredictions(): string[] {
         return this.duplicates;
     }
 

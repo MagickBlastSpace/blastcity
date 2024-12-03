@@ -1,7 +1,8 @@
-import { _decorator, Component, Node, Label, Sprite, SpriteFrame, Button, Layout } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, SpriteFrame, Button, Layout, assetManager } from 'cc';
 import { EventRewardData } from '../data/EventData';
 import { UIPopupFrameBase } from './UIPopupFrameBase';
 import { ShopItemData } from '../data/GameData';
+import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIPopupReward')
@@ -418,13 +419,34 @@ export class UIPopupReward extends UIPopupFrameBase {
                     if(this.itemIndex >= this.rewardNodes.length || this.itemIndex >= this.rewardLabels.length || this.itemIndex >= this.rewardIcons.length) {
                         return;
                     }
-    
-                    this.rewardNodes[this.itemIndex].active = true;
-    
-                    this.rewardIcons[this.itemIndex].spriteFrame = this.cards_stub;
-                    this.rewardLabels[this.itemIndex].string = "";
-    
-                    this.itemIndex = this.itemIndex + 1;
+
+                    let collectionId = UserData.instance.getCollectionIdByCard(data.cards[i]);
+
+                    assetManager.loadBundle(collectionId, (err, bundle) => {
+                        if (err) {
+                            console.error(`Failed to load bundle: ` + collectionId, err);
+                            return;
+                        }
+            
+                        console.log(`Successfully loaded bundle: ` + collectionId);
+            
+                        bundle.load(data.cards[i] + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                            if (err) {
+                                console.error(`Failed to load prefab: ` + data.cards[i], err);
+                                return;
+                            }
+            
+                            console.log(`Successfully loaded prefab: ` + data.cards[i]);
+
+                            this.rewardNodes[this.itemIndex].active = true;
+                    
+                            this.rewardLabels[this.itemIndex].string = "";
+            
+                            this.rewardIcons[this.itemIndex].spriteFrame = spriteFrame;
+
+                            this.itemIndex = this.itemIndex + 1;
+                        });
+                    });
                 }
             }
         }
