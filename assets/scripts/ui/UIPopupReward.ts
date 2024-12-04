@@ -124,11 +124,13 @@ export class UIPopupReward extends UIPopupFrameBase {
 
                 this.rewardsPool.push(newData);
             }
-            if(data.cards.length > 0) {
-                let newData = new EventRewardData();
-                newData.cards = data.cards;
-
-                this.rewardsPool.push(newData);
+            if(data.cards && data.cards !== undefined) {
+                if(data.cards.length > 0) {
+                    let newData = new EventRewardData();
+                    newData.cards = data.cards;
+    
+                    this.rewardsPool.push(newData);
+                }
             }
         }
 
@@ -414,39 +416,41 @@ export class UIPopupReward extends UIPopupFrameBase {
                 this.itemIndex = this.itemIndex + 1;
             }
 
-            if(data.cards.length) {
-                for(let i = 0; i < data.cards.length; i++) {
-                    if(this.itemIndex >= this.rewardNodes.length || this.itemIndex >= this.rewardLabels.length || this.itemIndex >= this.rewardIcons.length) {
-                        return;
-                    }
-
-                    let collectionId = UserData.instance.getCollectionIdByCard(data.cards[i]);
-
-                    assetManager.loadBundle(collectionId, (err, bundle) => {
-                        if (err) {
-                            console.error(`Failed to load bundle: ` + collectionId, err);
+            if(data.cards && data.cards !== undefined) {
+                if(data.cards.length) {
+                    for(let i = 0; i < data.cards.length; i++) {
+                        if(this.itemIndex >= this.rewardNodes.length || this.itemIndex >= this.rewardLabels.length || this.itemIndex >= this.rewardIcons.length) {
                             return;
                         }
-            
-                        console.log(`Successfully loaded bundle: ` + collectionId);
-            
-                        bundle.load(data.cards[i] + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+    
+                        let collectionId = UserData.instance.getCollectionIdByCard(data.cards[i]);
+    
+                        assetManager.loadBundle(collectionId, (err, bundle) => {
                             if (err) {
-                                console.error(`Failed to load prefab: ` + data.cards[i], err);
+                                console.error(`Failed to load bundle: ` + collectionId, err);
                                 return;
                             }
-            
-                            console.log(`Successfully loaded prefab: ` + data.cards[i]);
-
-                            this.rewardNodes[this.itemIndex].active = true;
-                    
-                            this.rewardLabels[this.itemIndex].string = "";
-            
-                            this.rewardIcons[this.itemIndex].spriteFrame = spriteFrame;
-
-                            this.itemIndex = this.itemIndex + 1;
+                
+                            console.log(`Successfully loaded bundle: ` + collectionId);
+                
+                            bundle.load(data.cards[i] + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                                if (err) {
+                                    console.error(`Failed to load prefab: ` + data.cards[i], err);
+                                    return;
+                                }
+                
+                                console.log(`Successfully loaded prefab: ` + data.cards[i]);
+    
+                                this.rewardNodes[this.itemIndex].active = true;
+                        
+                                this.rewardLabels[this.itemIndex].string = "";
+                
+                                this.rewardIcons[this.itemIndex].spriteFrame = spriteFrame;
+    
+                                this.itemIndex = this.itemIndex + 1;
+                            });
                         });
-                    });
+                    }
                 }
             }
         }

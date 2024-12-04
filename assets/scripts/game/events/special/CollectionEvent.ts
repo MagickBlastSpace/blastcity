@@ -1,7 +1,8 @@
 import { _decorator, Component, Node } from 'cc';
 import { SpecialEventBase } from './SpecialEventBase';
-import { CollectionData } from '../../../data/CollectionData';
+import { CollectionData, CollectionRewardData } from '../../../data/CollectionData';
 import { SaveData } from '../../../data/SaveData';
+import { UserData } from '../../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('CollectionEvent')
@@ -10,14 +11,21 @@ export class CollectionEvent extends SpecialEventBase {
     @property([CollectionData])
     eventData: CollectionData[] = [];
 
+    @property([CollectionRewardData])
+    totalRewards: CollectionRewardData[] = [];
+
     private collectedCards: string[] = [];
 
     private duplicates: string[] = [];
 
+    private completedCollections: string[] = [];
 
-    start() {
+    private currentStage: number = 0;
 
-    }
+    private isTotalRewardTaken: boolean = false;
+
+
+    start() {}
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
@@ -33,6 +41,9 @@ export class CollectionEvent extends SpecialEventBase {
 
         this.collectedCards = [];
         this.duplicates = [];
+
+        this.currentStage = 0;
+        this.isTotalRewardTaken = false;
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -222,6 +233,97 @@ export class CollectionEvent extends SpecialEventBase {
 
     getTotalProgressValue(): number {
         return this.getCollectedCardsCount() / this.getTotalCardsCount();
+    }
+
+
+    isCollectionComplete(id: string): boolean {
+        for(let i = 0; i < this.eventData.length; i++) {
+            if(this.eventData[i].id === id) {
+                for(let j = 0; j < this.eventData[i].cards.length; j++) {
+                    if(!this.isCollected(this.eventData[i].cards[j].id)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    isTotalComplete(): boolean {
+        return this.getTotalProgressValue() >= 1;
+    }
+
+
+    isCollectionRewardTaken(id: string): boolean {
+        return this.completedCollections.includes(id);
+    }
+
+    getIsTotalRewardTaken(): boolean {
+        return this.isTotalRewardTaken;
+    }
+
+
+    takeTotalReward() {
+        if(this.isTotalRewardTaken) {
+            return;
+        }
+
+        this.applyReward(this.totalRewards[0]);
+
+        this.isTotalRewardTaken = true;
+
+        //save
+
+        this.node.emit("refresh");
+    }
+
+    takeCollectionReward(id: string) {
+        if(this.isCollectionRewardTaken(id)) {
+            return;
+        }
+
+        this.completedCollections.push(id);
+
+        //save
+
+        for(let i = 0; i < this.eventData.length; i++) {
+            if(this.eventData[i].id === id) {
+                this.applyRewards(this.eventData[i].rewards);
+
+                return;
+            }
+        }
+
+        this.node.emit("refresh");
+    }
+
+
+    applyRewards(rewards: CollectionRewardData[]) {
+        for(let i = 0; i < rewards.length; i++) {
+            this.applyReward(rewards[i]);
+        }
+    }
+
+    applyReward(reward: CollectionRewardData) {
+        UserData.instance.addResource("gold", reward.gold);
+
+        UserData.instance.addResource("bomb", reward.startBonus_Bomb);
+        UserData.instance.addResource("rocket", reward.startBonus_Rocket);
+        UserData.instance.addResource("discoball", reward.startBonus_Discoball);
+
+        UserData.instance.addResource("hammer", reward.booster_Hammer);
+        UserData.instance.addResource("bow", reward.booster_Bow);
+        UserData.instance.addResource("cannon", reward.booster_Cannon);
+        UserData.instance.addResource("jester", reward.booster_Jester);
+
+        UserData.instance.addResource("bomb_minutes", reward.bomb_Minutes);
+        UserData.instance.addResource("rocket_minutes", reward.rocket_Minutes);
+        UserData.instance.addResource("discoball_minutes", reward.discoball_Minutes);
+        UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
+        UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
+
+        this.node.emit("reward", reward);
     }
 
 

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, Label, instantiate, ProgressBar, tween } from 'cc';
+import { _decorator, Component, Node, Prefab, Label, instantiate, ProgressBar, tween, Button } from 'cc';
 import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 import { UICollectionItem } from './UICollectionItem';
 import { CollectionData } from '../../data/CollectionData';
@@ -28,6 +28,13 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     @property(ProgressBar)
     progressBar: ProgressBar = null;
 
+    @property(Node)
+    isComplete: Node = null;
+    @property(Node)
+    takeReward: Node = null;
+    @property(Button)
+    takeRewardBtn: Button = null;
+
 
     start() {
         this.eventController.node.on("refresh", () => this.refresh());
@@ -36,7 +43,10 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].node.on("click", (data) => this.showCollection(data));
+            this.items[i].node.on("reward", (data) => this.onReward(data));
         }
+
+        this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
     }
 
     update(deltaTime: number) {
@@ -64,7 +74,7 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
                 this.items.push(item);
             }
 
-            this.items[i].refresh(data[i], this.eventController.getProgressByCollectionId(data[i].id));
+            this.items[i].refresh(data[i], this.eventController.getProgressByCollectionId(data[i].id), this.eventController);
         }
 
         this.progress.string = this.eventController.getCollectedCardsCount() + "/" + this.eventController.getTotalCardsCount();
@@ -76,6 +86,9 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
                 .to(0.8, { progress: progressValue })
                 .start();
         }
+
+        this.isComplete.active = this.eventController.isTotalComplete();
+        this.takeReward.active = !this.eventController.getIsTotalRewardTaken();
     }
 
 
@@ -95,6 +108,16 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         this.collectionInfoPopup.init(collection, this.eventController);
 
         this.collectionInfoPopup.show();
+    }
+
+
+    onReward(collection: CollectionData) {
+        this.eventController.takeCollectionReward(collection.id);
+    }
+
+
+    onTakeRewardBtnClick() {
+        this.eventController.takeTotalReward();
     }
 }
 
