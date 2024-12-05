@@ -23,6 +23,12 @@ export class Shop extends Component {
         UserData.instance.addResource("rocket_minutes", data.bonuses_Minutes);
         UserData.instance.addResource("discoball_minutes", data.bonuses_Minutes);
 
+        let cards = UserData.instance.openCardsPack(data.cardsPack);
+        data.cards = [];
+        for(let i = 0; i < cards.length; i++) {
+            data.cards.push(cards[i]);
+        }
+
         this.node.emit("buy", data);
     }
 }

@@ -179,6 +179,15 @@ export class UIPopupReward extends UIPopupFrameBase {
 
                 this.rewardsPool.push(newData);
             }
+
+            if(data.cards && data.cards !== undefined) {
+                if(data.cards.length > 0) {
+                    let newData = new EventRewardData();
+                    newData.cards = data.cards;
+    
+                    this.rewardsPool.push(newData);
+                }
+            }
         }
 
         this.tapBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);

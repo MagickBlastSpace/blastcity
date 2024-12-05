@@ -106,6 +106,11 @@ export class ShopItemData {
 
     @property
     price = 0;
+
+    @property
+    cardsPack = 0;
+    @property
+    cards = [];
 }
 
 
