@@ -80,9 +80,10 @@ export class CollectionEvent extends SpecialEventBase {
                 break;
 
             case 5: //one should be unique TBD
-                for(let i = 0; i < 6; i++) {
+                for(let i = 0; i < 5; i++) {
                     newCards.push(this.getRandomCard());
                 }
+                newCards.push(this.getUniqueRandomCard());
                 break;
         }
 
@@ -117,6 +118,24 @@ export class CollectionEvent extends SpecialEventBase {
 
         const randomIndex = Math.floor(Math.random() * cards.length);
         return cards[randomIndex];
+    }
+
+    getUniqueRandomCard(): string | null {
+        if(this.isTotalComplete()) {
+            return this.getRandomCard();
+        }
+
+        for(let i = 1; i <= 5; i++) {
+            let cards = this.getAllCardsByRarity(i);
+
+            for(let j = 0; j < cards.length; j++) {
+                if(!this.collectedCards.includes(cards[j])) {
+                    return cards[j];
+                }
+            }
+        }
+
+        return null;
     }
 
 
