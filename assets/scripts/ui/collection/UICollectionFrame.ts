@@ -3,6 +3,7 @@ import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 import { UICollectionItem } from './UICollectionItem';
 import { CollectionData } from '../../data/CollectionData';
 import { UIFrameBase } from '../UIFrameBase';
+import { UICollectionDuplicateExchange } from './UICollectionDuplicateExchange';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionFrame')
@@ -35,6 +36,12 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     @property(Button)
     takeRewardBtn: Button = null;
 
+    @property(Button)
+    openExchangeBtn: Button = null;
+
+    @property(UICollectionDuplicateExchange)
+    duplicateExchange: UICollectionDuplicateExchange;
+
 
     start() {
         this.eventController.node.on("refresh", () => this.refresh());
@@ -47,6 +54,9 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         }
 
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
+        this.openExchangeBtn.node.on(Button.EventType.CLICK, this.onOpenExchangeBtnClick, this);
+
+        this.duplicateExchange.node.on("exchange", (data) => this.exchangeDuplicates(data));
     }
 
     update(deltaTime: number) {
@@ -89,6 +99,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
         this.isComplete.active = this.eventController.isTotalComplete();
         this.takeReward.active = !this.eventController.getIsTotalRewardTaken();
+
+        this.duplicateExchange.init(this.eventController.getTotalDuplicatesStars())
     }
 
 
@@ -118,6 +130,16 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
     onTakeRewardBtnClick() {
         this.eventController.takeTotalReward();
+    }
+
+    onOpenExchangeBtnClick() {
+        this.duplicateExchange.init(this.eventController.getTotalDuplicatesStars())
+        this.duplicateExchange.show();
+    }
+
+
+    exchangeDuplicates(index: number) {
+        this.eventController.exchangeDuplicates(index);
     }
 }
 

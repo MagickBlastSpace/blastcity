@@ -34,6 +34,11 @@ export class CollectionRewardData {
     rocket_Minutes = 0;
     @property
     discoball_Minutes = 0;
+
+    @property
+    cardsPack = 0;
+    @property
+    cards = [];
 }
 
 

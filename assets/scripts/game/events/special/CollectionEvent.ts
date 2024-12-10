@@ -14,6 +14,9 @@ export class CollectionEvent extends SpecialEventBase {
     @property([CollectionRewardData])
     totalRewards: CollectionRewardData[] = [];
 
+    @property([CollectionRewardData])
+    exchangeRewards: CollectionRewardData[] = [];
+
     private collectedCards: string[] = [];
 
     private duplicates: string[] = [];
@@ -79,7 +82,7 @@ export class CollectionEvent extends SpecialEventBase {
                 }
                 break;
 
-            case 5: //one should be unique TBD
+            case 5:
                 for(let i = 0; i < 5; i++) {
                     newCards.push(this.getRandomCard());
                 }
@@ -310,11 +313,11 @@ export class CollectionEvent extends SpecialEventBase {
             if(this.eventData[i].id === id) {
                 this.applyRewards(this.eventData[i].rewards);
 
+                this.node.emit("refresh");
+
                 return;
             }
         }
-
-        this.node.emit("refresh");
     }
 
 
@@ -342,7 +345,99 @@ export class CollectionEvent extends SpecialEventBase {
         UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
         UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
 
+        let cards = UserData.instance.openCardsPack(reward.cardsPack);
+        reward.cards = [];
+        for(let i = 0; i < cards.length; i++) {
+            reward.cards.push(cards[i]);
+        }
+
         this.node.emit("reward", reward);
+    }
+
+    
+    exchangeDuplicates(level: number) {
+        let starsRequired = 10;
+    
+        switch (level) {
+            case 1:
+                starsRequired = 25;
+                break;
+            case 2:
+                starsRequired = 50;
+                break;
+        }
+    
+        const totalDuplicatesStars = this.getTotalDuplicatesStars();
+        console.log(`exchangeDuplicates: level = ${level}, starsRequired = ${starsRequired}, totalDuplicatesStars = ${totalDuplicatesStars}`);
+    
+        if (starsRequired > totalDuplicatesStars) {
+            //console.log(`exchangeDuplicates: Not enough stars to exchange.`);
+            return;
+        }
+    
+        let totalStarsExchanged = 0;
+    
+        for (let rarity = 1; rarity <= 5; rarity++) {
+            for (let i = 0; i < this.eventData.length; i++) {
+                const cards = this.findCardIdsByRarity(this.eventData[i], rarity);
+                //console.log(`exchangeDuplicates: rarity = ${rarity}, cards =`, cards);
+    
+                for (let cardId of cards) {
+                    let duplicatesCount = this.getDuplicatesCountById(cardId);
+    
+                    while (duplicatesCount > 0 && totalStarsExchanged < starsRequired) {
+                        if (this.removeDuplicate(cardId)) {
+                            totalStarsExchanged += rarity;
+                            duplicatesCount--;
+    
+                            //console.log(`exchangeDuplicates: cardId = ${cardId}, totalStarsExchanged = ${totalStarsExchanged}`);
+    
+                            if (totalStarsExchanged >= starsRequired) {
+                                //console.log(`exchangeDuplicates: Stars requirement met. Applying reward.`);
+                                this.applyReward(this.exchangeRewards[level]);
+                                this.node.emit("refresh");
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+        //console.log(`exchangeDuplicates: Finished processing without meeting requirement.`);
+    }
+
+    getTotalDuplicatesStars(): number {
+        let total = 0;
+
+        for(let i = 0; i < this.eventData.length; i++) {
+            for(let rarity = 1; rarity <= 5; rarity++) {
+                let cards = this.findCardIdsByRarity(this.eventData[i], rarity);
+
+                for(let k = 0; k < cards.length; k++) {
+                    total = total + this.countDuplicatesById(cards[k]) * rarity;
+                }
+            }
+        }
+        
+        return total;
+    }
+
+    countDuplicatesById(id: string): number {
+        let duplicates = this.duplicates.filter(d => d === id);
+        return duplicates.length;
+    }
+
+    removeDuplicate(id: string): boolean {
+        for (let i = this.duplicates.length - 1; i >= 0; i--) {
+            if (this.duplicates[i] === id) {
+                this.duplicates.splice(i, 1);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
