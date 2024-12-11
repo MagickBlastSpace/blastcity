@@ -1,8 +1,9 @@
 import { _decorator, Component, Node, Button, Label, ProgressBar, tween, Sprite, SpriteFrame } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
-import { CollectionData } from '../../data/CollectionData';
+import { CollectionCardData, CollectionData } from '../../data/CollectionData';
 import { UICollectionCard } from './UICollectionCard';
 import { EventBase } from '../../game/events/EventBase';
+import { UICollectionDuplicateSend } from './UICollectionDuplicateSend';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionInfoPopup')
@@ -48,9 +49,18 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     @property(ProgressBar)
     progressBar: ProgressBar = null;
 
+    @property(UICollectionDuplicateSend)
+    sendPopup: UICollectionDuplicateSend;
+
 
     start() {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        for(let i = 0; i < this.cards.length; i++) {
+            this.cards[i].node.on("send", (collectionId, data, isCollected, duplicates) => this.showSendPopup(collectionId, data, isCollected, duplicates));
+        }
+
+        this.sendPopup.node.on("send", (player, card) => this.sendCard(player, card));
     }
 
     init(data: CollectionData, controller: EventBase) {
@@ -138,6 +148,17 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
     onCloseBtnClick() {
         this.hide();
+    }
+
+
+    showSendPopup(collectionId: string, data: CollectionCardData, isCollected: boolean, duplicates: number) {
+        this.sendPopup.init(collectionId, data, isCollected, duplicates);
+
+        this.sendPopup.show();
+    }
+
+    sendCard(player: string, card: string) {
+        this.node.emit("send", player, card);
     }
 }
 

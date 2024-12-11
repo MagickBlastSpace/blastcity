@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { SpecialEventBase } from './SpecialEventBase';
 import { CollectionData, CollectionRewardData } from '../../../data/CollectionData';
@@ -92,8 +94,6 @@ export class CollectionEvent extends SpecialEventBase {
 
         this.applyNewCards(newCards);
 
-        SaveData.instance.saveEvent(this.eventId);
-
         return newCards;
     }
 
@@ -107,6 +107,8 @@ export class CollectionEvent extends SpecialEventBase {
                 this.collectedCards.push(cards[i]);
             }
         }
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 
 
@@ -368,7 +370,7 @@ export class CollectionEvent extends SpecialEventBase {
         }
     
         const totalDuplicatesStars = this.getTotalDuplicatesStars();
-        console.log(`exchangeDuplicates: level = ${level}, starsRequired = ${starsRequired}, totalDuplicatesStars = ${totalDuplicatesStars}`);
+        //console.log(`exchangeDuplicates: level = ${level}, starsRequired = ${starsRequired}, totalDuplicatesStars = ${totalDuplicatesStars}`);
     
         if (starsRequired > totalDuplicatesStars) {
             //console.log(`exchangeDuplicates: Not enough stars to exchange.`);
@@ -433,11 +435,34 @@ export class CollectionEvent extends SpecialEventBase {
             if (this.duplicates[i] === id) {
                 this.duplicates.splice(i, 1);
 
+                SaveData.instance.saveEvent(this.eventId);
+
                 return true;
             }
         }
 
         return false;
+    }
+
+
+    sendCard(playerId: number, cardId: string) {
+        if(playerId === UserData.instance.getPlayerId()) {
+            return;
+        }
+
+        if(!this.duplicates.includes(cardId)) {
+            return;
+        }
+
+        gamepush.channels.sendPersonalMessage({
+            playerId: playerId,
+            text: cardId,
+            tags: ['collection_card'],
+        });
+
+        this.removeDuplicate(cardId);
+
+        this.node.emit("refresh");
     }
 
 

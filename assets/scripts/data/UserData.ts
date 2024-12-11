@@ -126,6 +126,15 @@ export class UserData extends Component {
                 gamepush.player.add('stat_energy_recieved', 1);
             }
         });
+
+        gamepush.channels.on('event:message', (message) => {
+            if(message.target === "PERSONAL" && message.tags.includes("collection_card")) {
+                let newCards = [];
+                newCards.push(message.text);
+
+                this.collections.applyNewCards(newCards);
+            }
+        });
     }
 
 

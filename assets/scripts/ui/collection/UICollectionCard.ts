@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, assetManager, SpriteFrame, Sprite } from 'cc';
+import { _decorator, Component, Node, Label, assetManager, SpriteFrame, Sprite, Button } from 'cc';
 import { CollectionCardData } from '../../data/CollectionData';
 const { ccclass, property } = _decorator;
 
@@ -42,8 +42,25 @@ export class UICollectionCard extends Component {
     @property(Sprite)
     image: Sprite = null;
 
+    @property(Button)
+    sendBtn: Button = null;
+
+    private collectionId: string;
+    private data: CollectionCardData;
+    private isCollected: boolean;
+    private duplicatesCount: number;
+
+    
+    start() {
+        this.sendBtn.node.on(Button.EventType.CLICK, this.onSendBtnClick, this);
+    }
     
     init(collectionId: string, data: CollectionCardData, isCollected: boolean, duplicates: number) {
+        this.collectionId = collectionId;
+        this.data = data;
+        this.isCollected = isCollected;
+        this.duplicatesCount = duplicates;
+
         this.name_.string = data.name_;
         this.nameDuplicate.string = data.name_;
 
@@ -91,6 +108,11 @@ export class UICollectionCard extends Component {
                 this.image.spriteFrame = spriteFrame;
             });
         });
+    }
+
+
+    onSendBtnClick() {
+        this.node.emit("send", this.collectionId, this.data, this.isCollected, this.duplicatesCount);
     }
 }
 

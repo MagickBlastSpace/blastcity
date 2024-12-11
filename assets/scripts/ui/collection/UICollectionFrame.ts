@@ -53,6 +53,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
             this.items[i].node.on("reward", (data) => this.onReward(data));
         }
 
+        this.collectionInfoPopup.node.on("send", (player, card) => this.sendCard(player, card));
+
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
         this.openExchangeBtn.node.on(Button.EventType.CLICK, this.onOpenExchangeBtnClick, this);
 
@@ -140,6 +142,11 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
     exchangeDuplicates(index: number) {
         this.eventController.exchangeDuplicates(index);
+    }
+
+
+    sendCard(player: string, card: string) {
+        this.eventController.sendCard(player, card);
     }
 }
 
