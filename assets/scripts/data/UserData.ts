@@ -133,8 +133,13 @@ export class UserData extends Component {
                 newCards.push(message.text);
 
                 this.collections.applyNewCards(newCards);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
             }
         });
+
+
+        this.checkForItemsFromFriends();
     }
 
 
@@ -599,6 +604,27 @@ export class UserData extends Component {
 
     getCollectionIdByCard(id: string): string {
         return this.collections.findCollectionIdByCard(id);
+    }
+
+
+    async checkForItemsFromFriends() {
+        for(let i = 0; i < this.friendsList.length; i++) {
+            const response = await gamepush.channels.fetchPersonalMessages({
+                playerId: this.friendsList[i],
+                tags: ['collection_card'],
+                limit: 100,
+                offset: 0,
+            });
+
+            response.items.forEach((message) => {
+                let newCards = [];
+                newCards.push(message.text);
+
+                this.collections.applyNewCards(newCards);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
+            });
+        }
     }
 }
 
