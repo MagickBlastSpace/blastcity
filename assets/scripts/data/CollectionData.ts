@@ -39,6 +39,9 @@ export class CollectionRewardData {
     cardsPack = 0;
     @property
     cards = [];
+
+    @property
+    isChest = false;
 }
 
 

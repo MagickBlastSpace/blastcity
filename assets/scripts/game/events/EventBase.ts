@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
@@ -259,8 +261,13 @@ export class EventBase extends Component {
         UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
 
         let cards = UserData.instance.openCardsPack(reward.cardsPack);
+        reward.cards = [];
         for(let i = 0; i < cards.length; i++) {
             reward.cards.push(cards[i]);
+        }
+
+        if(reward.isChest) {
+            gamepush.player.add('stat_chests_open', 1);
         }
 
         this.node.emit("reward", reward);

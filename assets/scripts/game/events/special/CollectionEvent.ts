@@ -300,6 +300,8 @@ export class CollectionEvent extends SpecialEventBase {
         //save
 
         this.node.emit("refresh");
+
+        gamepush.player.add('stat_collections_finished', 1);
     }
 
     takeCollectionReward(id: string) {
@@ -316,6 +318,8 @@ export class CollectionEvent extends SpecialEventBase {
                 this.applyRewards(this.eventData[i].rewards);
 
                 this.node.emit("refresh");
+
+                gamepush.player.add('stat_collections', 1);
 
                 return;
             }
@@ -351,6 +355,10 @@ export class CollectionEvent extends SpecialEventBase {
         reward.cards = [];
         for(let i = 0; i < cards.length; i++) {
             reward.cards.push(cards[i]);
+        }
+
+        if(reward.isChest) {
+            gamepush.player.add('stat_chests_open', 1);
         }
 
         this.node.emit("reward", reward);
@@ -446,6 +454,8 @@ export class CollectionEvent extends SpecialEventBase {
 
 
     sendCard(playerId: number, cardId: string) {
+        console.log("trying to send card: " + cardId);
+
         if(playerId === UserData.instance.getPlayerId()) {
             return;
         }
@@ -453,6 +463,8 @@ export class CollectionEvent extends SpecialEventBase {
         if(!this.duplicates.includes(cardId)) {
             return;
         }
+
+        console.log("sending card: " + cardId);
 
         gamepush.channels.sendPersonalMessage({
             playerId: playerId,

@@ -26,6 +26,12 @@ export class UIProfilePopup extends UIPopupFrameBase {
     stat_energy_recieved: Label = null;
     @property(Label)
     stat_energy_given: Label = null;
+    @property(Label)
+    stat_chests_open: Label = null;
+    @property(Label)
+    stat_collections: Label = null;
+    @property(Label)
+    stat_collections_finished: Label = null;
 
     @property(Button)
     addToFriendsBtn: Button = null;
@@ -105,6 +111,9 @@ export class UIProfilePopup extends UIPopupFrameBase {
                 this.stat_win.string = players[0].state["stat_win"];
                 this.stat_energy_given.string = players[0].state["stat_energy_given"];
                 this.stat_energy_recieved.string = players[0].state["stat_energy_recieved"];
+                this.stat_chests_open.string = players[0].state["stat_chests_open"];
+                this.stat_collections.string = players[0].state["stat_collections"];
+                this.stat_collections_finished.string = players[0].state["stat_collections_finished"];
 
                 let isMe = this.playerId === UserData.instance.getPlayerId();
                 if(!isMe) {

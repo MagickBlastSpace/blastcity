@@ -132,6 +132,8 @@ export class UserData extends Component {
                 let newCards = [];
                 newCards.push(message.text);
 
+                console.log("Collection card accepted: " + message.text);
+
                 this.collections.applyNewCards(newCards);
 
                 gamepush.channels.deleteMessage({ messageId: message.id });

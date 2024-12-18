@@ -45,6 +45,9 @@ export class EventRewardData {
     cardsPack = 0;
     @property
     cards = [];
+
+    @property
+    isChest = false;
 }
 
 
