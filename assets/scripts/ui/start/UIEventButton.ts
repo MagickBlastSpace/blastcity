@@ -44,6 +44,48 @@ export class UIEventButton extends Component {
 
     start() {
         //this.setProgress();
+        assetManager.loadBundle("events", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: events`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: events"`);
+
+            let bundleToLoad = ResolutionManager.instance.isPortraitOrientation() && this.isPortraitVersionAvailable ? this.eventName + "_portrait" : this.eventName;
+
+            bundle.load(bundleToLoad, Prefab, (err, prefab) => {
+                if (err) {
+                    console.error(`Failed to load prefab: ${this.eventName}`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: ${this.eventName}`);
+
+                this.instantiatedNode = instantiate(prefab);
+
+                this.instantiatedNode.on("play", () => {
+                    this.node.emit("play");
+                });
+
+                this.instantiatedNode.on("hide", () => {
+                    //this.eventPopup = null;
+                });
+
+                this.popupLayout.addChild(this.instantiatedNode);
+
+                this.eventPopup = this.instantiatedNode.getComponent("UIEvent" + this.eventName);
+                this.eventPopup.init(this.eventController);
+
+                ResolutionManager.instance.addPopup(this.instantiatedNode);
+
+                this.instantiatedNode.active = false;
+
+                //this.eventPopup.show();
+
+                //AssetsLoader.instance.stopLoading();
+            });
+        });
     }
 
     update(deltaTime: number) {
@@ -91,7 +133,7 @@ export class UIEventButton extends Component {
             return;
         }
 
-        AssetsLoader.instance.startLoading();
+        /*AssetsLoader.instance.startLoading();
 
         assetManager.loadBundle("events", (err, bundle) => {
             if (err) {
@@ -134,7 +176,7 @@ export class UIEventButton extends Component {
 
                 AssetsLoader.instance.stopLoading();
             });
-        });
+        });*/
     }
 
 
@@ -142,7 +184,7 @@ export class UIEventButton extends Component {
         if(this.eventPopup) {
             this.eventPopup.hideClean();
 
-            this.eventPopup = null;
+            //this.eventPopup = null;
         }
     }
 
