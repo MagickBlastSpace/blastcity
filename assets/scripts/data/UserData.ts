@@ -142,7 +142,7 @@ export class UserData extends Component {
         });
 
         gamepush.channels.on('event:message', (message) => {
-            if(message.target === "PERSONAL" && message.tags.includes("friend_accept")) {
+            if(message.target === "FEED" && message.tags.includes("friend_accept")) {
                 this.addFriend(message.player.id);
                 this.removeFriendRequest(message.player.id);
 
@@ -151,7 +151,7 @@ export class UserData extends Component {
         });
 
         gamepush.channels.on('event:message', (message) => {
-            if(message.target === "PERSONAL" && message.tags.includes("friend_reject")) {
+            if(message.target === "FEED" && message.tags.includes("friend_reject")) {
                 this.removeFriendRequest(message.player.id);
 
                 gamepush.channels.deleteMessage({ messageId: message.id });
@@ -159,7 +159,7 @@ export class UserData extends Component {
         });
 
         gamepush.channels.on('event:message', (message) => {
-            if(message.target === "PERSONAL" && message.tags.includes("friend_remove")) {
+            if(message.target === "FEED" && message.tags.includes("friend_remove")) {
                 this.removeFriendRequest(message.player.id);
                 this.removeFriend(message.player.id);
 
@@ -686,7 +686,8 @@ export class UserData extends Component {
 
 
     async checkForFriendsAccepts() {
-        const response = await gamepush.channels.fetchPersonalMessages({
+        const response = await gamepush.channels.fetchFeedMessages({
+            playerId: this.getPlayerId(),
             tags: ['friend_accept'],
             limit: 100,
             offset: 0,
@@ -701,7 +702,8 @@ export class UserData extends Component {
     }
 
     async checkForFriendsRejects() {
-        const response = await gamepush.channels.fetchPersonalMessages({
+        const response = await gamepush.channels.fetchFeedMessages({
+            playerId: this.getPlayerId(),
             tags: ['friend_reject'],
             limit: 100,
             offset: 0,
@@ -715,7 +717,8 @@ export class UserData extends Component {
     }
 
     async checkForFriendsRemoves() {
-        const response = await gamepush.channels.fetchPersonalMessages({
+        const response = await gamepush.channels.fetchFeedMessages({
+            playerId: this.getPlayerId(),
             tags: ['friend_remove'],
             limit: 100,
             offset: 0,

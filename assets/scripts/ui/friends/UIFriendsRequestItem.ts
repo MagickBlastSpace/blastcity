@@ -33,7 +33,7 @@ export class UIFriendsRequestItem extends Component {
 
     
     accept() {
-        gamepush.channels.sendPersonalMessage({
+        gamepush.channels.sendFeedMessage({
             playerId: this.playerId,
             text: "Friend request accepted",
             tags: ['friend_accept'],
@@ -47,7 +47,7 @@ export class UIFriendsRequestItem extends Component {
     }
 
     reject() {
-        gamepush.channels.sendPersonalMessage({
+        gamepush.channels.sendFeedMessage({
             playerId: this.playerId,
             text: "Friend request rejected",
             tags: ['friend_reject'],

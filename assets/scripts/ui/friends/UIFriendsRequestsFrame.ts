@@ -3,6 +3,7 @@ declare const gamepush: any;
 import { _decorator, Component, Node, Button, instantiate, Prefab } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIFriendsRequestItem } from './UIFriendsRequestItem';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIFriendsRequestsFrame')
@@ -24,7 +25,7 @@ export class UIFriendsRequestsFrame extends UIPopupFrameBase {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
 
         gamepush.channels.on('event:message', (message) => {
-            if(message.target === "PERSONAL" && message.tags.includes("friend_request")) {
+            if(message.target === "FEED" && message.tags.includes("friend_request")) {
                 this.spawnRequestItem(message);
             }
         });
@@ -60,8 +61,8 @@ export class UIFriendsRequestsFrame extends UIPopupFrameBase {
 
 
     async checkForFriendsRequests() {
-        const response = await gamepush.channels.fetchPersonalMessages({
-            //playerId: this.friendsList[i],
+        const response = await gamepush.channels.fetchFeedMessages({
+            playerId: UserData.instance.getPlayerId(),
             tags: ['friend_request'],
             limit: 100,
             offset: 0,

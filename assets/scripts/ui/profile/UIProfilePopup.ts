@@ -154,7 +154,7 @@ export class UIProfilePopup extends UIPopupFrameBase {
         if(this.playerId !== 0) {
             UserData.instance.addFriendRequest(this.playerId);
 
-            gamepush.channels.sendPersonalMessage({
+            gamepush.channels.sendFeedMessage({
                 playerId: this.playerId,
                 text: "Friend request",
                 tags: ['friend_request'],
@@ -167,7 +167,7 @@ export class UIProfilePopup extends UIPopupFrameBase {
     onRemoveBtnClick() {
         UserData.instance.removeFriend(this.playerId);
 
-        gamepush.channels.sendPersonalMessage({
+        gamepush.channels.sendFeedMessage({
             playerId: this.playerId,
             text: "Friend remove",
             tags: ['friend_remove'],
