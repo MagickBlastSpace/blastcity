@@ -45,6 +45,7 @@ export class UserData extends Component {
     private energyMax_Premium: number = 8;
 
     private friendsList: number[] = [];
+    private friendsRequests: number[] = [];
 
     private overMaxEnergy: number = 15;
 
@@ -140,8 +141,37 @@ export class UserData extends Component {
             }
         });
 
+        gamepush.channels.on('event:message', (message) => {
+            if(message.target === "PERSONAL" && message.tags.includes("friend_accept")) {
+                this.addFriend(message.player.id);
+                this.removeFriendRequest(message.player.id);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
+            }
+        });
+
+        gamepush.channels.on('event:message', (message) => {
+            if(message.target === "PERSONAL" && message.tags.includes("friend_reject")) {
+                this.removeFriendRequest(message.player.id);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
+            }
+        });
+
+        gamepush.channels.on('event:message', (message) => {
+            if(message.target === "PERSONAL" && message.tags.includes("friend_remove")) {
+                this.removeFriendRequest(message.player.id);
+                this.removeFriend(message.player.id);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
+            }
+        });
+
 
         this.checkForItemsFromFriends();
+        this.checkForFriendsAccepts();
+        this.checkForFriendsRejects();
+        this.checkForFriendsRemoves();
     }
 
 
@@ -539,9 +569,27 @@ export class UserData extends Component {
         this.friendsList.push(playerId);
     }
 
+    addFriendRequest(playerId: number) {
+        if(this.friendsRequests === undefined || this.friendsRequests === null) {
+            this.friendsRequests = [];
+        }
+
+        if(this.friendsRequests.includes(playerId)) {
+            return;
+        }
+
+        this.friendsRequests.push(playerId);
+    }
+
     removeFriend(playerId: number) {
         if(this.friendsList.includes(playerId)) {
             this.friendsList.filter(num => num !== playerId);
+        }
+    }
+
+    removeFriendRequest(playerId: number) {
+        if(this.friendsRequests.includes(playerId)) {
+            this.friendsRequests.filter(num => num !== playerId);
         }
     }
 
@@ -550,6 +598,13 @@ export class UserData extends Component {
             return false;
         }
         return this.friendsList.includes(playerId);
+    }
+
+    isFriendRequested(playerId: number) {
+        if(this.friendsRequests === undefined || this.friendsRequests === null) {
+            return false;
+        }
+        return this.friendsRequests.includes(playerId);
     }
 
     getFriendsList(): number[] {
@@ -627,6 +682,51 @@ export class UserData extends Component {
                 gamepush.channels.deleteMessage({ messageId: message.id });
             });
         }
+    }
+
+
+    async checkForFriendsAccepts() {
+        const response = await gamepush.channels.fetchPersonalMessages({
+            tags: ['friend_accept'],
+            limit: 100,
+            offset: 0,
+        });
+
+        response.items.forEach((message) => {
+            this.addFriend(message.player.id);
+            this.removeFriendRequest(message.player.id);
+
+            gamepush.channels.deleteMessage({ messageId: message.id });
+        });
+    }
+
+    async checkForFriendsRejects() {
+        const response = await gamepush.channels.fetchPersonalMessages({
+            tags: ['friend_reject'],
+            limit: 100,
+            offset: 0,
+        });
+
+        response.items.forEach((message) => {
+            this.removeFriendRequest(message.player.id);
+
+            gamepush.channels.deleteMessage({ messageId: message.id });
+        });
+    }
+
+    async checkForFriendsRemoves() {
+        const response = await gamepush.channels.fetchPersonalMessages({
+            tags: ['friend_remove'],
+            limit: 100,
+            offset: 0,
+        });
+
+        response.items.forEach((message) => {
+            this.removeFriendRequest(message.player.id);
+            this.removeFriend(message.player.id);
+
+            gamepush.channels.deleteMessage({ messageId: message.id });
+        });
     }
 }
 

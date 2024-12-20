@@ -1,9 +1,10 @@
-import { _decorator, Component, Node, Prefab, instantiate, ScrollView } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, ScrollView, Button } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UILeaderboardFriendItem } from './UILeaderboardFriendItem';
 import { Net } from '../../net/Net';
 import { UserData } from '../../data/UserData';
 import { PlayerEventData } from '../../data/EventData';
+import { UIFriendsRequestsFrame } from '../friends/UIFriendsRequestsFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardFriendsFrame')
@@ -16,11 +17,19 @@ export class UILeaderboardFriendsFrame extends UIPopupFrameBase {
     @property(Node)
     itemsLayout: Node = null;
 
+    @property(Button)
+    requestsBtn: Button = null;
+
     @property(ScrollView)
     scroll: ScrollView = null;
 
+    @property(UIFriendsRequestsFrame)
+    requestsFrame: UIFriendsRequestsFrame;
 
-    start() {}
+
+    start() {
+        this.requestsBtn.node.on(Button.EventType.CLICK, this.onRequestsBtnClick, this);
+    }
 
     
     async refresh() {
@@ -85,6 +94,11 @@ export class UILeaderboardFriendsFrame extends UIPopupFrameBase {
 
     showProfile(playerId: number) {
         this.node.emit("profile", playerId);
+    }
+
+
+    onRequestsBtnClick() {
+        this.requestsFrame.show();
     }
 }
 

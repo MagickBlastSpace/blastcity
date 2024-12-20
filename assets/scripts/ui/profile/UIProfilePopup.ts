@@ -129,8 +129,9 @@ export class UIProfilePopup extends UIPopupFrameBase {
     refreshLocalData() {
         let isFriend = UserData.instance.isFriend(this.playerId);
         let isMe = this.playerId === UserData.instance.getPlayerId();
+        let isRequested = UserData.instance.isFriendRequested(this.playerId);
 
-        this.addToFriendsBtn.node.active = !isFriend && !isMe;
+        this.addToFriendsBtn.node.active = !isFriend && !isMe && !isRequested;
         this.removeFromFriendsBtn.node.active = isFriend && !isMe;
         this.openChatBtn.node.active = !isMe;
         this.changeBtn.node.active = isMe;
@@ -151,7 +152,13 @@ export class UIProfilePopup extends UIPopupFrameBase {
 
     onAddBtnClick() {
         if(this.playerId !== 0) {
-            UserData.instance.addFriend(this.playerId);
+            UserData.instance.addFriendRequest(this.playerId);
+
+            gamepush.channels.sendPersonalMessage({
+                playerId: this.playerId,
+                text: "Friend request",
+                tags: ['friend_request'],
+            });
         }
         
         this.refreshLocalData();
@@ -159,6 +166,12 @@ export class UIProfilePopup extends UIPopupFrameBase {
 
     onRemoveBtnClick() {
         UserData.instance.removeFriend(this.playerId);
+
+        gamepush.channels.sendPersonalMessage({
+            playerId: this.playerId,
+            text: "Friend remove",
+            tags: ['friend_remove'],
+        });
 
         this.refreshLocalData();
     }
