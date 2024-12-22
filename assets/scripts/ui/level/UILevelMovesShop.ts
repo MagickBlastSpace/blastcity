@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label, Button } from 'cc';
+import { _decorator, Component, Node, Label, Button, assetManager, Sprite, SpriteFrame } from 'cc';
 import { MovesShopStageData } from '../../data/GameData';
 import { MovesShop } from '../../game/boosters/MovesShop';
 import { Level } from '../../game/Level';
@@ -29,6 +29,11 @@ export class UILevelMovesShop extends Component {
     @property(Label)
     goldLabel: Label = null;
 
+    @property(Sprite)
+    picture_1: Sprite = null;
+    @property(Sprite)
+    picture_2: Sprite = null;
+
     private data: MovesShopStageData = null;
 
 
@@ -36,6 +41,8 @@ export class UILevelMovesShop extends Component {
         this.buyBtn.node.on(Button.EventType.CLICK, this.onBuyBtnClick, this);
         this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        this.loadAsstets();
     }
 
     refresh() {
@@ -96,6 +103,31 @@ export class UILevelMovesShop extends Component {
 
     onCloseBtnClick() {
         this.node.emit("close");
+    }
+
+
+    loadAsstets() {
+        assetManager.loadBundle("start", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: start`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: start"`);
+
+
+            bundle.load("fail_owl/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: fail_owl`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: fail_owl`);
+
+                this.picture_1.spriteFrame = spriteFrame;
+                this.picture_2.spriteFrame = spriteFrame;
+            });
+        });
     }
 }
 

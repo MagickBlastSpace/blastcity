@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button } from 'cc';
+import { _decorator, Component, Node, Button, assetManager, Sprite, SpriteFrame } from 'cc';
 import { UIShopItem } from './UIShopItem';
 import { GameData, ShopItemData } from '../../data/GameData';
 import { Shop } from '../../game/Shop';
@@ -34,6 +34,9 @@ export class UIShopFrame extends UIFrameBase {
     @property(UIPopupReward)
     rewardPopup: UIPopupReward;
 
+    @property(Sprite)
+    picture_bp: Sprite = null;
+
     private isHiddenState: boolean = true;
 
 
@@ -54,6 +57,8 @@ export class UIShopFrame extends UIFrameBase {
 
         this.bpActivateBtn.node.on(Button.EventType.CLICK, this.onBpActivateClick, this);
         this.showHiddenBtn.node.on(Button.EventType.CLICK, this.onShowHiddenClick, this);
+
+        this.loadAsstets();
     }
 
 
@@ -99,6 +104,30 @@ export class UIShopFrame extends UIFrameBase {
         this.rewardPopup.show();
 
         this.rewardPopup.init_Shop(data);
+    }
+
+
+    loadAsstets() {
+        assetManager.loadBundle("shop", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: shop`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: shop"`);
+
+
+            bundle.load("banner_battlepass/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: banner_battlepass`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: banner_battlepass`);
+
+                this.picture_bp.spriteFrame = spriteFrame;
+            });
+        });
     }
 }
 

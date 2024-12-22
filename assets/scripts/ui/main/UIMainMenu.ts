@@ -35,6 +35,8 @@ export class UIMainMenu extends UIFrameBase {
     background: Sprite = null;
     @property(Sprite)
     background_1: Sprite = null;
+    @property(Sprite)
+    chestPicture: Sprite = null;
 
     @property([UIMainMenuButton])
     buttonsUi: UIMainMenuButton[] = [];
@@ -182,6 +184,17 @@ export class UIMainMenu extends UIFrameBase {
 
                 this.background.spriteFrame = spriteFrame;
                 this.background_1.spriteFrame = spriteFrame;
+            });
+
+            bundle.load("chest/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: chest`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: chest`);
+
+                this.chestPicture.spriteFrame = spriteFrame;
             });
         });
     }
