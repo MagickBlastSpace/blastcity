@@ -582,14 +582,14 @@ export class UserData extends Component {
     }
 
     removeFriend(playerId: number) {
-        if(this.friendsList.includes(playerId)) {
-            this.friendsList.filter(num => num !== playerId);
+        if (this.friendsList.includes(playerId)) {
+            this.friendsList = this.friendsList.filter(num => num !== playerId);
         }
     }
-
+    
     removeFriendRequest(playerId: number) {
-        if(this.friendsRequests.includes(playerId)) {
-            this.friendsRequests.filter(num => num !== playerId);
+        if (this.friendsRequests.includes(playerId)) {
+            this.friendsRequests = this.friendsRequests.filter(num => num !== playerId);
         }
     }
 
