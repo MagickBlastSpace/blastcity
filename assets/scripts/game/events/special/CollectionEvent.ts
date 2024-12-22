@@ -302,6 +302,7 @@ export class CollectionEvent extends SpecialEventBase {
         this.node.emit("refresh");
 
         gamepush.player.add('stat_collections_finished', 1);
+        gamepush.player.sync();
     }
 
     takeCollectionReward(id: string) {
@@ -319,7 +320,10 @@ export class CollectionEvent extends SpecialEventBase {
 
                 this.node.emit("refresh");
 
+                console.log("stat collections update");
+                
                 gamepush.player.add('stat_collections', 1);
+                gamepush.player.sync();
 
                 return;
             }
@@ -359,6 +363,7 @@ export class CollectionEvent extends SpecialEventBase {
 
         if(reward.isChest) {
             gamepush.player.add('stat_chests_open', 1);
+            gamepush.player.sync();
         }
 
         this.node.emit("reward", reward);

@@ -125,6 +125,7 @@ export class UserData extends Component {
                 this.addResource("energy", 1);
 
                 gamepush.player.add('stat_energy_recieved', 1);
+                gamepush.player.sync();
             }
         });
 

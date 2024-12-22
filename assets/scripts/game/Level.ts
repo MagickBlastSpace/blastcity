@@ -320,6 +320,7 @@ export class Level extends Component {
 
         if(this.stats.fails === 0) {
             gamepush.player.add('stat_win', 1);
+            gamepush.player.sync();
         }
 
         SaveData.instance.clearLevelProgress();
