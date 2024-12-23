@@ -84,7 +84,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
 
     onLoad() {
-        //this.loadAssets();
+        this.loadAssets();
     }
     
     start() {
@@ -215,7 +215,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     }
 
 
-    loadAsstets() {
+    loadAssets() {
         assetManager.loadBundle("game", (err, bundle) => {
             if (err) {
                 console.error(`Failed to load bundle: game`, err);
