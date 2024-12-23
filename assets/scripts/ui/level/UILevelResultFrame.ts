@@ -43,6 +43,9 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     @property(SpriteFrame)
     header_superHard: SpriteFrame = null;
 
+    @property(Sprite)
+    picture: Sprite = null;
+
     @property(Button)
     playBtn: Button = null;
     @property(Button)
@@ -209,6 +212,30 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
     isKingLeagueMode(): boolean {
         return UserData.instance.getProgress() >= GameData.instance.getMaxProgress();
+    }
+
+
+    loadAsstets() {
+        assetManager.loadBundle("game", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: game`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: game"`);
+
+
+            bundle.load("win/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: win`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: win`);
+
+                this.picture.spriteFrame = spriteFrame;
+            });
+        });
     }
 
 

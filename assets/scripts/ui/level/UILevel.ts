@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Sprite, SpriteFrame, Button } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, SpriteFrame, Button, assetManager } from 'cc';
 import { GoalData } from '../../data/GameData';
 import { UILevelGoal } from './UILevelGoal';
 import { UIFrameBase } from '../UIFrameBase';
@@ -36,6 +36,11 @@ export class UILevel extends UIFrameBase {
     sidePanel_Left: Sprite = null;
     @property(Sprite)
     sidePanel_Right: Sprite = null;
+
+    @property(Sprite)
+    picture_1: Sprite = null;
+    @property(Sprite)
+    picture_2: Sprite = null;
 
     @property(SpriteFrame)
     common: SpriteFrame = null;
@@ -172,6 +177,31 @@ export class UILevel extends UIFrameBase {
 
     onSettingsLandscapeClick() {
         this.settings_Landscape.show();
+    }
+
+
+    loadAsstets() {
+        assetManager.loadBundle("game", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: game`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: game"`);
+
+
+            bundle.load("zeus/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: zeus`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: zeus`);
+
+                this.picture_1.spriteFrame = spriteFrame;
+                this.picture_2.spriteFrame = spriteFrame;
+            });
+        });
     }
 }
 
