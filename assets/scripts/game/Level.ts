@@ -237,10 +237,18 @@ export class Level extends Component {
     }
 
     setGoalCompleteEvent(goalId: string) {
+        if(goalId === "coin") {
+            return;
+        }
+
         this.node.emit("goal_complete_event", goalId);
     }
 
     checkGoalPossibility(goalType: string, count: number) {
+        if(goalType === "coin") {
+            return;
+        }
+
         const goal = this.goals.find(g => g.id === goalType);
         if(goal !== null && goal !== undefined) {
             if(goal.count <= count) {
@@ -382,6 +390,9 @@ export class Level extends Component {
 
 
     getCompletionReward(): number {
+        if(this.isBonusLevel()) {
+            return this.coinsCollected * this.difficultyMultiplier;
+        }
         return this.completionReward;
     }
 

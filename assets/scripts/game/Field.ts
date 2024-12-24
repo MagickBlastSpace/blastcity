@@ -2131,6 +2131,10 @@ export class Field extends Component {
     }
 
     setGoalPossible(goalId: string) {
+        if(goalId === "coin") {
+            return;
+        }
+        
         let tilesToRemove = [];
         
         if(goalId.includes("colored")) {
