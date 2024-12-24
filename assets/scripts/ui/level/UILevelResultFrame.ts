@@ -50,6 +50,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     playBtn: Button = null;
     @property(Button)
     showAdBtn: Button = null;
+    @property(Button)
+    closeBtn: Button = null;
 
     @property(Node)
     progressLose: Node = null;
@@ -90,6 +92,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     start() {
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
         this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
+        this.closeBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
         this.movesShop.node.on("buy", () => this.hide());
         this.movesShop.node.on("close", () => this.onPlayBtnClick());
