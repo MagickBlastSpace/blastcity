@@ -1,42 +1,69 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, Button } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
+import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { Field } from '../../game/Field';
 const { ccclass, property } = _decorator;
 
 @ccclass('UITutorialPopup')
-export class UITutorialPopup extends Component {
+export class UITutorialPopup extends UIPopupFrameBase {
 
     @property(Label)
     description: Label = null;
 
     @property(Node)
     isActive: Node = null;
+    @property(Node)
+    shadow: Node = null;
 
     @property(Node)
     level: Node = null;
+    @property(Field)
+    field: Field;
+
+    @property(Button)
+    btnContinue: Button = null;
 
 
     start() {
         this.level.on("tutorial", (tutorialString) => this.init(tutorialString));
-        this.level.on("destroy", (id) => this.checkTutorialCompletion(id));
 
-        this.show(false);
+        this.btnContinue.node.on(Button.EventType.CLICK, this.onBtnContinueClick, this);
+
+        this.hideClean();
     }
 
     init(tutorialString: string) {
-        this.show(tutorialString !== "");
+        if(tutorialString === "") {
+            this.hideClean();
+
+            this.shadow.active = false;
+
+            return;
+        }
 
         this.description.string = tutorialString;
+
+        this.show();
     }
 
 
-    checkTutorialCompletion(id: string) {
-        //if(id === "tutorial") {
-            this.show(false);
-        //}
+    onBtnContinueClick() {
+        this.hide();
     }
 
-    show(isActive: boolean) {
-        this.isActive.active = isActive;
+    
+    show() {
+        super.show();
+
+        this.shadow.active = true;
+    }
+    
+    hide() {
+        super.hide();
+
+        this.shadow.active = false;
+
+        this.field.resetTutorial();
     }
 }
 

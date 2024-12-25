@@ -141,6 +141,8 @@ export class LevelData {
     specialTiles: SpecialTileData[] = [];
     @property([SpecialTileData])
     statuses: SpecialTileData[] = [];
+    @property([SpecialTileData])
+    tutorialTiles: SpecialTileData[] = [];
     @property([Vec2])
     destroyedOnStart: Vec2[] = [];
     @property([cc.String])
@@ -201,6 +203,16 @@ export class LevelData {
     
         if (jsonData.statuses) {
             levelData.statuses = jsonData.statuses.map((specialTile: any) => {
+                const tileData = new SpecialTileData();
+                tileData.id = (specialTile.id || '').toLowerCase();
+                tileData.row = specialTile.row;
+                tileData.col = specialTile.col;
+                return tileData;
+            });
+        }
+
+        if (jsonData.tutorialTiles) {
+            levelData.tutorialTiles = jsonData.tutorialTiles.map((specialTile: any) => {
                 const tileData = new SpecialTileData();
                 tileData.id = (specialTile.id || '').toLowerCase();
                 tileData.row = specialTile.row;

@@ -24,6 +24,9 @@ export class Field extends Component {
     @property([Node])
     layersForCleanup: Node[] = [];
 
+    @property([SpecialPrefabData])
+    tutorialPrefabs: SpecialPrefabData[] = [];
+
     @property
     numRows: number = 8;
     @property
@@ -74,10 +77,14 @@ export class Field extends Component {
     private specialPrefabs: SpecialPrefabData[] = [];
     private statusPrefabs: SpecialPrefabData[] = [];
 
+    private spawnedTutorialItems: Node[] = [];
+
     private primaryColor: string = "";
     private secondaryColor: string = "";
 
     private savedLevelData: LevelData;
+
+    private isTutorialActive: boolean = false;
 
 
     onLoad() {
@@ -353,6 +360,16 @@ export class Field extends Component {
 
         if(level.tutorial) {
             this.node.emit("tutorial", level.tutorial);
+
+            this.isTutorialActive = true;
+
+            if(level.tutorialTiles) {
+                for(let i = 0; i < level.tutorialTiles.length; i++) {
+                    let item = this.spawnTutorialItem(level.tutorialTiles[i].row, level.tutorialTiles[i].col, level.tutorialTiles[i].id);
+
+                    this.spawnedTutorialItems.push(item);
+                }
+            }
         }
 
         this.isCompleteScheduled = false;
@@ -603,6 +620,20 @@ export class Field extends Component {
         const statusComponent = statusNode.getComponent("StatusBase");
         let spawnedStatus = this.initStatus(statusComponent, row, col, statusId);
         return spawnedStatus;
+    }
+
+    spawnTutorialItem(row: number, col: number, id: string): Node {
+        const prefab = this.tutorialPrefabs.find(p => p.id === id)?.prefab;
+        if(prefab === null) {
+            return;
+        }
+
+        const tutorialNode = instantiate(prefab);
+        this.node.emit("init_tutorial_item", tutorialNode, row, col);
+
+        this.spawnedTutorialItems.push(tutorialNode);
+
+        return tutorialNode;
     }
 
     spawnBonusTile(row: number, col: number, bonusId: string, isBonusPool: boolean) {
@@ -2134,7 +2165,7 @@ export class Field extends Component {
         if(goalId === "coin") {
             return;
         }
-        
+
         let tilesToRemove = [];
         
         if(goalId.includes("colored")) {
@@ -2466,6 +2497,21 @@ export class Field extends Component {
 
     centrate() {
         this.node.emit("centrate", this.tileArray);
+    }
+
+
+    resetTutorial() {
+        if(!this.isTutorialActive) {
+            return;
+        }
+
+        this.isTutorialActive = false;
+
+        for(let i = 0; i < this.spawnedTutorialItems.length; i++) {
+            this.spawnedTutorialItems[i].destroy();
+        }
+
+        this.spawnedTutorialItems = [];
     }
 }
 

@@ -31,6 +31,8 @@ export class UIField extends Component {
     statusLayout: Node = null;
     @property(Node)
     animationsLayout: Node = null;
+    @property(Node)
+    tutorialLayout: Node = null;
 
     @property(UIDiscoballLineRenderer)
     lr: UIDiscoballLineRenderer = null;
@@ -45,6 +47,7 @@ export class UIField extends Component {
         this.field.on("refresh", (tiles, statuses) => this.refresh(tiles, statuses));
         this.field.on("init_tile", (tile, isStatus, tileType) => this.init(tile, isStatus, tileType));
         this.field.on("init_status", (status, tileType) => this.initStatus(status, tileType));
+        this.field.on("init_tutorial_item", (item, row, col) => this.initTutorialItem(item, row, col));
         this.field.on("booster", (boosterType, row, col) => this.playBoosterAnimation(boosterType, row, col));
         this.field.on("shuffle", () => this.playShuffleSound());
 
@@ -110,6 +113,23 @@ export class UIField extends Component {
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
 
         tileUi.init(posX, posY, layout, true, tileType);
+    }
+
+    initTutorialItem(item: Node, row: number, col: number) {
+        if(item === null) {
+            return;
+        }
+
+        this.statusLayout.addChild(item);
+
+        const tileUi = item.getComponent("UITile");
+
+        let layout = this.tutorialLayout;
+
+        let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
+        let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
+
+        tileUi.init(posX, posY, layout, true, "tutorial");
     }
 
     
