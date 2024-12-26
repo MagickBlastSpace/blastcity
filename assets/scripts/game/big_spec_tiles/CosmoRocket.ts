@@ -5,8 +5,12 @@ const { ccclass, property } = _decorator;
 
 @ccclass('CosmoRocket')
 export class CosmoRocket extends BigTileBase {
+
     @property(Label)
     hpLabel: Label = null;
+
+    private extraDamage: number = 5;
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -43,8 +47,9 @@ export class CosmoRocket extends BigTileBase {
 
 
     startDestroyConsequences() {
-        this.node.emit("change_bonus", this.getRow(), this.getCol(), "rocket_vertical", true);
-        this.node.emit("activate_bonus_pool");
+        this.playAnimation("rocket_vertical", false, 1);
+
+        this.colExtraHit();
 
         this.node.emit("goal", "cosmorocket");
     }
@@ -52,6 +57,17 @@ export class CosmoRocket extends BigTileBase {
 
     setRespawnEvent(timeToRespawn: number) {
         this.node.emit("respawn", timeToRespawn);
+    }
+
+
+    colExtraHit() {
+        for(let j = this.getRow(); j < 9; j++) {
+                this.node.emit("increased_extra_hit", j, this.getCol(), this.extraDamage);
+        }
+
+        for(let j = this.getRow() - 1; j >= 0; j--) {
+                this.node.emit("increased_extra_hit", j, this.getCol(), this.extraDamage);
+        }
     }
 }
 

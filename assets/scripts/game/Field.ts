@@ -729,6 +729,9 @@ export class Field extends Component {
         tileNode.on("extra_hit_with_damage", (row, col) => {
             this.extraHitWithDamage(row, col);
         });
+        tileNode.on("increased_extra_hit", (row, col, increase) => {
+            this.increasedExtraHit(row, col, increase);
+        });
         tileNode.on("random_extra_hit", (except, except2) => {
             this.randomExtraHit(except, except2);
         });
@@ -1133,6 +1136,33 @@ export class Field extends Component {
         if(tile !== null) {
             const tileComp = tile.getComponent("TileBase");
             this.giveDamage(tile, tileComp.getTileType(), false, 0);
+        }
+    }
+
+    increasedExtraHit(row: number, col: number, increase: number) {
+        if(row > this.numRows - 1 || col > this.numCols - 1 || row < 0 || col < 0) {
+            return;
+        }
+
+        let tile = this.tileArray[row][col];
+
+        if(tile !== null) {
+            const tileComp = tile.getComponent("TileBase");
+            if(tileComp.isBonusTile()) {
+                return;
+            }
+
+            if(tileComp.isSpecialTile()) {
+                for(let i = 0; i < increase; i++) {
+                    if(!tileComp.isReadyToDestroy()) {
+                        this.extraHit(row, col, true, 0);
+                        this.clearExtra();
+                    }
+                }
+            }
+            else {
+                this.extraHit(row, col, true, 0);
+            }
         }
     }
 
