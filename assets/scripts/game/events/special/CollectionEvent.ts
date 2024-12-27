@@ -29,6 +29,8 @@ export class CollectionEvent extends SpecialEventBase {
 
     private isTotalRewardTaken: boolean = false;
 
+    private badgeName: string = "badge_winter";
+
 
     start() {}
 
@@ -303,6 +305,14 @@ export class CollectionEvent extends SpecialEventBase {
 
         gamepush.player.add('stat_collections_finished', 1);
         gamepush.player.sync();
+
+        this.takeBadge();
+    }
+
+    async takeBadge() {
+        await gamepush.rewards.give({ tag: this.badgeName });
+
+        await gamepush.player.sync();
     }
 
     takeCollectionReward(id: string) {

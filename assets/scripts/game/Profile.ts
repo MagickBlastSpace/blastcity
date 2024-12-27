@@ -20,6 +20,8 @@ export class Profile extends Component {
     private colorId: number = 0;
     private badgeId: number = 0;
 
+    private badgeNames: string[] = ["", "badge_winter"];
+
     public static instance: Profile = null;
 
 
@@ -97,6 +99,10 @@ export class Profile extends Component {
     }
 
     setBadgeId(id: number) {
+        if(!this.isBadgeAvailable(id)) {
+            return;
+        }
+
         this.badgeId = id;
 
         gamepush.player.set('badge_id', this.badgeId);
@@ -149,6 +155,17 @@ export class Profile extends Component {
             return this.badges[id];
         }
         return this.badges[0];
+    }
+
+
+    isBadgeAvailable(id: number): boolean {
+        if(id === 0 || this.badgeNames[id] === "") {
+            return true;
+        }
+        
+        const hasReward = gamepush.rewards.has(this.badgeNames[id]);
+
+        return hasReward;
     }
 }
 

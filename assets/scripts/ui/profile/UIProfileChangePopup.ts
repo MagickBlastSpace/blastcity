@@ -153,6 +153,10 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
 
             this.hide();
         });
+
+        this.savePopup.node.on("not_save", () => {
+            this.hide();
+        });
     }
 
     
@@ -187,6 +191,10 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.avatar.spriteFrame = this.profile.getAvatarById(this.avatarIndexValue);
         this.frame.spriteFrame = this.profile.getFrameById(this.frameIndexValue);
         this.badge.spriteFrame = this.profile.getBadgeById(this.badgeIndexValue);
+
+        for(let i = 0; i < this.items_Badge.length; i++) {
+            this.items_Badge[i].setLocked(!this.profile.isBadgeAvailable(i));
+        }
 
         this.saveBtn.node.active = this.isNameUpdated || this.isUpdated;
     }

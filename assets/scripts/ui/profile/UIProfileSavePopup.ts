@@ -23,6 +23,8 @@ export class UIProfileSavePopup extends UIPopupFrameBase {
 
     
     onCloseBtnClick() {
+        this.node.emit("not_save");
+
         this.hide();
     }
 

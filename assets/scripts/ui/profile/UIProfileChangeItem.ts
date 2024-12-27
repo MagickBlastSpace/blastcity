@@ -18,6 +18,10 @@ export class UIProfileChangeItem extends Component {
 
     @property(Node)
     active: Node = null;
+    @property(Node)
+    locked: Node = null;
+
+    private isLocked: boolean = false;
 
 
     start() {
@@ -54,11 +58,25 @@ export class UIProfileChangeItem extends Component {
 
 
     setActive(isActive: boolean) {
+        if(this.isLocked) {
+            return;
+        }
+
         this.active.active = isActive;
+    }
+
+    setLocked(isLocked: boolean) {
+        this.locked.active = isLocked;
+
+        this.isLocked = isLocked;
     }
 
 
     onBtnClick() {
+        if(this.isLocked) {
+            return;
+        }
+        
         this.node.emit("click");
     }
 
