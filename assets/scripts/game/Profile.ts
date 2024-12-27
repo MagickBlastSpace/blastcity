@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, SpriteFrame, Color } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('Profile')
@@ -10,8 +10,8 @@ export class Profile extends Component {
     avatars: SpriteFrame[] = [];
     @property([SpriteFrame])
     frames: SpriteFrame[] = [];
-    @property([SpriteFrame])
-    colors: SpriteFrame[] = [];
+    @property([Color])
+    colors: Color[] = [];
     @property([SpriteFrame])
     badges: SpriteFrame[] = [];
 
@@ -31,6 +31,8 @@ export class Profile extends Component {
     start() {
         this.setAvatarId(gamepush.player.get('avatar_id'));
         this.setFrameId(gamepush.player.get('frame_id'));
+        this.setColorId(gamepush.player.get('color_id'));
+        this.setBadgeId(gamepush.player.get('badge_id'));
     }
 
     getAvatars(): SpriteFrame[] {
@@ -41,7 +43,7 @@ export class Profile extends Component {
         return this.frames;
     }
 
-    getColors(): SpriteFrame[] {
+    getColors(): Color[] {
         return this.colors;
     }
 
@@ -88,11 +90,17 @@ export class Profile extends Component {
     setColorId(id: number) {
         this.colorId = id;
 
+        gamepush.player.set('color_id', this.colorId);
+        gamepush.player.sync();
+
         this.node.emit("refresh");
     }
 
     setBadgeId(id: number) {
         this.badgeId = id;
+
+        gamepush.player.set('badge_id', this.badgeId);
+        gamepush.player.sync();
 
         this.node.emit("refresh");
     }
@@ -106,7 +114,7 @@ export class Profile extends Component {
         return this.frames[this.frameId];
     }
 
-    getCurrentColor(): SpriteFrame {
+    getCurrentColor(): Color {
         return this.colors[this.colorId];
     }
 
@@ -129,7 +137,7 @@ export class Profile extends Component {
         return this.frames[0];
     }
 
-    getColorById(id: number): SpriteFrame {
+    getColorById(id: number): Color {
         if(id < this.colors.length) {
             return this.colors[id];
         }

@@ -41,6 +41,8 @@ export class UIProfilePopup extends UIPopupFrameBase {
     openChatBtn: Button = null;
     @property(Button)
     changeBtn: Button = null;
+    @property(Button)
+    changeBtn_Duplicate: Button = null;
 
     @property(Button)
     closeBtn: Button = null;
@@ -49,6 +51,11 @@ export class UIProfilePopup extends UIPopupFrameBase {
     avatar: Sprite = null;
     @property(Sprite)
     frame: Sprite = null;
+    @property(Sprite)
+    badge: Sprite = null;
+
+    @property([Sprite])
+    colors: Sprite[] = [];
 
     @property(Profile)
     profile: Profile;
@@ -64,6 +71,7 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.removeFromFriendsBtn.node.on(Button.EventType.CLICK, this.onRemoveBtnClick, this);
         this.openChatBtn.node.on(Button.EventType.CLICK, this.onOpenChatBtnClick, this);
         this.changeBtn.node.on(Button.EventType.CLICK, this.onChangeBtnClick, this);
+        this.changeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onChangeBtnClick, this);
 
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
 
@@ -119,6 +127,11 @@ export class UIProfilePopup extends UIPopupFrameBase {
                 if(!isMe) {
                     this.avatar.spriteFrame = this.profile.getAvatarById(players[0].state["avatar_id"]);
                     this.frame.spriteFrame = this.profile.getFrameById(players[0].state["frame_id"]);
+                    this.badge.spriteFrame = this.profile.getBadgeById(players[0].state["badge_id"]);
+
+                    for(let i = 0; i < this.colors.length; i++) {
+                        this.colors[i].color = this.profile.getColorById(this.profile.getBadgeById(players[0].state["color_id"]));
+                    }
                 }
             }
         } catch (error) {
@@ -139,6 +152,11 @@ export class UIProfilePopup extends UIPopupFrameBase {
         if(isMe) {
             this.avatar.spriteFrame = this.profile.getCurrentAvatar();
             this.frame.spriteFrame = this.profile.getCurrentFrame();
+            this.badge.spriteFrame = this.profile.getCurrentBadge();
+
+            for(let i = 0; i < this.colors.length; i++) {
+                this.colors[i].color = this.profile.getCurrentColor();
+            }
         }
     }
 

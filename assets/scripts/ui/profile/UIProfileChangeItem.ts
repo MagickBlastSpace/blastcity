@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, SpriteFrame, Sprite, Button } from 'cc';
+import { _decorator, Component, Node, SpriteFrame, Sprite, Button, Color } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIProfileChangeItem')
@@ -39,18 +39,17 @@ export class UIProfileChangeItem extends Component {
 
                 break;
 
-            case "color":
-                this.iconColor.node.active = true;
-                this.iconColor.spriteFrame = spf;
-
-                break;
-
             case "badge":
                 this.iconBadge.node.active = true;
                 this.iconBadge.spriteFrame = spf;
 
                 break;
         }
+    }
+
+    initColor(col: Color) {
+        this.iconColor.node.active = true;
+        this.iconColor.color = col;
     }
 
 

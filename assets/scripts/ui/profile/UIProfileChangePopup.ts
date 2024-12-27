@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, EditBox, Label } from 'cc';
+import { _decorator, Component, Node, Button, EditBox, Label, Sprite } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIProfileChangeItem } from './UIProfileChangeItem';
 import { Profile } from '../../game/Profile';
@@ -47,6 +47,13 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
     tabs: UITab = [];
     @property([Node])
     frames: Node[] = [];
+
+    @property(Sprite)
+    avatar: Sprite = null;
+    @property(Sprite)
+    frame: Sprite = null;
+    @property(Sprite)
+    badge: Sprite = null;
 
     private avatarIndexValue: number = 0;
     private frameIndexValue: number = 0;
@@ -111,7 +118,7 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
                 this.items_Color[i].node.active = false;
             }
             else {
-                //this.items_Color[i].init(colors[i]);
+                this.items_Color[i].initColor(colors[i]);
                 this.items_Color[i].node.on("click", () => {
                     this.colorIndexValue = i;
 
@@ -153,8 +160,17 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         super.show();
 
         this.isUpdated = false;
+        this.isNameUpdated = false;
 
         this.showFrame(0);
+
+        this.playerName.string = UserData.instance.getPlayerName();
+        this.saveBtn.node.active = false;
+
+        this.avatarIndexValue = this.profile.getAvatarId();
+        this.frameIndexValue = this.profile.getFrameId();
+        this.colorIndexValue = this.profile.getColorId();
+        this.badgeIndexValue = this.profile.getBadgeId();
 
         this.refresh();
     }
@@ -168,7 +184,11 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.items_Color[this.colorIndexValue].setActive(true);
         this.items_Badge[this.badgeIndexValue].setActive(true);
 
-        this.playerName.string = UserData.instance.getPlayerName();
+        this.avatar.spriteFrame = this.profile.getAvatarById(this.avatarIndexValue);
+        this.frame.spriteFrame = this.profile.getFrameById(this.frameIndexValue);
+        this.badge.spriteFrame = this.profile.getBadgeById(this.badgeIndexValue);
+
+        this.saveBtn.node.active = this.isNameUpdated || this.isUpdated;
     }
 
     setAllInactive() {
