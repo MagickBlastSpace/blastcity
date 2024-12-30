@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Label, Button } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { Field } from '../../game/Field';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UITutorialPopup')
@@ -23,6 +24,9 @@ export class UITutorialPopup extends UIPopupFrameBase {
     @property(Button)
     btnContinue: Button = null;
 
+    @property(Localization)
+    l10n: Localization;
+
 
     start() {
         this.level.on("tutorial", (tutorialString) => this.init(tutorialString));
@@ -41,7 +45,14 @@ export class UITutorialPopup extends UIPopupFrameBase {
             return;
         }
 
-        this.description.string = tutorialString;
+        let keySplit = tutorialString.split("_");
+        let localizationKey = keySplit[0] + "." + keySplit[1];
+
+        for(let i = 2; i < keySplit.length; i++) {
+            localizationKey += "_" + keySplit[i];
+        }
+        
+        this.description.string = this.l10n.getLabelByKey(localizationKey);
 
         this.show();
     }
