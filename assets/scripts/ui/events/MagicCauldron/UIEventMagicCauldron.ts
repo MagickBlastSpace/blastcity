@@ -6,6 +6,7 @@ import { UIEventMagicCauldronPredictionButton } from './UIEventMagicCauldronPred
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventMagicCauldronReward } from './UIEventMagicCauldronReward';
+import { UIEventMagicCauldronHistoryShelf } from './UIEventMagicCauldronHistoryShelf';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldron')
@@ -33,10 +34,11 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
     @property([UIEventMagicCauldronItem])
     items: UIEventMagicCauldronItem[] = [];
-    @property([UIEventMagicCauldronItem])
-    hints: UIEventMagicCauldronItem[] = [];
     @property([UIEventMagicCauldronPredictionButton])
     predictionBtns: UIEventMagicCauldronPredictionButton[] = [];
+
+    @property([UIEventMagicCauldronHistoryShelf])
+    historyShelfs: UIEventMagicCauldronHistoryShelf[] = [];
 
     @property(UIEventMagicCauldronReward)
     reward: UIEventMagicCauldronReward = null;
@@ -140,27 +142,14 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             this.items[i].setIndicator(hints.includes(color));
         }
 
-        let poolIterationIndex = 0;
-        for(let i = 0; i < this.hints.length; i++) {
-            this.hints[i].node.active = i < poolSize;
+        let history = this.eventController.getHistory();
+        let historySize = history.length;
 
-            let color = i < hints.length ? hints[i] : "undefined";
-            this.hints[i].refresh(color);
+        for(let i = 0; i < this.historyShelfs.length; i++) {
+            this.historyShelfs[i].node.active = i < historySize;
 
-            this.hints[i].setIndicator(color !== "undefined");
-
-            if(color === "undefined") {
-                let hintColor = pool[poolIterationIndex];
-                for(let j = poolIterationIndex; j < pool.length; j++) {
-                    if(hints.includes(hintColor)) {
-                        poolIterationIndex = poolIterationIndex + 1;
-
-                        hintColor = pool[poolIterationIndex];
-                    }
-                }
-                this.hints[i].setColor(hintColor);
-
-                poolIterationIndex = poolIterationIndex + 1;
+            if(i < historySize) {
+                this.historyShelfs[i].refresh(history[i], hints);
             }
         }
 

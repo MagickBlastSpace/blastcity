@@ -19,6 +19,8 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
     private hints: string[] = [];
 
+    private history: string[][] = [];
+
 
     onLoad() {
         this.hints = [];
@@ -87,10 +89,22 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
             this.hints = [];
             this.poolToPredict = [];
+            this.history = [];
             
             this.currentStage = this.currentStage + 1;
         }
-        
+        else {
+            let historyPack = [];
+
+            for(let i = 0; i < this.predictions.length; i++) {
+                historyPack.push(this.predictions[i]);
+            }
+
+            this.history.push(historyPack);
+
+            
+        }
+
         this.startStage();
     }
 
@@ -193,7 +207,7 @@ export class MagicCauldronEvent extends SpecialEventBase {
     }
 
 
-    getSpecialPool(): stirng[] {
+    getSpecialPool(): string[] {
         return this.poolToPredict;
     }
 
@@ -205,7 +219,7 @@ export class MagicCauldronEvent extends SpecialEventBase {
         this.poolToPredict = pool;
     }
 
-    getSpecialPredictions(): stirng[] {
+    getSpecialPredictions(): string[] {
         return this.predictions;
     }
 
@@ -217,7 +231,7 @@ export class MagicCauldronEvent extends SpecialEventBase {
         this.predictions = predictions;
     }
 
-    getSpecialHints(): stirng[] {
+    getSpecialHints(): string[] {
         return this.hints;
     }
 
@@ -227,6 +241,14 @@ export class MagicCauldronEvent extends SpecialEventBase {
         }
 
         this.hints = hints;
+    }
+
+    getHistory(): string[][] {
+        return this.history;
+    }
+
+    setHistory(history: string[][]) {
+        this.history = history;
     }
 
 
