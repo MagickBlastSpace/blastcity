@@ -23,6 +23,8 @@ export class UIField extends Component {
     tilesLayouts: Node[] = [];
     @property([Node])
     statusLayouts: Node[] = [];
+    @property([Node])
+    tutorialLayouts: Node[] = [];
     @property(Node)
     tilesLayout: Node = null;
     @property(Node)
@@ -120,11 +122,11 @@ export class UIField extends Component {
             return;
         }
 
-        this.statusLayout.addChild(item);
+        this.tutorialLayout.addChild(item);
 
         const tileUi = item.getComponent("UITile");
 
-        let layout = this.tutorialLayout;
+        let layout = this.tutorialLayouts[row];
 
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
