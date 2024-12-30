@@ -418,8 +418,8 @@ export class UITile extends Component {
 
 
     startShake() {
-        const shakeAmount = 10;
-        const shakeDuration = 0.05;
+        const shakeAmount = 5;
+        const shakeDuration = 0.1;
     
         if (this.content && !this.shakeTween) {
             this.shakeTween = tween(this.content)
