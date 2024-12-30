@@ -21,8 +21,8 @@ export class UITutorialPopup extends UIPopupFrameBase {
     @property(Field)
     field: Field;
 
-    @property(Button)
-    btnContinue: Button = null;
+    /*@property(Button)
+    btnContinue: Button = null;*/
 
     @property(Localization)
     l10n: Localization;
@@ -30,8 +30,9 @@ export class UITutorialPopup extends UIPopupFrameBase {
 
     start() {
         this.level.on("tutorial", (tutorialString) => this.init(tutorialString));
+        this.level.on("destroy", (id) => this.onBtnContinueClick());
 
-        this.btnContinue.node.on(Button.EventType.CLICK, this.onBtnContinueClick, this);
+        //this.btnContinue.node.on(Button.EventType.CLICK, this.onBtnContinueClick, this);
 
         this.hideClean();
     }

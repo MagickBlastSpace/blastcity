@@ -110,6 +110,7 @@ export class UIField extends Component {
         const tileUi = status.getComponent("UITile");
 
         let layout = this.highPriorityStatuses.includes(statusComponent.getStatusType().split("_")[0]) ? this.statusLayout : this.statusLayouts[statusComponent.getRow()];
+        layout = tileType === "tutorial_finger" ? this.tutorialLayout : layout;
 
         let posX = statusComponent.getCol() * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
