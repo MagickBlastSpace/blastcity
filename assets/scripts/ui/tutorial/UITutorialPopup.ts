@@ -45,14 +45,8 @@ export class UITutorialPopup extends UIPopupFrameBase {
             return;
         }
 
-        let keySplit = tutorialString.split("_");
-        let localizationKey = keySplit[0] + "." + keySplit[1];
-
-        for(let i = 2; i < keySplit.length; i++) {
-            localizationKey += "_" + keySplit[i];
-        }
-        
-        this.description.string = this.l10n.getLabelByKey(localizationKey);
+        console.log("Getting Tutorial Label: " + tutorialString);
+        this.description.string = this.l10n.getLabelByKey(tutorialString);
 
         this.show();
     }
