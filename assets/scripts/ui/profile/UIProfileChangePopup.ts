@@ -55,6 +55,9 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
     @property(Sprite)
     badge: Sprite = null;
 
+    @property([Sprite])
+    colors: Sprite[] = [];
+
     private avatarIndexValue: number = 0;
     private frameIndexValue: number = 0;
     private colorIndexValue: number = 0;
@@ -191,6 +194,9 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.avatar.spriteFrame = this.profile.getAvatarById(this.avatarIndexValue);
         this.frame.spriteFrame = this.profile.getFrameById(this.frameIndexValue);
         this.badge.spriteFrame = this.profile.getBadgeById(this.badgeIndexValue);
+        for(let i = 0; i < this.colors.length; i++) {
+            this.colors[i].color = this.profile.getColorById(this.colorIndexValue);
+        }
 
         for(let i = 0; i < this.items_Badge.length; i++) {
             this.items_Badge[i].setLocked(!this.profile.isBadgeAvailable(i));
