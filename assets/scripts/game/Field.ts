@@ -1,5 +1,5 @@
 import { _decorator, Component, Node, instantiate, Prefab, Vec2, Vec3 } from 'cc';
-import { GameData, GoalData, LevelData, SpecialPrefabData, SpecialTileStateData } from '../data/GameData';
+import { GameData, GoalData, LevelData, SpecialPrefabData, SpecialTileData, SpecialTileStateData } from '../data/GameData';
 import { TileBase } from './TileBase';
 import { Boosters } from './boosters/Boosters';
 import { StartBonuses } from './boosters/StartBonuses';
@@ -85,6 +85,8 @@ export class Field extends Component {
     private savedLevelData: LevelData;
 
     private isTutorialActive: boolean = false;
+    private tutorialKey: string = "";
+    private tutorialTiles: SpecialTileData[] = [];
 
 
     onLoad() {
@@ -362,8 +364,11 @@ export class Field extends Component {
             this.node.emit("tutorial", level.tutorial);
 
             this.isTutorialActive = true;
-
+            this.tutorialKey = level.tutorial;
+            
             if(level.tutorialTiles) {
+                this.tutorialTiles = level.tutorialTiles;
+
                 for(let i = 0; i < level.tutorialTiles.length; i++) {
                     let item = this.spawnTutorialItem(level.tutorialTiles[i].row, level.tutorialTiles[i].col, level.tutorialTiles[i].id);
 
@@ -2536,12 +2541,26 @@ export class Field extends Component {
         }
 
         this.isTutorialActive = false;
+        this.tutorialKey = "";
+        this.tutorialTiles = [];
 
         for(let i = 0; i < this.spawnedTutorialItems.length; i++) {
             this.spawnedTutorialItems[i].destroy();
         }
 
         this.spawnedTutorialItems = [];
+    }
+
+    getIsTutorialActive(): boolean {
+        return this.isTutorialActive;
+    }
+
+    getTutorialKey(): string {
+        return this.tutorialKey;
+    }
+
+    getTutorialTiles(): SpecialTileData[] {
+        return this.tutorialTiles;
     }
 }
 

@@ -139,6 +139,11 @@ export class SaveData extends Component {
         levelState.difficulty = levelComp.getDifficulty();
         levelState.movesShopStage = movesShopComp.getCurrentStage();
 
+        if(fieldComp.getIsTutorialActive()) {
+            levelState.tutorial = fieldComp.getTutorialKey();
+            levelState.tutorialTiles = fieldComp.getTutorialTiles();
+        }
+
         levelProgressData.levelState = levelState.toJSON();
 
         cc.sys.localStorage.setItem('levelProgress', JSON.stringify(levelProgressData));
