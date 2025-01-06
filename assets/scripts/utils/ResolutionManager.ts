@@ -62,6 +62,8 @@ export class ResolutionManager extends Component {
     kingLeagueBtn: Widget = null;
     @property([Widget])
     resources: Widget[] = [];
+    @property(Widget)
+    tutorialPopup: Widget = null;
 
     public static instance: ResolutionManager = null;
 
@@ -160,6 +162,8 @@ export class ResolutionManager extends Component {
         }
 
         this.mainMenuBtnsWidget.bottom = 0;
+
+        this.tutorialPopup.top = 120;
     }
 
     setPortraitMode() {
@@ -217,6 +221,8 @@ export class ResolutionManager extends Component {
 
         this.mainMenuBtnsWidget.bottom = 0;
 
+        this.tutorialPopup.top = 1000;
+
         //this.mainBtns.updateAlignment();
     }
 
@@ -253,11 +259,23 @@ export class ResolutionManager extends Component {
             this.boostersPortrait.setScale(new Vec3(1.6, 1.6, 1));
             this.goalsPortrait.setScale(new Vec3(2, 2, 1));
         }
-        else {
+        else if(ratio > 0.6) {
             this.field.setScale(new Vec3(1.8, 1.8, 1));
 
             this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
             this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+        }
+        else if(ratio > 0.5) {
+            this.field.setScale(new Vec3(2, 2, 1));
+
+            this.boostersPortrait.setScale(new Vec3(2, 2, 1));
+            this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+        }
+        else {
+            this.field.setScale(new Vec3(2.2, 2.2, 1));
+
+            this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
+            this.goalsPortrait.setScale(new Vec3(2.2, 2.2, 1));
         }
 
         let fieldComp = this.field.getComponent("Field");
