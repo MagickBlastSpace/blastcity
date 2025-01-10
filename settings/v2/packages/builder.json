@@ -10,7 +10,7 @@
         "configs": {
           "native": {
             "preferredOptions": {
-              "compressionType": "merge_dep",
+              "compressionType": "merge_all_json",
               "isRemote": false
             }
           },
@@ -73,12 +73,44 @@
           },
           "web": {
             "preferredOptions": {
-              "compressionType": "merge_dep",
+              "compressionType": "merge_all_json",
               "isRemote": false
             }
           }
         }
+      },
+      "default": {
+        "displayName": "i18n:builder.asset_bundle.defaultConfig",
+        "configs": {
+          "native": {
+            "preferredOptions": {
+              "isRemote": false,
+              "compressionType": "merge_all_json"
+            }
+          },
+          "web": {
+            "preferredOptions": {
+              "isRemote": false,
+              "compressionType": "merge_all_json"
+            },
+            "fallbackOptions": {
+              "compressionType": "merge_dep"
+            },
+            "overwriteSettings": {}
+          },
+          "miniGame": {
+            "fallbackOptions": {
+              "isRemote": false,
+              "compressionType": "merge_dep"
+            },
+            "configMode": "fallback"
+          }
+        }
       }
     }
+  },
+  "textureCompressConfig": {
+    "genMipmaps": true,
+    "customConfigs": {}
   }
 }
