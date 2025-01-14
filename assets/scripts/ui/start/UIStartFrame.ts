@@ -48,6 +48,13 @@ export class UIStartFrame extends UIFrameBase {
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
+        SaveData.instance.node.on("level_progress_checked", () => {
+            if(UserData.instance.getProgress() > 0) {
+                this.preloadEvents();
+            }
+        });
+        
+        this.field.node.on("level_init", () => this.preloadEvents());
         
         this.briefingPopup.node.on("play", () => this.onPlay());
 
@@ -164,6 +171,13 @@ export class UIStartFrame extends UIFrameBase {
 
                 return;
             }
+        }
+    }
+
+
+    preloadEvents() {
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].loadAssets();
         }
     }
 }

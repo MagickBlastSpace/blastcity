@@ -156,9 +156,14 @@ export class SaveData extends Component {
             if(levelProgressData.levelState) {
                 this.node.emit("level_progress_loaded", LevelData.fromJSON(levelProgressData.levelState));
             }
+            else {
+                this.node.emit("level_progress_checked");
+            }
         }
         else {
-            //console.log("No saved level progress data found");
+            console.log("No saved level progress data found");
+
+            this.node.emit("level_progress_checked");
         }
     }
 
