@@ -10,6 +10,7 @@ import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UIChest } from '../chest/UIChest';
 import { EventsController } from '../../game/events/EventsController';
 import { UIStartFrameEffects } from '../effects/UIStartFrameEffects';
+import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -43,6 +44,9 @@ export class UIStartFrame extends UIFrameBase {
     @property(UIStartFrameEffects)
     effectsManager: UIStartFrameEffects = null;
 
+    @property(UIAssetsLoadingFrame)
+    assetsLoadingFrame: UIAssetsLoadingFrame;
+
     private isLevelsLoaded: boolean = false;
 
 
@@ -50,11 +54,11 @@ export class UIStartFrame extends UIFrameBase {
         SaveData.instance.node.on("user_data", () => this.refresh());
         SaveData.instance.node.on("level_progress_checked", () => {
             if(UserData.instance.getProgress() > 0) {
-                this.preloadEvents();
+                this.preloadAssets();
             }
         });
-        
-        this.field.node.on("level_init", () => this.preloadEvents());
+
+        this.field.node.on("level_init", () => this.preloadAssets());
         
         this.briefingPopup.node.on("play", () => this.onPlay());
 
@@ -175,10 +179,12 @@ export class UIStartFrame extends UIFrameBase {
     }
 
 
-    preloadEvents() {
+    preloadAssets() {
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].loadAssets();
         }
+
+        this.assetsLoadingFrame.loadAssets();
     }
 }
 

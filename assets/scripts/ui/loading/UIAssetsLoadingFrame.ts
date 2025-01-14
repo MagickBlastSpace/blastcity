@@ -12,9 +12,11 @@ export class UIAssetsLoadingFrame extends UIFrameBase {
     @property(Sprite)
     screen: Sprite = null;
 
+    private isInited: boolean = false;
+
 
     onLoad() {
-        this.loadAsstets();
+        //this.loadAsstets();
     }
 
     show() {
@@ -35,7 +37,13 @@ export class UIAssetsLoadingFrame extends UIFrameBase {
     }
 
 
-    loadAsstets() {
+    loadAssets() {
+        if(this.isInited) {
+            return;
+        }
+
+        this.isInited = true;
+        
         this.screens = [];
 
         assetManager.loadBundle("loading", (err, bundle) => {
