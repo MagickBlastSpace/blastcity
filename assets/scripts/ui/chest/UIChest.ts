@@ -21,7 +21,7 @@ export class UIChest extends Component {
 
 
     onLoad() {
-        window.addEventListener('resize', this.refreshScale.bind(this));
+        //window.addEventListener('resize', this.refreshScale.bind(this));
     }
     
     start() {
@@ -54,8 +54,6 @@ export class UIChest extends Component {
         if(this.chest.isStageComplete()) {
             let scale = ResolutionManager.instance.isPortraitOrientation() ? 2 : 1.1;
             this.node.setScale(new Vec3(scale, scale, 1));
-
-            //this.node.emit("complete", true);
         }
         else {
             let scale = ResolutionManager.instance.isPortraitOrientation() ? 1.8 : 0.9;
@@ -71,18 +69,16 @@ export class UIChest extends Component {
             if(this.progressLabel) {
                 this.progressLabel.string = collectables + "/" + stageStep;
             }
-
-            //this.node.emit("complete", false);
         }
     }
 
-    refreshScale() {
+    refreshScale(isPortrait: boolean) {
         if(this.chest.isStageComplete()) {
-            let scale = ResolutionManager.instance.isPortraitOrientation() ? 1.1 : 2;
+            let scale = isPortrait ? 1.1 : 2;
             this.node.setScale(new Vec3(scale, scale, 1));
         }
         else {
-            let scale = ResolutionManager.instance.isPortraitOrientation() ? 0.9 : 1.8;
+            let scale = isPortrait ? 0.9 : 1.8;
             this.node.setScale(new Vec3(scale, scale, 1));
         }
     }

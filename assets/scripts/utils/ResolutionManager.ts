@@ -1,5 +1,6 @@
 import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget, Layout } from 'cc';
 import { UIFrameBase } from '../ui/UIFrameBase';
+import { UIChest } from '../ui/chest/UIChest';
 const { ccclass, property } = _decorator;
 
 @ccclass('ResolutionManager')
@@ -64,6 +65,9 @@ export class ResolutionManager extends Component {
     resources: Widget[] = [];
     @property(Widget)
     tutorialPopup: Widget = null;
+
+    @property(UIChest)
+    chestUi: UIChest;
 
     public static instance: ResolutionManager = null;
 
@@ -164,6 +168,8 @@ export class ResolutionManager extends Component {
         this.mainMenuBtnsWidget.bottom = 0;
 
         this.tutorialPopup.top = 120;
+
+        this.chestUi.refreshScale(true);
     }
 
     setPortraitMode() {
@@ -222,6 +228,8 @@ export class ResolutionManager extends Component {
         this.mainMenuBtnsWidget.bottom = 0;
 
         this.tutorialPopup.top = 1000;
+
+        this.chestUi.refreshScale(false);
 
         //this.mainBtns.updateAlignment();
     }
