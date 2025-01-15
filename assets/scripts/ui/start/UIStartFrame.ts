@@ -11,6 +11,7 @@ import { UIChest } from '../chest/UIChest';
 import { EventsController } from '../../game/events/EventsController';
 import { UIStartFrameEffects } from '../effects/UIStartFrameEffects';
 import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
+import { AudioController } from '../../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -49,6 +50,8 @@ export class UIStartFrame extends UIFrameBase {
 
     private isLevelsLoaded: boolean = false;
 
+    private isPreloaded: boolean = false;
+
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
@@ -58,7 +61,10 @@ export class UIStartFrame extends UIFrameBase {
             }
         });
 
-        this.field.node.on("level_init", () => this.preloadAssets());
+        this.field.node.on("level_init", () => {
+            this.playGameplaySoundtrack();
+            this.preloadAssets();
+        });
         
         this.briefingPopup.node.on("play", () => this.onPlay());
 
@@ -180,11 +186,24 @@ export class UIStartFrame extends UIFrameBase {
 
 
     preloadAssets() {
+        if(this.isPreloaded) {
+            return;
+        }
+
+        this.isPreloaded = true;
+
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].loadAssets();
         }
 
         this.assetsLoadingFrame.loadAssets();
+
+        this.node.emit("assets_ready");
+    }
+
+
+    playGameplaySoundtrack() {
+        AudioController.instance.playGameplaySoundtrack();
     }
 }
 

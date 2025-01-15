@@ -165,6 +165,8 @@ export class AssetsLoader extends Component {
                     return;
                 }
 
+                console.log(`Successfully loaded prefab: Tile`);
+
                 this.fieldComp.setTilePrefab(prefab);
                 this.checkLoadCompletion();
             });
@@ -174,6 +176,8 @@ export class AssetsLoader extends Component {
                     console.error(`Failed to load prefab: EmptyTile`, err);
                     return;
                 }
+
+                console.log(`Successfully loaded prefab: EmptyTile`);
 
                 this.fieldComp.setEmptyTilePrefab(prefab);
                 this.checkLoadCompletion();
@@ -185,6 +189,8 @@ export class AssetsLoader extends Component {
                     return;
                 }
 
+                console.log(`Successfully loaded prefab: Bomb`);
+
                 this.fieldComp.setBombPrefab(prefab);
                 this.checkLoadCompletion();
             });
@@ -195,6 +201,8 @@ export class AssetsLoader extends Component {
                     return;
                 }
 
+                console.log(`Successfully loaded prefab: Rocket`);
+
                 this.fieldComp.setRocketPrefab(prefab);
                 this.checkLoadCompletion();
             });
@@ -204,6 +212,8 @@ export class AssetsLoader extends Component {
                     console.error(`Failed to load prefab: Discoball`, err);
                     return;
                 }
+
+                console.log(`Successfully loaded prefab: Discoball`);
 
                 this.fieldComp.setDiscoballPrefab(prefab);
                 this.checkLoadCompletion();

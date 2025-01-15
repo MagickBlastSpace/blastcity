@@ -10,6 +10,7 @@ import { UISettingsFrame } from '../start/UISettingsFrame';
 import { UserData } from '../../data/UserData';
 import { UIPopupReward } from '../UIPopupReward';
 import { UIProfilePopup } from '../profile/UIProfilePopup';
+import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -60,10 +61,22 @@ export class UIMainMenu extends UIFrameBase {
     @property(UIProfilePopup)
     profilePopup: UIProfilePopup;
 
+    @property(UIAssetsLoadingFrame)
+    assetsLoadingFrame: UIAssetsLoadingFrame;
+
 
     start() {
+        this.assetsLoadingFrame.show();
+
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
         UserData.instance.node.on("premium_purchase", () => this.showPremiumPurchase());
+        SaveData.instance.node.on("level_progress_checked", () => {
+            if(UserData.instance.getProgress() > 0) {
+                this.assetsLoadingFrame.hide();
+
+                AudioController.instance.playMainMenuSoundtrack();
+            }
+        });
 
         this.shopBtn.node.on(Button.EventType.CLICK, this.onBtnShopClick, this);
         this.clanBtn.node.on(Button.EventType.CLICK, this.onBtnClanClick, this);
@@ -77,16 +90,13 @@ export class UIMainMenu extends UIFrameBase {
         this.setAllBtnsPassive();
         this.onBtnPlayClick();
 
-        this.updateBackgroundGraphics();
-
         this.startFrame.on("play", () => this.play());
+        this.startFrame.on("assets_ready", () => this.updateBackgroundGraphics());
         this.chest.node.on("complete", () => this.updateBackgroundGraphics());
 
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
         //SaveData.instance.loadLevelProgressData();
-
-        AudioController.instance.playMainMenuSoundtrack();
     }
 
 
@@ -104,8 +114,6 @@ export class UIMainMenu extends UIFrameBase {
         this.hide();
 
         this.adsTimer.startGameplayTimer();
-
-        AudioController.instance.playGameplaySoundtrack();
     }
 
 
