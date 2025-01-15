@@ -11,8 +11,6 @@ export class UIEventMagicCauldronHistoryShelf extends Component {
     refresh(pool: string[], hints: string[]) {
         let poolSize = pool.length;
 
-        let poolIterationIndex = 0;
-
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].node.active = i < poolSize;
 
@@ -22,17 +20,9 @@ export class UIEventMagicCauldronHistoryShelf extends Component {
             this.items[i].setIndicator(color !== "undefined");
 
             if(color === "undefined") {
-                let hintColor = pool[poolIterationIndex];
-                for(let j = poolIterationIndex; j < pool.length; j++) {
-                    if(hints.includes(hintColor)) {
-                        poolIterationIndex = poolIterationIndex + 1;
+                let hintColor = pool[i];
 
-                        hintColor = pool[poolIterationIndex];
-                    }
-                }
                 this.items[i].setColor(hintColor);
-
-                poolIterationIndex = poolIterationIndex + 1;
             }
         }
     }
