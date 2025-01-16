@@ -25,6 +25,8 @@ export class AssetsLoader extends Component {
 
     private currentSpecs: string[] = [];
 
+    private isLoadingStarted: boolean = false;
+
 
     onLoad() {
         AssetsLoader.instance = this;
@@ -111,6 +113,10 @@ export class AssetsLoader extends Component {
     }
     
     loadGameplayAssets() {
+        if(this.isLoadingStarted) {
+            return;
+        }
+        
         this.startLoading();
 
         this.maxGamplayAssets = 0;
@@ -124,10 +130,14 @@ export class AssetsLoader extends Component {
 
 
     startLoading() {
+        this.isLoadingStarted = true;
+
         this.loadingFrame.show();
     }
 
     stopLoading() {
+        this.isLoadingStarted = false;
+
         this.loadingFrame.hide();
     }
 
