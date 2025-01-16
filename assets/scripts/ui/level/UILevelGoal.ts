@@ -1,6 +1,5 @@
-import { _decorator, Component, Node, Label, Sprite, SpriteFrame, Vec2, Vec3, UITransform } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, SpriteFrame, Vec2, Vec3, UITransform, assetManager } from 'cc';
 import { GoalData } from '../../data/GameData';
-import { SpriteTileData } from '../../game/Tile';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelGoal')
@@ -12,9 +11,6 @@ export class UILevelGoal extends Component {
     @property(Sprite)
     icon: Sprite = null;
 
-    @property([SpriteTileData])
-    icons: SpriteTileData[] = [];
-
     private goalId: string = "";
 
     
@@ -25,8 +21,29 @@ export class UILevelGoal extends Component {
         }
         
         this.node.active = true;
-        this.icon.spriteFrame = this.icons.find(i => i.id === goal.id)?.icon;
         this.count.string = goal.count;
+
+        if(this.goalId !== goal.id) {
+            assetManager.loadBundle("goals", (err, bundle) => {
+                if (err) {
+                    console.error(`Failed to load bundle: goals: `, err);
+                    return;
+                }
+    
+                console.log(`Successfully loaded bundle: goals`);
+    
+                bundle.load(goal.id + "_goal" + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                    if (err) {
+                        console.error(`Failed to load prefab: ` + goal.id, err);
+                        return;
+                    }
+    
+                    console.log(`Successfully loaded prefab: ` + goal.id + "_goal");
+    
+                    this.icon.spriteFrame = spriteFrame;
+                });
+            });
+        }
 
         this.goalId = goal.id;
     }
