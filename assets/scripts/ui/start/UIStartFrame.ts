@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label } from 'cc';
+import { _decorator, Component, Node, Button, Label, assetManager } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
@@ -192,9 +192,18 @@ export class UIStartFrame extends UIFrameBase {
 
         this.isPreloaded = true;
 
-        for(let i = 0; i < this.eventBtns.length; i++) {
-            this.eventBtns[i].loadAssets();
-        }
+        assetManager.loadBundle("events", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: events`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle events`);
+
+            for(let i = 0; i < this.eventBtns.length; i++) {
+                this.eventBtns[i].loadAssets(bundle);
+            }
+        });
 
         this.assetsLoadingFrame.loadAssets();
 

@@ -135,46 +135,39 @@ export class UIEventButton extends Component {
     }
 
 
-    loadAssets() {
+    loadAssets(bundle: any) {
+        console.log("trying to load event assets... " + this.eventName + " is inited: " + this.isInited);
+
         if(this.isInited) {
             return;
         }
 
         this.isInited = true;
 
-        assetManager.loadBundle("events", (err, bundle) => {
+        let bundleToLoad = ResolutionManager.instance.isPortraitOrientation() && this.isPortraitVersionAvailable ? this.eventName + "_portrait" : this.eventName;
+
+        bundle.load(bundleToLoad, Prefab, (err, prefab) => {
             if (err) {
-                console.error(`Failed to load bundle: events`, err);
+                console.error(`Failed to load prefab: ${this.eventName}`, err);
                 return;
             }
 
-            console.log(`Successfully loaded bundle: events"`);
+            console.log(`Successfully loaded prefab: ${this.eventName}`);
 
-            let bundleToLoad = ResolutionManager.instance.isPortraitOrientation() && this.isPortraitVersionAvailable ? this.eventName + "_portrait" : this.eventName;
+            this.instantiatedNode = instantiate(prefab);
 
-            bundle.load(bundleToLoad, Prefab, (err, prefab) => {
-                if (err) {
-                    console.error(`Failed to load prefab: ${this.eventName}`, err);
-                    return;
-                }
-
-                console.log(`Successfully loaded prefab: ${this.eventName}`);
-
-                this.instantiatedNode = instantiate(prefab);
-
-                this.instantiatedNode.on("play", () => {
-                    this.node.emit("play");
-                });
-
-                this.popupLayout.addChild(this.instantiatedNode);
-
-                this.eventPopup = this.instantiatedNode.getComponent("UIEvent" + this.eventName);
-                this.eventPopup.init(this.eventController);
-
-                ResolutionManager.instance.addPopup(this.instantiatedNode);
-
-                this.instantiatedNode.active = false;
+            this.instantiatedNode.on("play", () => {
+                this.node.emit("play");
             });
+
+            this.popupLayout.addChild(this.instantiatedNode);
+
+            this.eventPopup = this.instantiatedNode.getComponent("UIEvent" + this.eventName);
+            this.eventPopup.init(this.eventController);
+
+            ResolutionManager.instance.addPopup(this.instantiatedNode);
+
+            this.instantiatedNode.active = false;
         });
     }
 }
