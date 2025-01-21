@@ -10,6 +10,13 @@ export class AudioController extends Component {
     @property(AudioSource)
     public uiSource: AudioSource = null!
 
+    /*@property(AudioSource)
+    public baseTileSource: AudioSource = null!
+    @property(AudioSource)
+    public bonusTileSource: AudioSource = null!
+    @property(AudioSource)
+    public specTileSource: AudioSource = null!*/
+
     private click: AudioClip = null!
     private popup: AudioClip = null!
 
@@ -28,18 +35,26 @@ export class AudioController extends Component {
     private isSfx: boolean = true;
     private isVibration: boolean = true;
 
+    private isAssetsLoaded: boolean = false;
+
 
     onLoad() {
         AudioController.instance = this;
     }
 
     start() {
-        this.loadSoundsAssets();
+        //this.loadSoundsAssets();
     }
 
 
     /*Assets Management*/
     loadSoundsAssets() {
+        if(this.isAssetsLoaded) {
+            return;
+        }
+
+        this.isAssetsLoaded = true;
+
         this.loadUiSounds();
         this.loadGameplaySounds();
     }

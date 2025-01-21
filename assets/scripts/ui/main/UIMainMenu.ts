@@ -75,6 +75,8 @@ export class UIMainMenu extends UIFrameBase {
                 this.assetsLoadingFrame.hide();
 
                 AudioController.instance.playMainMenuSoundtrack();
+
+                AudioController.instance.loadSoundsAssets();
             }
         });
 
@@ -91,7 +93,11 @@ export class UIMainMenu extends UIFrameBase {
         this.onBtnPlayClick();
 
         this.startFrame.on("play", () => this.play());
-        this.startFrame.on("assets_ready", () => this.updateBackgroundGraphics());
+        this.startFrame.on("assets_ready", () => {
+            this.updateBackgroundGraphics();
+            
+            AudioController.instance.loadSoundsAssets();
+        });
         this.chest.node.on("complete", () => this.updateBackgroundGraphics());
 
         SaveData.instance.loadStartBonusesData();

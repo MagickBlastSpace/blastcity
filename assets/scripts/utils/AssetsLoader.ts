@@ -26,6 +26,7 @@ export class AssetsLoader extends Component {
     private currentSpecs: string[] = [];
 
     private isLoadingStarted: boolean = false;
+    private isBaseTilesLoaded: boolean = false;
 
 
     onLoad() {
@@ -145,6 +146,8 @@ export class AssetsLoader extends Component {
     private checkLoadCompletion() {
         this.gamplayAssetsCounter++;
 
+        //console.log("Loaded " + this.gamplayAssetsCounter + " gameplay assets from " + this.maxGamplayAssets + " and " + this.loadedGameplayBundlesCount + " gameplay bundles from " + this.gameplayBundlesCount);
+
         if(this.gamplayAssetsCounter >= this.maxGamplayAssets && this.loadedGameplayBundlesCount >= this.gameplayBundlesCount) {
             this.fieldComp.setAssetsAsLoaded();
 
@@ -154,6 +157,14 @@ export class AssetsLoader extends Component {
 
 
     private loadBaseBundle() {
+        if(this.isBaseTilesLoaded) {
+            this.loadedGameplayBundlesCount++;
+
+            return;
+        }
+
+        this.isBaseTilesLoaded = true;
+
         assetManager.loadBundle("base_tiles", (err, bundle) => {
             if (err) {
                 console.error(`Failed to load bundle: base_tiles`, err);

@@ -136,8 +136,6 @@ export class UIEventButton extends Component {
 
 
     loadAssets(bundle: any) {
-        console.log("trying to load event assets... " + this.eventName + " is inited: " + this.isInited);
-
         if(this.isInited) {
             return;
         }
