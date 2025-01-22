@@ -202,7 +202,7 @@ export class AudioController extends Component {
 
     /*UI*/
     playClick() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.click) {
             return;
         }
 
@@ -210,7 +210,7 @@ export class AudioController extends Component {
     }
 
     playPopup() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.popup) {
             return;
         }
 
@@ -220,7 +220,7 @@ export class AudioController extends Component {
     
     /*Gameplay*/
     playLevelComplete() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.levelComplete) {
             return;
         }
 
@@ -228,7 +228,7 @@ export class AudioController extends Component {
     }
 
     playWin() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.win) {
             return;
         }
 
@@ -236,7 +236,7 @@ export class AudioController extends Component {
     }
 
     playLose() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.lose) {
             return;
         }
 
@@ -244,7 +244,7 @@ export class AudioController extends Component {
     }
 
     playHammerSound() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.hammer) {
             return;
         }
 
@@ -252,7 +252,7 @@ export class AudioController extends Component {
     }
 
     playBowSound() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.bow) {
             return;
         }
 
@@ -260,7 +260,7 @@ export class AudioController extends Component {
     }
     
     playCannonSound() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.cannon) {
             return;
         }
 
@@ -268,7 +268,7 @@ export class AudioController extends Component {
     }
     
     playShuffleSound() {
-        if(!this.isSfxEnabled()) {
+        if(!this.isSfxEnabled() || !this.shuffle) {
             return;
         }
 
