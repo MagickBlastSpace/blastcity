@@ -24,9 +24,11 @@ export class UILoadingFrame extends Component {
 
                 gamepush.ads.showPreloader();
 
-                gamepush.ads.on('preloader:close', (success) => {
+                this.loadScene();
+
+                /*gamepush.ads.on('preloader:close', (success) => {
                     this.loadScene();
-                });
+                });*/
 
             }
             else {
