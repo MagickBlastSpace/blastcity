@@ -111,7 +111,7 @@ export class Rocket extends BonusTileBase {
             this.colExtraHit(field, this.row, this.col + 1);
             this.colExtraHit(field, this.row, this.col - 1);
 
-            this.setRespawnEvent(0);
+            this.setRespawnEvent(this.respawnDelay);
         }, this.bombCombo_Delay);
 
         return matches;

@@ -9,8 +9,6 @@ export class TransparentButton extends Component {
     }
 
     private allowEventPropagation(event: EventTouch) {
-        console.log("preventing swallow");
-        
         event.preventSwallow  = true;
     }
 }
