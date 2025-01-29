@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, ProgressBar, tween, Widget } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, ScrollView, tween, Vec2, Widget } from 'cc';
 import { UIFrameBase } from '../../UIFrameBase';
 import { SpecialEventBase } from '../../../game/events/special/SpecialEventBase';
 import { UIEventMagicCauldronItem } from './UIEventMagicCauldronItem';
@@ -46,8 +46,15 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     @property([Widget])
     frameWidgets: Widget[] = [];
 
+    @property(ScrollView)
+    scrollView: ScrollView = null!;
+
     private isEventStarted = false;
     private isEventComplete = false;
+
+    private lastHistorySize: number = 0;
+
+    private scrollDuration: number = 2;
 
 
     /*onLoad() {
@@ -75,6 +82,8 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
         for(let i = 0; i < this.predictionBtns.length; i++) {
             this.predictionBtns[i].node.on("move", (color) => this.makeMove(color));
         }
+
+        this.lastHistorySize = 0;
     }
 
     update(deltaTime: number) {
@@ -153,6 +162,13 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             }
         }
 
+        if(historySize > this.lastHistorySize) {
+            this.scrollToTop();
+            this.scheduleOnce(() => this.animateScrollToBottom(), 0.1);
+        }
+
+        this.lastHistorySize = historySize;
+
         for(let i = 0; i < this.predictionBtns.length; i++) {
             this.predictionBtns[i].node.active = i < poolSize;
 
@@ -214,6 +230,23 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
     makeMove(color: string) {
         this.eventController.makeMove(color);
+    }
+
+
+    scrollToTop() {
+        this.scrollView.scrollToOffset(new Vec2(0, 0), 0);
+    }
+
+    animateScrollToBottom() {
+        const maxOffset = this.scrollView.getMaxScrollOffset();
+        
+        tween(this.scrollView.getScrollOffset())
+            .to(this.scrollDuration, new Vec2(0, maxOffset.y), {
+                onUpdate: (val: Vec2) => {
+                    this.scrollView.scrollToOffset(val);
+                }
+            })
+            .start();
     }
 }
 
