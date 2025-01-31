@@ -150,8 +150,8 @@ export class KingLeagueEvent extends CompetitiveEventBase {
         this.isComplete = false;
     }
 
-    isRewardAvailable(playerPlace: number): boolean {
-        return this.isComplete && playerPlace > -1 && playerPlace < this.rewards.length;
+    isRewardAvailable(): boolean {
+        return this.isComplete && this.playerPlace > -1 && this.playerPlace < this.rewards.length && !this.isRewardPicked;
     }
 
 

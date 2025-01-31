@@ -9,6 +9,9 @@ const { ccclass, property } = _decorator;
 @ccclass('WeeklyContestEvent')
 export class WeeklyContestEvent extends SkyRaceEvent {
 
+    private playerPlace: number = -1;
+
+
     onLoad() {
         this.players = [];
     }
@@ -40,9 +43,9 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
         this.isComplete = true;
 
-        let playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
+        this.playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
 
-        this.takeReward(playerPlace);
+        this.takeReward();
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -61,18 +64,18 @@ export class WeeklyContestEvent extends SkyRaceEvent {
     }
 
 
-    takeReward(playerPlace: number) {
-        if(!this.isRewardAvailable(playerPlace)) {
+    takeReward() {
+        if(!this.isRewardAvailable()) {
             return;
         }
 
-        this.applyReward(this.rewards[playerPlace]);
+        this.applyReward(this.rewards[this.playerPlace]);
 
         this.isComplete = false;
     }
 
-    isRewardAvailable(playerPlace: number): boolean {
-        return this.isComplete && playerPlace > -1 && playerPlace < this.rewards.length;
+    isRewardAvailable(): boolean {
+        return this.isComplete && this.playerPlace > -1 && this.playerPlace < this.rewards.length;
     }
 
 

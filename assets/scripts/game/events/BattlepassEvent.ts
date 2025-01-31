@@ -201,6 +201,29 @@ export class BattlepassEvent extends RocketFeverEvent {
     getIsBankTakeAvailable(): boolean {
         return !this.isBankTaken && this.isComplete;
     }
+
+
+    isRewardAvailable(): boolean {
+        if(this.getIsBankTakeAvailable()) {
+            return true;
+        }
+
+        let isPrem = UserData.instance.getIsPremium();
+
+        for(let i = 1; i <= this.currentStage; i++) {
+            if(!this.takenRewards.includes(i)) {
+                return true;
+            }
+
+            if(isPrem) {
+                if(!this.takenRewards_Premium.includes(i)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }
 
 

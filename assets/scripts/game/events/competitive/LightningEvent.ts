@@ -109,8 +109,13 @@ export class LightningEvent extends KingsCupEvent {
 
 
     handleEventCompletion() {
-        this.isComplete = true;
         this.isStarted = false;
+
+        this.updateMultiplayerData();
+
+        this.isComplete = true;
+
+        this.playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
 
         this.node.emit("refresh");
 
@@ -132,7 +137,7 @@ export class LightningEvent extends KingsCupEvent {
     }
 
     isRewardAvailable(): boolean {
-        return this.isComplete;
+        return this.isComplete && this.playerPlace === 0;
     }
 
 

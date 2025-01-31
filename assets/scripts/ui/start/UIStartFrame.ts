@@ -108,6 +108,10 @@ export class UIStartFrame extends UIFrameBase {
 
         this.chest.refresh();
 
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].refresh();
+        }
+
         ResolutionManager.instance.adjustResolution();
     }
 

@@ -115,6 +115,19 @@ export class TeamTreasureEvent extends TeamEventBase {
             console.log('Error fetching leaderboard data:', error);
         }
     }
+
+
+    isRewardAvailable(): boolean {
+        let progress = this.getTotalTeamProgress();
+
+        for(let i = 0; i < this.rewards.length; i++) {
+            if(progress >= this.rewards[i].progress && !this.isRewardPicked[i]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 

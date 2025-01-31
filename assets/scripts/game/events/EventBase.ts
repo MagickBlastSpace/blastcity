@@ -279,6 +279,11 @@ export class EventBase extends Component {
 
         SaveData.instance.saveEvent(this.eventId);
     }
+
+
+    isRewardAvailable(): boolean {
+        return false;
+    }
 }
 
 

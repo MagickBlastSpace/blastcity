@@ -29,6 +29,9 @@ export class UIEventButton extends Component {
     @property(Node)
     popupLayout: Node = null;
 
+    @property(Node)
+    rewardIndicator: Node = null;
+
     private instantiatedNode: Node | null = null;
     private eventPopup: any = null;
 
@@ -46,12 +49,20 @@ export class UIEventButton extends Component {
 
     start() {
         //this.loadAssets();
+
+        this.eventController.node.on("refresh", () => this.refresh());
     }
 
     update(deltaTime: number) {
         this.timeLabel.string = this.eventController.getRemainingTimeString();
 
-        this.node.active = this.eventController.isEventAvailable();
+        let isAvailable = this.eventController.isEventAvailable();
+
+        this.node.active = isAvailable;
+
+        if(!isAvailable) {
+            return;
+        }
 
         if(this.progressBar) {
             this.progressBar.progress = this.eventController.getTimeProgress();
@@ -59,6 +70,12 @@ export class UIEventButton extends Component {
 
         if(this.progressLabel) {
             this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
+        }
+    }
+
+    refresh() {
+        if(this.rewardIndicator) {
+            this.rewardIndicator.active = this.eventController.isRewardAvailable();
         }
     }
 

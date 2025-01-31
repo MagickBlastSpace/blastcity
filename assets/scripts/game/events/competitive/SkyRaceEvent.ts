@@ -115,7 +115,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     }
 
     isRewardAvailable(): boolean {
-        return this.isComplete && this.playerPlace > -1 && this.playerPlace < 3;
+        return this.isComplete && this.playerPlace > -1 && this.playerPlace < 3 && !this.isRewardPicked;
     }
 
 
