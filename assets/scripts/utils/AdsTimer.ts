@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, EventTouch, EventKeyboard, input, Input, game } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('AdsTimer')
@@ -19,7 +19,7 @@ export class AdsTimer extends Component {
 
     private levelsCounter: number = 0;
 
-    private MENU_TRESHOLD = 300; //5 minutes
+    private MENU_TRESHOLD = 30; //25 sec
     private GAMEPLAY_TRESHOLD = 1200; //20 minutes
 
 
@@ -40,6 +40,8 @@ export class AdsTimer extends Component {
         console.log("Advertsment type: " + this.adsType);
 
         this.startMenuTimer();
+
+        this.registerUserActivity();
     }
 
     update(dt: number) {
@@ -50,7 +52,7 @@ export class AdsTimer extends Component {
         if(this.isMenu) {
             this.menuTime += dt;
             if (this.hasExceededMenuTime(this.menuTime)) {
-                console.log("Menu time has exceeded 5 minutes!");
+                console.log("Menu time has exceeded!");
 
                 this.resetMenuTimer();
     
@@ -58,6 +60,24 @@ export class AdsTimer extends Component {
             }
         }
     }
+
+
+    registerUserActivity() {
+        const resetTimer = () => {
+            if (this.menuTime > 0) {
+                console.log("User input detected, resetting timer.");
+            }
+            this.menuTime = 0;
+        };
+
+        input.on(Input.EventType.TOUCH_START, resetTimer, this);
+        input.on(Input.EventType.TOUCH_END, resetTimer, this);
+        input.on(Input.EventType.KEY_DOWN, resetTimer, this);
+        input.on(Input.EventType.KEY_UP, resetTimer, this);
+
+        game.on(Game.EVENT_SHOW, resetTimer, this);
+    }
+
 
     startGameplayTimer() {
         console.log("Started Gameplay Timer");
