@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node, Button, Label, assetManager } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { GameData } from '../../data/GameData';
@@ -12,6 +14,7 @@ import { EventsController } from '../../game/events/EventsController';
 import { UIStartFrameEffects } from '../effects/UIStartFrameEffects';
 import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
 import { AudioController } from '../../utils/AudioController';
+import { Level } from '../../game/Level';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -36,6 +39,8 @@ export class UIStartFrame extends UIFrameBase {
 
     @property(Field)
     field: Field = null;
+    @property(Level)
+    level: Level = null;
 
     @property(KingLeagueEvent)
     kingLeague: KingLeagueEvent = null;
@@ -67,6 +72,7 @@ export class UIStartFrame extends UIFrameBase {
         });
         
         this.briefingPopup.node.on("play", () => this.onPlay());
+        this.briefingPopup.node.on("play_rewarded", () => this.onPlayRewarded());
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
@@ -174,6 +180,19 @@ export class UIStartFrame extends UIFrameBase {
         }
         catch (error) {
             console.log(error);
+        }
+    }
+
+    onPlayRewarded() {
+        this.onPlay();
+
+        this.showRewardedAd();
+    }
+
+    async showRewardedAd() {
+        const success = await gamepush.ads.showRewardedVideo();
+        if (success) {
+            this.level.addExtraMoves(4);
         }
     }
 

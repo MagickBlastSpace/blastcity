@@ -43,6 +43,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     closeBtn: Button = null;
     @property(Button)
     butlersGiftInfoBtn: Button = null;
+    @property(Button)
+    playRewardedBtn: Button = null;
 
     @property(UIFrameBase)
     butlersGiftInfoPopup: UIFrameBase = null;
@@ -63,6 +65,7 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         this.butlersGiftInfoPopup.node.on("play", () => this.onPlayBtnClick());
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+        this.playRewardedBtn.node.on(Button.EventType.CLICK, this.onPlayRewardedBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.hide, this);
         this.butlersGiftInfoBtn.node.on(Button.EventType.CLICK, this.showButlerGiftInfo, this);
 
@@ -124,6 +127,19 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         this.hide();
         
         this.node.emit("play");
+    }
+
+    onPlayRewardedBtnClick() {
+        /*if(!UserData.instance.isEndlessLivesActive()) {
+            if (gamepush.player.get('energy') <= 0) {
+                this.refillEnergyPopup.show();
+                return;
+            }
+        }*/
+        
+        this.hide();
+        
+        this.node.emit("play_rewarded");
     }
 
     showButlerGiftInfo() {
