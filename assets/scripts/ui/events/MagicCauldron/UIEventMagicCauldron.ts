@@ -156,15 +156,14 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
         for(let i = 0; i < this.historyShelfs.length; i++) {
             this.historyShelfs[i].node.active = i < historySize;
-
-            if(i < historySize) {
-                this.historyShelfs[i].refresh(history[i], hints);
-            }
         }
 
         if(historySize > this.lastHistorySize) {
-            this.scrollToTop();
             this.scheduleOnce(() => this.animateScrollToBottom(), 0.1);
+
+            for(let i = this.lastHistorySize; i < historySize; i++) {
+                this.historyShelfs[i].refresh(history[i], hints);
+            }
         }
 
         this.lastHistorySize = historySize;
