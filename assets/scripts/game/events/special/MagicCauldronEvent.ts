@@ -56,16 +56,26 @@ export class MagicCauldronEvent extends SpecialEventBase {
             //return;
         }
 
+        console.log("Winemaking Before Move State: " + this.predictions);
+
         this.collectable--;
 
-        this.predictions.push(prediction);
+        const index = this.predictions.indexOf("undefined");
+        if (index !== -1) {
+            this.predictions[index] = prediction;
+        }
+        else {
+            this.predictions.push(prediction);
+        }
 
         this.fillPredictionsHints();
 
         this.node.emit("refresh");
 
-        if(this.poolToPredict.length === 0) {
-            this.poolToPredict = this.shufflePool(this.getCurrentPool());
+        let curPool = this.getCurrentPool();
+        
+        if(this.poolToPredict.length === 0 || this.poolToPredict.length < curPool.length) {
+            this.poolToPredict = this.shufflePool(curPool);
             
             if(this.hints.length !== this.poolToPredict.length) {
                 this.hints = [];
@@ -75,9 +85,36 @@ export class MagicCauldronEvent extends SpecialEventBase {
             }
         }
 
-        if(this.predictions.length >= this.poolToPredict.length) {
+        console.log("Winemaking After Move State: " + this.predictions);
+        console.log("Winemaking Pool To Predict: " + this.poolToPredict);
+
+        if(this.predictions.length >= this.poolToPredict.length && !this.predictions.includes("undefined")) {
             this.checkStageCompletion();
         }
+
+        SaveData.instance.saveEvent(this.eventId);
+    }
+
+    removeColor(color: string) {
+        if(color === "" || color === "none" || color === "undefined") {
+            return;
+        }
+        
+        console.log("Winemaking Before Unpick State: " + this.predictions);
+
+        const index = this.predictions.indexOf(color);
+        if (index !== -1) {
+            this.predictions[index] = "undefined";
+        }
+        else {
+            return;
+        }
+
+        this.collectable++;
+
+        this.node.emit("refresh");
+
+        console.log("Winemaking After Unpick State: " + this.predictions);
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -101,8 +138,6 @@ export class MagicCauldronEvent extends SpecialEventBase {
             }
 
             this.history.push(historyPack);
-
-            
         }
 
         this.startStage();

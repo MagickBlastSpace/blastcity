@@ -83,6 +83,10 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             this.predictionBtns[i].node.on("move", (color) => this.makeMove(color));
         }
 
+        for(let i = 0; i < this.items.length; i++) {
+            this.items[i].node.on("remove", (color) => this.removeColor(color));
+        }
+
         this.lastHistorySize = 0;
     }
 
@@ -148,7 +152,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
             
             this.items[i].refresh(color);
 
-            this.items[i].setIndicator(hints.includes(color));
+            this.items[i].setIndicator(hints.includes(color) && color !== "undefined");
         }
 
         let history = this.eventController.getHistory();
@@ -229,6 +233,10 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
     makeMove(color: string) {
         this.eventController.makeMove(color);
+    }
+
+    removeColor(color: string) {
+        this.eventController.removeColor(color);
     }
 
 

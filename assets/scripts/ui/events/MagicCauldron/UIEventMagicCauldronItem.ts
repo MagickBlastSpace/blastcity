@@ -23,9 +23,30 @@ export class UIEventMagicCauldronItem extends Component {
     @property(SpriteFrame)
     passive: SpriteFrame = null;
 
+    @property
+    isClickable: boolean = false;
+
+    private col: string = "";
+
+
+    start() {
+        if(this.isClickable) {
+            this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
+        }
+    }
+
+
+    onTouchStart(event: cc.Event.EventTouch) {
+        if(this.col !== "" && this.col !== "none" && this.col !== "undefined") {
+            this.node.emit("remove", this.col);
+        }
+    }
+
 
     refresh(color: string) {
-        if(color === "none") {
+        this.col = color;
+
+        if(color === "none" || (color === "undefined" && this.isClickable)) {
             if(this.icon.spriteFrame !== null) {
                 tween(this.icon.node).stop();
                 tween(this.icon.node)
