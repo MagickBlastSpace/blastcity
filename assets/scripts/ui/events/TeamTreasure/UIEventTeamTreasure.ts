@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Button, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Node, Label, Button, Prefab, instantiate, ProgressBar } from 'cc';
 import { UIEventTeamTreasureRewardItem } from './UIEventTeamTreasureRewardItem';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventKingsCupPlayerItem } from '../KingsCup/UIEventKingsCupPlayerItem';
@@ -33,6 +33,9 @@ export class UIEventTeamTreasure extends UIEventPopupFrameBase {
     itemPrefab: Prefab = null;
     @property([UIEventKingsCupPlayerItem])
     items: UIEventKingsCupPlayerItem[] = [];
+
+    @property(ProgressBar)
+    progressBar: ProgressBar = null;
 
     private isEventStarted = false;
 
@@ -91,6 +94,10 @@ export class UIEventTeamTreasure extends UIEventPopupFrameBase {
 
         this.total.string = totalProgress + "/" + rewardsData[rewardsData.length - 1].progress;
         this.teamName.string = this.eventController.getClanName();
+
+        if(this.progressBar) {
+            this.progressBar.progress = totalProgress / rewardsData[rewardsData.length - 1].progress;
+        }
     }
 
 
