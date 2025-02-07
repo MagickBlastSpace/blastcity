@@ -24,6 +24,8 @@ export class TeamEventBase extends WeeklyEventBase {
 
     private isComplete: boolean = false;
 
+    private isUpdating: boolean = false;
+
     
     onLoad() {
         this.players = [];

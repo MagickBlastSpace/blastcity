@@ -5,6 +5,7 @@ import { WeeklyEventBase } from '../WeeklyEventBase';
 import { PlayerEventData } from '../../../data/EventData';
 import { SaveData } from '../../../data/SaveData';
 import { Net } from '../../../net/Net';
+import { UserData } from '../../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('CompetitiveEventBase')
@@ -21,6 +22,8 @@ export class CompetitiveEventBase extends WeeklyEventBase {
     private isComplete: boolean = false;
 
     private multiplayerChannelId: number = 0;
+
+    private isUpdating: boolean = false;
 
 
     onLoad() {
@@ -194,7 +197,14 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
 
     async updateMultiplayerData() {
+        if(this.isUpdating) {
+            return;
+        }
+
         this.players = [];
+        let ids = [];
+
+        this.isUpdating = true;
 
         try {
             const result = await Net.instance.fetchScoreLeaderboardData(this.eventId, this.eventId + "_" + this.multiplayerChannelId);
@@ -205,13 +215,23 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 player.playerName = players[i].name;
                 player.progressValue = players[i].score;
 
-                this.players.push(player);
+                let id = players[i].id;
+
+                if(!ids.includes(id)) {
+                    ids.push(id);
+
+                    this.players.push(player);
+                }
             }
 
             this.node.emit("refresh");
 
+            this.isUpdating = false;
+
         } catch (error) {
             console.log('Error fetching leaderboard data:', error);
+
+            this.isUpdating = false;
         }
     }
 

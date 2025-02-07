@@ -194,7 +194,14 @@ export class KingsCupEvent extends WeeklyContestEvent {
 
 
     async updateMultiplayerData() {
+        if(this.isUpdating) {
+            return;
+        }
+
         this.players = [];
+        let ids = [];
+
+        this.isUpdating = true;
 
         try {
             const result = await Net.instance.fetchScoreLeaderboardData(this.eventId, this.eventId + "_" + this.multiplayerChannelId);
@@ -205,13 +212,23 @@ export class KingsCupEvent extends WeeklyContestEvent {
                 player.playerName = players[i].name;
                 player.progressValue = players[i].score;
 
-                this.players.push(player);
+                let id = players[i].id;
+
+                if(!ids.includes(id)) {
+                    ids.push(id);
+
+                    this.players.push(player);
+                }
             }
 
             this.node.emit("refresh");
 
+            this.isUpdating = false;
+
         } catch (error) {
             console.log('Error fetching leaderboard data:', error);
+
+            this.isUpdating = false;
         }
     }
 }
