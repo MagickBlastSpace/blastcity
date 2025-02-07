@@ -210,7 +210,7 @@ export class BattlepassEvent extends RocketFeverEvent {
 
         let isPrem = UserData.instance.getIsPremium();
 
-        for(let i = 1; i <= this.currentStage; i++) {
+        for(let i = 0; i < this.currentStage; i++) {
             if(!this.takenRewards.includes(i)) {
                 return true;
             }
