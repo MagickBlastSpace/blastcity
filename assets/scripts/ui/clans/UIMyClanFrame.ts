@@ -36,6 +36,8 @@ export class UIMyClanFrame extends UIPopupFrameBase {
     @property(Label)
     cooldownTimeLabel: Label = null;
 
+    private itemsToClean: Node[] = [];
+
     private data: ClanData = null;
 
 
@@ -98,6 +100,8 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         if(data.ownerId === UserData.instance.getPlayerId()) {
             Net.instance.fetchClanJoinRequests(data.clanId);
         }
+
+        this.checkForAskEnergyRequests();
     }
 
     refreshJoinRequests(items: any) {
@@ -143,6 +147,8 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         let item = itemNode.getComponent("UIClansAskForEnergyItem");
             
         item.init(message);
+
+        this.itemsToClean.push(itemNode);
     }
 
     spawnRequestItem() {
@@ -152,6 +158,26 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         let item = itemNode.getComponent("UIClanRequestItem");
             
         this.requests.push(item);
+    }
+
+
+    async checkForAskEnergyRequests() {
+        for(let i = this.itemsToClean.length - 1; i >= 0; i--) {
+            this.itemsToClean[i].destroy();
+        }
+
+        this.itemsToClean = [];
+
+        const response = await gamepush.channels.fetchMessages({
+            channelId: this.data.clanId,
+            tags: ['ask_for_energy'],
+            limit: 10,
+            offset: 0,
+        });
+
+        response.items.forEach((message) => {
+            this.spawnAskForEnergyItem(message);
+        });
     }
 }
 

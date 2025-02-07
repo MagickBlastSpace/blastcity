@@ -1,7 +1,9 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label, Button } from 'cc';
+import { _decorator, Component, Node, Label, Button, SpriteFrame, Sprite } from 'cc';
 import { UserData } from '../../data/UserData';
+import { Profile } from '../../game/Profile';
+import { Net } from '../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClansAskForEnergyItem')
@@ -13,6 +15,9 @@ export class UIClansAskForEnergyItem extends Component {
     @property(Button)
     helpButton: Button = null;
 
+    @property(Sprite)
+    avatar: Sprite = null;
+
     private playerName: string = "";
     private playerId: number = 0;
 
@@ -22,17 +27,14 @@ export class UIClansAskForEnergyItem extends Component {
     }
     
     init(message: any) {
-        if(message.player.name === UserData.instance.getPlayerName()) {
-            this.nameLabel.string = "You asked for help";
-            this.helpButton.node.active = false;
-        }
-        else {
-            this.nameLabel.string = message.player.name + " asked for help";
-            this.helpButton.node.active = true;
-        }
+        this.nameLabel.string = message.player.name;
+
+        this.helpButton.node.active = message.player.name !== UserData.instance.getPlayerName();
 
         this.playerId = message.authorId;
         this.playerName = message.player.name;
+
+        this.loadAvatar(this.playerId);
     }
 
     
@@ -46,6 +48,26 @@ export class UIClansAskForEnergyItem extends Component {
         gamepush.player.add('stat_energy_given', 1);
 
         this.node.destroy();
+    }
+
+
+    async loadAvatar(id: number) {
+        try {
+            let ids = [id];
+            const result = await Net.instance.getPlayersByIds(ids);
+            
+            const { players } = result;
+            
+            if(players.length > 0) {
+                if(this.avatar) {
+                    this.avatar.spriteFrame = Profile.instance.getAvatarById(players[0].state["avatar_id"]);
+                }
+            }
+        }
+
+        catch (error) {
+            console.log('Error fetching players:', error);
+        }
     }
 }
 
