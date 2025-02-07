@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, ProgressBar, Button, Label, instantiate } from 'cc';
+import { _decorator, Component, Node, Prefab, ProgressBar, Button, Label, instantiate, ScrollView, Vec2 } from 'cc';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventBattlepassItem } from './UIEventBattlepassItem';
 import { UserData } from '../../../data/UserData';
@@ -22,6 +22,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     @property(ProgressBar)
     progressBar: ProgressBar = null;
+    @property(ScrollView)
+    scrollView: ScrollView = null;
 
     @property(Prefab)
     itemPrefab: Prefab = null;
@@ -67,6 +69,9 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.bonusSafe.on("take", () => {
             this.eventController.takeBonusBank();
         });
+
+        const percent = this.eventController.getCurrentStage() / this.eventController.getTotalStages();
+        this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
     }
 
     update(deltaTime: number) {
@@ -99,6 +104,9 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.progressBar.progress = this.eventController.getTimeProgress();
 
         this.bonusSafeComp.refresh(isPrem, this.eventController.getIsBankTakeAvailable(), this.eventController.getBonusBank());
+
+        const percent = this.eventController.getCurrentStage() / this.eventController.getTotalStages();
+        this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
     }
 
 

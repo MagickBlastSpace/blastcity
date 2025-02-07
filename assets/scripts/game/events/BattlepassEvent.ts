@@ -224,6 +224,11 @@ export class BattlepassEvent extends RocketFeverEvent {
 
         return false;
     }
+
+
+    getTotalStages(): number {
+        return this.eventData.length;
+    }
 }
 
 
