@@ -60,6 +60,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         this.isComplete = false;
 
         this.currentStep = 0;
+        this.playerPlace = -1;
 
         this.lastAttemptTimestamp = Date.now();
 
@@ -109,9 +110,14 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         this.applyReward(this.rewards[this.playerPlace]);
 
         this.currentStep = 0;
+        this.playerPlace = -1;
 
         this.isStarted = false;
         this.isComplete = false;
+
+        SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("refresh");
     }
 
     isRewardAvailable(): boolean {

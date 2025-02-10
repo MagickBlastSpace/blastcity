@@ -1,6 +1,8 @@
 import { _decorator, Component, Node, Label, Slider, tween, Sprite, SpriteFrame, Button } from 'cc';
 import { PlayerEventData } from '../../../data/EventData';
 import { UserData } from '../../../data/UserData';
+import { Net } from '../../../net/Net';
+import { Profile } from '../../../game/Profile';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventSkyRacePlayerItem')
@@ -21,26 +23,36 @@ export class UIEventSkyRacePlayerItem extends Component {
     rewardsLayout: Node = null;
     @property(Node)
     rewardsPlayerLayout: Node = null;
-    @property(Sprite)
-    rewardIcon: Sprite = null;
-    @property([SpriteFrame])
-    rewardIcons: SpriteFrame[] = [];
+
+    @property([Node])
+    rewards: Node[] = [];
 
     @property(Sprite)
     placeIcon: Sprite = null;
     @property([SpriteFrame])
     placeIcons: SpriteFrame[] = [];
 
+    @property(Sprite)
+    avatar: Sprite = null;
+
     @property(Button)
     takeRewardBtn: Button = null;
+    @property(Button)
+    showRewardBtn: Button = null;
 
     private index: number = 0;
     private isRewardTaken: boolean = false;
+
+    private data: PlayerEventData;
 
     
     start() {
         if(this.takeRewardBtn && this.takeRewardBtn !== undefined) {
             this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeClick, this);
+        }
+
+        if(this.showRewardBtn && this.showRewardBtn !== undefined) {
+            this.showRewardBtn.node.on(Button.EventType.CLICK, this.onShowRewardClick, this);
         }
     }
     
@@ -49,21 +61,15 @@ export class UIEventSkyRacePlayerItem extends Component {
     }
     
     refresh(data: PlayerEventData) {
+        this.data = data;
+
         this.playerName.string = data.playerName;
         this.progressLabel.string = data.progressValue;
 
-        this.isPlayer.active = UserData.instance.getPlayerName() === data.playerName || data.playerName === UserData.instance.getClanName();
+        this.isPlayer.active = UserData.instance.getPlayerName() === this.data.playerName || this.data.playerName === UserData.instance.getClanName();
 
-        if(this.rewardsLayout && this.rewardsLayout !== undefined) {
-            this.rewardsLayout.active = data.progressValue >= 15;
-
-            if(this.rewardIcon) {
-                this.rewardIcon.spriteFrame = this.rewardIcons[this.index];
-            }
-        }
-        
-        if(this.rewardsPlayerLayout && this.rewardsPlayerLayout !== undefined) {
-            this.rewardsPlayerLayout.active = data.progressValue >= 15 && UserData.instance.getPlayerName() === data.playerName && !this.isRewardTaken;
+        if(this.isRewardAvailable()) {
+            this.showRewardLayout();
         }
 
         if(this.placeIcon && this.placeIcon !== undefined) {
@@ -79,10 +85,60 @@ export class UIEventSkyRacePlayerItem extends Component {
             return;
         }
 
+        this.loadAvatar(data.playerId);
+
         tween(this.slider)
             .to(2, { progress: data.progressValue / 15 }, { easing: 'quadInOut' })
             .start();
     }
+
+
+    showRewardLayout() {
+        if(this.rewardsLayout && this.rewardsLayout !== undefined) {
+            if(this.index < 0 || this.index > 2) {
+                this.rewardsLayout.active = false;
+
+                return;
+            }
+
+            this.rewardsLayout.active = true;
+
+            for(let i = 0; i < this.rewards.length; i++) {
+                this.rewards[i].active = false;
+            }
+
+            this.rewards[this.index].active = true;
+        }
+        
+        if(this.rewardsPlayerLayout && this.rewardsPlayerLayout !== undefined) {
+            this.rewardsPlayerLayout.active = this.isRewardAvailable();
+        }
+    }
+
+    isRewardAvailable(): boolean {
+        return this.data.progressValue >= 15 && UserData.instance.getPlayerName() === this.data.playerName && !this.isRewardTaken && this.index >= 0 && this.index < 3
+    }
+
+
+    async loadAvatar(id: number) {
+        try {
+            let ids = [id];
+            const result = await Net.instance.getPlayersByIds(ids);
+            
+            const { players } = result;
+            
+            if(players.length > 0) {
+                if(this.avatar) {
+                    this.avatar.spriteFrame = Profile.instance.getAvatarById(players[0].state["avatar_id"]);
+                }
+            }
+        }
+
+        catch (error) {
+            console.log('Error fetching players:', error);
+        }
+    }
+
 
     onTakeClick() {
         this.node.emit("take_reward");
@@ -91,6 +147,17 @@ export class UIEventSkyRacePlayerItem extends Component {
         
         if(this.rewardsPlayerLayout) {
             this.rewardsPlayerLayout.active = false;
+        }
+    }
+
+    onShowRewardClick() {
+        if(this.rewardsLayout) {
+            if(this.rewardsLayout.active) {
+                this.rewardsLayout.active = false;
+            }
+            else {
+                this.showRewardLayout();
+            }
         }
     }
 }

@@ -214,6 +214,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 let player = new PlayerEventData();
                 player.playerName = players[i].name;
                 player.progressValue = players[i].score;
+                player.playerId = players[i].id;
 
                 let id = players[i].id;
 
