@@ -74,7 +74,7 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
         let curPool = this.getCurrentPool();
         
-        if(this.poolToPredict.length === 0 || this.poolToPredict.length < curPool.length) {
+        if(!this.isPoolsAreEqual(this.poolToPredict, curPool)) {
             this.poolToPredict = this.shufflePool(curPool);
             
             if(this.hints.length !== this.poolToPredict.length) {
@@ -95,11 +95,33 @@ export class MagicCauldronEvent extends SpecialEventBase {
         SaveData.instance.saveEvent(this.eventId);
     }
 
+    isPoolsAreEqual(pool1: string[], pool2: string[]): boolean {
+        if(pool1.length !== pool2.length) {
+            return false;
+        }
+
+        if(pool1.length === 0 || pool2.length === 0) {
+            return false;
+        }
+
+        for(let i = 0; i < pool1.length; i++) {
+            if(!pool2.includes(pool1[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     removeColor(color: string) {
         if(color === "" || color === "none" || color === "undefined") {
             return;
         }
-        
+
+        if(this.hints.includes(color)) {
+            return;
+        }
+
         console.log("Winemaking Before Unpick State: " + this.predictions);
 
         const index = this.predictions.indexOf(color);
