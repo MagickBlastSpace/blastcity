@@ -47,7 +47,7 @@ export class UITile extends Component {
     spine: sp.Skeleton = null;
 
     @property
-    destroyTime: number = 0.25;
+    destroyTime: number = 0.05;
 
     @property(AudioSource)
     source: AudioSource = null!
@@ -58,6 +58,7 @@ export class UITile extends Component {
     additionalAudios: AudioClip[] = [];
 
     private fallTime: number = 0.35;
+    private fallSpeed: number = 3300;
 
     private isBlocked: boolean = false;
 
@@ -87,7 +88,8 @@ export class UITile extends Component {
         }
 
         let fallMultiplier = isStatus ? 1 : 7;
-        this.node.setPosition(posX, posY + this.node.height * fallMultiplier);
+        let startPosition = posY + this.node.height * fallMultiplier;
+        this.node.setPosition(posX, startPosition);
 
         this.currentX = posX;
         this.currentY = posY;
@@ -99,9 +101,11 @@ export class UITile extends Component {
             this.content = this.node;
         }
 
+        let fallTime = (startPosition - posY) / this.fallSpeed;
+
         tween(this.node)
             .to(0.05, { scale: new Vec3(0.92, 1.08, 1) }, { easing: 'linear' })
-            .to(this.fallTime, { position: new Vec3(posX, posY, 0) })
+            .to(fallTime, { position: new Vec3(posX, posY, 0) })
             .call(() => layout.addChild(this.node))
             .to(0.07, { scale: new Vec3(1.03, 0.97, 1) }, { easing: 'elasticInOut' })
             .to(0.07, { scale: new Vec3(0.97, 1.03, 1) }, { easing: 'elasticInOut' })
