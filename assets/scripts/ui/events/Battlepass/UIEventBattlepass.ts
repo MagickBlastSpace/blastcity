@@ -3,6 +3,7 @@ import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventBattlepassItem } from './UIEventBattlepassItem';
 import { UserData } from '../../../data/UserData';
 import { UIEventBattlepassBonusBank } from './UIEventBattlepassBonusBank';
+import { ResolutionManager } from '../../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventBattlepass')
@@ -104,9 +105,6 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.progressBar.progress = this.eventController.getTimeProgress();
 
         this.bonusSafeComp.refresh(isPrem, this.eventController.getIsBankTakeAvailable(), this.eventController.getBonusBank());
-
-        const percent = this.eventController.getCurrentStage() / this.eventController.getTotalStages();
-        this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
     }
 
 
@@ -114,6 +112,28 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         super.show();
 
         this.refresh();
+
+        this.scrollToCurrentStage();
+    }
+
+
+    scrollToCurrentStage() {
+        let curStage = this.eventController.getCurrentStage() - 1;
+
+        if(curStage < 0) {
+            curStage = 0;
+        }
+
+        let percent = curStage / this.eventController.getTotalStages();
+
+        let isPortrait = ResolutionManager.instance.isPortraitOrientation();
+        if(isPortrait) {
+            percent = 1 - percent;
+        }
+
+        this.scheduleOnce(() => {
+            this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
+        }, 0.2);
     }
 
 

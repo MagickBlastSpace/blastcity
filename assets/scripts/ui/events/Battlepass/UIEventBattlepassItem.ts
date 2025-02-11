@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Sprite, Button, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, Button, SpriteFrame, ProgressBar, tween } from 'cc';
 import { UIEventRocketFeverItem } from '../RocketFever/UIEventRocketFeverItem';
 import { RocketFeverEventData } from '../../../data/EventData';
 import { UserData } from '../../../data/UserData';
@@ -26,6 +26,9 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
     takeBtn: Button = null;
     @property(Button)
     takeBtn_Premium: Button = null;
+
+    @property(ProgressBar)
+    progressBar: ProgressBar = null;
 
     private stageIndex: number = 0;
     private isComplete: boolean = false;
@@ -123,6 +126,22 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
             this.rewardIcon.spriteFrame = this.chestsIcons[0];
             this.rewardLabel.string = "";
             this.rewardLabel_Premium.string = "";
+        }
+
+        if(currentStage >= stageNumber) {
+            tween(this.progressBar)
+                .to(0, { progress: 1.0 })
+                .start();
+        }
+        else if(currentStage < stageNumber - 1) {
+            tween(this.progressBar)
+                .to(0, { progress: 0.0 })
+                .start();
+        }
+        else {
+            tween(this.progressBar)
+                .to(2, { progress: 0.5 })
+                .start();
         }
     }
 
