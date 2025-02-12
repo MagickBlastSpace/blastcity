@@ -57,6 +57,9 @@ export class UITile extends Component {
     @property([AudioClip])
     additionalAudios: AudioClip[] = [];
 
+    @property
+    disableSound: boolean = false;
+
     private fallTime: number = 0.35;
     private fallSpeed: number = 3300;
 
@@ -380,6 +383,10 @@ export class UITile extends Component {
 
 
     playDestroySound() {
+        if(this.disableSound) {
+            return;
+        }
+
         if(!AudioController.instance.isSfxEnabled()) {
             return;
         }
@@ -393,8 +400,8 @@ export class UITile extends Component {
         }
 
         if (this.destroyAudios.length > 0) {
-            const randomIndex = Math.floor(Math.random() * this.destroyAudios.length);
-            const randomClip = this.destroyAudios[randomIndex];
+            //const randomIndex = Math.floor(Math.random() * this.destroyAudios.length);
+            const randomClip = this.destroyAudios[0];
 
             this.source.playOneShot(randomClip);
         } else {
@@ -403,6 +410,10 @@ export class UITile extends Component {
     }
 
     playAdditionalSound(soundIndex: number) {
+        if(this.disableSound) {
+            return;
+        }
+
         if(!AudioController.instance.isSfxEnabled()) {
             return;
         }

@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Vec2 } from 'cc';
 import { TileBase } from '../TileBase';
+import { AudioController } from '../../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('BonusTileBase')
@@ -246,7 +247,23 @@ export class BonusTileBase extends TileBase {
 
 
     playComboSound() {
-        this.playSound(0);
+        AudioController.instance.playCombo();
+    }
+
+    playRocketSound() {
+        AudioController.instance.playRocket();
+    }
+
+    playBombSound() {
+        AudioController.instance.playBomb();
+    }
+
+    playDiscoballSound() {
+        AudioController.instance.playDiscoball();
+    }
+
+    playDoubleDiscoballSound() {
+        AudioController.instance.playDoubleDiscoball();
     }
 
 

@@ -55,6 +55,7 @@ export class Bomb extends BonusTileBase {
         let matches = [];
 
         this.playAnimation("bomb", false, 1);
+        this.playBombSound();
 
         const totalTime = this.respawnDelay / 2;
         const timeStep = totalTime / 9;
@@ -228,7 +229,7 @@ export class Bomb extends BonusTileBase {
     }
 
     setBonusPoolAnimation() {
-        this.isBonusPoolState = true;
+        //this.isBonusPoolState = true;
 
         this.scheduleOnce(() => {
             this.playAnimation("bomb_discoball", true, 1);

@@ -140,7 +140,7 @@ export class Discoball extends BonusTileBase {
             }
         }, totalTime - 0.05);
 
-        this.playComboSound();
+        this.playDiscoballSound();
 
         return matches;
     }
@@ -268,7 +268,7 @@ export class Discoball extends BonusTileBase {
 
         this.activateDiscoballComboAnimation(field);
         this.playAnimation("discoball_discoball", false, 1);
-        this.playDoubleDiscoSound();
+        this.playDoubleDiscoballSound();
         this.playHideAnimation(this.icon.node);
 
         this.scheduleOnce(() => {
@@ -313,7 +313,7 @@ export class Discoball extends BonusTileBase {
             this.getDiscoballComboMatches(field, statuses);
         }, this.respawnDelay);
 
-        this.playDoubleDiscoSound();
+        this.playDoubleDiscoballSound();
 
         return matches;
     }
@@ -438,11 +438,6 @@ export class Discoball extends BonusTileBase {
             this.icon.spriteFrame = this.multiIcons.find(i => i.id === primaryColor)?.icon;
         }
         
-    }
-
-
-    playDoubleDiscoSound() {
-        this.playSound(1);
     }
 }
 

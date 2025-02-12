@@ -7,6 +7,7 @@ import { ButlersGift } from './boosters/ButlersGift';
 import { SaveData } from '../data/SaveData';
 import { UserData } from '../data/UserData';
 import { AssetsLoader } from '../utils/AssetsLoader';
+import { AudioController } from '../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -1950,6 +1951,10 @@ export class Field extends Component {
 
         if(isMatchesFound) {
             this.node.emit("move");
+
+            if(tileComponent.isCommonTile()) {
+                AudioController.instance.playTilesDestroy();
+            }
 
             if(this.levelCompletePoints > 0) {
                 this.levelCompletePoints = this.levelCompletePoints - 1;

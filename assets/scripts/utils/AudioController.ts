@@ -1,315 +1,163 @@
-import { _decorator, Component, Node, assetManager, AudioSource, AudioClip } from 'cc';
+import { _decorator, Component, AudioSource, AudioClip, assetManager } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('AudioController')
 export class AudioController extends Component {
+    @property(AudioSource) soundtrackSource: AudioSource = null!;
+    @property(AudioSource) uiSource: AudioSource = null!;
+    @property(AudioSource) baseTileSource: AudioSource = null!;
+    @property(AudioSource) bonusTileSource: AudioSource = null!;
 
-    @property(AudioSource)
-    public soundtrackSource: AudioSource = null!
-
-    @property(AudioSource)
-    public uiSource: AudioSource = null!
-
-    /*@property(AudioSource)
-    public baseTileSource: AudioSource = null!
-    @property(AudioSource)
-    public bonusTileSource: AudioSource = null!
-    @property(AudioSource)
-    public specTileSource: AudioSource = null!*/
-
-    private click: AudioClip = null!
-    private popup: AudioClip = null!
-
-    private levelComplete: AudioClip = null!
-    private win: AudioClip = null!
-    private lose: AudioClip = null!
-
-    private hammer: AudioClip = null!
-    private bow: AudioClip = null!
-    private cannon: AudioClip = null!
-    private shuffle: AudioClip = null!
+    private audioCache: Map<string, AudioClip> = new Map();
+    private musicCache: Map<string, AudioClip> = new Map();
+    private soundCooldowns: Map<string, number> = new Map(); // Prevents rapid repeated playbacks
 
     public static instance: AudioController = null;
+    
+    private isMusic = true;
+    private isSfx = true;
+    private isVibration = true;
+    private isAssetsLoaded = false;
 
-    private isMusic: boolean = true;
-    private isSfx: boolean = true;
-    private isVibration: boolean = true;
-
-    private isAssetsLoaded: boolean = false;
-
+    private baseTileNames: string[] = ['base_tile_destroy_1', 'base_tile_destroy_2', 'base_tile_destroy_3', 'base_tile_destroy_4', 'base_tile_destroy_5'];
 
     onLoad() {
-        AudioController.instance = this;
+        if (!AudioController.instance) {
+            AudioController.instance = this;
+        }
     }
 
-    start() {
-        //this.loadSoundsAssets();
-    }
-
-
-    /*Assets Management*/
+    /* Asset Management */
     loadSoundsAssets() {
-        if(this.isAssetsLoaded) {
+        if (this.isAssetsLoaded) return;
+        this.isAssetsLoaded = true;
+        this.loadBundleSounds('sounds_ui', ['click', 'popup']);
+        this.loadBundleSounds('sounds_boosters', ['hammer', 'bow', 'cannon', 'shuffle']);
+        this.loadBundleSounds('sounds_level', ['level_complete', 'win', 'lose']);
+        this.loadBundleSounds('sounds_bonuses', ['bomb', 'rocket', 'discoball', 'double_discoball', 'combo']);
+        this.loadBundleSounds('sounds_tiles', this.baseTileNames);
+        this.loadMusicAssets();
+    }
+
+    private loadBundleSounds(bundleName: string, sounds: string[]) {
+        assetManager.loadBundle(bundleName, (err, bundle) => {
+            if (err) return;
+            sounds.forEach(sound => this.loadSound(bundle, sound));
+        });
+    }
+
+    private loadSound(bundle: any, soundName: string) {
+        bundle.load(soundName, AudioClip, (err, audio) => {
+            if (!err) this.audioCache.set(soundName, audio);
+        });
+    }
+
+    /* Music Caching */
+    private loadMusicAssets() {
+        assetManager.loadBundle('music', (err, bundle) => {
+            if (err) return;
+            ['main', 'gameplay'].forEach(track => {
+                bundle.load(track, AudioClip, (err, audio) => {
+                    if (!err) this.musicCache.set(track, audio);
+                });
+            });
+        });
+    }
+
+    private playMusic(soundtrackName: string) {
+        if (!this.isMusic) return;
+
+        // If the track is cached, use it instead of reloading
+        if (this.musicCache.has(soundtrackName)) {
+            if (this.soundtrackSource.clip !== this.musicCache.get(soundtrackName)) {
+                this.soundtrackSource.clip = this.musicCache.get(soundtrackName)!;
+                this.soundtrackSource.play();
+            }
             return;
         }
 
-        this.isAssetsLoaded = true;
-
-        this.loadUiSounds();
-        this.loadGameplaySounds();
-    }
-
-
-    loadUiSounds() {
-        assetManager.loadBundle("sounds_ui", (err, bundle) => {
-            if (err) {
-                return;
-            }
-
-            bundle.load("click", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.click = audio;
-            });
-
-            bundle.load("popup", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.popup = audio;
-            });
-        });
-    }
-
-    loadGameplaySounds() {
-        assetManager.loadBundle("sounds_boosters", (err, bundle) => {
-            if (err) {
-                return;
-            }
-
-            bundle.load("hammer", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.hammer = audio;
-            });
-
-            bundle.load("bow", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.bow = audio;
-            });
-
-            bundle.load("cannon", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.cannon = audio;
-            });
-
-            bundle.load("shuffle", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.shuffle = audio;
-            });
-        });
-
-        assetManager.loadBundle("sounds_level", (err, bundle) => {
-            if (err) {
-                return;
-            }
-
-            bundle.load("level_complete", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.levelComplete = audio;
-            });
-
-            bundle.load("win", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.win = audio;
-            });
-
-            bundle.load("lose", AudioClip, (err, audio) => {
-                if (err) {
-                    return;
-                }
-
-                this.lose = audio;
-            });
-        });
-    }
-
-
-    /*Music*/
-    playMainMenuSoundtrack() {
-        this.playMusic("main");
-    }
-
-    playGameplaySoundtrack() {
-        this.playMusic("gameplay");
-    }
-
-
-    playMusic(soundtrackName: string) {
-        if (this.soundtrackSource.playing) {
-            this.soundtrackSource.stop();
-        }
-
-        assetManager.loadBundle("music", (err, bundle) => {
-            if (err) {
-                console.error(`Failed to load bundle: music`, err);
-                return;
-            }
-
-            console.log(`Successfully loaded bundle: music"`);
-
+        // Load the music if not already cached
+        assetManager.loadBundle('music', (err, bundle) => {
+            if (err) return;
             bundle.load(soundtrackName, AudioClip, (err, audio) => {
-                if (err) {
-                    console.error(`Failed to load sound`, err);
-                    return;
-                }
-
-                console.log(`Successfully loaded sound`);
-
-                if (this.soundtrackSource.playing) {
-                    this.soundtrackSource.stop();
-                }
-
-                this.soundtrackSource.clip = audio;
-
-                if(this.isMusicEnabled()) {
+                if (!err) {
+                    this.musicCache.set(soundtrackName, audio);
+                    this.soundtrackSource.clip = audio;
                     this.soundtrackSource.play();
                 }
             });
         });
     }
 
+    playMainMenuSoundtrack() { this.playMusic('main'); }
+    playGameplaySoundtrack() { this.playMusic('gameplay'); }
 
-    /*UI*/
-    playClick() {
-        if(!this.isSfxEnabled() || !this.click) {
-            return;
-        }
+    /* Cooldown for Audio Clips */
+    private playSound(source: AudioSource, soundName: string, volume = 1) {
+        if (!this.isSfx || !this.audioCache.has(soundName)) return;
 
-        this.uiSource.playOneShot(this.click, 1);
+        const now = Date.now();
+        const lastPlayed = this.soundCooldowns.get(soundName) || 0;
+
+        // Prevent playing the same sound within 100ms
+        if (now - lastPlayed < 100) return;
+
+        this.soundCooldowns.set(soundName, now);
+        source.playOneShot(this.audioCache.get(soundName)!, volume);
     }
 
-    playPopup() {
-        if(!this.isSfxEnabled() || !this.popup) {
-            return;
-        }
+    /* UI Sounds */
+    playClick() { this.playSound(this.uiSource, 'click'); }
+    playPopup() { this.playSound(this.uiSource, 'popup'); }
 
-        this.uiSource.playOneShot(this.popup, 1);
+    /* Gameplay Sounds */
+    playLevelComplete() { this.playSound(this.uiSource, 'level_complete'); }
+    playWin() { this.playSound(this.uiSource, 'win'); }
+    playLose() { this.playSound(this.uiSource, 'lose'); }
+    playHammerSound() { this.playSound(this.uiSource, 'hammer'); }
+    playBowSound() { this.playSound(this.uiSource, 'bow'); }
+    playCannonSound() { this.playSound(this.uiSource, 'cannon'); }
+    playShuffleSound() { this.playSound(this.uiSource, 'shuffle'); }
+
+    playRocket() { this.playSound(this.bonusTileSource, 'rocket'); }
+    playBomb() { this.playSound(this.bonusTileSource, 'bomb'); }
+    playDiscoball() { this.playSound(this.bonusTileSource, 'discoball'); }
+    playDoubleDiscoball() { this.playSound(this.bonusTileSource, 'double_discoball'); }
+    playCombo() { this.playSound(this.bonusTileSource, 'combo'); }
+
+    playTilesDestroy() {
+        const randomClip = this.baseTileNames[Math.floor(Math.random() * this.baseTileNames.length)];
+        this.playSound(this.baseTileSource, randomClip);
     }
 
-    
-    /*Gameplay*/
-    playLevelComplete() {
-        if(!this.isSfxEnabled() || !this.levelComplete) {
-            return;
-        }
+    /* Unload Unused Audio (Memory Management) */
+    clearUnusedAudio() {
+        this.audioCache.forEach((_, key) => {
+            if (!this.audioCache.has(key)) return;
+            this.audioCache.get(key)?.destroy();
+            this.audioCache.delete(key);
+        });
 
-        this.uiSource.playOneShot(this.levelComplete, 1);
+        this.musicCache.forEach((_, key) => {
+            if (!this.musicCache.has(key)) return;
+            this.musicCache.get(key)?.destroy();
+            this.musicCache.delete(key);
+        });
     }
 
-    playWin() {
-        if(!this.isSfxEnabled() || !this.win) {
-            return;
-        }
-
-        this.uiSource.playOneShot(this.win, 1);
-    }
-
-    playLose() {
-        if(!this.isSfxEnabled() || !this.lose) {
-            return;
-        }
-
-        this.uiSource.playOneShot(this.lose, 1);
-    }
-
-    playHammerSound() {
-        if(!this.isSfxEnabled() || !this.hammer) {
-            return;
-        }
-
-        this.uiSource.playOneShot(this.hammer, 1);
-    }
-
-    playBowSound() {
-        if(!this.isSfxEnabled() || !this.bow) {
-            return;
-        }
-
-        this.uiSource.playOneShot(this.bow, 1);
-    }
-    
-    playCannonSound() {
-        if(!this.isSfxEnabled() || !this.cannon) {
-            return;
-        }
-
-        this.uiSource.playOneShot(this.cannon, 1);
-    }
-    
-    playShuffleSound() {
-        if(!this.isSfxEnabled() || !this.shuffle) {
-            return;
-        }
-
-        this.uiSource.playOneShot(this.shuffle, 1);
-    }
-
-
-    /*Settings Switcher*/
+    /* Settings */
     switchMusic() {
         this.isMusic = !this.isMusic;
-
-        if(!this.isMusicEnabled()) {
-            if (this.soundtrackSource.playing) {
-                this.soundtrackSource.stop();
-            }
-        }
-        else {
+        if (!this.isMusic && this.soundtrackSource.playing) {
+            this.soundtrackSource.stop();
+        } else {
             this.soundtrackSource.play();
         }
     }
 
-    switchSfx() {
-        this.isSfx = !this.isSfx;
-    }
-
-    switchVibration() {
-        this.isVibration = !this.isVibration;
-    }
-
-
-    isMusicEnabled(): boolean {
-        return this.isMusic;
-    }
-
-    isSfxEnabled(): boolean {
-        return this.isSfx;
-    }
-
-    isVibrationEnabled(): boolean {
-        return this.isVibration;
-    }
+    switchSfx() { this.isSfx = !this.isSfx; }
+    switchVibration() { this.isVibration = !this.isVibration; }
+    isMusicEnabled() { return this.isMusic; }
+    isSfxEnabled() { return this.isSfx; }
+    isVibrationEnabled() { return this.isVibration; }
 }
-
-

@@ -62,6 +62,8 @@ export class Rocket extends BonusTileBase {
                 break;
         }
 
+        this.playRocketSound();
+
         return matches;
     }
 
@@ -186,7 +188,7 @@ export class Rocket extends BonusTileBase {
     }
 
     setBonusPoolAnimation() {
-        this.isBonusPoolState = true;
+        //this.isBonusPoolState = true;
 
         let anim = this.tileType === "rocket_vertical" ? "rocket_discoball_vert" : "rocket_discoball_hor";
         
