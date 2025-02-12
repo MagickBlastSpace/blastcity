@@ -60,11 +60,13 @@ export class UIEventSkyRacePlayerItem extends Component {
         this.index = index;
     }
     
-    refresh(data: PlayerEventData) {
+    refresh(data: PlayerEventData, isRewardAvailable: boolean) {
         this.data = data;
 
         this.playerName.string = data.playerName;
         this.progressLabel.string = data.progressValue;
+
+        this.isRewardTaken = !isRewardAvailable;
 
         this.isPlayer.active = UserData.instance.getPlayerName() === this.data.playerName || this.data.playerName === UserData.instance.getClanName();
 
@@ -107,7 +109,9 @@ export class UIEventSkyRacePlayerItem extends Component {
                 this.rewards[i].active = false;
             }
 
-            this.rewards[this.index].active = true;
+            if(this.index < this.rewards.length && this.index >= 0) {
+                this.rewards[this.index].active = true;
+            }
         }
         
         if(this.rewardsPlayerLayout && this.rewardsPlayerLayout !== undefined) {

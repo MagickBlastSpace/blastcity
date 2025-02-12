@@ -17,6 +17,10 @@ export class UIEventLightning extends UIEventPopupFrameBase {
     closeBtn_Duplicate: Button = null;
     @property(Button)
     takeRewardBtn: Button = null;
+    @property(Button)
+    playBtn: Button = null;
+    @property(Button)
+    restartBtn: Button = null;
 
     @property(Label)
     timeLabel: Label = null;
@@ -31,6 +35,10 @@ export class UIEventLightning extends UIEventPopupFrameBase {
     playersLayout: Node = null;
     @property(Node)
     rewardLayout: Node = null;
+    @property(Node)
+    playLayout: Node = null;
+    @property(Node)
+    finishLayout: Node = null;
 
     @property([UIEventSkyRacePlayerItem])
     items: UIEventSkyRacePlayerItem[] = [];
@@ -50,6 +58,8 @@ export class UIEventLightning extends UIEventPopupFrameBase {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
+        this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+        this.restartBtn.node.on(Button.EventType.CLICK, this.onRestartBtnClick, this);
 
         this.eventController.node.on("refresh", () => this.refresh());
     }
@@ -74,9 +84,11 @@ export class UIEventLightning extends UIEventPopupFrameBase {
         this.isEventComplete = this.eventController.getIsComplete();
 
         this.playersLayout.active = this.isEventStarted || this.isEventComplete;
-        this.rewardLayout.active = this.isEventComplete;
+        this.rewardLayout.active = this.isEventComplete && this.eventController.isRewardAvailable();
+        this.playLayout.active = this.isEventStarted && !this.isEventComplete;
+        this.finishLayout.active = this.isEventComplete && !this.eventController.isRewardAvailable();
    
-        this.startBtn.node.active = this.eventController.canParticipate() && !this.isEventStarted && !this.isEventComplete;
+        this.startBtn.node.active = this.eventController.canParticipate() && this.eventController.isEventAvailable() && !this.isEventStarted && !this.isEventComplete;
 
         let data = this.eventController.sortPlayersByProgress();
 
@@ -117,6 +129,18 @@ export class UIEventLightning extends UIEventPopupFrameBase {
 
     onTakeRewardBtnClick() {
         this.eventController.takeReward();
+
+        this.refresh();
+    }
+
+    onPlayBtnClick() {
+        this.hide();
+
+        this.node.emit("play");
+    }
+
+    onRestartBtnClick() {
+        this.eventController.finish();
 
         this.refresh();
     }

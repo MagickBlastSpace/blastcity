@@ -72,8 +72,10 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
 
         let data = this.eventController.sortPlayersByProgress();
 
+        let isRewardAvailable = this.eventController.isRewardAvailable();
+
         for(let i = 0; i < data.length && i < this.items.length; i++) {
-            this.items[i].refresh(data[i]);
+            this.items[i].refresh(data[i], isRewardAvailable);
         }
 
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();

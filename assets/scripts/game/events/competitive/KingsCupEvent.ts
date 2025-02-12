@@ -18,6 +18,15 @@ export class KingsCupEvent extends WeeklyContestEvent {
         this.players = [];
 
         gamepush.channels.on('fetchChannels', (result) => {
+            /*for(let i = 0; i < result.items.length; i++) {
+                let channel = result.items[i];
+
+                if(channel.tags.includes("lightning")) {
+                    console.log("deleting channel lightning: " + channel.id);
+                    gamepush.channels.deleteChannel({ channelId: channel.id });
+                }
+            }*/
+
             if(this.multiplayerChannelId > 0) {
                 return;
             }
@@ -130,6 +139,9 @@ export class KingsCupEvent extends WeeklyContestEvent {
     activateEvent() {
         if(this.multiplayerChannelId === 0) {
             console.log("Multiplayer is not ready");
+            
+            Net.instance.requestMoreChannels(this.eventId);
+
             return;
         }
 
@@ -211,6 +223,7 @@ export class KingsCupEvent extends WeeklyContestEvent {
                 let player = new PlayerEventData();
                 player.playerName = players[i].name;
                 player.progressValue = players[i].score;
+                player.playerId = players[i].id;
 
                 let id = players[i].id;
 
@@ -220,6 +233,8 @@ export class KingsCupEvent extends WeeklyContestEvent {
                     this.players.push(player);
                 }
             }
+
+            this.playerPlace = this.players.findIndex(player => player.playerId === UserData.instance.getPlayerId());
 
             this.node.emit("refresh");
 

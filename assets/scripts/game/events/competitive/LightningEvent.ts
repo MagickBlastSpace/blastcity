@@ -12,9 +12,8 @@ const { ccclass, property } = _decorator;
 @ccclass('LightningEvent')
 export class LightningEvent extends KingsCupEvent {
 
-    private REWARD_COINS: number = 10000;
-    private RETRY_COOLDOWN_MINUTES: number = 1440;
-    private PLAYTIME_MINUTES: number = 60;
+    private RETRY_COOLDOWN_MINUTES: number = 1440; //1440
+    private PLAYTIME_MINUTES: number = 60; //60
 
     private collectables: number = 0;
 
@@ -26,7 +25,7 @@ export class LightningEvent extends KingsCupEvent {
     }
 
     update(deltaTime: number) {
-        if(!this.isStarted || this.isComplete) {
+        if(!this.isStarted || (this.isComplete && this.playerPlace >= 0) ) {
             return;
         }
 
@@ -67,6 +66,9 @@ export class LightningEvent extends KingsCupEvent {
     activateEvent() {
         if(this.multiplayerChannelId === 0) {
             console.log("Multiplayer is not ready");
+
+            Net.instance.requestMoreChannels(this.eventId);
+
             return;
         }
 
@@ -86,6 +88,8 @@ export class LightningEvent extends KingsCupEvent {
         Net.instance.publishScore(this.eventId, "lightning_" + this.multiplayerChannelId, this.collectables);
 
         this.updateMultiplayerData();
+
+        this.applyReward(this.rewards[1]);
     }
 
 
@@ -115,8 +119,6 @@ export class LightningEvent extends KingsCupEvent {
 
         this.isComplete = true;
 
-        this.playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
-
         this.node.emit("refresh");
 
         SaveData.instance.saveEvent(this.eventId);
@@ -125,15 +127,23 @@ export class LightningEvent extends KingsCupEvent {
 
     takeReward() {
         if(!this.isRewardAvailable()) {
+            this.finish();
+
             return;
         }
 
         this.applyReward(this.rewards[0]);
 
+        this.finish();
+    }
+
+    finish() {
         this.collectables = 0;
 
         this.isStarted = false;
         this.isComplete = false;
+
+        this.multiplayerChannelId = 0;
     }
 
     isRewardAvailable(): boolean {
@@ -183,14 +193,14 @@ export class LightningEvent extends KingsCupEvent {
 
     getRemainingPlaytimeString(): string {
         if (this.isPlaytimeOver() || !this.isStarted) {
-            return "";
+            return "Finished";
         }
     
         const now = Date.now();
         const playEndTime = this.lastAttemptTimestamp + this.PLAYTIME_MINUTES * 60 * 1000;
     
         if (now >= playEndTime) {
-            return "";
+            return "Finished";
         }
     
         const timeDiff = playEndTime - now;

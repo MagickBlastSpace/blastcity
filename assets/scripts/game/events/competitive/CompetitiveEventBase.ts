@@ -131,6 +131,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
     activateEvent() {
         if(this.multiplayerChannelId === 0) {
             console.log("Multiplayer is not ready");
+            Net.instance.requestMoreChannels(this.eventId);
             return;
         }
 
