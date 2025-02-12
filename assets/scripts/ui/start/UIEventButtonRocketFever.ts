@@ -10,12 +10,21 @@ export class UIEventButtonRocketFever extends UIEventButton {
     rewardIcon: UIEventRocketFeverRewardIcon;
 
 
-    update(deltaTime: number) {
-        super.update();
+    refresh() {
+        super.refresh();
 
         let data = this.eventController.getData();
 
-        this.rewardIcon.refresh(data[this.eventController.getCurrentStage()]);
+        let currentStage = this.eventController.getCurrentStage();
+        if(currentStage >= data.length) {
+            currentStage = data.length - 1;
+        }
+
+        if(currentStage < 0) {
+            return;
+        }
+
+        this.rewardIcon.refresh(data[currentStage]);
     }
 }
 

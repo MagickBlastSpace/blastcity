@@ -120,11 +120,17 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
         let data = this.eventController.getData();
 
+        let currentStage = this.eventController.getCurrentStage();
+
         for(let i = 0; i < data.length && i < this.items.length; i++) {
-            this.items[i].refresh(i + 1, data[i], this.eventController.getCurrentStage());
+            this.items[i].refresh(i + 1, data[i], currentStage);
         }
 
-        this.rewardIcon.refresh(data[this.eventController.getCurrentStage()]);
+        if(currentStage >= data.length) {
+            currentStage = data.length - 1;
+        }
+
+        this.rewardIcon.refresh(data[currentStage]);
     }
 
 
