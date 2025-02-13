@@ -66,16 +66,22 @@ export class AudioController extends Component {
 
     private playMusic(soundtrackName: string) {
         if (!this.isMusic) return;
-
+    
+        // Stop current music before changing tracks
+        if (this.soundtrackSource.playing) {
+            this.soundtrackSource.stop();
+        }
+    
         // If the track is cached, use it instead of reloading
         if (this.musicCache.has(soundtrackName)) {
-            if (this.soundtrackSource.clip !== this.musicCache.get(soundtrackName)) {
-                this.soundtrackSource.clip = this.musicCache.get(soundtrackName)!;
-                this.soundtrackSource.play();
+            const newClip = this.musicCache.get(soundtrackName)!;
+            if (this.soundtrackSource.clip !== newClip) {
+                this.soundtrackSource.clip = newClip;
             }
+            this.soundtrackSource.play();
             return;
         }
-
+    
         // Load the music if not already cached
         assetManager.loadBundle('music', (err, bundle) => {
             if (err) return;
@@ -88,6 +94,7 @@ export class AudioController extends Component {
             });
         });
     }
+    
 
     playMainMenuSoundtrack() { this.playMusic('main'); }
     playGameplaySoundtrack() { this.playMusic('gameplay'); }
