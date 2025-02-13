@@ -30,7 +30,7 @@ export class UITutorialPopup extends UIPopupFrameBase {
 
     start() {
         this.level.on("tutorial", (tutorialString) => this.init(tutorialString));
-        this.level.on("destroy", (id) => this.onBtnContinueClick());
+        //this.level.on("destroy", (id) => this.onBtnContinueClick());
 
         this.btnContinue.node.on(Button.EventType.CLICK, this.onBtnContinueClick, this);
 

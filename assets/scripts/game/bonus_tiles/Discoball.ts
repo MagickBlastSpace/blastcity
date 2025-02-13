@@ -49,7 +49,7 @@ export class Discoball extends BonusTileBase {
 
 
     getMatchesClear(field: Node[][], statuses: Node[][]): Node[] {
-        if(this.isActivated) {
+        /*if(this.isActivated) {
             return;
         }
 
@@ -83,7 +83,8 @@ export class Discoball extends BonusTileBase {
             this.node.emit("clear_lines");
         }, 0.2);
 
-        this.setRespawnEvent(0.2);
+        this.setRespawnEvent(0.2);*/
+        let matches = this.getMatchesByType(field, statuses);
 
         return matches;
     }
@@ -93,6 +94,8 @@ export class Discoball extends BonusTileBase {
         if(this.isActivated) {
             return;
         }
+
+        this.isShifts = false;
 
         let matches = [];
 
@@ -121,6 +124,12 @@ export class Discoball extends BonusTileBase {
 
         this.setRespawnEvent(totalTime + 0.05);
 
+        if(this.respawnDelay < totalTime) { //protection from delayed combo bonuses
+            this.scheduleOnce(() => {
+                this.setRespawnEvent(totalTime + 0.05 - this.respawnDelay);
+            }, this.respawnDelay);
+        }
+
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 try {
@@ -138,6 +147,8 @@ export class Discoball extends BonusTileBase {
             for(let i = 0; i < tiles.length; i++) {
                 this.node.emit("extra_hit_with_damage", tiles[i].getRow(), tiles[i].getCol());
             }
+
+            this.setRespawnEvent(0);
         }, totalTime - 0.05);
 
         this.playDiscoballSound();
@@ -398,6 +409,8 @@ export class Discoball extends BonusTileBase {
             let time = timeScale < 1 ? timeScale : 1;
 
             this.playAnimation("discoball_color" + colorString, false, time);
+
+            //this.playHideAnimation(this);
         }
     }
 

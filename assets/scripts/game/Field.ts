@@ -1508,10 +1508,18 @@ export class Field extends Component {
                 this.activateBonusByIndex(this.bonusIndex, true);
                 return;
             }
+
+            if(isRespawn) {
+                if(this.checkIfAnyBonusActivated()) {
+                    isRespawn = false;
+                }
+            }
             
             if(!isRespawn || this.isBonusPoolActivated || this.bonusPool.length > 0) {
                 return;
             }
+
+            
 
             if(this.isCompleteScheduled) {
                 this.node.emit("complete", this.countBonusGold());
@@ -1756,6 +1764,30 @@ export class Field extends Component {
                 }
             }
         }
+    }
+
+    checkIfAnyBonusActivated(): boolean {
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                let tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    let tileComponent = null;
+                    try {
+                        tileComponent = tile.getComponent("TileBase");
+                    } catch (error) {
+                        continue;
+                    }
+
+                    if(tileComponent.isBonusTile()) {
+                        if(tileComponent.isTileActivated()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     tryToSpawnStartBonuses() {
