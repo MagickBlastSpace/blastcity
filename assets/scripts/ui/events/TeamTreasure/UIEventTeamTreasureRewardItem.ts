@@ -25,6 +25,10 @@ export class UIEventTeamTreasureRewardItem extends Component {
         this.done.active = isPicked;
         this.reward.active = progress >= data.progress && !isPicked;
 
+        if(progress >= data.progress) {
+            progress = data.progress;
+        }
+        
         this.progressLabel.string = progress + "/" + data.progress;
     }
 

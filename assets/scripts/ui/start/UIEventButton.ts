@@ -69,7 +69,12 @@ export class UIEventButton extends Component {
         }
 
         if(this.progressLabel) {
-            this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
+            if(this.eventController.getIsComplete()) {
+                this.progressLabel.string = "Complete";
+            }
+            else {
+                this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
+            }
         }
     }
 

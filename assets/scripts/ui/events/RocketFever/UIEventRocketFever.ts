@@ -95,7 +95,8 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.infoContainer.active = true;
             this.rewardsContainer.active = false;
 
-            this.progressLabel.string = "0/0";
+            this.progressLabel.string = "Complete";
+            this.progressBar.progress = 1.0;
 
             this.infoLabel.string = "Event Complete";
         }
@@ -103,7 +104,8 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.infoContainer.active = true;
             this.rewardsContainer.active = false;
 
-            this.progressLabel.string = "0/0";
+            this.progressLabel.string = "";
+            this.progressBar.progress = 0.0;
 
             this.infoLabel.string = "Required Level " + this.eventController.getLevelRequired();
         }
@@ -111,7 +113,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.infoContainer.active = true;
             this.rewardsContainer.active = false;
 
-            this.progressLabel.string = "0/0";
+            this.progressLabel.string = "";
 
             this.infoLabel.string = "Collect rockets to win rewards";
         }

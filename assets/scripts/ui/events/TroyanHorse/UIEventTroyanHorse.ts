@@ -20,7 +20,12 @@ export class UIEventTroyanHorse extends UIEventTeamTreasure {
             this.rewards[i].refresh(rewardsData[i], isPicked[i], totalProgress);
         }
 
-        this.total.string = totalProgress + "/" + rewardsData[rewardsData.length - 1].progress;
+        if(totalProgress >= rewardsData[rewardsData.length - 1].progress) {
+            this.total.string = "Complete";
+        }
+        else {
+            this.total.string = totalProgress + "/" + rewardsData[rewardsData.length - 1].progress;
+        }
 
         if(this.progressBar) {
             this.progressBar.progress = totalProgress / rewardsData[rewardsData.length - 1].progress;
