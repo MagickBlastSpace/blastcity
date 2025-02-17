@@ -82,6 +82,10 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.profileChangePopup.node.on("refresh", () => {
             this.refresh();
         });
+
+        this.profileChangePopup.node.on("save", () => {
+            this.scheduledRefresh();
+        });
     }
 
 
@@ -137,6 +141,12 @@ export class UIProfilePopup extends UIPopupFrameBase {
         } catch (error) {
             console.log('Error fetching player profile:', error);
         }
+    }
+
+    scheduledRefresh() {
+        this.scheduleOnce(() => {
+            this.refresh();
+        }, 1);
     }
 
     refreshLocalData() {

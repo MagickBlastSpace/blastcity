@@ -74,6 +74,9 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.changeNameBtn.node.on(Button.EventType.CLICK, this.onChangeNameBtnClick, this);
         this.saveNameBtn.node.on(Button.EventType.CLICK, this.onSaveNameBtnClick, this);
 
+        this.inputName.node.on('editing-did-ended', this.onNameUpdate, this);
+        this.inputName.node.on('text-changed', this.onNameUpdate, this);
+
         for(let i = 0; i < this.tabs.length; i++) {
             this.tabs[i].node.on("tab", (index) => this.showFrame(index));
         }
@@ -252,6 +255,8 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         }
 
         this.isUpdated = false;
+
+        this.node.emit("save");
     }
 
 
@@ -259,6 +264,8 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         super.hide();
 
         this.hideAllFrames();
+
+        this.node.emit("refresh");
     }
 
 
@@ -297,10 +304,19 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
 
             this.playerName.string = this.inputName.string;
 
-            this.node.emit("refresh");
+            this.refresh();
         }
         
         this.inputNameContainer.active = false;
+    }
+
+
+    onNameUpdate() {
+        this.isNameUpdated = true;
+
+        this.playerName.string = this.inputName.string;
+
+        this.refresh();
     }
 }
 
