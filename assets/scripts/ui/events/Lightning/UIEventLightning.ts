@@ -90,7 +90,7 @@ export class UIEventLightning extends UIEventPopupFrameBase {
    
         this.startBtn.node.active = this.eventController.canParticipate() && this.eventController.isEventAvailable() && !this.isEventStarted && !this.isEventComplete;
 
-        let data = this.eventController.sortPlayersByProgress();
+        let data = this.eventController.sortPlayersByProgress().reverse();
 
         for(let i = 0; i < data.length; i++) {
             if(i >= this.items.length) {
@@ -98,7 +98,8 @@ export class UIEventLightning extends UIEventPopupFrameBase {
                 this.playerItemsLayout.addChild(itemNode);
     
                 let item = itemNode.getComponent("UIEventKingsCupPlayerItem");
-                item.init(i + 1);
+                //item.init(i + 1);
+                item.init(data.length - i);
     
                 this.items.push(item);
             }

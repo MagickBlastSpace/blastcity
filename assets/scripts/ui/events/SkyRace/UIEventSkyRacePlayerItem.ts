@@ -11,6 +11,8 @@ export class UIEventSkyRacePlayerItem extends Component {
     @property(Label)
     playerName: Label = null;
     @property(Label)
+    clanName: Label = null;
+    @property(Label)
     progressLabel: Label = null;
 
     @property(Slider)
@@ -80,14 +82,13 @@ export class UIEventSkyRacePlayerItem extends Component {
             }
             this.placeIcon.spriteFrame = this.placeIcons[this.index];
         }
-        
 
+        this.loadAvatar(data.playerId);
+        
         if (!this.slider) {
             //console.warn("Slider component is not assigned.");
             return;
         }
-
-        this.loadAvatar(data.playerId);
 
         tween(this.slider)
             .to(2, { progress: data.progressValue / 15 }, { easing: 'quadInOut' })
@@ -134,6 +135,10 @@ export class UIEventSkyRacePlayerItem extends Component {
             if(players.length > 0) {
                 if(this.avatar) {
                     this.avatar.spriteFrame = Profile.instance.getAvatarById(players[0].state["avatar_id"]);
+                }
+
+                if(this.clanName) {
+                    this.clanName.string = players[0].state["clanname"];
                 }
             }
         }

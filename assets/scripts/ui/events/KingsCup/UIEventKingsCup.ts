@@ -37,11 +37,13 @@ export class UIEventKingsCup extends UIEventSkyRace {
         this.startBtn.node.active = !this.isEventStarted;
 
         let data = this.eventController.sortPlayersByProgress();
+        
+        let isRewardAvailable = this.eventController.isRewardAvailable();
 
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].node.active = i < data.length;
             if(i < data.length) {
-                this.items[i].refresh(data[i]);
+                this.items[i].refresh(data[i], isRewardAvailable);
             }
         }
 
