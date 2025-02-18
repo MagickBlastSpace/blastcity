@@ -37,7 +37,7 @@ export class UIEventTeamBattle extends UIEventKingsCup {
         this.isEventStarted = this.eventController.getIsStarted();
 
         this.playersLayout.active = this.isEventStarted;
-        this.startBtn.node.active = !this.isEventStarted;
+        this.startBtn.node.active = !this.isEventStarted && this.eventController.isRequiredLevelReached() && this.eventController.isJoinedClan();
 
         let data = this.eventController.sortPlayersByProgress();
 

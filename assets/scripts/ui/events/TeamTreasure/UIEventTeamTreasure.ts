@@ -62,7 +62,7 @@ export class UIEventTeamTreasure extends UIEventPopupFrameBase {
         this.isEventStarted = this.eventController.getIsStarted();
 
         this.playersLayout.active = this.isEventStarted;
-        this.startBtn.node.active = !this.isEventStarted;
+        this.startBtn.node.active = !this.isEventStarted && this.eventController.isRequiredLevelReached() && this.eventController.isJoinedClan();
 
         let data = this.eventController.sortPlayersByProgress();
 
@@ -82,7 +82,6 @@ export class UIEventTeamTreasure extends UIEventPopupFrameBase {
 
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
         this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : "Join Clan";
-
 
         let rewardsData = this.eventController.getRewardsData();
         let isPicked = this.eventController.getIsRewardPicked();
