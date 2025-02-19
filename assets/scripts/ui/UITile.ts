@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, UITransform, AudioClip, AudioSource } from 'cc';
+import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, UITransform, AudioClip, AudioSource, instantiate } from 'cc';
 import { AudioController } from '../utils/AudioController';
 const { ccclass, property } = _decorator;
 
@@ -145,98 +145,79 @@ export class UITile extends Component {
 
 
     destroyTile(delay: number) {
-        if(this.isBlocked) {
+        if (this.isBlocked) {
             return;
         }
-
+    
         this.isBlocked = true;
-
         this.destroyLayout.addChild(this.node);
-
-        if (this.particles_1) {
-            this.particles_1.resetSystem();
-        }
-        if (this.particles_2) {
-            this.particles_2.resetSystem();
-        }
-        if (this.particles_3) {
-            this.particles_3.resetSystem();
-        }
-        if (this.particles_4) {
-            this.particles_4.resetSystem();
-        }
-        if (this.particles_5) {
-            this.particles_5.resetSystem();
-        }
-
-        if(this.particlesParent) {
+    
+        const particles = [this.particles_1, this.particles_2, this.particles_3, this.particles_4, this.particles_5];
+        particles.forEach(particle => particle?.resetSystem());
+    
+        if (this.particlesParent) {
             this.destroyLayout.addChild(this.particlesParent);
             this.particlesParent.setPosition(this.currentX, this.currentY);
         }
-        
+    
         this.playAnimation("destroy", false, 1);
         this.playDestroySound();
-
+    
         this.scheduleOnce(() => {
-            if(this.isSpineDestroyScheduled && this.spine !== null) {
+            if (this.isSpineDestroyScheduled && this.spine !== null) {
                 try {
                     this.spine.node.destroy();
                 } catch {}
             }
-
+    
             tween(this.node).stop();
-
-            if(this.content) {
+    
+            if (this.content) {
                 tween(this.content).stop();
-
                 tween(this.content)
                     .parallel(
                         tween().to(this.destroyTime, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' }),
                         tween().to(this.destroyTime, { opacity: 0 }, { easing: 'linear' })
                     )
                     .call(() => {
-                        this.node.destroy()
+                        this.node.destroy();
                     })
                     .start();
             }
-            
         }, delay);
     }
-
+    
     playAnimation(animation: string, isLooped: boolean, timeScale: number) {
         try {
-            if(this.spine) {
+            if (this.spine) {
                 let trackEntry = this.spine.getCurrent(0);
                 let isPlaying = trackEntry && !trackEntry.isComplete();
-
+    
                 if (isPlaying) {
-                    //console.log("Animation is playing");
                     let isLoop = trackEntry.loop;
-                    if(!isLoop) {
+                    if (!isLoop) {
                         return;
                     }
                 }
-
+    
                 this.isSpineDestroyScheduled = isLooped;
-
+    
                 const spineNode = this.spine.node;
                 spineNode.active = true;
-
                 this.animationsLayout.addChild(spineNode);
-
                 spineNode.setPosition(this.currentX, this.currentY);
-
+    
                 let goalEmitLayout = this.animationsLayout;
-
-                if(!isLooped) {
+    
+                if (!isLooped) {
                     this.spine.setCompleteListener(() => {
-                        if(animation === "goal") {
+                        if (animation === "goal") {
                             goalEmitLayout.emit("goal_effect_positioned", "goal_fly", this.currentX, this.currentY);
                         }
                         spineNode.destroy();
                     });
                 }
-                
+    
                 trackEntry = this.spine.setAnimation(0, animation, isLooped);
                 trackEntry.timeScale = timeScale;
             }
@@ -244,62 +225,43 @@ export class UITile extends Component {
             //console.error('Error setting spine animation:', error);
         }
     }
-
+    
     playAdditionalAnimation(skeleton: sp.Skeleton, animation: string, disableNode: Node) {
         try {
             const spineNode = skeleton ? skeleton.node : this.spine.node;
             spineNode.active = true;
-
-            if(disableNode) {
+    
+            if (disableNode) {
                 disableNode.active = false;
             }
-
-            const currentWorldPosition = spineNode.getWorldPosition();
-            const newLocalPosition = new Vec3(this.currentX, this.currentY, 0);
-
-            if(this.animationsLayout) {
-                const animationsLayoutTransform = this.animationsLayout.getComponent(UITransform);
-                if (animationsLayoutTransform) {
-                    animationsLayoutTransform.convertToNodeSpaceAR(currentWorldPosition, newLocalPosition);
-
-                    this.animationsLayout.addChild(spineNode);
-
-                    spineNode.setPosition(newLocalPosition);
-                } else {
-                    console.log('UITransform component is missing from animationsLayout.');
-                    //return;
-                }
-            }
-            else {
-                //console.log('Anim layout is missing.');
-            }
-                
-            if(skeleton) {
+    
+            this.animationsLayout.addChild(spineNode);
+            spineNode.setPosition(this.currentX, this.currentY);
+    
+            if (skeleton) {
                 skeleton.setCompleteListener(() => {
-                    spineNode.active = false;
-
-                    if(disableNode) {
+                    spineNode.destroy();
+                    if (disableNode) {
                         disableNode.active = true;
                     }
                 });
     
                 skeleton.setAnimation(0, animation, false);
-            }
-            else {
+            } else if (this.spine) {
                 this.spine.setCompleteListener(() => {
-                    spineNode.active = false;
-
-                    if(disableNode) {
+                    spineNode.destroy();
+                    if (disableNode) {
                         disableNode.active = true;
                     }
                 });
-
+    
                 this.spine.setAnimation(0, animation, false);
             }
         } catch (error) {
             console.error('Error setting additional spine animation:', error);
         }
     }
+    
 
     /*playAnimationsSequence(animations: string[], isGoal: boolean) {
         try {
