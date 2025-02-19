@@ -52,9 +52,9 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
     }
 
     update(deltaTime: number) {
-        if(!this.isInited) {
+        /*if(!this.isInited) {
             return;
-        }
+        }*/
 
         this.timeLabel.string = this.eventController.getRemainingTimeString();
         if(this.timeLabel_Duplicate) {
