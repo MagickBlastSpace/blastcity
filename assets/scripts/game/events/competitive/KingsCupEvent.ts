@@ -167,7 +167,9 @@ export class KingsCupEvent extends WeeklyContestEvent {
             return;
         }
 
-        UserData.instance.addResource("gold", this.REWARD_COINS);
+        this.applyRewards(this.unpickedRewards);
+
+        this.unpickedRewards = [];
 
         this.isComplete = false;
         this.isStarted = false;
@@ -245,6 +247,23 @@ export class KingsCupEvent extends WeeklyContestEvent {
 
             this.isUpdating = false;
         }
+    }
+
+
+    isRewardAvailable(): boolean {
+        return this.unpickedRewards.length > 0;
+    }
+
+    restartEvent(): void {
+        this.unpickedRewards = [];
+
+        this.handleEventCompletion();
+
+        if(this.playerPlace > -1 && this.playerPlace < this.rewards.length) {
+            this.unpickedRewards.push(this.rewards[this.playerPlace]);
+        }
+
+        super.restartEvent();
     }
 }
 

@@ -20,6 +20,8 @@ export class EventBase extends Component {
 
     private isTutorialComplete: boolean = false;
 
+    private unpickedRewards: EventRewardData[] = [];
+
     @property
     MIN_LEVEL_REQUIRED = 0;
     @property

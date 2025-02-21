@@ -2,6 +2,7 @@ import { _decorator, Component, Node } from 'cc';
 import { EventBase } from './EventBase';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
+import { EventRewardData } from '../../data/EventData';
 const { ccclass, property } = _decorator;
 
 @ccclass('LavaAdventureEvent')
@@ -94,7 +95,11 @@ export class LavaAdventureEvent extends EventBase {
         this.currentStep = 0;
 
         let rewardGold = Math.floor(this.REWARD_COINS / this.currentPlayers);
-        UserData.instance.addResource("gold", rewardGold);
+        let newReward = new EventRewardData();
+        newReward.gold = rewardGold;
+
+        this.unpickedRewards = [];
+        this.unpickedRewards.push(newReward);
 
         console.log("Lava Adventure completed! Player rewarded:", rewardGold, "coins");
 
@@ -164,6 +169,23 @@ export class LavaAdventureEvent extends EventBase {
 
     setIsComplete(isComplete: boolean) {
         this.isCompletedToday = isComplete;
+    }
+
+
+    isRewardAvailable(): boolean {
+        return this.unpickedRewards.length > 0;
+    }
+
+    takeReward() {
+        if(!this.isRewardAvailable()) {
+            return;
+        }
+
+        this.applyRewards(this.unpickedRewards);
+
+        this.unpickedRewards = [];
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 }   
 

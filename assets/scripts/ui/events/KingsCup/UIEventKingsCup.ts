@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate } from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, Button } from 'cc';
 import { UIEventSkyRace } from '../SkyRace/UIEventSkyRace';
 const { ccclass, property } = _decorator;
 
@@ -13,6 +13,9 @@ export class UIEventKingsCup extends UIEventSkyRace {
     @property(Node)
     rewardLayout: Node = null;
 
+    @property(Button)
+    takeRewardBtn: Button = null;
+
 
     start() {
         super.start();
@@ -26,6 +29,8 @@ export class UIEventKingsCup extends UIEventSkyRace {
 
             this.items.push(item);
         }
+
+        this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
     }
 
 
@@ -47,10 +52,19 @@ export class UIEventKingsCup extends UIEventSkyRace {
             }
         }
 
+        this.rewardLayout.active = isRewardAvailable;
+
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
     }
 
     updateWidgetAlignment(isPortrait) {}
+
+
+    onTakeRewardBtnClick() {
+        this.eventController.takeReward();
+
+        this.refresh();
+    }
 }
 
 

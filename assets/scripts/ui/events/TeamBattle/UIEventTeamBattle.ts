@@ -29,6 +29,8 @@ export class UIEventTeamBattle extends UIEventKingsCup {
         this.showBattleBtn.node.on(Button.EventType.CLICK, this.onShowBattleBtnClick, this);
         this.showTeamBtn.node.on(Button.EventType.CLICK, this.onShowTeamBtnClick, this);
 
+        this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
+
         this.onShowBattleBtnClick();
     }
 
@@ -41,6 +43,8 @@ export class UIEventTeamBattle extends UIEventKingsCup {
 
         let data = this.eventController.sortPlayersByProgress();
 
+        let isRewardAvailable = this.eventController.isRewardAvailable();
+
         for(let i = 0; i < data.length; i++) {
             if(i >= this.items.length) {
                 const itemNode = instantiate(this.itemPrefab);
@@ -52,7 +56,7 @@ export class UIEventTeamBattle extends UIEventKingsCup {
                 this.items.push(item);
             }
 
-            this.items[i].refresh(data[i]);
+            this.items[i].refresh(data[i], isRewardAvailable);
         }
 
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
@@ -71,8 +75,10 @@ export class UIEventTeamBattle extends UIEventKingsCup {
                 this.teams.push(item);
             }
 
-            this.teams[i].refresh(teamsData[i]);
+            this.teams[i].refresh(teamsData[i], isRewardAvailable);
         }
+
+        this.rewardLayout.active = isRewardAvailable;
 
         this.onShowBattleBtnClick();
     }

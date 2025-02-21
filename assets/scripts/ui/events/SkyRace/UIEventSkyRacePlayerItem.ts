@@ -98,7 +98,7 @@ export class UIEventSkyRacePlayerItem extends Component {
 
     showRewardLayout() {
         if(this.rewardsLayout && this.rewardsLayout !== undefined) {
-            if(this.index < 0 || this.index > 2) {
+            if(this.index < 0 || this.index >= this.rewards.length) {
                 this.rewardsLayout.active = false;
 
                 return;

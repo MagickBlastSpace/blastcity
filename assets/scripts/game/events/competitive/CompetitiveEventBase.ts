@@ -2,7 +2,7 @@ declare const gamepush: any;
 
 import { _decorator, Component, Node } from 'cc';
 import { WeeklyEventBase } from '../WeeklyEventBase';
-import { PlayerEventData } from '../../../data/EventData';
+import { EventRewardData, PlayerEventData } from '../../../data/EventData';
 import { SaveData } from '../../../data/SaveData';
 import { Net } from '../../../net/Net';
 import { UserData } from '../../../data/UserData';

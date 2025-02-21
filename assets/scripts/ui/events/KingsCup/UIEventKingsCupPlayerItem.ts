@@ -13,6 +13,10 @@ export class UIEventKingsCupPlayerItem extends UIEventSkyRacePlayerItem {
         this.index = index - 1;
 
         this.indexLabel.string = index;
+
+        let isRewardAvailable = this.index > -1 && this.index < this.rewards.length;
+
+        this.showRewardBtn.node.active = isRewardAvailable;
     }
 }
 

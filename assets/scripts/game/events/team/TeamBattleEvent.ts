@@ -1,12 +1,13 @@
 declare const gamepush: any;
 
 import { _decorator, Component, Node } from 'cc';
-import { PlayerEventData } from '../../../data/EventData';
+import { EventRewardData, PlayerEventData } from '../../../data/EventData';
 import { LevelProgressStatisticsData } from '../../../data/Statistics';
 import { SaveData } from '../../../data/SaveData';
 import { TeamEventBase } from './TeamEventBase';
 import { ClanData } from '../../../data/ClanData';
 import { Net } from '../../../net/Net';
+import { UserData } from '../../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('TeamBattleEvent')
@@ -14,6 +15,11 @@ export class TeamBattleEvent extends TeamEventBase {
 
     @property([PlayerEventData])
     teams: PlayerEventData[] = [];
+
+    @property([EventRewardData])
+    rewards: EventRewardData[] = [];
+
+    private playerPlace: number = -1;
 
 
     start() {
@@ -129,6 +135,48 @@ export class TeamBattleEvent extends TeamEventBase {
                 this.isUpdating = false;
             }
         }
+    }
+
+
+    takeReward() {
+        if(!this.isRewardAvailable()) {
+            return;
+        }
+
+        this.applyRewards(this.unpickedRewards);
+
+        this.unpickedRewards = [];
+
+        this.isComplete = false;
+        this.isStarted = false;
+
+        SaveData.instance.saveEvent(this.eventId);
+    }
+
+
+    isRewardAvailable(): boolean {
+        return this.unpickedRewards.length > 0;
+    }
+
+    restartEvent(): void {
+        this.unpickedRewards = [];
+
+        this.handleEventCompletion();
+
+        if(this.playerPlace > -1 && this.playerPlace < this.rewards.length) {
+            this.unpickedRewards.push(this.rewards[this.playerPlace]);
+        }
+
+        super.restartEvent();
+    }
+
+    private handleEventCompletion() {
+        this.isComplete = true;
+
+        this.sortTeamsByProgress();
+        this.playerPlace = this.teams.findIndex(t => t.clanName === UserData.instance.getClanName());
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 }
 

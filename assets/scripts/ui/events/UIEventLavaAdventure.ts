@@ -14,6 +14,8 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
     closeBtn_2: Button = null;
     @property(Button)
     playBtn: Button = null;
+    @property(Button)
+    takeRewardBtn: Button = null;
 
     @property(Label)
     progressLabel: Label = null;
@@ -34,6 +36,9 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
     background: Node = null;
     @property(Node)
     player: Node = null;
+
+    @property(Node)
+    rewardLayout: Node = null;
 
     @property([Node])
     stgPositions: Node[] = [];
@@ -60,6 +65,8 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
         this.closeBtn_2.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+
+        this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
     }
 
     update(deltaTime: number) {
@@ -112,6 +119,10 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
         }
         
         this.startBtn.node.active = this.eventController.canParticipate() && !this.isEventStarted && !(this.eventController.getIsComplete() && UserData.instance.isTemproraryBonusActive());
+
+        let isRewardAvailable = this.eventController.isRewardAvailable();
+
+        this.rewardLayout.active = isRewardAvailable;
     }
 
     private destroyAllPlayers() {
@@ -158,6 +169,13 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
         this.hide();
 
         this.node.emit("play");
+    }
+
+
+    onTakeRewardBtnClick() {
+        this.eventController.takeReward();
+
+        this.refresh();
     }
 }
 
