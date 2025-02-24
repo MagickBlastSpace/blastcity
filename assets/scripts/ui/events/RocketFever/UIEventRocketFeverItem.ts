@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Sprite, SpriteFrame, sp } from 'cc';
+import { _decorator, Component, Node, Label, Sprite, SpriteFrame, sp, Button } from 'cc';
 import { RocketFeverEventData } from '../../../data/EventData';
 const { ccclass, property } = _decorator;
 
@@ -55,6 +55,17 @@ export class UIEventRocketFeverItem extends Component {
 
     @property(sp.Skeleton)
     spine: sp.Skeleton = null;
+
+    @property(Button)
+    takeBtn: Button = null;
+
+    private stageIndex: number = 0;
+    private isComplete: boolean = false;
+
+
+    start() {
+        this.takeBtn.node.on(Button.EventType.CLICK, this.onTakeBtnClick, this);
+    }
 
 
     refresh(stageNumber: number, data: RocketFeverEventData, currentStage: number) {
@@ -142,6 +153,22 @@ export class UIEventRocketFeverItem extends Component {
         else {
             this.numberIcon.spriteFrame = this.next_number;
         }
+
+        this.stageIndex = stageNumber;
+        
+        this.isComplete = currentStage >= stageNumber;
+    }
+
+
+    refreshAvailability(isTaken: boolean) {
+        this.takeBtn.node.active = !isTaken && this.isComplete;
+
+        this.complete.active = this.isComplete && isTaken;
+    }
+
+
+    onTakeBtnClick() {
+        this.node.emit("take", this.stageIndex);
     }
 }
 

@@ -1,10 +1,11 @@
-import { _decorator, Component, Node, Button, Label, ProgressBar, tween, instantiate, Prefab, Vec3 } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, tween, instantiate, Prefab, Vec2, ScrollView } from 'cc';
 import { UIFrameBase } from '../../UIFrameBase';
 import { RocketFeverEvent } from '../../../game/events/RocketFeverEvent';
 import { UIEventRocketFeverItem } from './UIEventRocketFeverItem';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventRocketFeverRewardIcon } from './UIEventRocketFeverRewardIcon';
+import { ResolutionManager } from '../../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventRocketFever')
@@ -24,6 +25,8 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
     @property(ProgressBar)
     progressBar: ProgressBar = null;
+    @property(ScrollView)
+    scrollView: ScrollView = null;
 
     @property(Prefab)
     itemPrefab: Prefab = null;
@@ -59,11 +62,16 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.itemsLayout.addChild(itemNode);
             const item = itemNode.getComponent('UIEventRocketFeverItem');
 
+            itemNode.on("take", (stageIndex) => {
+                this.eventController.takeReward(stageIndex - 1);
+            });
+
             this.items.push(item);
         }
 
         for(let i = 0; i < data.length && i < this.items.length; i++) {
             this.items[i].refresh(i + 1, data[i], this.eventController.getCurrentStage());
+            this.items[i].refreshAvailability(this.eventController.isRewardTaken(i));
         }
     }
 
@@ -126,6 +134,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
         for(let i = 0; i < data.length && i < this.items.length; i++) {
             this.items[i].refresh(i + 1, data[i], currentStage);
+            this.items[i].refreshAvailability(this.eventController.isRewardTaken(i));
         }
 
         if(currentStage >= data.length) {
@@ -140,6 +149,28 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
         super.show();
 
         this.refresh();
+
+        this.scrollToCurrentStage();
+    }
+
+
+    scrollToCurrentStage() {
+        let curStage = this.eventController.getCurrentStage() - 1;
+
+        if(curStage < 0) {
+            curStage = 0;
+        }
+
+        let percent = curStage / this.eventController.getTotalStages();
+
+        /*let isPortrait = ResolutionManager.instance.isPortraitOrientation();
+        if(isPortrait) {
+            percent = 1 - percent;
+        }*/
+
+        this.scheduleOnce(() => {
+            this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
+        }, 0.2);
     }
 
 

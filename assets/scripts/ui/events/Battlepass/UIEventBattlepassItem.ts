@@ -23,15 +23,10 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
     block: Node = null;
 
     @property(Button)
-    takeBtn: Button = null;
-    @property(Button)
     takeBtn_Premium: Button = null;
 
     @property(ProgressBar)
     progressBar: ProgressBar = null;
-
-    private stageIndex: number = 0;
-    private isComplete: boolean = false;
 
 
     start() {

@@ -18,6 +18,8 @@ export class RocketFeverEvent extends WeeklyEventBase {
     private collectedRockets: number = 0;
     private currentStage: number = 0;
 
+    private takenRewards: number[] = [];
+
     private isComplete: boolean = false;
 
 
@@ -60,7 +62,7 @@ export class RocketFeverEvent extends WeeklyEventBase {
         if(this.collectedRockets >= this.eventData[this.currentStage].stageStep) {
             this.collectedRockets = this.collectedRockets - this.eventData[this.currentStage].stageStep;
 
-            this.applyRewards(this.eventData[this.currentStage].rewards);
+            //this.applyRewards(this.eventData[this.currentStage].rewards);
 
             this.currentStage = this.currentStage + 1;
 
@@ -125,7 +127,6 @@ export class RocketFeverEvent extends WeeklyEventBase {
     }
 
 
-
     activateEvent() {
         super.activateEvent();
 
@@ -141,6 +142,35 @@ export class RocketFeverEvent extends WeeklyEventBase {
 
     getTimeProgress(): number {
         return this.getCollectable() / this.getCurrentStageStep();
+    }
+
+
+    isRewardTaken(index: number): boolean {
+        return this.takenRewards.includes(index);
+    }
+
+    takeReward(index: number) {
+        if(!this.takenRewards.includes(index)) {
+            this.takenRewards.push(index);
+
+            this.applyRewards(this.eventData[index].rewards);
+        }
+
+        this.node.emit("refresh");
+    }
+
+    isRewardAvailable(): boolean {
+        for(let i = 0; i < this.currentStage; i++) {
+            if(!this.takenRewards.includes(i)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    getTotalStages(): number {
+        return this.eventData.length;
     }
 }
 
