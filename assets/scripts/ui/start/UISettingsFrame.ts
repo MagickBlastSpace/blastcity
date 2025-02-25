@@ -25,6 +25,8 @@ export class UISettingsFrame extends UIPopupFrameBase {
 
     @property(Toggle)
     devModeToggle: Toggle = null;
+    @property(Toggle)
+    aphroditeToggle: Toggle = null;
 
     @property(Button)
     langBtn_Ru: Button = null;
@@ -48,6 +50,11 @@ export class UISettingsFrame extends UIPopupFrameBase {
         this.devModeToggle.isChecked = isDevMode;
 
         this.devModeToggle.node.on('toggle', this.onToggleDevMode, this);
+
+        const isAphrodite = UserData.instance.isAphroditeAvailable();
+        this.aphroditeToggle.isChecked = isAphrodite;
+
+        this.aphroditeToggle.node.on('toggle', this.onToggleAphrodite, this);
 
         this.langBtn_Ru.node.on(Button.EventType.CLICK, this.onLangBtnClickRu, this);
         this.langBtn_En.node.on(Button.EventType.CLICK, this.onLangBtnClickEn, this);
@@ -76,6 +83,11 @@ export class UISettingsFrame extends UIPopupFrameBase {
     onToggleDevMode(toggle: Toggle) {
         UserData.instance.setDevMode(toggle.isChecked);
         console.log('Developer mode is now:', toggle.isChecked);
+    }
+
+    onToggleAphrodite(toggle: Toggle) {
+        UserData.instance.setAphroditeAvailable(toggle.isChecked);
+        console.log('Aphrodite is now:', toggle.isChecked);
     }
 
 

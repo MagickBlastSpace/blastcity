@@ -29,7 +29,7 @@ export class ButlersGift extends Component {
 
 
     updateProgress(isWin: boolean) {
-        if(this.levelComp.getExperimentCategory() === "B") {
+        if(!UserData.instance.isAphroditeAvailable()) {
             return;
         }
         

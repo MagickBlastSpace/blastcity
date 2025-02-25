@@ -52,6 +52,7 @@ export class UserData extends Component {
     public static instance: UserData = null;
 
     private isDev: boolean = false;
+    private isAphrodite: boolean = true;
 
     private isPremium: boolean = false;
 
@@ -626,6 +627,14 @@ export class UserData extends Component {
 
     isDevMode(): boolean {
         return this.isDev;
+    }
+
+    setAphroditeAvailable(isAphrodite: boolean) {
+        this.isAphrodite = isAphrodite;
+    }
+
+    isAphroditeAvailable(): boolean {
+        return this.isAphrodite;
     }
 
 
