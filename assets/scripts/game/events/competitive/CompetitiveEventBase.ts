@@ -22,6 +22,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
     private isComplete: boolean = false;
 
     private multiplayerChannelId: number = 0;
+    private lastMultiplayerChannelId: number = 0;
 
     private isUpdating: boolean = false;
 
@@ -42,6 +43,10 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 let channel = result.items[i];
 
                 if(!channel.tags.includes("event")) {
+                    return;
+                }
+
+                if(this.lastMultiplayerChannelId === channel.id) {
                     return;
                 }
 
@@ -79,6 +84,10 @@ export class CompetitiveEventBase extends WeeklyEventBase {
                 let channel = result.items[i];
 
                 if(!channel.tags.includes("event")) {
+                    return;
+                }
+
+                if(this.lastMultiplayerChannelId === channel.id) {
                     return;
                 }
 
@@ -171,12 +180,21 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         this.currentStep = stage;
     }
 
+
     getMultiplayerChannel(): number {
         return this.multiplayerChannelId;
     }
 
     setMultiplayerChannel(id: number) {
         this.multiplayerChannelId = id;
+    }
+
+    getLastMultiplayerChannel(): number {
+        return this.lastMultiplayerChannelId;
+    }
+
+    setLastMultiplayerChannel(id: number) {
+        this.lastMultiplayerChannelId = id;
     }
 
 
@@ -190,6 +208,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
 
     tryToJoinMultiplayerChannel(id: number) {
         this.multiplayerChannelId = id;
+        this.lastMultiplayerChannelId = id;
 
         SaveData.instance.saveEvent(this.eventId);
 
@@ -243,6 +262,8 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
 
         gamepush.channels.deleteChannel({ channelId: this.multiplayerChannelId });
+
+        this.lastMultiplayerChannelId = this.multiplayerChannelId;
         this.multiplayerChannelId = 0;
 
         SaveData.instance.saveEvent(this.eventId);

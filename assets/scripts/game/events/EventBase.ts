@@ -229,6 +229,12 @@ export class EventBase extends Component {
 
     setMultiplayerChannel(id: number) {}
 
+    getLastMultiplayerChannel(): number {
+        return 0;
+    }
+
+    setLastMultiplayerChannel(id: number) {}
+
     getIsTutorialComplete(): boolean {
         return this.isTutorialComplete;
     }

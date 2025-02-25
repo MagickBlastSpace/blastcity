@@ -79,7 +79,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         this.isComplete = true;
 
         this.sortPlayersByProgress();
-        this.playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
+        this.playerPlace = this.players.findIndex(player => player.playerId === UserData.instance.getPlayerId());
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -141,7 +141,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         //sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
 
         if(this.playerPlace >= 0) {
-            let playerIndex = sortedPlayers.findIndex(player => player.playerName === UserData.instance.getPlayerName());
+            let playerIndex = sortedPlayers.findIndex(player => player.playerId === UserData.instance.getPlayerId());
             if(playerIndex !== this.playerPlace) {
                 let bufferPlayer = new PlayerEventData();
                 bufferPlayer.playerName = sortedPlayers[this.playerPlace].playerName;

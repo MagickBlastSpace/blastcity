@@ -70,7 +70,7 @@ export class UIEventSkyRacePlayerItem extends Component {
 
         this.isRewardTaken = !isRewardAvailable;
 
-        this.isPlayer.active = UserData.instance.getPlayerName() === this.data.playerName || this.data.playerName === UserData.instance.getClanName();
+        this.isPlayer.active = UserData.instance.getPlayerId() === this.data.playerId;
 
         if(this.isRewardAvailable()) {
             this.showRewardLayout();
@@ -79,8 +79,12 @@ export class UIEventSkyRacePlayerItem extends Component {
         if(this.placeIcon && this.placeIcon !== undefined) {
             if(this.index > 2 || this.index < 0) {
                 this.placeIcon.spriteFrame = null;
+                this.placeIcon.node.active = false;
             }
-            this.placeIcon.spriteFrame = this.placeIcons[this.index];
+            else {
+                this.placeIcon.node.active = true;
+                this.placeIcon.spriteFrame = this.placeIcons[this.index];
+            }
         }
 
         this.loadAvatar(data.playerId);
@@ -93,6 +97,27 @@ export class UIEventSkyRacePlayerItem extends Component {
         tween(this.slider)
             .to(2, { progress: data.progressValue / 15 }, { easing: 'quadInOut' })
             .start();
+    }
+
+
+    setBasicState() {
+        this.playerName.string = "";
+        this.progressLabel.string = "0";
+
+        this.isPlayer.active = false;
+
+        if(this.placeIcon && this.placeIcon !== undefined) {
+            this.placeIcon.spriteFrame = null;
+            this.placeIcon.node.active = false;
+        }
+
+        if(this.avatar) {
+            this.avatar.spriteFrame = null;
+        }
+
+        if(this.slider) {
+            this.slider.progress = 0;
+        }
     }
 
 
