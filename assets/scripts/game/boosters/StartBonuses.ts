@@ -13,12 +13,14 @@ export class StartBonuses extends Component {
 
     onLoad() {
         this.startBonusPool = [];
-    }
 
-    start() {
         for(let i = 0; i < this.bonuses.length; i++) {
             this.bonuses[i].on("activate", (bonusName) => this.activateBonus(bonusName));
         }
+    }
+
+    start() {
+        
     }
 
 

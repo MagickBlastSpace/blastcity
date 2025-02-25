@@ -87,16 +87,16 @@ export class UIStartBonusItem extends Component {
 
 
     checkAutopick() {
-        if(this.timeLabel.string === "") {
+        if(UserData.instance.getRemainingTimeString(this.bonusName) === "") {
             return;
         }
 
         this.node.emit("activate", this.bonusName);
 
-        let bonuses = [];
+        /*let bonuses = [];
         bonuses.push(this.bonusName);
 
-        this.refresh(bonuses);
+        this.refresh(bonuses);*/
     }
 }
 
