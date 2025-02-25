@@ -9,6 +9,7 @@ import { SaveData } from '../../data/SaveData';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIEventMinified } from '../events/UIEventMinified';
 import { Localization } from '../../utils/Localization';
+import { UIStartBonusItem } from './UIStartBonusItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartBriefingPopup')
@@ -53,6 +54,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
     @property([UIEventMinified])
     minifiedEvents: UIEventMinified[] = [];
+
+    @property([UIStartBonusItem])
+    startBonuses: UIStartBonusItem[] = [];
 
     @property(Localization)
     l10n: Localization;
@@ -106,6 +110,10 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
         for(let i = 0; i < this.minifiedEvents.length; i++) {
             this.minifiedEvents[i].updateData();
+        }
+
+        for(let i = 0; i < this.startBonuses.length; i++) {
+            this.startBonuses[i].checkAutopick();
         }
     }
 

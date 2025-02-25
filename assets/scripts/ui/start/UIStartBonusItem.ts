@@ -61,7 +61,7 @@ export class UIStartBonusItem extends Component {
     }
 
     onClick(event: cc.Event.EventTouch): void {
-        if(this.count <= 0 && !UserData.instance.isDevMode() && this.timeLabel === "") {
+        if(this.count <= 0 && !UserData.instance.isDevMode() && this.timeLabel.string === "") {
             return;
         }
 
@@ -83,6 +83,20 @@ export class UIStartBonusItem extends Component {
     updateCount() {
         this.count = UserData.instance.getResource(this.bonusName);
         this.countLabel.string = this.count;
+    }
+
+
+    checkAutopick() {
+        if(this.timeLabel.string === "") {
+            return;
+        }
+
+        this.node.emit("activate", this.bonusName);
+
+        let bonuses = [];
+        bonuses.push(this.bonusName);
+
+        this.refresh(bonuses);
     }
 }
 
