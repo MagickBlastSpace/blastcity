@@ -31,6 +31,8 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
     @property(Node)
     minigameContainer: Node = null;
+    @property(Node)
+    completeContainer: Node = null;
 
     @property([UIEventMagicCauldronItem])
     items: UIEventMagicCauldronItem[] = [];
@@ -107,6 +109,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
         this.minigameContainer.active = this.isEventStarted && !this.isEventComplete;
         this.progressBar.node.active = this.isEventStarted && !this.isEventComplete;
+        this.completeContainer.active = this.isEventComplete;
 
         if(this.isEventStarted && !this.isEventComplete) {
             let curLvl = this.eventController.getCurrentStage() + 1;
@@ -118,16 +121,10 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
                 .to(0.8, { progress: this.eventController.getCurrentStage() / this.eventController.getTotalLevels() })
                 .start();
         }
-        else if(this.isEventComplete) {
-            this.reqLabel.string = "Event Complete";
-        }
-        else if(!this.eventController.isRequiredLevelReached()) {
+        
+        if(!this.eventController.isRequiredLevelReached()) {
             this.reqLabel.string = "Required Level " + this.eventController.getLevelRequired();
         }
-        else {
-            this.reqLabel.string = "Not Started";
-        }
-        
         
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
 
