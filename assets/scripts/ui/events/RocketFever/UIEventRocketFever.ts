@@ -101,7 +101,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
         }
         else if(this.isEventComplete) {
             this.infoContainer.active = true;
-            this.rewardsContainer.active = false;
+            this.rewardsContainer.active = true;
 
             this.progressLabel.string = "Complete";
             this.progressBar.progress = 1.0;
