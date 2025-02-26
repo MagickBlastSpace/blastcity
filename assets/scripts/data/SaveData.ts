@@ -457,7 +457,8 @@ export class SaveData extends Component {
                     specialHints: eventComp.getSpecialHints(),
                     multiplayerChannel: eventComp.getMultiplayerChannel(),
                     isTutorialComplete: eventComp.getIsTutorialComplete(),
-                    lastMpChannel: eventComp.getLastMultiplayerChannel()
+                    lastMpChannel: eventComp.getLastMultiplayerChannel(),
+                    playerPlace: eventComp.getPlayerPlace()
                 };
         
                 try {
@@ -495,6 +496,8 @@ export class SaveData extends Component {
                         eventComp.setIsTutorialComplete(eventData.isTutorialComplete);
 
                         eventComp.setLastMultiplayerChannel(eventData.lastMpChannel);
+
+                        eventComp.setPlayerPlace(eventData.playerPlace);
                     } else {
                         //console.log("No event " + eventComp.getEventId() + " data found");
                     }

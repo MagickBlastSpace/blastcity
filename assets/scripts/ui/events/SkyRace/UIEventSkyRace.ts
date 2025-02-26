@@ -74,6 +74,8 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
 
         let isRewardAvailable = this.eventController.isRewardAvailable();
 
+        console.log("Sky race reward available: " + isRewardAvailable);
+
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].setBasicState();
         }

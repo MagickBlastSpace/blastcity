@@ -243,6 +243,12 @@ export class EventBase extends Component {
         this.isTutorialComplete = isTutorialComplete;
     }
 
+    getPlayerPlace(): number {
+        return 0;
+    }
+
+    setPlayerPlace(place: number) {}
+
 
     applyRewards(rewards: EventRewardData[]) {
         for(let i = 0; i < rewards.length; i++) {

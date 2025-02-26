@@ -72,10 +72,6 @@ export class UIEventSkyRacePlayerItem extends Component {
 
         this.isPlayer.active = UserData.instance.getPlayerId() === this.data.playerId;
 
-        if(this.isRewardAvailable()) {
-            this.showRewardLayout();
-        }
-
         if(this.placeIcon && this.placeIcon !== undefined) {
             if(this.index > 2 || this.index < 0) {
                 this.placeIcon.spriteFrame = null;
@@ -96,7 +92,17 @@ export class UIEventSkyRacePlayerItem extends Component {
 
         tween(this.slider)
             .to(2, { progress: data.progressValue / 15 }, { easing: 'quadInOut' })
+            .call(() => {
+                this.checkReward();
+            })
             .start();
+    }
+
+
+    checkReward() {
+        if(this.isRewardAvailable()) {
+            this.showRewardLayout();
+        }
     }
 
 
@@ -118,6 +124,9 @@ export class UIEventSkyRacePlayerItem extends Component {
         if(this.slider) {
             this.slider.progress = 0;
         }
+
+        this.rewardsLayout.active = false;
+        this.rewardsPlayerLayout.active = false;
     }
 
 
@@ -146,7 +155,7 @@ export class UIEventSkyRacePlayerItem extends Component {
     }
 
     isRewardAvailable(): boolean {
-        return this.data.progressValue >= 15 && UserData.instance.getPlayerName() === this.data.playerName && !this.isRewardTaken && this.index >= 0 && this.index < 3
+        return this.data.progressValue >= 15 && UserData.instance.getPlayerId() === this.data.playerId && !this.isRewardTaken && this.index >= 0 && this.index < 3
     }
 
 
@@ -181,6 +190,10 @@ export class UIEventSkyRacePlayerItem extends Component {
         
         if(this.rewardsPlayerLayout) {
             this.rewardsPlayerLayout.active = false;
+        }
+
+        if(this.rewardsLayout) {
+            this.rewardsLayout.active = false;
         }
     }
 

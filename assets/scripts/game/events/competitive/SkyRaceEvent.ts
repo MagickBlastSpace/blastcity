@@ -34,6 +34,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         this.isStarted = false;
         this.isComplete = false;
 
+        this.isRewardPicked = false;
+
         this.eventId = "sky_race";
     }
 
@@ -61,6 +63,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         this.isStarted = true;
         this.isComplete = false;
+
+        this.isRewardPicked = false;
 
         this.currentStep = 0;
         this.playerPlace = -1;
@@ -115,8 +119,9 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         this.currentStep = 0;
         this.playerPlace = -1;
 
-        this.isStarted = false;
-        this.isComplete = false;
+        /*this.isStarted = false;
+        this.isComplete = false;*/
+        this.isRewardPicked = true;
 
         SaveData.instance.saveEvent(this.eventId);
 
@@ -124,6 +129,12 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     }
 
     isRewardAvailable(): boolean {
+        if(this.isComplete && (this.playerPlace < 0 || this.playerPlace === undefined)) {
+            this.playerPlace = this.players.findIndex(player => player.playerId === UserData.instance.getPlayerId());
+        }
+
+        console.log(this.isComplete + " - " + this.playerPlace + " - " + this.isRewardPicked);
+        
         return this.isComplete && this.playerPlace > -1 && this.playerPlace < 3 && !this.isRewardPicked;
     }
 
@@ -139,6 +150,9 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         sortedPlayers = this.players;
 
         //sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
+        if(this.isComplete && (this.playerPlace < 0 || this.playerPlace === undefined)) {
+            this.playerPlace = sortedPlayers.findIndex(player => player.playerId === UserData.instance.getPlayerId());
+        }
 
         if(this.playerPlace >= 0) {
             let playerIndex = sortedPlayers.findIndex(player => player.playerId === UserData.instance.getPlayerId());
@@ -162,6 +176,10 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
     getPlayerPlace(): number {
         return this.playerPlace;
+    }
+
+    setPlayerPlace(place: number) {
+        this.playerPlace = place;
     }
 }
 
