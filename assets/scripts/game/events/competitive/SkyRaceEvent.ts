@@ -119,8 +119,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         this.currentStep = 0;
         this.playerPlace = -1;
 
-        /*this.isStarted = false;
-        this.isComplete = false;*/
+        this.isStarted = false;
+        this.isComplete = false;
         this.isRewardPicked = true;
 
         SaveData.instance.saveEvent(this.eventId);
@@ -133,7 +133,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
             this.playerPlace = this.players.findIndex(player => player.playerId === UserData.instance.getPlayerId());
         }
 
-        console.log(this.isComplete + " - " + this.playerPlace + " - " + this.isRewardPicked);
+        //console.log(this.isComplete + " - " + this.playerPlace + " - " + this.isRewardPicked);
         
         return this.isComplete && this.playerPlace > -1 && this.playerPlace < 3 && !this.isRewardPicked;
     }

@@ -298,6 +298,11 @@ export class EventBase extends Component {
     isRewardAvailable(): boolean {
         return false;
     }
+
+
+    isInteractable(): boolean {
+        return this.isEventAvailable();
+    }
 }
 
 

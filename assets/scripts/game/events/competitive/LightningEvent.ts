@@ -221,6 +221,23 @@ export class LightningEvent extends KingsCupEvent {
 
         return sortedPlayers;
     }
+
+
+    isInteractable(): boolean {
+        if(!this.isEventAvailable()) {
+            return false;
+        }
+
+        if(!this.isCooldownOver()) {
+            return false;
+        }
+
+        if(this.isComplete && !this.isRewardAvailable()) {
+            return false;
+        }
+
+        return true;
+    }
 }
 
 

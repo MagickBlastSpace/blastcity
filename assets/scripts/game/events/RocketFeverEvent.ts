@@ -172,6 +172,19 @@ export class RocketFeverEvent extends WeeklyEventBase {
     getTotalStages(): number {
         return this.eventData.length;
     }
+
+
+    isInteractable(): boolean {
+        if(!this.isEventAvailable()) {
+            return false;
+        }
+
+        if(this.isComplete && !this.isRewardAvailable()) {
+            return false;
+        }
+
+        return true;
+    }
 }
 
 

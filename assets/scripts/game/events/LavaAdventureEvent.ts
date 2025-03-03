@@ -187,6 +187,21 @@ export class LavaAdventureEvent extends EventBase {
 
         SaveData.instance.saveEvent(this.eventId);
     }
+
+
+    isInteractable(): boolean {
+        if(!this.isEventAvailable()) {
+            console.log("lava unavailable");
+            return false;
+        }
+
+        if(this.isCompletedToday && this.unpickedRewards.length === 0) {
+            console.log(this.isCompletedToday + " - " + this.unpickedRewards.length);
+            return false;
+        }
+
+        return true;
+    }
 }   
 
 

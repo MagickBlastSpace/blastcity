@@ -145,6 +145,21 @@ export class TeamTreasureEvent extends TeamEventBase {
 
         return false;
     }
+
+
+    isInteractable(): boolean {
+        if(!this.isEventAvailable()) {
+            return false;
+        }
+
+        for(let i = 0; i < this.rewards.length; i++) {
+            if(!this.isRewardPicked[i]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 

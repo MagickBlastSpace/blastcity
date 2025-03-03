@@ -315,6 +315,19 @@ export class MagicCauldronEvent extends SpecialEventBase {
         }
         return this.eventData[this.currentStage].rewards[0];
     }
+
+
+    isInteractable(): boolean {
+        if(!this.isEventAvailable()) {
+            return false;
+        }
+
+        if(this.isComplete) {
+            return false;
+        }
+
+        return true;
+    }
 }
 
 
