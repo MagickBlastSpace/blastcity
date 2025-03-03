@@ -16,7 +16,9 @@ export class UIEventKingsCupPlayerItem extends UIEventSkyRacePlayerItem {
 
         let isRewardAvailable = this.index > -1 && this.index < this.rewards.length;
 
-        this.showRewardBtn.node.active = isRewardAvailable;
+        if(this.showRewardBtn && this.showRewardBtn !== undefined) {
+            this.showRewardBtn.node.active = isRewardAvailable;
+        }   
     }
 }
 
