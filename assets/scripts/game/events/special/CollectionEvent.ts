@@ -40,6 +40,8 @@ export class CollectionEvent extends SpecialEventBase {
         this.eventId = "collection";
 
         this.isStarted = true;
+
+        this.lastAttemptTimestamp = Date.now();
     }
 
 

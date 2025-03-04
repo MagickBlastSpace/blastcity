@@ -8,7 +8,7 @@ const { ccclass, property } = _decorator;
 @ccclass('BattlepassEvent')
 export class BattlepassEvent extends RocketFeverEvent {
 
-    private takenRewards: number[] = [];
+    //private takenRewards: number[] = [];
     private takenRewards_Premium: number[] = [];
 
     private bonusBank: number = 0;
@@ -55,9 +55,11 @@ export class BattlepassEvent extends RocketFeverEvent {
             this.startTime = new Date(Date.UTC(nextMonth.getUTCFullYear(), nextMonth.getUTCMonth(), 1, 8, 0, 0, 0));
             this.endTime = new Date(Date.UTC(nextMonth.getUTCFullYear(), nextMonth.getUTCMonth() + 1, 0, 8, 0, 0, 0));
         }
+
+        this.lastAttemptTimestamp = Date.now();
     
-        console.log("Start time: " + this.startTime);
-        console.log("End time: " + this.endTime);
+        console.log("bp Start time: " + this.startTime);
+        console.log("bp End time: " + this.endTime);
     }
 
 
@@ -229,6 +231,7 @@ export class BattlepassEvent extends RocketFeverEvent {
     getTotalStages(): number {
         return this.eventData.length;
     }
+
 }
 
 

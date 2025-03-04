@@ -113,6 +113,7 @@ export class TeamBattleEvent extends TeamEventBase {
         for(let i = 0; i < clansData.length; i++) {
             let data = new PlayerEventData();
             data.playerName = clansData[i].clanName;
+            data.playerId = 0;
             data.progressValue = 0;
 
             try {

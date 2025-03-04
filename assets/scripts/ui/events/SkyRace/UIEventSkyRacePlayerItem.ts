@@ -160,6 +160,10 @@ export class UIEventSkyRacePlayerItem extends Component {
 
 
     async loadAvatar(id: number) {
+        if(id === 0) {
+            return;
+        }
+        
         try {
             let ids = [id];
             const result = await Net.instance.getPlayersByIds(ids);
