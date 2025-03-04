@@ -181,6 +181,15 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     setPlayerPlace(place: number) {
         this.playerPlace = place;
     }
+
+
+    setIsTotalRewardTaken(isTaken: boolean) {
+        this.isRewardPicked = isTaken;
+    }
+
+    getIsTotalRewardTaken(): boolean {
+        return this.isRewardPicked;
+    }
 }
 
 

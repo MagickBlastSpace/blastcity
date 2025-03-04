@@ -64,6 +64,8 @@ export class TeamTreasureEvent extends TeamEventBase {
         this.applyReward(this.rewards[rewardIndex]);
 
         this.isRewardPicked[rewardIndex] = true;
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 
 
@@ -159,6 +161,11 @@ export class TeamTreasureEvent extends TeamEventBase {
         }
 
         return false;
+    }
+
+
+    setIsRewardPicked(isPicked: boolean[]) {
+        this.isRewardPicked = isPicked;
     }
 }
 

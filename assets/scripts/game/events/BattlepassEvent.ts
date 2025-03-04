@@ -152,6 +152,8 @@ export class BattlepassEvent extends RocketFeverEvent {
             this.takenRewards.push(index);
 
             this.applyReward(this.eventData[index].rewards[0]);
+
+            SaveData.instance.saveEvent(this.eventId);
         }
 
         this.node.emit("refresh");
@@ -162,6 +164,8 @@ export class BattlepassEvent extends RocketFeverEvent {
             this.takenRewards_Premium.push(index);
 
             this.applyReward(this.eventData[index].rewards[1]);
+
+            SaveData.instance.saveEvent(this.eventId);
         }
 
         this.node.emit("refresh");
@@ -232,6 +236,14 @@ export class BattlepassEvent extends RocketFeverEvent {
         return this.eventData.length;
     }
 
+
+    getTakenRewards_Premium(): number[] {
+        return this.takenRewards_Premium;
+    }
+
+    setTakenRewards_Premium(rewards: number[]) {
+        this.takenRewards_Premium = rewards;
+    }
 }
 
 

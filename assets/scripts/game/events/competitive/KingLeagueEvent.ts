@@ -201,7 +201,13 @@ export class KingLeagueEvent extends CompetitiveEventBase {
     }
 
 
+    setIsTotalRewardTaken(isTaken: boolean) {
+        this.isRewardPicked = isTaken;
+    }
 
+    getIsTotalRewardTaken(): boolean {
+        return this.isRewardPicked;
+    }
 }
 
 

@@ -301,7 +301,7 @@ export class CollectionEvent extends SpecialEventBase {
 
         this.isTotalRewardTaken = true;
 
-        //save
+        SaveData.instance.saveEvent(this.eventId);
 
         this.node.emit("refresh");
 
@@ -324,7 +324,7 @@ export class CollectionEvent extends SpecialEventBase {
 
         this.completedCollections.push(id);
 
-        //save
+        SaveData.instance.saveEvent(this.eventId);
 
         for(let i = 0; i < this.eventData.length; i++) {
             if(this.eventData[i].id === id) {
@@ -518,6 +518,22 @@ export class CollectionEvent extends SpecialEventBase {
         }
 
         this.duplicates = predictions;
+    }
+
+    getCompletedCollections(): string[] {
+        return this.completedCollections;
+    }
+
+    setCompletedCollections(collections: string[]) {
+        if(!collections) {
+            return;
+        }
+
+        this.completedCollections = collections;
+    }
+
+    setIsTotalRewardTaken(isTaken: boolean) {
+        this.isTotalRewardTaken = isTaken;
     }
 }
 

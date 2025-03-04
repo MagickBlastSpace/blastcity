@@ -153,6 +153,8 @@ export class RocketFeverEvent extends WeeklyEventBase {
         if(!this.takenRewards.includes(index)) {
             this.takenRewards.push(index);
 
+            SaveData.instance.saveEvent(this.eventId);
+
             this.applyRewards(this.eventData[index].rewards);
         }
 
@@ -184,6 +186,15 @@ export class RocketFeverEvent extends WeeklyEventBase {
         }
 
         return true;
+    }
+
+
+    getTakenRewards(): number[] {
+        return this.takenRewards;
+    }
+
+    setTakenRewards(rewards: number[]) {
+        this.takenRewards = rewards;
     }
 }
 

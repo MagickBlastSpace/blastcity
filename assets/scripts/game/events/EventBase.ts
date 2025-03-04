@@ -249,6 +249,44 @@ export class EventBase extends Component {
 
     setPlayerPlace(place: number) {}
 
+    getCompletedCollections(): string[] {
+        return [];
+    }
+
+    setCompletedCollections(collections: string[]) {}
+
+    getIsTotalRewardTaken() {
+        return false;
+    }
+
+    setIsTotalRewardTaken(isTaken: boolean) {}
+
+    getTakenRewards(): number[] {
+        return [];
+    }
+
+    setTakenRewards(rewards: number[]) {}
+
+    getTakenRewards_Premium(): number[] {
+        return [];
+    }
+
+    setTakenRewards_Premium(rewards: number[]) {}
+
+    getIsRewardPicked(): boolean[] {
+        return [];
+    }
+
+    setIsRewardPicked(isPicked: boolean[]) {}
+
+    getUnpickedRewards(): EventRewardData[] {
+        return this.unpickedRewards;
+    }
+
+    setUnpickedRewards(rewards: EventRewardData[]) {
+        this.unpickedRewards = rewards;
+    }
+
 
     applyRewards(rewards: EventRewardData[]) {
         for(let i = 0; i < rewards.length; i++) {

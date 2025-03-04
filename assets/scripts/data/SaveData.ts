@@ -458,7 +458,14 @@ export class SaveData extends Component {
                     multiplayerChannel: eventComp.getMultiplayerChannel(),
                     isTutorialComplete: eventComp.getIsTutorialComplete(),
                     lastMpChannel: eventComp.getLastMultiplayerChannel(),
-                    playerPlace: eventComp.getPlayerPlace()
+                    playerPlace: eventComp.getPlayerPlace(),
+
+                    collections: eventComp.getCompletedCollections(),
+                    isTotalRewardPicked: eventComp.getIsTotalRewardTaken(),
+                    takenRewards: eventComp.getTakenRewards(),
+                    takenRewards_Premium: eventComp.getTakenRewards_Premium(),
+                    isRewardPicked: eventComp.getIsRewardPicked(),
+                    unpickedRewards: eventComp.getUnpickedRewards()
                 };
         
                 try {
@@ -498,6 +505,25 @@ export class SaveData extends Component {
                         eventComp.setLastMultiplayerChannel(eventData.lastMpChannel);
 
                         eventComp.setPlayerPlace(eventData.playerPlace);
+
+                        if (eventData.completedCollections !== undefined) {
+                            eventComp.setCompletedCollections(eventData.completedCollections);
+                        }
+                        if (eventData.isTotalRewardPicked !== undefined) {
+                            eventComp.setIsTotalRewardTaken(eventData.isTotalRewardPicked);
+                        }
+                        if (eventData.takenRewards !== undefined) {
+                            eventComp.setTakenRewards(eventData.takenRewards);
+                        }
+                        if (eventData.takenRewards_Premium !== undefined) {
+                            eventComp.setTakenRewards_Premium(eventData.takenRewards_Premium);
+                        }
+                        if (eventData.isRewardPicked !== undefined) {
+                            eventComp.setIsRewardPicked(eventData.isRewardPicked);
+                        }
+                        if (eventData.unpickedRewards !== undefined) {
+                            eventComp.setUnpickedRewards(eventData.unpickedRewards);
+                        }
                     } else {
                         //console.log("No event " + eventComp.getEventId() + " data found");
                     }
