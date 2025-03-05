@@ -19,7 +19,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     private playerPlace: number = -1;
     private isRewardPicked: boolean = false;
 
-    private readonly UPDATE_INTERVAL: number = 100000;
+    private readonly UPDATE_INTERVAL: number = 50000;
     private readonly PROGRESS_CHANCE: number = 0.3;
     private progressInterval: any = null;
 
@@ -54,6 +54,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
             }
 
             if (updated) {
+                this.node.emit("refresh");
+
                 SaveData.instance.saveEvent(this.eventId);
             }
         }, this.UPDATE_INTERVAL);
@@ -213,6 +215,8 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         if(this.isComplete && (this.playerPlace < 0 || this.playerPlace === undefined)) {
             this.playerPlace = sortedPlayers.findIndex(player => player.playerId === UserData.instance.getPlayerId());
         }
+
+        sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
 
         if(this.playerPlace >= 0) {
             let playerIndex = sortedPlayers.findIndex(player => player.playerId === UserData.instance.getPlayerId());
