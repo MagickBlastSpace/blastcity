@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, SpriteFrame, Sprite, Button, Color } from 'cc';
+import { _decorator, Component, Node, SpriteFrame, Sprite, Button, Color, tween, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIProfileChangeItem')
@@ -63,6 +63,12 @@ export class UIProfileChangeItem extends Component {
         }
 
         this.active.active = isActive;
+
+        let newScale = isActive ? 0.8 : 1;
+
+        tween(this.node)
+            .to(0.2, { scale: new Vec3(newScale, newScale, 1) })
+            .start();
     }
 
     setLocked(isLocked: boolean) {
