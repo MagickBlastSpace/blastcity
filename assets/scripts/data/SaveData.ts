@@ -465,7 +465,9 @@ export class SaveData extends Component {
                     takenRewards: eventComp.getTakenRewards(),
                     takenRewards_Premium: eventComp.getTakenRewards_Premium(),
                     isRewardPicked: eventComp.getIsRewardPicked(),
-                    unpickedRewards: eventComp.getUnpickedRewards()
+                    unpickedRewards: eventComp.getUnpickedRewards(),
+
+                    bots: eventComp.getBots()
                 };
         
                 try {
@@ -523,6 +525,9 @@ export class SaveData extends Component {
                         }
                         if (eventData.unpickedRewards !== undefined) {
                             eventComp.setUnpickedRewards(eventData.unpickedRewards);
+                        }
+                        if (eventData.bots !== undefined) {
+                            eventComp.setBots(eventData.bots);
                         }
                     } else {
                         //console.log("No event " + eventComp.getEventId() + " data found");

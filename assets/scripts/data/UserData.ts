@@ -4,6 +4,8 @@ import { _decorator, Component, Node } from 'cc';
 import { GameData } from './GameData';
 import { SaveData } from './SaveData';
 import { CollectionEvent } from '../game/events/special/CollectionEvent';
+import { PlayerEventData } from './EventData';
+import { Net } from '../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserData')
@@ -58,6 +60,9 @@ export class UserData extends Component {
 
     @property(CollectionEvent)
     collections: CollectionEvent;
+
+    @property([PlayerEventData])
+    players: PlayerEventData[] = [];
 
 
     onLoad() {
@@ -174,6 +179,8 @@ export class UserData extends Component {
         this.checkForFriendsAccepts();
         this.checkForFriendsRejects();
         this.checkForFriendsRemoves();
+
+        this.fetchAndSavePlayers();
     }
 
 
@@ -740,6 +747,45 @@ export class UserData extends Component {
 
             gamepush.channels.deleteMessage({ messageId: message.id });
         });
+    }
+
+
+    async fetchAndSavePlayers() {
+        this.players = [];
+        let count = 50;
+
+        try {
+            const result = await Net.instance.fetchScoreLeaderboardDataUnscoped("level_1");
+            const { players, fields, topPlayers, abovePlayers, belowPlayers, player } = result;
+
+            for(let i = 0; i < players.length; i++) {
+                let player = new PlayerEventData();
+                player.playerName = players[i].name;
+                player.progressValue = 0;
+                player.playerId = players[i].id;
+
+                this.players.push(player);
+
+                if(this.players.length >= count) {
+                    return;
+                }
+            }
+
+        } catch (error) {
+            console.log('Error fetching leaderboard data:', error);
+        }
+    }
+
+
+    getRandomPlayers(count: number): PlayerEventData[] {
+        if (count >= this.players.length) {
+            return [...this.players];
+        }
+    
+        return this.players
+            .slice()
+            .sort(() => Math.random() - 0.5)
+            .slice(0, count);
     }
 }
 

@@ -19,9 +19,51 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     private playerPlace: number = -1;
     private isRewardPicked: boolean = false;
 
+    private readonly UPDATE_INTERVAL: number = 100000;
+    private readonly PROGRESS_CHANCE: number = 0.3;
+    private progressInterval: any = null;
+
+    
+    onLoad() {
+        this.players = [];
+    }
+
     
     start() {
         this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
+        this.startProgressUpdateLoop();
+    }
+
+    onDestroy() {
+        this.stopProgressUpdateLoop();
+    }
+
+    private startProgressUpdateLoop() {
+        if (this.progressInterval) return;
+
+        this.progressInterval = setInterval(() => {
+            let updated = false;
+
+            for (let player of this.players) {
+                if(player.playerId !== UserData.instance.getPlayerId()) {
+                    if (Math.random() < this.PROGRESS_CHANCE) { 
+                        player.progressValue += 1;
+                        updated = true;
+                    }
+                }
+            }
+
+            if (updated) {
+                SaveData.instance.saveEvent(this.eventId);
+            }
+        }, this.UPDATE_INTERVAL);
+    }
+
+    private stopProgressUpdateLoop() {
+        if (this.progressInterval) {
+            clearInterval(this.progressInterval);
+            this.progressInterval = null;
+        }
     }
     
 
@@ -49,14 +91,6 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     }
 
     activateEvent() {
-        if(this.multiplayerChannelId === 0) {
-            console.log("Multiplayer is not ready");
-
-            Net.instance.requestMoreChannels(this.eventId);
-            
-            return;
-        }
-
         if(!this.isEventAvailable() || this.isStarted || !this.canParticipate()) {
             return;
         }
@@ -71,11 +105,30 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         this.lastAttemptTimestamp = Date.now();
 
+        this.resetBots();
+
         SaveData.instance.saveEvent(this.eventId);
 
-        Net.instance.publishScore(this.eventId, "sky_race_" + this.multiplayerChannelId, this.currentStep);
-
         this.updateMultiplayerData();
+    }
+
+
+    private resetBots() {
+        this.players = [];
+
+        let player = new PlayerEventData();
+        player.playerName = UserData.instance.getPlayerName();
+        player.playerId = UserData.instance.getPlayerId();
+        player.clanName = UserData.instance.getClanName();
+        player.progressValue = 0;
+
+        this.players.push(player);
+
+        let bots = UserData.instance.getRandomPlayers(4);
+
+        for(let i = 0; i < bots.length; i++) {
+            this.players.push(bots[i]);
+        }
     }
 
 
@@ -96,7 +149,10 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         this.currentStep = this.currentStep + 1;
 
-        Net.instance.publishScore(this.eventId, "sky_race_" + this.multiplayerChannelId, this.currentStep);
+        let player = this.players.find(p => p.playerId === UserData.instance.getPlayerId());
+        if (player) {
+            player.progressValue = this.currentStep;
+        }
 
         if(this.currentStep >= this.TOTAL_LEVELS) {
             this.handleEventCompletion();
@@ -147,6 +203,10 @@ export class SkyRaceEvent extends CompetitiveEventBase {
     sortPlayersByProgress(): PlayerEventData[] {
         let sortedPlayers = [];
 
+        if(this.players.length === 0) {
+            this.resetBots();
+        }
+
         sortedPlayers = this.players;
 
         //sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
@@ -189,6 +249,18 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
     getIsTotalRewardTaken(): boolean {
         return this.isRewardPicked;
+    }
+
+    async updateMultiplayerData() {
+        this.node.emit("refresh");
+    }
+
+    getBots(): PlayerEventData[] {
+        return this.players;
+    }
+
+    setBots(bots: PlayerEventData[]) {
+        this.players = bots;
     }
 }
 

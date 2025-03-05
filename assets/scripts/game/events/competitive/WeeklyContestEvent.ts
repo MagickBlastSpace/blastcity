@@ -132,6 +132,12 @@ export class WeeklyContestEvent extends SkyRaceEvent {
             this.isUpdating = false;
         }
     }
+
+    getBots(): PlayerEventData[] {
+        return [];
+    }
+
+    setBots(bots: PlayerEventData[]) {}
 }
 
 

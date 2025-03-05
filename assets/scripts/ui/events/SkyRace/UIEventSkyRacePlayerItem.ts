@@ -42,7 +42,9 @@ export class UIEventSkyRacePlayerItem extends Component {
     @property(Button)
     showRewardBtn: Button = null;
 
-    private index: number = 0;
+    @property
+    index: number = 0;
+    
     private isRewardTaken: boolean = false;
 
     private data: PlayerEventData;

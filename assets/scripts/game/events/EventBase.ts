@@ -3,7 +3,7 @@ declare const gamepush: any;
 import { _decorator, Component, Node } from 'cc';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
-import { EventRewardData } from '../../data/EventData';
+import { EventRewardData, PlayerEventData } from '../../data/EventData';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventBase')
@@ -341,6 +341,13 @@ export class EventBase extends Component {
     isInteractable(): boolean {
         return this.isEventAvailable();
     }
+
+
+    getBots(): PlayerEventData[] {
+        return [];
+    }
+
+    setBots(bots: PlayerEventData[]) {}
 }
 
 
