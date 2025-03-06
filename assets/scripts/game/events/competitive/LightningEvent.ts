@@ -20,9 +20,51 @@ export class LightningEvent extends KingsCupEvent {
     private lastAttemptTimestamp: number = 0;
 
     
+    onLoad() {
+        this.players = [];
+    }
+    
     start() {
         this.level.on("complete_statistics", (stats) => this.handleLevelCompletion(stats));
+        this.startProgressUpdateLoop();
     }
+
+    onDestroy() {
+        this.stopProgressUpdateLoop();
+    }
+
+    private startProgressUpdateLoop() {
+        if (this.progressInterval) return;
+
+        this.progressInterval = setInterval(() => {
+            let updated = false;
+
+            for (let player of this.players) {
+                if(player.playerId !== UserData.instance.getPlayerId()) {
+                    if (Math.random() < this.PROGRESS_CHANCE) { 
+                        const randomIncrease = Math.floor(Math.random() * (21 - 7 + 1)) + 7;
+                        player.progressValue += randomIncrease;
+
+                        updated = true;
+                    }
+                }
+            }
+
+            if (updated) {
+                this.node.emit("refresh");
+
+                SaveData.instance.saveEvent(this.eventId);
+            }
+        }, this.UPDATE_INTERVAL);
+    }
+
+    private stopProgressUpdateLoop() {
+        if (this.progressInterval) {
+            clearInterval(this.progressInterval);
+            this.progressInterval = null;
+        }
+    }
+
 
     update(deltaTime: number) {
         if(!this.isStarted || (this.isComplete && this.playerPlace >= 0) ) {
@@ -64,14 +106,6 @@ export class LightningEvent extends KingsCupEvent {
 
 
     activateEvent() {
-        if(this.multiplayerChannelId === 0) {
-            console.log("Multiplayer is not ready");
-
-            Net.instance.requestMoreChannels(this.eventId);
-
-            return;
-        }
-
         if(!this.isEventAvailable() || this.isStarted || !this.canParticipate()) {
             return;
         }
@@ -83,11 +117,9 @@ export class LightningEvent extends KingsCupEvent {
 
         this.lastAttemptTimestamp = Date.now();
 
+        this.resetBots();
+
         SaveData.instance.saveEvent(this.eventId);
-
-        Net.instance.publishScore(this.eventId, "lightning_" + this.multiplayerChannelId, this.collectables);
-
-        this.updateMultiplayerData();
 
         this.applyReward(this.rewards[1]);
     }
@@ -104,7 +136,10 @@ export class LightningEvent extends KingsCupEvent {
 
         this.collectables = this.collectables + statistics.destroyedByDiscoball;
 
-        Net.instance.publishScore(this.eventId, "lightning_" + this.multiplayerChannelId, this.collectables);
+        let player = this.players.find(p => p.playerId === UserData.instance.getPlayerId());
+        if (player) {
+            player.progressValue = this.collectables;
+        }
 
         SaveData.instance.saveEvent(this.eventId);
 
@@ -114,8 +149,6 @@ export class LightningEvent extends KingsCupEvent {
 
     handleEventCompletion() {
         this.isStarted = false;
-
-        this.updateMultiplayerData();
 
         this.isComplete = true;
 
@@ -142,8 +175,6 @@ export class LightningEvent extends KingsCupEvent {
 
         this.isStarted = false;
         this.isComplete = false;
-
-        this.multiplayerChannelId = 0;
     }
 
     isRewardAvailable(): boolean {
@@ -225,18 +256,34 @@ export class LightningEvent extends KingsCupEvent {
 
     isInteractable(): boolean {
         if(!this.isEventAvailable()) {
+            console.log("light not aval");
             return false;
         }
 
-        if(!this.isCooldownOver()) {
+        /*if(!this.isCooldownOver()) {
+            console.log("light not cooldown over");
             return false;
-        }
+        }*/
 
         if(this.isComplete && !this.isRewardAvailable()) {
+            console.log(" light complete and reward taken");
             return false;
         }
 
         return true;
+    }
+
+
+    async updateMultiplayerData() {
+        this.node.emit("refresh");
+    }
+
+    getBots(): PlayerEventData[] {
+        return this.players;
+    }
+
+    setBots(bots: PlayerEventData[]) {
+        this.players = bots;
     }
 }
 
