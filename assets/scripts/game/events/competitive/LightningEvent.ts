@@ -174,7 +174,7 @@ export class LightningEvent extends KingsCupEvent {
         this.collectables = 0;
 
         this.isStarted = false;
-        this.isComplete = false;
+        //this.isComplete = false;
     }
 
     isRewardAvailable(): boolean {
@@ -256,17 +256,10 @@ export class LightningEvent extends KingsCupEvent {
 
     isInteractable(): boolean {
         if(!this.isEventAvailable()) {
-            console.log("light not aval");
             return false;
         }
 
-        /*if(!this.isCooldownOver()) {
-            console.log("light not cooldown over");
-            return false;
-        }*/
-
         if(this.isComplete && !this.isRewardAvailable()) {
-            console.log(" light complete and reward taken");
             return false;
         }
 
