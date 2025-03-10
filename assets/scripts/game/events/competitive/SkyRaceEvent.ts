@@ -209,6 +209,11 @@ export class SkyRaceEvent extends CompetitiveEventBase {
             this.resetBots();
         }
 
+        let player = this.players.find(p => p.playerId === UserData.instance.getPlayerId());
+        if (player) {
+            player.playerName = UserData.instance.getPlayerName();
+        }
+
         sortedPlayers = this.players;
 
         //sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);

@@ -148,9 +148,12 @@ export class LightningEvent extends KingsCupEvent {
 
 
     handleEventCompletion() {
-        this.isStarted = false;
+        //this.isStarted = false;
 
         this.isComplete = true;
+
+        this.sortPlayersByProgress();
+        this.playerPlace = this.players.findIndex(player => player.playerId === UserData.instance.getPlayerId());
 
         this.node.emit("refresh");
 
@@ -174,7 +177,7 @@ export class LightningEvent extends KingsCupEvent {
         this.collectables = 0;
 
         this.isStarted = false;
-        //this.isComplete = false;
+        this.isComplete = false;
     }
 
     isRewardAvailable(): boolean {
@@ -246,6 +249,11 @@ export class LightningEvent extends KingsCupEvent {
     sortPlayersByProgress(): PlayerEventData[] {
         let sortedPlayers = [];
 
+        let player = this.players.find(p => p.playerId === UserData.instance.getPlayerId());
+        if (player) {
+            player.playerName = UserData.instance.getPlayerName();
+        }
+
         sortedPlayers = this.players;
 
         sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
@@ -256,12 +264,19 @@ export class LightningEvent extends KingsCupEvent {
 
     isInteractable(): boolean {
         if(!this.isEventAvailable()) {
+            console.log("light not aval");
             return false;
         }
 
-        if(this.isComplete && !this.isRewardAvailable()) {
+        if(!this.isCooldownOver() && !this.isStarted) {
+            console.log("light not cooldown over");
             return false;
         }
+
+        /*if(this.isComplete && !this.isRewardAvailable()) {
+            console.log(" light complete and reward taken");
+            return false;
+        }*/
 
         return true;
     }
