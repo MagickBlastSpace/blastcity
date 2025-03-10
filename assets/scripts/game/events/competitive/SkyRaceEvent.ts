@@ -46,9 +46,11 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
             for (let player of this.players) {
                 if(player.playerId !== UserData.instance.getPlayerId()) {
-                    if (Math.random() < this.PROGRESS_CHANCE) { 
-                        player.progressValue += 1;
-                        updated = true;
+                    if (Math.random() < this.PROGRESS_CHANCE) {
+                        if(player.progressValue < this.TOTAL_LEVELS) {
+                            player.progressValue += 1;
+                            updated = true;
+                        }
                     }
                 }
             }
