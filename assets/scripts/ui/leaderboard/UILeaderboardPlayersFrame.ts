@@ -46,6 +46,8 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
                     let item = itemNode.getComponent("UILeaderboardPlayerItem");
             
                     this.items.push(item);
+
+                    itemNode.on("profile", (data) => this.showProfile(data));
                 }
     
                 this.items[i].init(i + 1);
@@ -66,6 +68,11 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
         super.show();
 
         this.refresh();
+    }
+
+
+    showProfile(playerId: number) {
+        this.node.emit("profile", playerId);
     }
 }
 

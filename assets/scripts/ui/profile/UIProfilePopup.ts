@@ -134,7 +134,7 @@ export class UIProfilePopup extends UIPopupFrameBase {
                     this.badge.spriteFrame = this.profile.getBadgeById(players[0].state["badge_id"]);
 
                     for(let i = 0; i < this.colors.length; i++) {
-                        this.colors[i].color = this.profile.getColorById(this.profile.getBadgeById(players[0].state["color_id"]));
+                        this.colors[i].color = this.profile.getColorById(players[0].state["color_id"]);
                     }
                 }
             }
@@ -158,6 +158,7 @@ export class UIProfilePopup extends UIPopupFrameBase {
         this.removeFromFriendsBtn.node.active = isFriend && !isMe;
         this.openChatBtn.node.active = !isMe;
         this.changeBtn.node.active = isMe;
+        this.changeBtn_Duplicate.node.active = isMe;
 
         if(isMe) {
             this.avatar.spriteFrame = this.profile.getCurrentAvatar();

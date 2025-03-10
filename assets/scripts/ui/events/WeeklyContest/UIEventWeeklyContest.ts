@@ -52,6 +52,8 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
                 item.init(i + 1);
         
                 this.items.push(item);
+
+                itemNode.on("profile", (data) => this.showProfile(data));
             }
 
             this.items[i].refresh(data[i]);

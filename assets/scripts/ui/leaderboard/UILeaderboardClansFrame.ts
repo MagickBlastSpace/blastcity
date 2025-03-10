@@ -4,7 +4,7 @@ import { PlayerEventData } from '../../data/EventData';
 import { Net } from '../../net/Net';
 import { UILeaderboardClanItem } from './UILeaderboardClanItem';
 import { Clans } from '../../game/Clans';
-import { ClanLeaderboardData } from '../../data/ClanData';
+import { ClanData, ClanLeaderboardData } from '../../data/ClanData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardClansFrame')
@@ -74,6 +74,8 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
                 let item = itemNode.getComponent("UILeaderboardClanItem");
         
                 this.items.push(item);
+
+                itemNode.on("show_info", (data) => this.showClan(data));
             }
 
             this.items[i].setIndex(i);
@@ -88,6 +90,11 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
         super.show();
 
         this.refresh();
+    }
+
+
+    showClan(clanData: ClanData) {
+        this.node.emit("clan", clanData);
     }
 }
 

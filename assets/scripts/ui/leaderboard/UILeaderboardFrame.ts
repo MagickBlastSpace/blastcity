@@ -3,6 +3,8 @@ import { UIEventWeeklyContest } from '../events/WeeklyContest/UIEventWeeklyConte
 import { UIFrameBase } from '../UIFrameBase';
 import { UITab } from '../main/UITab';
 import { UIProfilePopup } from '../profile/UIProfilePopup';
+import { ClanData } from '../../data/ClanData';
+import { UIClanInfoPopup } from '../clans/UIClanInfoPopup';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardFrame')
@@ -23,6 +25,9 @@ export class UILeaderboardFrame extends UIFrameBase {
     @property(UIProfilePopup)
     profilePopup: UIProfilePopup = null;
 
+    @property(UIClanInfoPopup)
+    clanPopup: UIClanInfoPopup = null;
+
 
     start() {
         for(let i = 0; i < this.tabs.length; i++) {
@@ -31,6 +36,7 @@ export class UILeaderboardFrame extends UIFrameBase {
 
         for(let i = 0; i < this.frames.length; i++) {
             this.frames[i].node.on("profile", (data) => this.showProfile(data));
+            this.frames[i].node.on("clan", (data) => this.showClan(data));
         }
     }
 
@@ -83,6 +89,12 @@ export class UILeaderboardFrame extends UIFrameBase {
         this.profilePopup.init(playerId);
 
         this.profilePopup.show();
+    }
+
+    showClan(clanData: ClanData) {
+        this.clanPopup.init(clanData);
+
+        this.clanPopup.show();
     }
 }
 

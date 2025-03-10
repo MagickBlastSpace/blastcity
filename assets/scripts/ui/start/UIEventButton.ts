@@ -82,6 +82,10 @@ export class UIEventButton extends Component {
         if(this.rewardIndicator) {
             this.rewardIndicator.active = this.eventController.isRewardAvailable();
         }
+
+        let isAvailable = this.eventController.isInteractable();
+
+        this.node.active = isAvailable;
     }
 
     setProgress() {
