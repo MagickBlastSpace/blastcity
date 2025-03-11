@@ -19,6 +19,8 @@ export class LightningEvent extends KingsCupEvent {
 
     private lastAttemptTimestamp: number = 0;
 
+    private progressInterval_Lightning: any = null;
+
     
     onLoad() {
         this.players = [];
@@ -26,17 +28,17 @@ export class LightningEvent extends KingsCupEvent {
     
     start() {
         this.level.on("complete_statistics", (stats) => this.handleLevelCompletion(stats));
-        this.startProgressUpdateLoop();
+        this.startProgressUpdateLoop_Lightning();
     }
 
     onDestroy() {
-        this.stopProgressUpdateLoop();
+        this.stopProgressUpdateLoop_Lightning();
     }
 
-    private startProgressUpdateLoop() {
-        if (this.progressInterval) return;
+    private startProgressUpdateLoop_Lightning() {
+        if (this.progressInterval_Lightning) return;
 
-        this.progressInterval = setInterval(() => {
+        this.progressInterval_Lightning = setInterval(() => {
             let updated = false;
 
             for (let player of this.players) {
@@ -58,10 +60,10 @@ export class LightningEvent extends KingsCupEvent {
         }, this.UPDATE_INTERVAL);
     }
 
-    private stopProgressUpdateLoop() {
-        if (this.progressInterval) {
-            clearInterval(this.progressInterval);
-            this.progressInterval = null;
+    private stopProgressUpdateLoop_Lightning() {
+        if (this.progressInterval_Lightning) {
+            clearInterval(this.progressInterval_Lightning);
+            this.progressInterval_Lightning = null;
         }
     }
 

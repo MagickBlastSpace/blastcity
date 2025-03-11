@@ -25,6 +25,10 @@ export class LavaAdventureEvent extends EventBase {
     private isCompletedToday: boolean = false;
 
 
+    onLoad() {
+        this.unpickedRewards = [];
+    }
+    
     start() {
         this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
         this.level.on("fail", () => this.handleLevelFail());
@@ -35,6 +39,8 @@ export class LavaAdventureEvent extends EventBase {
 
         this.currentStep = 0;
         this.isCompletedToday = false;
+
+        this.unpickedRewards = [];
 
         this.eventId = "lava_adventure";
     }
@@ -56,6 +62,10 @@ export class LavaAdventureEvent extends EventBase {
 
         this.currentStep = 0;
         this.currentPlayers = this.MAX_PLAYERS;
+
+        this.unpickedRewards = [];
+
+        SaveData.instance.saveEvent(this.eventId);
 
         //console.log("Lava Adventure started for player at level: ", UserData.instance.getProgress());
     }
@@ -92,14 +102,18 @@ export class LavaAdventureEvent extends EventBase {
         this.lastAttemptTimestamp = Date.now();
 
         this.isStarted = false;
-        this.currentStep = 0;
-
-        let rewardGold = Math.floor(this.REWARD_COINS / this.currentPlayers);
-        let newReward = new EventRewardData();
-        newReward.gold = rewardGold;
 
         this.unpickedRewards = [];
-        this.unpickedRewards.push(newReward);
+
+        if(this.currentStep >= this.TOTAL_LEVELS) {
+            let rewardGold = Math.floor(this.REWARD_COINS / this.currentPlayers);
+            let newReward = new EventRewardData();
+            newReward.gold = rewardGold;
+
+            this.unpickedRewards.push(newReward);
+        }
+
+        this.currentStep = 0;
 
         console.log("Lava Adventure completed! Player rewarded:", rewardGold, "coins");
 
@@ -129,6 +143,10 @@ export class LavaAdventureEvent extends EventBase {
     }
 
     private handleLevelFail() {
+        if(!this.canParticipate() || !this.isStarted || !this.isEventAvailable()) {
+            return;
+        }
+
         this.handleEventCompletion();
 
         //console.log("Lava Adventure failed!");
@@ -186,6 +204,8 @@ export class LavaAdventureEvent extends EventBase {
         this.unpickedRewards = [];
 
         SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("refresh");
     }
 
 

@@ -21,6 +21,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
     private readonly UPDATE_INTERVAL: number = 50000;
     private readonly PROGRESS_CHANCE: number = 0.3;
+    
     private progressInterval: any = null;
 
     
