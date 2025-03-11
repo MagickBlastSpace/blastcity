@@ -49,6 +49,10 @@ export class SkyRaceEvent extends CompetitiveEventBase {
                     if (Math.random() < this.PROGRESS_CHANCE) {
                         if(player.progressValue < this.TOTAL_LEVELS) {
                             player.progressValue += 1;
+
+                            if(player.progressValue > this.TOTAL_LEVELS) {
+                                player.progressValue = this.TOTAL_LEVELS;
+                            }
                             updated = true;
                         }
                     }
@@ -131,6 +135,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         let bots = UserData.instance.getRandomPlayers(4);
 
         for(let i = 0; i < bots.length; i++) {
+            bots[i].progressValue = 0;
             this.players.push(bots[i]);
         }
     }
@@ -141,6 +146,11 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         this.sortPlayersByProgress();
         this.playerPlace = this.players.findIndex(player => player.playerId === UserData.instance.getPlayerId());
+
+        if(this.playerPlace > 2) {
+            this.isComplete = false;
+            this.isStarted = false;
+        }
 
         SaveData.instance.saveEvent(this.eventId);
     }

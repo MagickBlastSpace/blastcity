@@ -70,7 +70,7 @@ export class TeamTreasureEvent extends TeamEventBase {
 
 
     private handleLevelCompletion(isComplete: boolean) {
-        if(!this.isEventAvailable() || !isComplete || !this.canParticipate()) {
+        if(!this.isEventAvailable() || !isComplete || !this.canParticipate() || !this.isStarted) {
             return;
         }
 

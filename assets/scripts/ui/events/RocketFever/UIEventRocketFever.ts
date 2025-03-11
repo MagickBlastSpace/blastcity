@@ -42,6 +42,9 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
     @property(Node)
     infoContainer: Node = null;
 
+    @property(Node)
+    rewardPopup: Node = null;
+
     @property(UIEventRocketFeverRewardIcon)
     rewardIcon: UIEventRocketFeverRewardIcon;
 
@@ -71,7 +74,6 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
         for(let i = 0; i < data.length && i < this.items.length; i++) {
             this.items[i].refresh(i + 1, data[i], this.eventController.getCurrentStage());
-            this.items[i].refreshAvailability(this.eventController.isRewardTaken(i));
         }
     }
 
@@ -134,7 +136,6 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
         for(let i = 0; i < data.length && i < this.items.length; i++) {
             this.items[i].refresh(i + 1, data[i], currentStage);
-            this.items[i].refreshAvailability(this.eventController.isRewardTaken(i));
         }
 
         if(currentStage >= data.length) {
@@ -170,6 +171,8 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
         this.scheduleOnce(() => {
             this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
+
+            this.eventController.takeAllRewards();
         }, 0.2);
     }
 

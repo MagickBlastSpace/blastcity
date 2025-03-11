@@ -171,6 +171,49 @@ export class RocketFeverEvent extends WeeklyEventBase {
         return false;
     }
 
+    takeAllRewards() {
+        if (this.isRewardAvailable()) {
+            let totalReward = new EventRewardData();
+    
+            for (let i = 0; i < this.currentStage; i++) {
+                if (!this.takenRewards.includes(i)) {
+                    this.takenRewards.push(i);
+    
+                    let eventRewards = this.eventData[i]?.rewards;
+                    if (eventRewards) {
+                        for (let reward of eventRewards) {
+                            totalReward.gold += reward.gold;
+                            totalReward.progress += reward.progress;
+                            totalReward.startBonus_Bomb += reward.startBonus_Bomb;
+                            totalReward.startBonus_Rocket += reward.startBonus_Rocket;
+                            totalReward.startBonus_Discoball += reward.startBonus_Discoball;
+                            totalReward.booster_Hammer += reward.booster_Hammer;
+                            totalReward.booster_Bow += reward.booster_Bow;
+                            totalReward.booster_Cannon += reward.booster_Cannon;
+                            totalReward.booster_Jester += reward.booster_Jester;
+                            totalReward.endlessLives_Minutes += reward.endlessLives_Minutes;
+                            totalReward.modifierX2_Minutes += reward.modifierX2_Minutes;
+                            totalReward.bomb_Minutes += reward.bomb_Minutes;
+                            totalReward.rocket_Minutes += reward.rocket_Minutes;
+                            totalReward.discoball_Minutes += reward.discoball_Minutes;
+                            totalReward.battlepass += reward.battlepass;
+                            totalReward.cardsPack += reward.cardsPack;
+                            totalReward.cards.push(...reward.cards);
+                            totalReward.isChest ||= reward.isChest;
+                        }
+                    }
+                }
+            }
+    
+            SaveData.instance.saveEvent(this.eventId);
+            this.applyRewards([totalReward]);
+
+            this.node.emit("refresh");
+        }
+    }
+    
+    
+
     getTotalStages(): number {
         return this.eventData.length;
     }

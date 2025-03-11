@@ -160,13 +160,6 @@ export class UIEventRocketFeverItem extends Component {
     }
 
 
-    refreshAvailability(isTaken: boolean) {
-        this.takeBtn.node.active = !isTaken && this.isComplete;
-
-        this.complete.active = this.isComplete && isTaken;
-    }
-
-
     onTakeBtnClick() {
         this.node.emit("take", this.stageIndex);
     }
