@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, instantiate, ScrollView} from 'cc';
+import { _decorator, Component, Node, Prefab, instantiate, ScrollView, EditBox, Button } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UILeaderboardPlayerItem } from './UILeaderboardPlayerItem';
 import { PlayerEventData } from '../../data/EventData';
@@ -18,8 +18,19 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
     @property(ScrollView)
     scroll: ScrollView = null;
 
+    @property(EditBox)
+    searchInput: EditBox = null;
 
-    start() {}
+    @property(Button)
+    searchBtn: Button = null;
+    @property(Button)
+    cancelSearchBtn: Button = null;
+
+
+    start() {
+        this.searchBtn.node.on(Button.EventType.CLICK, this.onSearchBtnClick, this);
+        this.cancelSearchBtn.node.on(Button.EventType.CLICK, this.onCancelSearchBtnClick, this);
+    }
 
     
     async refresh() {
@@ -50,6 +61,8 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
                     itemNode.on("profile", (data) => this.showProfile(data));
                 }
     
+                this.items[i].node.active = true;
+                
                 this.items[i].init(i + 1);
                 this.items[i].refresh(members[i]);
             }
@@ -73,6 +86,26 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
 
     showProfile(playerId: number) {
         this.node.emit("profile", playerId);
+    }
+
+    onSearchBtnClick() {
+        let searchString = this.searchInput.string;
+
+        if(searchString === "") {
+            this.onCancelSearchBtnClick();
+
+            return;
+        }
+
+        for(let i = 0; i < this.items.length; i++) {
+            let playerName = this.items[i].getPlayerName();
+
+            this.items[i].node.active = playerName !== "" && playerName === searchString;
+        }
+    }
+
+    onCancelSearchBtnClick() {
+        this.show();
     }
 }
 

@@ -213,6 +213,15 @@ export class UIEventSkyRacePlayerItem extends Component {
             }
         }
     }
+
+
+    getPlayerName(): string {
+        if(this.data) {
+            return this.data.playerName;
+        }
+
+        return "";
+    }
 }
 
 
