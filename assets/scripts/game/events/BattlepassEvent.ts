@@ -18,7 +18,7 @@ export class BattlepassEvent extends RocketFeverEvent {
 
 
     start() {
-        this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
+        this.level.on("complete_statistics", (stats) => this.handleLevelCompletion(stats));
         this.level.on("fail", () => this.handleLevelFail());
 
         UserData.instance.node.on("premium_purchase", () => this.onPremiumPurchase());

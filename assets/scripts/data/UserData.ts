@@ -659,6 +659,8 @@ export class UserData extends Component {
         gamepush.player.set('energy:max', this.energyMax_Premium);
 
         this.node.emit("premium_purchase");
+
+        SaveData.instance.saveUserData();
     }
 
 

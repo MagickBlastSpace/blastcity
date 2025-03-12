@@ -52,7 +52,9 @@ export class SaveData extends Component {
             energyAskTimestamp: UserData.instance.getEnergyAskTimestamp(),
 
             friendsList: UserData.instance.getFriendsList(),
-            kingLeagueProgress: UserData.instance.getKingLeagueProgress()
+            kingLeagueProgress: UserData.instance.getKingLeagueProgress(),
+
+            isPremium: UserData.instance.getIsPremium()
         };
         
         cc.sys.localStorage.setItem('userData', JSON.stringify(userData));
@@ -81,6 +83,10 @@ export class SaveData extends Component {
 
             UserData.instance.setFriendsList(userData.friendsList);
             UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
+
+            if (userData.isPremium !== undefined) {
+                UserData.instance.setIsPremium(userData.isPremium);
+            }
         }
         else {
             UserData.instance.setProgress(gamepush.player.get('score'));

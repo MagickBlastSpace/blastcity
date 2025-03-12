@@ -20,6 +20,12 @@ export class UILevelMovesShop extends Component {
     @property(Button)
     closeBtn: Button = null;
 
+    @property(Button)
+    activateBpBtn: Button = null;
+
+    @property(Node)
+    bp_mini: Node = null;
+
     @property(Label)
     stageDataLabel: Label = null;
     @property(Label)
@@ -42,11 +48,15 @@ export class UILevelMovesShop extends Component {
         this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
 
+        this.activateBpBtn.node.on(Button.EventType.CLICK, this.onActivateBpBtnClick, this);
+
         this.loadAsstets();
     }
 
     refresh() {
         this.goldLabel.string = UserData.instance.getResource("gold");
+
+        this.bp_mini.active = !UserData.instance.getIsPremium();
 
         if(this.movesShop.isMovesShopAvailable()) {
             this.data = this.movesShop.getStageData();
@@ -103,6 +113,12 @@ export class UILevelMovesShop extends Component {
 
     onCloseBtnClick() {
         this.node.emit("close");
+    }
+
+    onActivateBpBtnClick() {
+        UserData.instance.buyPremium();
+
+        this.refresh();
     }
 
 
