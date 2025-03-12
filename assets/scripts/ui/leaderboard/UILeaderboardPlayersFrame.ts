@@ -89,20 +89,20 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
     }
 
     onSearchBtnClick() {
-        let searchString = this.searchInput.string;
-
-        if(searchString === "") {
+        let searchString = this.searchInput.string.trim().toLowerCase();
+    
+        if (searchString === "") {
             this.onCancelSearchBtnClick();
-
             return;
         }
-
-        for(let i = 0; i < this.items.length; i++) {
-            let playerName = this.items[i].getPlayerName();
-
-            this.items[i].node.active = playerName !== "" && playerName === searchString;
+    
+        for (let i = 0; i < this.items.length; i++) {
+            let playerName = this.items[i].getPlayerName().toLowerCase();
+    
+            this.items[i].node.active = playerName !== "" && playerName.includes(searchString);
         }
     }
+    
 
     onCancelSearchBtnClick() {
         this.show();

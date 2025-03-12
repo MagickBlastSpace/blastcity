@@ -82,6 +82,8 @@ export class LightningEvent extends KingsCupEvent {
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
+        console.log("Lightning init: " + startDayOfWeek + " - " + startHourUTC + " - " + durationDays);
+
         this.collectables = 0;
 
         this.isStarted = false;

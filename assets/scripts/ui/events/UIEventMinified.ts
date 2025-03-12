@@ -33,7 +33,7 @@ export class UIEventMinified extends Component {
     }
 
     update(deltaTime: number) {
-        this.node.active = this.eventController.isEventAvailable() && this.eventController.canParticipate();
+        //this.node.active = this.eventController.isEventAvailable() && this.eventController.canParticipate();
     }
 
     
@@ -47,6 +47,8 @@ export class UIEventMinified extends Component {
         this.rewardContainer.active = isRewardAvailable;
 
         let data = this.eventController.sortPlayersByProgress();
+
+        console.log("minified: " + isEventStarted + " - " + isEventComplete + " - " + data.length);
 
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].init(i);
@@ -62,7 +64,17 @@ export class UIEventMinified extends Component {
 
 
     updateData() {
-        this.eventController.updateMultiplayerData();
+        //console.log(this.eventController.getEventId() + " minified update: " + this.eventController.isEventAvailable() + " - " + this.eventController.canParticipate());
+
+        if(this.eventController.isEventAvailable()) {
+            this.node.active = true;
+
+            //this.eventController.updateMultiplayerData();
+            this.eventController.refresh();
+        }
+        else {
+            this.node.active = false;
+        }
     }
 
 
