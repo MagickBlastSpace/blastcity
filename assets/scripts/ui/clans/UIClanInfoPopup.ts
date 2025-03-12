@@ -93,10 +93,10 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
         this.clanName.string = this.clanData.clanName;
         this.membersCount.string = this.clanData.membersCount + "/" + this.clanData.capacity;
 
-        this.joinBtn.node.active = !this.isFull() && !this.clanData.isJoined && !this.clanData.isPrivate;
+        this.joinBtn.node.active = !this.isFull() && !this.clans.isJoined() && !this.clanData.isPrivate;
         this.leaveBtn.node.active = this.clanData.isJoined;
 
-        this.requestBtn.node.active = !this.isFull() && !this.clanData.isJoined && this.clanData.isPrivate && !this.clans.isJoinRequested();
+        this.requestBtn.node.active = !this.isFull() && !this.clans.isJoined() && this.clanData.isPrivate && !this.clans.isJoinRequested();
         this.cancelRequestBtn.node.active = this.clanData.isPrivate && this.clans.isJoinRequested() && this.clans.getJoinRequestId() === this.clanData.clanId;
 
         Net.instance.fetchMembersOfChannel(this.clanData.clanId);

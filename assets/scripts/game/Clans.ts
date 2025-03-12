@@ -161,11 +161,15 @@ export class Clans extends Component {
 
 
     joinClan(clanId: number) {
+        if(this.isJoinRequested() || this.isJoined()) {
+            return;
+        }
+        
         Net.instance.tryToJoinClanChannel(clanId, this.playerClanId);
     }
 
     joinPrivateClan(clanId: number) {
-        if(this.isJoinRequested()) {
+        if(this.isJoinRequested() || this.isJoined()) {
             return;
         }
         
