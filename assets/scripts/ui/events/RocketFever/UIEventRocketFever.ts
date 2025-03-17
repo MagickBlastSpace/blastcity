@@ -172,7 +172,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
         this.scheduleOnce(() => {
             this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
 
-            this.eventController.takeAllRewards();
+            //this.eventController.takeAllRewards();
         }, 0.2);
     }
 

@@ -25,6 +25,10 @@ export class UIEventButtonRocketFever extends UIEventButton {
         }
 
         this.rewardIcon.refresh(data[currentStage]);
+
+        if(this.eventController.isRewardAvailable()) {
+            this.eventController.takeAllRewards();
+        }
     }
 }
 
