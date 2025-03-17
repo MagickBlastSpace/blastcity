@@ -65,6 +65,8 @@ export class ResolutionManager extends Component {
     resources: Widget[] = [];
     @property(Widget)
     tutorialPopup: Widget = null;
+    @property(Widget)
+    friendsSearch: Widget = null;
 
     @property(UIChest)
     chestUi: UIChest;
@@ -169,6 +171,8 @@ export class ResolutionManager extends Component {
 
         this.tutorialPopup.top = 120;
 
+        this.friendsSearch.bottom = 820;
+
         this.chestUi.refreshScale(true);
     }
 
@@ -228,6 +232,8 @@ export class ResolutionManager extends Component {
         this.mainMenuBtnsWidget.bottom = 0;
 
         this.tutorialPopup.top = 1000;
+
+        this.friendsSearch.bottom = 0;
 
         this.chestUi.refreshScale(false);
 

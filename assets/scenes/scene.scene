@@ -69,7 +69,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 4519
+      "__id__": 4521
     },
     "_id": "7b2dc026-88d5-4e1b-8f76-c916ba7bb4f8"
   },
@@ -65900,6 +65900,7 @@
     "tutorialPopup": {
       "__id__": 2820
     },
+    "friendsSearch": null,
     "chestUi": null,
     "_id": "79EycuoapBkJF5F8Ha+74g"
   },
@@ -68362,7 +68363,7 @@
     "profile": {
       "__id__": 2368
     },
-    "_id": "46UU126vtD/qnBtbIF8K3l"
+    "_id": "f6idO549JLfpE2J4TYlJYV"
   },
   {
     "__type__": "cc.Node",
@@ -82098,6 +82099,9 @@
       },
       {
         "__id__": 4517
+      },
+      {
+        "__id__": 4519
       }
     ],
     "nestedPrefabInstanceRoots": [
@@ -93775,30 +93779,53 @@
     ]
   },
   {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 2573
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "friendsSearch"
+    ],
+    "target": {
+      "__id__": 1153
+    },
+    "targetInfo": {
+      "__id__": 4520
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "64YK45nHhCXarG05TNzomI",
+      "9b4p6v7QlD6a/n1gUn/ZxX"
+    ]
+  },
+  {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 4520
-    },
-    "shadows": {
-      "__id__": 4521
-    },
-    "_skybox": {
       "__id__": 4522
     },
-    "fog": {
+    "shadows": {
       "__id__": 4523
     },
-    "octree": {
+    "_skybox": {
       "__id__": 4524
     },
-    "skin": {
+    "fog": {
       "__id__": 4525
     },
-    "lightProbeInfo": {
+    "octree": {
       "__id__": 4526
     },
-    "postSettings": {
+    "skin": {
       "__id__": 4527
+    },
+    "lightProbeInfo": {
+      "__id__": 4528
+    },
+    "postSettings": {
+      "__id__": 4529
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false
