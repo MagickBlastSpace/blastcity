@@ -3,6 +3,7 @@ declare const gamepush: any;
 import { _decorator, Component, Node, Vec2 } from 'cc';
 import { UserData } from './UserData';
 import { GameData, LevelData, LevelProgressData, SpecialTileData, SpecialTileStateData } from './GameData';
+import { AudioController } from '../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 @ccclass('SaveData')
@@ -54,7 +55,12 @@ export class SaveData extends Component {
             friendsList: UserData.instance.getFriendsList(),
             kingLeagueProgress: UserData.instance.getKingLeagueProgress(),
 
-            isPremium: UserData.instance.getIsPremium()
+            isPremium: UserData.instance.getIsPremium(),
+
+            musicVolume: UserData.instance.getMusicVolume(),
+            sfxVolume: UserData.instance.getSfxVolume(),
+            lastMusicVolume: UserData.instance.getLastMusicVolume(),
+            lastSfxVolume: UserData.instance.getLastSfxVolume()
         };
         
         cc.sys.localStorage.setItem('userData', JSON.stringify(userData));
@@ -87,6 +93,22 @@ export class SaveData extends Component {
             if (userData.isPremium !== undefined) {
                 UserData.instance.setIsPremium(userData.isPremium);
             }
+
+            if (userData.musicVolume !== undefined) {
+                UserData.instance.setMusicVolume(userData.musicVolume);
+            }
+            if (userData.sfxVolume !== undefined) {
+                UserData.instance.setSfxVolume(userData.sfxVolume);
+            }
+            if (userData.lastMusicVolume !== undefined) {
+                UserData.instance.setLastMusicVolume(userData.lastMusicVolume);
+            }
+            if (userData.lastSfxVolume !== undefined) {
+                UserData.instance.setLastSfxVolume(userData.lastSfxVolume);
+            }
+
+            AudioController.instance.setMusicVolume(UserData.instance.getMusicVolume());
+            AudioController.instance.setSfxVolume(UserData.instance.getSfxVolume());
         }
         else {
             UserData.instance.setProgress(gamepush.player.get('score'));

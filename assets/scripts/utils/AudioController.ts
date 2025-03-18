@@ -1,8 +1,10 @@
 import { _decorator, Component, AudioSource, AudioClip, assetManager } from 'cc';
+import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('AudioController')
 export class AudioController extends Component {
+
     @property(AudioSource) soundtrackSource: AudioSource = null!;
     @property(AudioSource) uiSource: AudioSource = null!;
     @property(AudioSource) baseTileSource: AudioSource = null!;
@@ -21,6 +23,7 @@ export class AudioController extends Component {
 
     private baseTileNames: string[] = ['base_tile_destroy_1', 'base_tile_destroy_2', 'base_tile_destroy_3', 'base_tile_destroy_4', 'base_tile_destroy_5'];
 
+    
     onLoad() {
         if (!AudioController.instance) {
             AudioController.instance = this;
@@ -157,14 +160,50 @@ export class AudioController extends Component {
         this.isMusic = !this.isMusic;
         if (!this.isMusic && this.soundtrackSource.playing) {
             this.soundtrackSource.stop();
+
+            UserData.instance.setLastMusicVolume(this.soundtrackSource.volume);
+
+            this.setMusicVolume(0);
         } else {
             this.soundtrackSource.play();
+
+            this.setMusicVolume(UserData.instance.getLastMusicVolume());
         }
     }
 
-    switchSfx() { this.isSfx = !this.isSfx; }
+    switchSfx() { 
+        this.isSfx = !this.isSfx; 
+
+        if(!this.isSfx) {
+            UserData.instance.setLastSfxVolume(this.uiSource.volume);
+
+            this.setSfxVolume(0);
+        }
+        else {
+            this.setSfxVolume(UserData.instance.getLastSfxVolume());
+        }
+    }
     switchVibration() { this.isVibration = !this.isVibration; }
     isMusicEnabled() { return this.isMusic; }
     isSfxEnabled() { return this.isSfx; }
     isVibrationEnabled() { return this.isVibration; }
+
+
+    setMusicVolume(vol: number) {
+        this.soundtrackSource.volume = vol;
+
+        this.isMusic = vol > 0;
+
+        UserData.instance.setMusicVolume(vol);
+    }
+
+    setSfxVolume(vol: number) {
+        this.uiSource.volume = vol;
+        this.baseTileSource.volume = vol;
+        this.bonusTileSource.volume = vol;
+
+        this.isSfx = vol > 0;
+
+        UserData.instance.setSfxVolume(vol);
+    }
 }

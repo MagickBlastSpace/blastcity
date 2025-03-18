@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Slider, AudioSource, Button, Toggle } from 'cc';
+import { _decorator, Component, Node, Slider, Button, Toggle } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { AudioController } from '../../utils/AudioController';
 import { UserData } from '../../data/UserData';
@@ -13,12 +13,6 @@ export class UISettingsFrame extends UIPopupFrameBase {
 
     @property(Slider)
     sfxSlider: Slider = null;
-
-    @property(AudioSource)
-    musicAudioSource: AudioSource = null;
-
-    @property(AudioSource)
-    sfxAudioSource: AudioSource = null;
 
     @property(Button)
     closeBtn: Button = null;
@@ -38,9 +32,6 @@ export class UISettingsFrame extends UIPopupFrameBase {
 
 
     start() {
-        this.musicSlider.progress = this.musicAudioSource.volume;
-        this.sfxSlider.progress = this.sfxAudioSource.volume;
-
         this.musicSlider.node.on('slide', this.onMusicVolumeChanged, this);
         this.sfxSlider.node.on('slide', this.onSfxVolumeChanged, this);
 
@@ -60,14 +51,30 @@ export class UISettingsFrame extends UIPopupFrameBase {
         this.langBtn_En.node.on(Button.EventType.CLICK, this.onLangBtnClickEn, this);
     }
 
+
+    refresh() {
+        this.musicSlider.progress = UserData.instance.getMusicVolume();
+        this.sfxSlider.progress = UserData.instance.getSfxVolume();
+    }
+
+
+    show() {
+        super.show();
+
+        this.refresh();
+    }
+    
+
     onMusicVolumeChanged(slider: Slider) {
         const newVolume = slider.progress;
-        this.musicAudioSource.volume = newVolume;
+
+        AudioController.instance.setMusicVolume(newVolume);
     }
 
     onSfxVolumeChanged(slider: Slider) {
         const newVolume = slider.progress;
-        this.sfxAudioSource.volume = newVolume;
+
+        AudioController.instance.setSfxVolume(newVolume);
 
         //this.playSfxPreview();
     }

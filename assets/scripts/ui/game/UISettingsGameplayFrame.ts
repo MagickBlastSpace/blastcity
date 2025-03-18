@@ -60,6 +60,12 @@ export class UISettingsGameplayFrame extends UIPopupFrameBase {
         this.hide();
     }
 
+    show() {
+        super.show();
+
+        this.refresh();
+    }
+
 
     refresh() {
         this.musicOff.active = !AudioController.instance.isMusicEnabled();

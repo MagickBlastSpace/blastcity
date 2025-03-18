@@ -58,6 +58,12 @@ export class UserData extends Component {
 
     private isPremium: boolean = false;
 
+    private musicVolume: number = 0;
+    private sfxVolume: number = 0;
+
+    private lastMusicVolume: number = 0;
+    private lastSfxVolume: number = 0;
+
     @property(CollectionEvent)
     collections: CollectionEvent;
 
@@ -75,6 +81,9 @@ export class UserData extends Component {
 
         this.Gold = 5000;
         this.Stars = 0;
+
+        this.musicVolume = 1;
+        this.sfxVolume = 1;
 
         const now = new Date();
         this.Bombs_EndTime = new Date(now);
@@ -788,6 +797,48 @@ export class UserData extends Component {
             .slice()
             .sort(() => Math.random() - 0.5)
             .slice(0, count);
+    }
+
+
+    getMusicVolume(): number {
+        return this.musicVolume;
+    }
+
+    getSfxVolume(): number {
+        return this.sfxVolume;
+    }
+
+    setMusicVolume(vol: number) {
+        this.musicVolume = vol;
+
+        SaveData.instance.saveUserData();
+    }
+
+    setSfxVolume(vol: number) {
+        this.sfxVolume = vol;
+
+        SaveData.instance.saveUserData();
+    }
+
+
+    getLastMusicVolume(): number {
+        return this.lastMusicVolume;
+    }
+
+    getLastSfxVolume(): number {
+        return this.lastSfxVolume;
+    }
+
+    setLastMusicVolume(vol: number) {
+        this.lastMusicVolume = vol;
+
+        SaveData.instance.saveUserData();
+    }
+
+    setLastSfxVolume(vol: number) {
+        this.lastSfxVolume = vol;
+
+        SaveData.instance.saveUserData();
     }
 }
 
