@@ -1,6 +1,7 @@
 import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget, Layout } from 'cc';
 import { UIFrameBase } from '../ui/UIFrameBase';
 import { UIChest } from '../ui/chest/UIChest';
+import { UIEventButton } from '../ui/start/UIEventButton';
 const { ccclass, property } = _decorator;
 
 @ccclass('ResolutionManager')
@@ -48,6 +49,8 @@ export class ResolutionManager extends Component {
     @property([UIFrameBase])
     popupComponents: UIFrameBase[] = [];
 
+    @property([UIEventButton])
+    eventBtnsComp: UIEventButton[] = [];
     @property([Widget])
     eventBtnsWidgets: Widget[] = [];
     @property([Layout])
@@ -154,6 +157,10 @@ export class ResolutionManager extends Component {
             this.eventBtnsLs[i].updateLayout();
         }
 
+        for(let i = 0; i < this.eventBtnsComp.length; i++) {
+            this.eventBtnsComp[i].updateAdaptivity();
+        }
+
         this.playBtn.bottom = 400;
         this.playBtn.center = 0;
 
@@ -214,6 +221,10 @@ export class ResolutionManager extends Component {
             this.eventBtnsLs[i].spacingY = 125;
 
             this.eventBtnsLs[i].updateLayout();
+        }
+
+        for(let i = 0; i < this.eventBtnsComp.length; i++) {
+            this.eventBtnsComp[i].updateAdaptivity();
         }
 
         this.playBtn.bottom = 800;

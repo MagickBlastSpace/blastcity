@@ -32,8 +32,8 @@ export class UIEventButton extends Component {
     @property(Node)
     rewardIndicator: Node = null;
 
-    private instantiatedNode: Node | null = null;
     private eventPopup: any = null;
+    private eventPopup_portrait: any = null;
 
     private isInited: boolean = false;
 
@@ -112,10 +112,43 @@ export class UIEventButton extends Component {
 
 
     showEventPrefab() {
-        if(this.eventPopup) {
-            this.eventPopup.show();
+        let isPortrait = ResolutionManager.instance.isPortraitOrientation() && this.isPortraitVersionAvailable;
 
-            return;
+        if(isPortrait && this.eventPopup_portrait) {
+            if(this.eventPopup) {
+                this.eventPopup.hideClean();
+            }
+            
+            if(!this.eventPopup_portrait.node.active) {
+                this.eventPopup_portrait.show();
+            }
+        }
+        else if(this.eventPopup) {
+            if(this.eventPopup_portrait) {
+                this.eventPopup_portrait.hideClean();
+            }
+            
+            if(!this.eventPopup.node.active) {
+                this.eventPopup.show();
+            }
+        }
+    }
+
+    updateAdaptivity() {
+        if(this.eventPopup) {
+            if(this.eventPopup.node.active) {
+                this.showEventPrefab();
+
+                return;
+            }
+        }
+
+        if(this.eventPopup_portrait) {
+            if(this.eventPopup_portrait.node.active) {
+                this.showEventPrefab();
+
+                return;
+            }
         }
     }
 
@@ -162,36 +195,40 @@ export class UIEventButton extends Component {
 
 
     loadAssets(bundle: any) {
-        if(this.isInited) {
+        if (this.isInited) {
             return;
         }
-
+        
         this.isInited = true;
-
-        let bundleToLoad = ResolutionManager.instance.isPortraitOrientation() && this.isPortraitVersionAvailable ? this.eventName + "_portrait" : this.eventName;
-
-        bundle.load(bundleToLoad, Prefab, (err, prefab) => {
-            if (err) {
-                console.error(`Failed to load prefab: ${this.eventName}`, err);
-                return;
-            }
-
-            console.log(`Successfully loaded prefab: ${this.eventName}`);
-
-            this.instantiatedNode = instantiate(prefab);
-
-            this.instantiatedNode.on("play", () => {
-                this.node.emit("play");
+        
+        const bundlesToLoad = [this.eventName];
+        if (this.isPortraitVersionAvailable) {
+            bundlesToLoad.push(`${this.eventName}_portrait`);
+        }
+        
+        bundlesToLoad.forEach(bundleName => {
+            bundle.load(bundleName, Prefab, (err, prefab) => {
+                if (err) {
+                    console.error(`Failed to load prefab: ${bundleName}`, err);
+                    return;
+                }
+    
+                console.log(`Successfully loaded prefab: ${bundleName}`);
+                
+                const instantiatedNode = instantiate(prefab);
+                instantiatedNode.on("play", () => this.node.emit("play"));
+                this.popupLayout.addChild(instantiatedNode);
+                ResolutionManager.instance.addPopup(instantiatedNode);
+                instantiatedNode.active = false;
+                
+                if (bundleName === this.eventName) {
+                    this.eventPopup = instantiatedNode.getComponent("UIEvent" + this.eventName);
+                    this.eventPopup.init(this.eventController);
+                } else {
+                    this.eventPopup_portrait = instantiatedNode.getComponent("UIEvent" + this.eventName);
+                    this.eventPopup_portrait.init(this.eventController);
+                }
             });
-
-            this.popupLayout.addChild(this.instantiatedNode);
-
-            this.eventPopup = this.instantiatedNode.getComponent("UIEvent" + this.eventName);
-            this.eventPopup.init(this.eventController);
-
-            ResolutionManager.instance.addPopup(this.instantiatedNode);
-
-            this.instantiatedNode.active = false;
         });
     }
 }
