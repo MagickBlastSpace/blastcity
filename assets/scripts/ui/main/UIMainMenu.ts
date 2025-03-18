@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, assetManager, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Button, assetManager, Sprite, SpriteFrame, macro } from 'cc';
 import { UIMainMenuButton } from './UIMainMenuButton';
 import { UIMainMenuFrame } from './UIMainMenuFrame';
 import { UIFrameBase } from '../UIFrameBase';
@@ -65,6 +65,10 @@ export class UIMainMenu extends UIFrameBase {
     assetsLoadingFrame: UIAssetsLoadingFrame;
 
 
+    onLoad() {
+        macro.ENABLE_MULTI_TOUCH = false;
+    }
+    
     start() {
         this.assetsLoadingFrame.show();
 
