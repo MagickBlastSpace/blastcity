@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, UITransform, AudioClip, AudioSource, instantiate } from 'cc';
 import { AudioController } from '../utils/AudioController';
+import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 
@@ -361,6 +362,8 @@ export class UITile extends Component {
             return;
         }
 
+        this.source.volume = UserData.instance.getSfxVolume();
+
         if (this.destroyAudios.length > 0) {
             //const randomIndex = Math.floor(Math.random() * this.destroyAudios.length);
             const randomClip = this.destroyAudios[0];
@@ -383,6 +386,8 @@ export class UITile extends Component {
         if (!this.source) {
             return;
         }
+
+        this.source.volume = UserData.instance.getSfxVolume();
 
         if (this.additionalAudios.length > soundIndex) {
             const clip = this.additionalAudios[soundIndex];
