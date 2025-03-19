@@ -1,5 +1,7 @@
 import { _decorator, Component, Node, Label, Sprite, SpriteFrame } from 'cc';
 import { PlayerEventData } from '../../data/EventData';
+import { Net } from '../../net/Net';
+import { Profile } from '../../game/Profile';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMinifiedPlayerItem')
@@ -14,6 +16,9 @@ export class UIEventMinifiedPlayerItem extends Component {
     placeIcon: Sprite = null;
     @property([SpriteFrame])
     placeIcons: SpriteFrame[] = [];
+
+    @property(Sprite)
+    avatar: Sprite = null;
 
     private index: number = 0;
 
@@ -36,6 +41,31 @@ export class UIEventMinifiedPlayerItem extends Component {
             else {
                 this.placeIcon.spriteFrame = this.placeIcons[this.index];
             }
+        }
+
+        this.loadAvatar(data.playerId);
+    }
+
+    async loadAvatar(id: number) {
+        if(id === 0) {
+            return;
+        }
+        
+        try {
+            let ids = [id];
+            const result = await Net.instance.getPlayersByIds(ids);
+            
+            const { players } = result;
+            
+            if(players.length > 0) {
+                if(this.avatar) {
+                    this.avatar.spriteFrame = Profile.instance.getAvatarById(players[0].state["avatar_id"]);
+                }
+            }
+        }
+
+        catch (error) {
+            console.log('Error fetching players:', error);
         }
     }
 }
