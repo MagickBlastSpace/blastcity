@@ -59,6 +59,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     commonMovesShopPanel: Node = null;
     @property(Node)
     winPanel: Node = null;
+    @property(Node)
+    giftPanel: Node = null;
 
     @property(UIMainMenu)
     mainFrame: UIMainMenu = null;
@@ -121,6 +123,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.goldEarned = goldEarned;
 
         this.showAdBtn.node.active = false;
+
+        this.giftPanel.active = this.butlersGift.isAvailable();
 
         if(isSuccess) {
             let isPortrait = ResolutionManager.instance.isPortraitOrientation();
