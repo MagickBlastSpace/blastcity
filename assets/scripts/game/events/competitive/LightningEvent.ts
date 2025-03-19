@@ -80,6 +80,8 @@ export class LightningEvent extends KingsCupEvent {
     
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
+        this.eventId = "lightning";
+        
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
         console.log("Lightning init: " + startDayOfWeek + " - " + startHourUTC + " - " + durationDays);
@@ -88,8 +90,6 @@ export class LightningEvent extends KingsCupEvent {
 
         this.isStarted = false;
         this.isComplete = false;
-
-        this.eventId = "lightning";
     }
 
 
@@ -277,11 +277,6 @@ export class LightningEvent extends KingsCupEvent {
             return false;
         }
 
-        /*if(this.isComplete && !this.isRewardAvailable()) {
-            console.log(" light complete and reward taken");
-            return false;
-        }*/
-
         return true;
     }
 
@@ -296,6 +291,17 @@ export class LightningEvent extends KingsCupEvent {
 
     setBots(bots: PlayerEventData[]) {
         this.players = bots;
+    }
+
+
+    restartEvent(): void {
+        console.log("Restarting Multiplayer Event: " + this.eventId);
+
+        this.lastAttemptTimestamp = 0;
+
+        this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 }
 

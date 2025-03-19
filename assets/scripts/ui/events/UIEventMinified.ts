@@ -66,11 +66,12 @@ export class UIEventMinified extends Component {
     updateData() {
         //console.log(this.eventController.getEventId() + " minified update: " + this.eventController.isEventAvailable() + " - " + this.eventController.canParticipate());
 
-        if(this.eventController.isEventAvailable()) {
+        if(this.eventController.isInteractable()) {
             this.node.active = true;
 
             //this.eventController.updateMultiplayerData();
-            this.eventController.refresh();
+            //this.eventController.refresh();
+            this.refresh();
         }
         else {
             this.node.active = false;

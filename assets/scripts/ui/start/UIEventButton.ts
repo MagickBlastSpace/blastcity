@@ -54,7 +54,14 @@ export class UIEventButton extends Component {
     }
 
     update(deltaTime: number) {
-        this.timeLabel.string = this.eventController.getRemainingTimeString();
+        let timeStr = this.eventController.getRemainingTimeString();
+        if(timeStr === "00:00:00" || timeStr === "00 d 00 h") {
+            this.node.active = false;
+
+            return;
+        }
+
+        this.timeLabel.string = timeStr;
 
         let isAvailable = this.eventController.isInteractable();
 
@@ -81,6 +88,13 @@ export class UIEventButton extends Component {
     refresh() {
         if(this.rewardIndicator) {
             this.rewardIndicator.active = this.eventController.isRewardAvailable();
+        }
+
+        let timeStr = this.eventController.getRemainingTimeString();
+        if(timeStr === "00:00:00" || timeStr === "00 d 00 h") {
+            this.node.active = false;
+
+            return;
         }
 
         let isAvailable = this.eventController.isInteractable();

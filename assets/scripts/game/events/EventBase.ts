@@ -54,7 +54,7 @@ export class EventBase extends Component {
 
     isEventAvailable(): boolean {
         const now = new Date();
-        return now >= this.startTime && now <= this.endTime;
+        return now > this.startTime && now < this.endTime;
     }
 
     restartEvent(): void {
@@ -64,6 +64,10 @@ export class EventBase extends Component {
     }
 
     getRemainingTimeString(): string {
+        if(!this.endTime) {
+            return "";
+        }
+        
         const now = new Date();
         const timeDiff = this.endTime.getTime() - now.getTime();
 

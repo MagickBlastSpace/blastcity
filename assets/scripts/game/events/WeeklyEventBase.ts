@@ -33,7 +33,7 @@ export class WeeklyEventBase extends EventBase {
 
         if (currentDay + durationDays > this.endTime.getUTCDay()) {
             this.startTime.setUTCDate(this.startTime.getUTCDate() - 7);
-            this.endTime = new Date(this.startTime.getTime() + durationDays * 24 * 60 * 60 * 1000 + this.END_TIME_OFFSET * 60 * 60 * 1000);
+            this.endTime = new Date(this.startTime.getTime() + durationDays * 24 * 60 * 60 * 1000);
         }
 
         let timeDiff = this.endTime.getTime() - now.getTime();
@@ -45,8 +45,8 @@ export class WeeklyEventBase extends EventBase {
             timeDiff = this.endTime.getTime() - now.getTime();
         }
 
-        /*console.log("Start time: " + this.startTime);
-        console.log("End time: " + this.endTime);*/
+        console.log("Start time: " + this.eventId + " " + this.startTime);
+        console.log("End time: " + this.eventId + " " + this.endTime);
     }
 
     private formatTimeUnits(value: number): string {
@@ -54,6 +54,10 @@ export class WeeklyEventBase extends EventBase {
     }
 
     getRemainingTimeString(): string {
+        if(!this.endTime) {
+            return "";
+        }
+
         const now = new Date();
         const timeDiff = this.endTime.getTime() - now.getTime();
 
@@ -69,7 +73,11 @@ export class WeeklyEventBase extends EventBase {
     }
 
     restartEvent() {
+        this.lastAttemptTimestamp = 0;
+
         this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
+
+
     }
 
     isWeekly(): boolean {
