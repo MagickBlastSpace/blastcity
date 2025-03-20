@@ -7,6 +7,7 @@ import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { Net } from '../../net/Net';
 import { UIClanRequestItem } from './UIClanRequestItem';
+import { UIClansAskForEnergyItem } from './UIClansAskForEnergyItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMyClanFrame')
@@ -32,13 +33,15 @@ export class UIMyClanFrame extends UIPopupFrameBase {
     requestPrefab: Prefab = null;
     @property([UIClanRequestItem])
     requests: UIClanRequestItem[] = [];
+    @property([UIClansAskForEnergyItem])
+    helpItems: UIClansAskForEnergyItem[] = [];
 
     @property(Label)
     cooldownTimeLabel: Label = null;
 
-    private itemsToClean: Node[] = [];
-
     private data: ClanData = null;
+
+    private itemsToClean: Node[] = [];
 
 
     start() {
@@ -56,6 +59,10 @@ export class UIMyClanFrame extends UIPopupFrameBase {
 
             if(message.tags.includes("ask_for_energy")) {
                 this.spawnAskForEnergyItem(message);
+            }
+
+            if(message.tags.includes("help")) {
+                this.updateHelpProgress(message);
             }
         });
 
@@ -101,6 +108,13 @@ export class UIMyClanFrame extends UIPopupFrameBase {
             Net.instance.fetchClanJoinRequests(data.clanId);
         }
 
+        for(let i = this.itemsToClean.length - 1; i >= 0; i--) {
+            this.itemsToClean[i].destroy();
+        }
+
+        this.itemsToClean = [];
+        this.helpItems = []; 
+
         this.checkForAskEnergyRequests();
     }
 
@@ -141,15 +155,59 @@ export class UIMyClanFrame extends UIPopupFrameBase {
     }
 
     spawnAskForEnergyItem(message: any) {
+        // Check if an item with this message ID already exists
+        if (this.helpItems.some(item => item.getMessageId() === message.id)) {
+            console.warn(`Duplicate message prevented: ${message.id}`);
+            return; // Skip duplicate
+        }
+    
         const itemNode = instantiate(this.itemPrefab);
         this.itemsLayout.addChild(itemNode);
-            
+    
         let item = itemNode.getComponent("UIClansAskForEnergyItem");
-            
         item.init(message);
+    
+        itemNode.on('help', (playerName, messageId) => {
+            gamepush.channels.sendMessage({
+                channelId: this.data.clanId,
+                text: 'Help ' + playerName + ' energy request ' + messageId,
+                tags: ['help'],
+            });
+    
+            UserData.instance.addHelpedMessageId(messageId);
+        });
+    
+        item.refreshAvailability(UserData.instance.isHelped(message.id));
+    
+        this.checkAuthor(message.authorId);
 
+        this.helpItems.push(item);
         this.itemsToClean.push(itemNode);
     }
+
+    checkAuthor(id: number) {
+        for(let i = 0; i < this.helpItems.length; i++) {
+            if(this.helpItems[i].getPlayerId() === id) {
+                gamepush.channels.deleteMessage({ messageId: this.helpItems[i].getMessageId() });
+                this.helpItems[i].node.active = false;
+            }
+        }
+    }
+
+
+    updateHelpProgress(message: any) {
+        const parts = message.text.split(" ");
+        const id = parts[parts.length - 1];
+
+        console.log("update help progress: " + id);
+
+        for(let i = 0; i < this.helpItems.length; i++) {
+            if(this.helpItems[i].getMessageId() === id) {
+                this.helpItems[i].addHelpProgress();
+            }
+        }
+    }
+
 
     spawnRequestItem() {
         const itemNode = instantiate(this.requestPrefab);
@@ -162,21 +220,34 @@ export class UIMyClanFrame extends UIPopupFrameBase {
 
 
     async checkForAskEnergyRequests() {
-        for(let i = this.itemsToClean.length - 1; i >= 0; i--) {
-            this.itemsToClean[i].destroy();
-        }
-
-        this.itemsToClean = [];
 
         const response = await gamepush.channels.fetchMessages({
             channelId: this.data.clanId,
             tags: ['ask_for_energy'],
-            limit: 10,
+            limit: 50,
             offset: 0,
         });
-
+    
+        // Track existing message IDs to prevent duplicates
+        const existingIds = new Set<string>();
+    
         response.items.forEach((message) => {
-            this.spawnAskForEnergyItem(message);
+            if (!existingIds.has(message.id)) {
+                existingIds.add(message.id);
+                this.spawnAskForEnergyItem(message);
+            }
+        });
+    
+        // Fetch help messages
+        const response2 = await gamepush.channels.fetchMessages({
+            channelId: this.data.clanId,
+            tags: ['help'],
+            limit: 200,
+            offset: 0,
+        });
+    
+        response2.items.forEach((message) => {
+            this.updateHelpProgress(message);
         });
     }
 }

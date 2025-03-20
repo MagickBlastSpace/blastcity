@@ -64,6 +64,9 @@ export class UserData extends Component {
     private lastMusicVolume: number = 0;
     private lastSfxVolume: number = 0;
 
+    private helpedMessages: number[] = [];
+    private maxMessagesStorage: number = 50;
+
     @property(CollectionEvent)
     collections: CollectionEvent;
 
@@ -839,6 +842,29 @@ export class UserData extends Component {
         this.lastSfxVolume = vol;
 
         SaveData.instance.saveUserData();
+    }
+
+
+    addHelpedMessageId(id: number) {
+        if(this.helpedMessages.length >= this.maxMessagesStorage) {
+            this.helpedMessages.shift();
+        }
+
+        this.helpedMessages.push(id);
+
+        SaveData.instance.saveUserData();
+    }
+
+    getHelpedMessages(): number[] {
+        return this.helpedMessages;
+    }
+
+    setHelpedMessages(m: number[]) {
+        this.helpedMessages = m;
+    }
+
+    isHelped(id: number): boolean {
+        return this.helpedMessages.includes(id);
     }
 }
 
