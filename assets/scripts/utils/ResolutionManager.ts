@@ -178,8 +178,6 @@ export class ResolutionManager extends Component {
 
         this.tutorialPopup.top = 120;
 
-        this.friendsSearch.bottom = 820;
-
         this.chestUi.refreshScale(true);
     }
 
@@ -244,7 +242,7 @@ export class ResolutionManager extends Component {
 
         this.tutorialPopup.top = 1000;
 
-        this.friendsSearch.bottom = 0;
+        //this.friendsSearch.bottom = -100;
 
         this.chestUi.refreshScale(false);
 
@@ -268,39 +266,53 @@ export class ResolutionManager extends Component {
     scaleItemsByScreenRatio(ratio: number) {
         if(ratio > 1.4) {
             this.field.setScale(new Vec3(1, 1, 1));
+
+            this.friendsSearch.bottom = 850;
         }
         else if(ratio > 1) {
             this.field.setScale(new Vec3(1.2, 1.2, 1));
+
+            this.friendsSearch.bottom = 600;
         }
         else if(ratio > 0.8) {
             this.field.setScale(new Vec3(1.5, 1.5, 1));
 
             this.boostersPortrait.setScale(new Vec3(1.4, 1.4, 1));
             this.goalsPortrait.setScale(new Vec3(1.7, 1.7, 1));
+
+            this.friendsSearch.bottom = 600;
         }
         else if(ratio > 0.72) {
             this.field.setScale(new Vec3(1.8, 1.8, 1));
 
             this.boostersPortrait.setScale(new Vec3(1.6, 1.6, 1));
             this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+
+            this.friendsSearch.bottom = 350;
         }
         else if(ratio > 0.6) {
             this.field.setScale(new Vec3(1.8, 1.8, 1));
 
             this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
             this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+
+            this.friendsSearch.bottom = 250;
         }
         else if(ratio > 0.5) {
             this.field.setScale(new Vec3(2, 2, 1));
 
             this.boostersPortrait.setScale(new Vec3(2, 2, 1));
             this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+
+            this.friendsSearch.bottom = 250;
         }
         else {
             this.field.setScale(new Vec3(2.2, 2.2, 1));
 
             this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
             this.goalsPortrait.setScale(new Vec3(2.2, 2.2, 1));
+
+            this.friendsSearch.bottom = 250;
         }
 
         let fieldComp = this.field.getComponent("Field");
