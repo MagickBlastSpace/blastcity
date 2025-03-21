@@ -32,6 +32,9 @@ export class UIEventButton extends Component {
     @property(Node)
     rewardIndicator: Node = null;
 
+    @property
+    is_v2: boolean = false;
+
     private eventPopup: any = null;
     private eventPopup_portrait: any = null;
 
@@ -232,7 +235,14 @@ export class UIEventButton extends Component {
                 const instantiatedNode = instantiate(prefab);
                 instantiatedNode.on("play", () => this.node.emit("play"));
                 this.popupLayout.addChild(instantiatedNode);
-                ResolutionManager.instance.addPopup(instantiatedNode);
+
+                if(this.is_v2) {
+                    ResolutionManager.instance.addPopup_v2(instantiatedNode);
+                }
+                else {
+                    ResolutionManager.instance.addPopup(instantiatedNode);
+                }
+                
                 instantiatedNode.active = false;
                 
                 if (bundleName === this.eventName) {

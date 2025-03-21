@@ -46,6 +46,8 @@ export class ResolutionManager extends Component {
     eventProgressBtns: Node[] = [];
     @property([Node])
     popups: Node[] = [];
+    @property([Node])
+    popups_v2: Node[] = [];
     @property([UIFrameBase])
     popupComponents: UIFrameBase[] = [];
 
@@ -136,6 +138,9 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(1, 1, 1));
         }
+        for(let i = 0; i < this.popups_v2.length; i++) {
+            this.popups_v2[i].setScale(new Vec3(1, 1, 1));
+        }
         for(let i = 0; i < this.popupComponents.length; i++) {
             this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
         }
@@ -199,6 +204,9 @@ export class ResolutionManager extends Component {
         }
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(2, 2, 1));
+        }
+        for(let i = 0; i < this.popups_v2.length; i++) {
+            this.popups_v2[i].setScale(new Vec3(1.8, 1.8, 1));
         }
         for(let i = 0; i < this.popupComponents.length; i++) {
             this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
@@ -327,6 +335,16 @@ export class ResolutionManager extends Component {
 
     addPopup(popup: Node) {
         this.popups.push(popup);
+
+        let popupComponent = popup.getComponent("UIFrameBase");
+
+        if(popupComponent) {
+            this.popupComponents.push(popupComponent);
+        }
+    }
+
+    addPopup_v2(popup: Node) {
+        this.popups_v2.push(popup);
 
         let popupComponent = popup.getComponent("UIFrameBase");
 
