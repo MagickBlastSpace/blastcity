@@ -144,6 +144,13 @@ export class SaveData extends Component {
         gamepush.player.sync();
     }
 
+    cheatToLastLevel() {
+        gamepush.player.set('score', 599);
+        gamepush.player.set('score_king_league', 0);
+
+        gamepush.player.sync();
+    }
+
 
     //Level Progress Data
     saveLevelProgressData() {

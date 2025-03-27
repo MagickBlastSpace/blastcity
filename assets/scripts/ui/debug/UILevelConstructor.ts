@@ -27,6 +27,8 @@ export class UILevelConstructor extends Component {
     @property(Button)
     clearGlobalSaveBtn: Button = null;
     @property(Button)
+    cheatToLastLevelBtn: Button = null;
+    @property(Button)
     showLevelStatsBtn: Button = null;
 
     @property(Button)
@@ -49,6 +51,7 @@ export class UILevelConstructor extends Component {
         this.clearLevelSaveBtn.node.on(Button.EventType.CLICK, this.clearLevelSave, this);
         this.clearGlobalSaveBtn.node.on(Button.EventType.CLICK, this.clearGlobalSave, this);
         this.showLevelStatsBtn.node.on(Button.EventType.CLICK, this.showLevelStats, this);
+        this.cheatToLastLevelBtn.node.on(Button.EventType.CLICK, this.cheatToLastLevel, this);
 
         this.showMatrixBtn.node.on(Button.EventType.CLICK, this.onShowMatrixBtnClick, this);
     }
@@ -160,6 +163,11 @@ export class UILevelConstructor extends Component {
         }
 
         return matrixString;
+    }
+
+
+    cheatToLastLevel() {
+        SaveData.instance.cheatToLastLevel();
     }
 }
 
