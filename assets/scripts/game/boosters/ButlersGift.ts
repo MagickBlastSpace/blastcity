@@ -15,7 +15,7 @@ export class ButlersGift extends Component {
 
     private isGifted: boolean = false;
 
-    private LEVEL_REQUIRED: number = 30;
+    private LEVEL_REQUIRED: number = 28;
 
     private levelComp: Level = null;
 
