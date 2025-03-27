@@ -41,6 +41,7 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
 
         for(let i = 0; i < this.infoPopups.length; i++) {
             this.infoPopups[i].node.on("hide", () => this.showNextTutorialPage());
+            this.infoPopups[i].node.on("event_play", () => this.onPlay());
         }
 
         if(this.infoBtn && this.infoBtn !== undefined) {
@@ -105,6 +106,12 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
 
             this.showNextTutorialPage();
         }
+    }
+
+    onPlay() {
+        this.node.emit("event_play");
+
+        this.hide();
     }
 }
 

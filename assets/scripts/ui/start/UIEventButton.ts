@@ -233,7 +233,8 @@ export class UIEventButton extends Component {
                 console.log(`Successfully loaded prefab: ${bundleName}`);
                 
                 const instantiatedNode = instantiate(prefab);
-                instantiatedNode.on("play", () => this.node.emit("play"));
+                instantiatedNode.on("play", () => this.node.emit("event_play"));
+                instantiatedNode.on("event_play", () => this.node.emit("event_play"));
                 this.popupLayout.addChild(instantiatedNode);
 
                 if(this.is_v2) {

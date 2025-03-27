@@ -78,7 +78,8 @@ export class UIStartFrame extends UIFrameBase {
 
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].node.on("click", () => this.onEventBtnClick(i), this);
-            this.eventBtns[i].node.on("play", () => this.onPlay());
+            this.eventBtns[i].node.on("play", () => this.onEventPlay());
+            this.eventBtns[i].node.on("event_play", () => this.onEventPlay());
         }
 
         GameData.instance.node.on("levels_loaded", () => this.lockPlay(false));
@@ -181,6 +182,10 @@ export class UIStartFrame extends UIFrameBase {
         catch (error) {
             console.log(error);
         }
+    }
+
+    onEventPlay() {
+        this.onPlayBtnClick();
     }
 
     onPlayRewarded() {
