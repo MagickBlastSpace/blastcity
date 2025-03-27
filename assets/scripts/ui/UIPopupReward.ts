@@ -3,6 +3,7 @@ import { EventRewardData } from '../data/EventData';
 import { UIPopupFrameBase } from './UIPopupFrameBase';
 import { ShopItemData } from '../data/GameData';
 import { UserData } from '../data/UserData';
+import { ChestRewardData } from '../data/ChestData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIPopupReward')
@@ -187,6 +188,68 @@ export class UIPopupReward extends UIPopupFrameBase {
     
                     this.rewardsPool.push(newData);
                 }
+            }
+        }
+
+        this.tapBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        this.showNext();
+    }
+
+    init_Chest(data: ChestRewardData) {
+        this.rewardsPool = [];
+        this.rewardIndex = 0;
+
+        if(data) {
+            if(data.gold > 0) {
+                let newData = new EventRewardData();
+                newData.gold = data.gold;
+
+                this.rewardsPool.push(newData);
+            }
+
+            if(data.startBonus_Bomb > 0 || data.startBonus_Rocket > 0 || data.startBonus_Discoball > 0) {
+                let newData = new EventRewardData();
+
+                newData.startBonus_Bomb = data.startBonus_Bomb;
+                newData.startBonus_Rocket = data.startBonus_Rocket;
+                newData.startBonus_Discoball = data.startBonus_Discoball;
+
+                this.rewardsPool.push(newData);
+            }
+
+            if(data.booster_Hammer > 0 || data.booster_Bow > 0 || data.booster_Cannon > 0 || data.booster_Jester > 0) {
+                let newData = new EventRewardData();
+
+                newData.booster_Hammer = data.booster_Hammer;
+                newData.booster_Bow = data.booster_Bow;
+                newData.booster_Cannon = data.booster_Cannon;
+                newData.booster_Jester = data.booster_Jester;
+
+                this.rewardsPool.push(newData);
+            }
+
+            if(data.bomb_Minutes > 0 || data.rocket_Minutes > 0 || data.discoball_Minutes > 0) {
+                let newData = new EventRewardData();
+
+                newData.bomb_Minutes = data.bomb_Minutes;
+                newData.rocket_Minutes = data.rocket_Minutes;
+                newData.discoball_Minutes = data.discoball_Minutes;
+
+                this.rewardsPool.push(newData);
+            }
+
+            if(data.endlessLives_Minutes > 0) {
+                let newData = new EventRewardData();
+                newData.endlessLives_Minutes = data.endlessLives_Minutes;
+
+                this.rewardsPool.push(newData);
+            }
+            if(data.modifierX2_Minutes > 0) {
+                let newData = new EventRewardData();
+                newData.modifierX2_Minutes = data.modifierX2_Minutes;
+
+                this.rewardsPool.push(newData);
             }
         }
 

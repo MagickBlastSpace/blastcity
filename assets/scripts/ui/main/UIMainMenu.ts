@@ -11,6 +11,7 @@ import { UserData } from '../../data/UserData';
 import { UIPopupReward } from '../UIPopupReward';
 import { UIProfilePopup } from '../profile/UIProfilePopup';
 import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
+import { ChestRewardData } from '../../data/ChestData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -103,10 +104,16 @@ export class UIMainMenu extends UIFrameBase {
             AudioController.instance.loadSoundsAssets();
         });
         this.chest.node.on("complete", () => this.updateBackgroundGraphics());
+        this.chest.node.on("reward", (data) => this.showChestReward(data));
 
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
         //SaveData.instance.loadLevelProgressData();
+
+        /*console.log("platform: " + gamepush.platform.type + " - " + gamepush.platform.hasIntegratedAuth);
+
+        let sdk = gamepush.platform.getSDK();
+        console.log("sdk: " + sdk);*/
     }
 
 
@@ -222,6 +229,12 @@ export class UIMainMenu extends UIFrameBase {
         this.rewardPopup.show();
 
         this.rewardPopup.init_Battlepass();
+    }
+
+    showChestReward(data: ChestRewardData) {
+        this.rewardPopup.show();
+
+        this.rewardPopup.init_Chest(data);
     }
 }
 

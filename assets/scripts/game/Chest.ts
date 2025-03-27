@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { ChestData, ChestRewardData } from '../data/ChestData';
 import { UserData } from '../data/UserData';
@@ -132,6 +134,10 @@ export class Chest extends Component {
         UserData.instance.addResource("discoball_minutes", reward.discoball_Minutes);
         UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
         UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
+
+        gamepush.player.add('stat_chests_open', 1);
+
+        this.node.emit("reward", reward);
     }
 
 

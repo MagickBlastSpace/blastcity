@@ -39,6 +39,8 @@ export class UIEventButton extends Component {
     private eventPopup_portrait: any = null;
 
     private isInited: boolean = false;
+    private isLoaded: boolean = false;
+    private isOpenScheduled: boolean = false;
 
 
     onLoad() {
@@ -151,6 +153,15 @@ export class UIEventButton extends Component {
         }
     }
 
+    scheduleOpen() {
+        if(this.isLoaded) {
+            this.showEventPrefab();
+        }
+        else {
+            this.isOpenScheduled = true;
+        }
+    }
+
     updateAdaptivity() {
         if(this.eventPopup) {
             if(this.eventPopup.node.active) {
@@ -252,6 +263,12 @@ export class UIEventButton extends Component {
                 } else {
                     this.eventPopup_portrait = instantiatedNode.getComponent("UIEvent" + this.eventName);
                     this.eventPopup_portrait.init(this.eventController);
+                }
+
+                this.isLoaded = true;
+
+                if(this.isOpenScheduled) {
+                    this.showEventPrefab();
                 }
             });
         });

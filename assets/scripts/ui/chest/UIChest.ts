@@ -2,6 +2,7 @@ import { _decorator, Component, Node, ProgressBar, Label, Button, Vec3 } from 'c
 import { Chest } from '../../game/Chest';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { GameData } from '../../data/GameData';
+import { ChestRewardData } from '../../data/ChestData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIChest')

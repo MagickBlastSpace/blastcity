@@ -15,6 +15,7 @@ import { UIStartFrameEffects } from '../effects/UIStartFrameEffects';
 import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
 import { AudioController } from '../../utils/AudioController';
 import { Level } from '../../game/Level';
+import { ChestRewardData } from '../../data/ChestData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -100,7 +101,7 @@ export class UIStartFrame extends UIFrameBase {
     refresh() {
         if(this.kingLeague.isKingLeagueMode()) {
             if(!this.kingLeague.getIsStarted() && this.isLevelsLoaded && this.kingLeague.canParticipate()) {
-                this.openEventByName("KingLeague");
+                this.scheduleOpenEventByName("KingLeague");
             }
 
             let currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
@@ -157,7 +158,7 @@ export class UIStartFrame extends UIFrameBase {
                 console.log("King League Mode");
 
                 if(!this.kingLeague.getIsStarted() && this.kingLeague.canParticipate()) {
-                    this.openEventByName("KingLeague");
+                    this.scheduleOpenEventByName("KingLeague");
                 }
             }
         }
@@ -206,6 +207,16 @@ export class UIStartFrame extends UIFrameBase {
         for(let i = 0; i < this.eventBtns.length; i++) {
             if(this.eventBtns[i].getEventName() === eventName) {
                 this.onEventBtnClick(i);
+
+                return;
+            }
+        }
+    }
+
+    scheduleOpenEventByName(eventName: string) {
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            if(this.eventBtns[i].getEventName() === eventName) {
+                this.eventBtns[i].scheduleOpen();
 
                 return;
             }
