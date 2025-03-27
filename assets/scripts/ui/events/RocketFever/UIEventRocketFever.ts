@@ -6,6 +6,7 @@ import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventRocketFeverRewardIcon } from './UIEventRocketFeverRewardIcon';
 import { ResolutionManager } from '../../../utils/ResolutionManager';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventRocketFever')
@@ -117,7 +118,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.progressLabel.string = "";
             this.progressBar.progress = 0.0;
 
-            this.infoLabel.string = "Required Level " + this.eventController.getLevelRequired();
+            this.infoLabel.string = Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
         }
         else {
             this.infoContainer.active = true;

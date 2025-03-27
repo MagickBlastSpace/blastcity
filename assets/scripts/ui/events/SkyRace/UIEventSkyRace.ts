@@ -6,6 +6,7 @@ import { EventBase } from '../../../game/events/EventBase';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { ResolutionManager } from '../../../utils/ResolutionManager';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventSkyRace')
@@ -84,7 +85,7 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
             this.items[i].refresh(data[i], isRewardAvailable);
         }
 
-        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
+        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
 
         this.updateWidgetAlignment(ResolutionManager.instance.isPortraitOrientation());
     }

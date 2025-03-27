@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('UIRewardEffect')
 export class UIRewardEffect extends Component {
 
-    private lifeTime: number = 1;
+    private lifeTime: number = 1.2;
 
 
     init(startPosition: Vec2, targetPosition: Vec2) {

@@ -2,6 +2,7 @@ declare const gamepush: any;
 
 import { _decorator, Component, Node, Label, Button } from 'cc';
 import { UserData } from '../../data/UserData';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIFriendsRequestItem')
@@ -25,7 +26,7 @@ export class UIFriendsRequestItem extends Component {
     }
     
     init(message: any) {
-        this.nameLabel.string = message.player.name + " requested to be your friend";
+        this.nameLabel.string = message.player.name + " " + Localization.instance.getLabelByKey("rating.requestlabel");
 
         this.playerId = message.player.id;
         this.messageId = message.id;

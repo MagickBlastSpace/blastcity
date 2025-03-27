@@ -46,15 +46,6 @@ export class UIClansObserveFrame extends UIPopupFrameBase {
     }
 
 
-    join(id: number) {
-        this.clans.joinClan(id);
-    }
-
-    leave(id: number) {
-        this.clans.leaveClan(id);
-    }
-
-
     showClanInfo(data: ClanData) {
         this.node.emit("show_info", data);
     }

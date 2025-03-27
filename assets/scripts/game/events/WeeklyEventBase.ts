@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { EventBase } from './EventBase';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('WeeklyEventBase')
@@ -69,7 +70,7 @@ export class WeeklyEventBase extends EventBase {
         const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
-        return `${this.formatTimeUnits(days)} d ${this.formatTimeUnits(hours)} h`;
+        return `${this.formatTimeUnits(days)} ${Localization.instance.getLabelByKey("misc.days")} ${this.formatTimeUnits(hours)} ${Localization.instance.getLabelByKey("misc.hours")}`;
     }
 
     restartEvent() {

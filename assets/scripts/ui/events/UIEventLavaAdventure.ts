@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Button, Label, tween, Vec3, Prefab, instantiate, Widget } from 'cc';
 import { UIEventPopupFrameBase } from './UIEventPopupFrameBase';
 import { UserData } from '../../data/UserData';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventLavaAdventure')
@@ -109,7 +110,7 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
         }
 
         if(!this.eventController.isRequiredLevelReached()) {
-            this.levelReqLabel.string = "Required Level " + this.eventController.getLevelRequired();
+            this.levelReqLabel.string = Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
         }
         else if(this.eventController.getIsComplete() && UserData.instance.isTemproraryBonusActive()) {
             this.levelReqLabel.string = "Can not start with bonuses";

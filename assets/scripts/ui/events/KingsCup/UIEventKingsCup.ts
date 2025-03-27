@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Prefab, instantiate, Button } from 'cc';
 import { UIEventSkyRace } from '../SkyRace/UIEventSkyRace';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventKingsCup')
@@ -54,7 +55,7 @@ export class UIEventKingsCup extends UIEventSkyRace {
 
         this.rewardLayout.active = isRewardAvailable;
 
-        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
+        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
     }
 
     updateWidgetAlignment(isPortrait) {}

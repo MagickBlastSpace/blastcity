@@ -4,6 +4,14 @@ const { ccclass, property } = _decorator;
 
 @ccclass('Localization')
 export class Localization extends Component {
+
+    public static instance: Localization = null;
+
+
+    onLoad() {
+        Localization.instance = this;
+    }
+
     start() {
         this.setLanguage("ru");
     }

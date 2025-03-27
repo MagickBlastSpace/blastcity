@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Button, instantiate } from 'cc';
 import { UIEventKingsCup } from '../KingsCup/UIEventKingsCup';
 import { UIEventSkyRacePlayerItem } from '../SkyRace/UIEventSkyRacePlayerItem';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventTeamBattle')
@@ -59,7 +60,7 @@ export class UIEventTeamBattle extends UIEventKingsCup {
             this.items[i].refresh(data[i], isRewardAvailable);
         }
 
-        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
+        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
         this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : "Join Clan";
 
         let teamsData = this.eventController.sortTeamsByProgress();

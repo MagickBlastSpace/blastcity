@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Label, Button, Prefab, instantiate, Progre
 import { UIEventTeamTreasureRewardItem } from './UIEventTeamTreasureRewardItem';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventKingsCupPlayerItem } from '../KingsCup/UIEventKingsCupPlayerItem';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventTeamTreasure')
@@ -80,7 +81,7 @@ export class UIEventTeamTreasure extends UIEventPopupFrameBase {
             this.items[i].refresh(data[i]);
         }
 
-        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : "Required Level " + this.eventController.getLevelRequired();
+        this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
         this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : "Join Clan";
 
         let rewardsData = this.eventController.getRewardsData();

@@ -7,6 +7,7 @@ import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventMagicCauldronReward } from './UIEventMagicCauldronReward';
 import { UIEventMagicCauldronHistoryShelf } from './UIEventMagicCauldronHistoryShelf';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldron')
@@ -123,7 +124,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
         }
         
         if(!this.eventController.isRequiredLevelReached()) {
-            this.reqLabel.string = "Required Level " + this.eventController.getLevelRequired();
+            this.reqLabel.string = Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
         }
         
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
