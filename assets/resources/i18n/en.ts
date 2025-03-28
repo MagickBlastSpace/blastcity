@@ -36,7 +36,8 @@ export const languages = {
     "cancelsearch": "Cancel Search",
     "requestlabel": "sent you a friend request",
     "requestaccept": "Accept",
-    "requestreject": "Reject"
+    "requestreject": "Reject",
+    "weekly": "Weekly Contest"
   },
   "clans": {
     "clans": "Clans",
@@ -57,7 +58,14 @@ export const languages = {
     "about": "About the Clan",
     "openchat": "Chat",
     "ask": "Request Energy",
-    "leave": "Leave"
+    "leave": "Leave",
+    "asksforhelp": "asks for help",
+    "help": "Help",
+    "activerequest": "Wants to join your clan",
+    "approve": "Accept",
+    "deny": "Reject",
+    "apply": "Apply now",
+    "cancel": "Cancel"
   },
   "events": {
     "levelreq": "Required Level",
@@ -86,7 +94,9 @@ export const languages = {
     "pdescription2": "Complete 15 levels faster than others to earn a reward!",
     "vname": "Winemaking",
     "vreward": "Reward",
-    "vdescription": "Complete all Winemaking stages to earn the grand prize!"
+    "vdescription": "Complete all Winemaking stages to earn the grand prize!",
+    "start": "Start",
+    "continue": "Continue"
   },
   "misc": {
     "min": "Min",
@@ -100,7 +110,11 @@ export const languages = {
     "lr1": "Use disco balls!",
     "lr2": "Collect more lightning bolts than other players!",
     "lr3": "Win rewards!",
-    "lr4": "During the challenge, you will have infinite lives!"
+    "lr4": "During the challenge, you will have infinite lives!",
+    "skip": "Tap to continue!",
+    "rating1": "Complete the levels!",
+    "rating2": "Be among the best!",
+    "rating3": "Unlock rewards!"
   },
   "tutorial": {
     "balloon": "Tap cubes next to a VASE to collect it!",
@@ -130,6 +144,33 @@ export const languages = {
     "pump": "Tap cubes next to a POTTER'S WHEEL to create Vases!",
     "cosmorocket": "Collect cubes to launch SPACE ROCKETS!",
     "soap": "Tap cubes next to SOAP to create bubbles!"
+  },
+  "store": {
+    "special": "Special offer",
+    "offer1": "Small Treasure",
+    "offer2": "Average Treasure",
+    "offer3": "Great Treasure",
+    "offer4": "Giant Treasure",
+    "offer5": "Treasure of Olympus",
+    "offer6": "Zeus' Stash",
+    "name": "Shop"
+  },
+  "profile": {
+    "name": "Profile",
+    "level": "Level",
+    "stats": "General Statistics",
+    "wins": "Wins on 1st try",
+    "helpg": "Help provided",
+    "helpr": "Help received",
+    "chests": "Opened chests",
+    "collections": "Completed collections",
+    "sets": "Completed sets",
+    "edit": "Edit profile",
+    "change": "Change",
+    "avatar": "Avatar",
+    "frame": "Frame",
+    "theme": "Theme",
+    "badge": "Badge"
   }
 };
 

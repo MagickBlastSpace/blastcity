@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Label, Button } from 'cc';
 import { Net } from '../../net/Net';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClanRequestItem')
@@ -23,7 +24,7 @@ export class UIClanRequestItem extends Component {
     }
     
     init(message: any, clanId: number) {
-        this.nameLabel.string = message.player.name + " requested to join clan";
+        this.nameLabel.string = message.player.name + " " + Localization.instance.getLabelByKey("clans.activerequest");
 
         this.playerId = message.player.id;
         this.clanId = clanId;

@@ -8,6 +8,7 @@ import { UIClanMemberItem } from './UIClanMemberItem';
 import { UIProfilePopup } from '../profile/UIProfilePopup';
 import { UserData } from '../../data/UserData';
 import { Clans } from '../../game/Clans';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClanInfoPopup')
@@ -26,6 +27,8 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
     membersCount: Label = null;
     @property(Label)
     score: Label = null;
+    @property(Label)
+    privacyType: Label = null;
 
     @property(Button)
     joinBtn: Button = null;
@@ -98,6 +101,8 @@ export class UIClanInfoPopup extends UIPopupFrameBase {
 
         this.requestBtn.node.active = !this.isFull() && !this.clans.isJoined() && this.clanData.isPrivate && !this.clans.isJoinRequested();
         this.cancelRequestBtn.node.active = this.clanData.isPrivate && this.clans.isJoinRequested() && this.clans.getJoinRequestId() === this.clanData.clanId;
+
+        this.privacyType.string = this.clanData.isPrivate ? Localization.instance.getLabelByKey("clans.closed") : Localization.instance.getLabelByKey("clans.open");
 
         Net.instance.fetchMembersOfChannel(this.clanData.clanId);
     }

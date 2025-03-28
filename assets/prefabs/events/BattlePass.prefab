@@ -1245,7 +1245,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Банк Бонусов",
+    "_string": "Bonus Bank",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 105,
@@ -2589,7 +2589,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Забрать",
+    "_string": "",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 90,
@@ -4383,7 +4383,9 @@
       "__id__": 186
     },
     "_alignFlags": 9,
-    "_target": null,
+    "_target": {
+      "__id__": 171
+    },
     "_left": 125,
     "_right": 1777,
     "_top": 67,
@@ -4635,7 +4637,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Боевой пропуск",
+    "_string": "Battle Pass",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 130,
@@ -4802,7 +4804,9 @@
       "__id__": 204
     },
     "_alignFlags": 9,
-    "_target": null,
+    "_target": {
+      "__id__": 171
+    },
     "_left": 350,
     "_right": 1777,
     "_top": 55,
@@ -5846,7 +5850,9 @@
       "__id__": 248
     },
     "_alignFlags": 33,
-    "_target": null,
+    "_target": {
+      "__id__": 171
+    },
     "_left": 350,
     "_right": 550,
     "_top": 70,
@@ -6222,7 +6228,9 @@
       "__id__": 264
     },
     "_alignFlags": 33,
-    "_target": null,
+    "_target": {
+      "__id__": 171
+    },
     "_left": 350,
     "_right": 108.26899999999978,
     "_top": 43.49999999999977,
@@ -6344,7 +6352,9 @@
       "__id__": 271
     },
     "_alignFlags": 41,
-    "_target": null,
+    "_target": {
+      "__id__": 2
+    },
     "_left": 0,
     "_right": 0,
     "_top": 0,
@@ -6600,7 +6610,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Активировать",
+    "_string": "Activate",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 90,
@@ -6661,7 +6671,7 @@
     "__prefab": {
       "__id__": 281
     },
-    "key": "events.bpactivare",
+    "key": "events.bpactivate",
     "_id": ""
   },
   {
@@ -9688,6 +9698,7 @@
     "btnClose": {
       "__id__": 397
     },
+    "btnPlay": null,
     "_id": ""
   },
   {

@@ -18,14 +18,15 @@ export class EventBase extends Component {
 
     private lastAttemptTimestamp: number = 0;
 
-    private isTutorialComplete: boolean = false;
-
     private unpickedRewards: EventRewardData[] = [];
 
     @property
     MIN_LEVEL_REQUIRED = 0;
     @property
     END_TIME_OFFSET = 0;
+
+    @property
+    isTutorialComplete: boolean = false;
 
 
     init(startHourUTC: number, durationHours: number) {
@@ -243,7 +244,7 @@ export class EventBase extends Component {
         return this.isTutorialComplete;
     }
 
-    setIsTutorialComplete(isTutorialComplete: boolean): boolean {
+    setIsTutorialComplete(isTutorialComplete: boolean) {
         this.isTutorialComplete = isTutorialComplete;
     }
 

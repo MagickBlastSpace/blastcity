@@ -28,17 +28,17 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 426
-      },
-      {
         "__id__": 428
       },
       {
         "__id__": 430
+      },
+      {
+        "__id__": 432
       }
     ],
     "_prefab": {
-      "__id__": 432
+      "__id__": 434
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -1432,7 +1432,7 @@
       "b": 2,
       "a": 255
     },
-    "_string": "Банк Бонусов",
+    "_string": "Bonus Bank",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 80,
@@ -2862,7 +2862,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Активировать",
+    "_string": "",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 70,
@@ -6428,7 +6428,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Активировать",
+    "_string": "Activate",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 70,
@@ -6489,7 +6489,7 @@
     "__prefab": {
       "__id__": 272
     },
-    "key": "events.bpactivare",
+    "key": "events.bpactivate",
     "_id": ""
   },
   {
@@ -6816,7 +6816,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Боевой пропуск",
+    "_string": "Battle Pass",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 110,
@@ -7662,23 +7662,23 @@
         "__id__": 337
       },
       {
-        "__id__": 413
+        "__id__": 415
       }
     ],
     "_active": false,
     "_components": [
       {
-        "__id__": 419
-      },
-      {
         "__id__": 421
       },
       {
         "__id__": 423
+      },
+      {
+        "__id__": 425
       }
     ],
     "_prefab": {
-      "__id__": 425
+      "__id__": 427
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -7917,11 +7917,11 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 410
+        "__id__": 412
       }
     ],
     "_prefab": {
-      "__id__": 412
+      "__id__": 414
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -9616,10 +9616,13 @@
       },
       {
         "__id__": 407
+      },
+      {
+        "__id__": 409
       }
     ],
     "_prefab": {
-      "__id__": 409
+      "__id__": 411
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -9750,6 +9753,25 @@
     "fileId": "25QDfylUZBOawvsxrnjXsV"
   },
   {
+    "__type__": "edf98QH2D1AUoCrtQlbxFrU",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 404
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 410
+    },
+    "key": "events.continue",
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "7166RJChhFwLMQKn+op7kx"
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -9772,7 +9794,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 411
+      "__id__": 413
     },
     "_contentSize": {
       "__type__": "cc.Size",
@@ -9815,14 +9837,14 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 414
+        "__id__": 416
       },
       {
-        "__id__": 416
+        "__id__": 418
       }
     ],
     "_prefab": {
-      "__id__": 418
+      "__id__": 420
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -9859,11 +9881,11 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 413
+      "__id__": 415
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 415
+      "__id__": 417
     },
     "_contentSize": {
       "__type__": "cc.Size",
@@ -9887,11 +9909,11 @@
     "_objFlags": 0,
     "__editorExtras__": {},
     "node": {
-      "__id__": 413
+      "__id__": 415
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 417
+      "__id__": 419
     },
     "clickEvents": [],
     "_interactable": true,
@@ -9943,7 +9965,7 @@
     "_duration": 0.1,
     "_zoomScale": 1.2,
     "_target": {
-      "__id__": 413
+      "__id__": 415
     },
     "_id": ""
   },
@@ -9974,7 +9996,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 420
+      "__id__": 422
     },
     "_contentSize": {
       "__type__": "cc.Size",
@@ -10002,7 +10024,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 422
+      "__id__": 424
     },
     "_alignFlags": 45,
     "_target": null,
@@ -10038,15 +10060,16 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 424
+      "__id__": 426
     },
     "contentNode": {
       "__id__": 337
     },
     "disablePopupSound": true,
     "btnClose": {
-      "__id__": 416
+      "__id__": 418
     },
+    "btnPlay": null,
     "_id": ""
   },
   {
@@ -10076,7 +10099,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 427
+      "__id__": 429
     },
     "_contentSize": {
       "__type__": "cc.Size",
@@ -10104,7 +10127,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 429
+      "__id__": 431
     },
     "clickEvents": [],
     "_interactable": true,
@@ -10162,7 +10185,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 431
+      "__id__": 433
     },
     "contentNode": {
       "__id__": 2
@@ -10179,13 +10202,13 @@
         "__id__": 320
       },
       {
-        "__id__": 421
+        "__id__": 423
       }
     ],
     "eventController": null,
     "infoPopups": [
       {
-        "__id__": 423
+        "__id__": 425
       }
     ],
     "infoBtn": {
