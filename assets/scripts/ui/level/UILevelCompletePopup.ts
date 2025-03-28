@@ -1,7 +1,8 @@
-import { _decorator, Component, Node, Button } from 'cc';
+import { _decorator, Component, Node, Button, sp } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { Field } from '../../game/Field';
 import { TestBot } from '../../utils/TestBot';
+import { ResolutionManager } from '../../utils/ResolutionManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelCompletePopup')
@@ -15,6 +16,9 @@ export class UILevelCompletePopup extends UIPopupFrameBase {
 
     @property(TestBot)
     testBot: TestBot = null;
+
+    @property(sp.Skeleton)
+    animationFireworks: sp.Skeleton = null;
 
     private isSkipped: boolean = false;
 
@@ -34,6 +38,13 @@ export class UILevelCompletePopup extends UIPopupFrameBase {
             this.hide();
 
             return;
+        }
+
+        let isPortrait = ResolutionManager.instance.isPortraitOrientation();
+        let fireworksName = isPortrait ? "vertical" : "horizontal";
+
+        if(this.animationFireworks.skeletonData) {
+            this.animationFireworks.setAnimation(0, fireworksName, false);
         }
 
         this.scheduleOnce(() => {

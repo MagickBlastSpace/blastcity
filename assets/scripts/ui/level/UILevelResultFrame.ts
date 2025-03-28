@@ -76,8 +76,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     @property(Field)
     field: Field = null;
 
-    @property(sp.Skeleton)
-    animationFireworks: sp.Skeleton = null;
+    /*@property(sp.Skeleton)
+    animationFireworks: sp.Skeleton = null;*/
     @property(sp.Skeleton)
     animationEffect: sp.Skeleton = null;
 
@@ -127,12 +127,12 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.giftPanel.active = this.butlersGift.isAvailable();
 
         if(isSuccess) {
-            let isPortrait = ResolutionManager.instance.isPortraitOrientation();
+            /*let isPortrait = ResolutionManager.instance.isPortraitOrientation();
             let fireworksName = isPortrait ? "vertical" : "horizontal";
 
             if(this.animationFireworks.skeletonData) {
                 this.animationFireworks.setAnimation(0, fireworksName, false);
-            }
+            }*/
             if(this.animationEffect.skeletonData) {
                 this.animationEffect.setAnimation(0, 'animation', true);
             }

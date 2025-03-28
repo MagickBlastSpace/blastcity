@@ -41,6 +41,8 @@ export class UILevel extends UIFrameBase {
     picture_1: Sprite = null;
     @property(Sprite)
     picture_2: Sprite = null;
+    @property(Sprite)
+    picture_win: Sprite = null;
 
     @property(SpriteFrame)
     common: SpriteFrame = null;
@@ -63,6 +65,10 @@ export class UILevel extends UIFrameBase {
     private rewardGoal: GoalData = null;
 
 
+    onLoad() {
+        this.loadAssets();
+    }
+    
     start() {
         this.level.on("init", () => this.init());
         this.level.on("refresh", () => this.refreshAll());
@@ -128,12 +134,13 @@ export class UILevel extends UIFrameBase {
         this.levelResult.show();
         this.levelResult.refresh(isSuccess, goldEarned);
 
-        if(isSuccess) {
-            AudioController.instance.playWin();
-        }
-        else {
+        if(!isSuccess) {
+            //AudioController.instance.playWin();
             AudioController.instance.playLose();
         }
+        /*else {
+            AudioController.instance.playLose();
+        }*/
     }
 
     showLevelCompletePopup() {
@@ -142,6 +149,8 @@ export class UILevel extends UIFrameBase {
         this.levelCompletePopup.show();
 
         AudioController.instance.playLevelComplete();
+
+        AudioController.instance.playWin();
     }
 
 
@@ -180,29 +189,44 @@ export class UILevel extends UIFrameBase {
     }
 
 
-    loadAsstets() {
-        assetManager.loadBundle("game", (err, bundle) => {
+    loadAssets() {
+        assetManager.loadBundle("gameplay_ui", (err, bundle) => {
             if (err) {
                 console.error(`Failed to load bundle: game`, err);
                 return;
             }
-
-            console.log(`Successfully loaded bundle: game"`);
-
-
-            bundle.load("zeus/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+    
+            console.log(`Successfully loaded bundle: game`);
+    
+            // Check if zeus exists in the bundle
+            const zeusInfo = bundle.getInfoWithPath("zeus_gameplay/spriteFrame");
+            console.log(`Zeus asset info:`, zeusInfo);
+    
+            // Load zeus spriteFrame
+            bundle.load("zeus_gameplay/spriteFrame", SpriteFrame, (err, spriteFrame) => {
                 if (err) {
-                    console.error(`Failed to load prefab: zeus`, err);
+                    console.error(`Failed to load spriteFrame: zeus_gameplay`, err);
                     return;
                 }
-
-                console.log(`Successfully loaded prefab: zeus`);
-
+    
+                console.log(`Successfully loaded spriteFrame: zeus_gameplay`);
                 this.picture_1.spriteFrame = spriteFrame;
                 this.picture_2.spriteFrame = spriteFrame;
             });
+    
+            // Load win spriteFrame
+            bundle.load("win/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load spriteFrame: win`, err);
+                    return;
+                }
+    
+                console.log(`Successfully loaded spriteFrame: win`);
+                this.picture_win.spriteFrame = spriteFrame;
+            });
         });
     }
+    
 }
 
 
