@@ -65,7 +65,11 @@ export const languages = {
     "approve": "Accept",
     "deny": "Reject",
     "apply": "Apply now",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "activity":	"Activity",
+    "ahigh":	"High",
+    "amedium":	"Average",
+    "alow":	"Low"
   },
   "events": {
     "levelreq": "Required Level",
@@ -114,7 +118,15 @@ export const languages = {
     "skip": "Tap to continue!",
     "rating1": "Complete the levels!",
     "rating2": "Be among the best!",
-    "rating3": "Unlock rewards!"
+    "rating3": "Unlock rewards!",
+    "bp1":	"Complete the levels!",
+    "bp2":	"Collect the keys!",
+    "bp3":	"Unlock rewards!",
+    "bp4":	"You can activate the Battle Pass to receive additional exclusive rewards!",
+    "v1":	"Complete the levels!",
+    "v2":	"Collect grapes!",
+    "v3":	"Find the recipe you need!",
+    "v4":	"Unlock rewards!"
   },
   "tutorial": {
     "balloon": "Tap cubes next to a VASE to collect it!",
@@ -170,7 +182,14 @@ export const languages = {
     "avatar": "Avatar",
     "frame": "Frame",
     "theme": "Theme",
-    "badge": "Badge"
+    "badge": "Badge",
+    "addfriend":	"Add friend",
+    "deletefriend":	"Remove",
+    "chatopen":	"Open Chat",
+    "changes":	"Complete?",
+    "savetext":	"Save before quit?",
+    "exit":	"Quit",
+    "save":	"Save"
   }
 };
 
