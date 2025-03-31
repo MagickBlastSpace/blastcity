@@ -50,11 +50,11 @@ export class Jars extends BigTileBase {
         for(let i = 0; i < this.strength && i < this.hps.length; i++) {
             this.hps[i].active = true;
 
-            if(this.hps_anim.length >= (i + 1)) {
+            /*if(this.hps_anim.length >= (i + 1)) {
                 let animName = "jars" + (Math.floor(Math.random() * 3) + 1);
 
                 this.playAdditionalAnimation(this.hps_anim[i], animName, this.hps[i]);
-            }
+            }*/
         }
 
         if(this.hps_anim.length >= (this.strength + 1)) {
