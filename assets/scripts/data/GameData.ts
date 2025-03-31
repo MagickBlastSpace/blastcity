@@ -81,6 +81,9 @@ export class MovesShopStageData {
 @ccclass('ShopItemData')
 export class ShopItemData {
     @property
+    tag = "";
+    
+    @property
     gold = 0;
 
     @property
