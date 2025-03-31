@@ -13,6 +13,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     activateBtn: Button = null;
     @property(Button)
     closeBtn: Button = null;
+    @property(Button)
+    takeUnpickedBtn: Button = null;
 
     @property(Label)
     progressLabel: Label = null;
@@ -42,6 +44,7 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     start() {
         this.activateBtn.node.on(Button.EventType.CLICK, this.onActivateBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        this.takeUnpickedBtn.node.on(Button.EventType.CLICK, this.onTakeUnpickedClick, this);
 
         let data = this.eventController.getData();
 
@@ -105,6 +108,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.progressBar.progress = this.eventController.getTimeProgress();
 
         this.bonusSafeComp.refresh(isPrem, this.eventController.getIsBankTakeAvailable(), this.eventController.getBonusBank());
+
+        this.takeUnpickedBtn.node.active = this.eventController.isUnpickedRewardAvailable();
     }
 
 
@@ -145,6 +150,10 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     onCloseBtnClick() {
         this.hide();
+    }
+
+    onTakeUnpickedClick() {
+        this.eventController.takeUnpickedRewards();
     }
 }
 

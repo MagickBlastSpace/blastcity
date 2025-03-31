@@ -43,19 +43,18 @@ export class BattlepassEvent extends RocketFeverEvent {
     private calculateStartEndTimeMonthly() {
         const now = new Date();
     
+        // Начало - 1-е число текущего месяца в 08:00 UTC
         this.startTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 8, 0, 0, 0));
     
-        const lastDay = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 8, 0, 0, 0));
-        this.endTime = lastDay;
+        // Окончание - 1-е число следующего месяца в 08:00 UTC
+        this.endTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 8, 0, 0, 0));
     
-        if (now > this.endTime) {
-            const nextMonth = new Date(now);
-            nextMonth.setUTCMonth(nextMonth.getUTCMonth() + 1);
-    
-            this.startTime = new Date(Date.UTC(nextMonth.getUTCFullYear(), nextMonth.getUTCMonth(), 1, 8, 0, 0, 0));
-            this.endTime = new Date(Date.UTC(nextMonth.getUTCFullYear(), nextMonth.getUTCMonth() + 1, 0, 8, 0, 0, 0));
+        // Если текущее время >= времени окончания, сдвигаем на следующий месяц
+        if (now >= this.endTime) {
+            this.startTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 8, 0, 0, 0));
+            this.endTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 2, 1, 8, 0, 0, 0));
         }
-
+    
         this.lastAttemptTimestamp = Date.now();
     
         console.log("bp Start time: " + this.startTime);
@@ -210,6 +209,10 @@ export class BattlepassEvent extends RocketFeverEvent {
 
 
     isRewardAvailable(): boolean {
+        if(this.isUnpickedRewardAvailable()) {
+            return true;
+        }
+
         if(this.getIsBankTakeAvailable()) {
             return true;
         }
@@ -231,6 +234,10 @@ export class BattlepassEvent extends RocketFeverEvent {
         return false;
     }
 
+    isUnpickedRewardAvailable(): boolean {
+        return this.unpickedRewards.length > 0;
+    }
+
 
     getTotalStages(): number {
         return this.eventData.length;
@@ -243,6 +250,92 @@ export class BattlepassEvent extends RocketFeverEvent {
 
     setTakenRewards_Premium(rewards: number[]) {
         this.takenRewards_Premium = rewards;
+    }
+
+
+    restartEvent(): void {
+        this.saveUnpickedRewards();
+
+        super.restartEvent();
+    }
+
+
+    saveUnpickedRewards() {
+        if (this.isRewardAvailable()) {
+            let totalReward = new EventRewardData();
+    
+            for (let i = 0; i < this.currentStage; i++) {
+                if (!this.takenRewards.includes(i)) {
+                    let reward = this.eventData[i]?.rewards[0];
+
+                    totalReward.gold += reward.gold;
+                    totalReward.progress += reward.progress;
+                    totalReward.startBonus_Bomb += reward.startBonus_Bomb;
+                    totalReward.startBonus_Rocket += reward.startBonus_Rocket;
+                    totalReward.startBonus_Discoball += reward.startBonus_Discoball;
+                    totalReward.booster_Hammer += reward.booster_Hammer;
+                    totalReward.booster_Bow += reward.booster_Bow;
+                    totalReward.booster_Cannon += reward.booster_Cannon;
+                    totalReward.booster_Jester += reward.booster_Jester;
+                    totalReward.endlessLives_Minutes += reward.endlessLives_Minutes;
+                    totalReward.modifierX2_Minutes += reward.modifierX2_Minutes;
+                    totalReward.bomb_Minutes += reward.bomb_Minutes;
+                    totalReward.rocket_Minutes += reward.rocket_Minutes;
+                    totalReward.discoball_Minutes += reward.discoball_Minutes;
+                    totalReward.battlepass += reward.battlepass;
+                    totalReward.cardsPack += reward.cardsPack;
+                    totalReward.cards.push(...reward.cards);
+                    totalReward.isChest ||= reward.isChest;
+                }
+
+                if (!this.takenRewards_Premium.includes(i)) {
+                    let reward = this.eventData[i]?.rewards[1];
+
+                    totalReward.gold += reward.gold;
+                    totalReward.progress += reward.progress;
+                    totalReward.startBonus_Bomb += reward.startBonus_Bomb;
+                    totalReward.startBonus_Rocket += reward.startBonus_Rocket;
+                    totalReward.startBonus_Discoball += reward.startBonus_Discoball;
+                    totalReward.booster_Hammer += reward.booster_Hammer;
+                    totalReward.booster_Bow += reward.booster_Bow;
+                    totalReward.booster_Cannon += reward.booster_Cannon;
+                    totalReward.booster_Jester += reward.booster_Jester;
+                    totalReward.endlessLives_Minutes += reward.endlessLives_Minutes;
+                    totalReward.modifierX2_Minutes += reward.modifierX2_Minutes;
+                    totalReward.bomb_Minutes += reward.bomb_Minutes;
+                    totalReward.rocket_Minutes += reward.rocket_Minutes;
+                    totalReward.discoball_Minutes += reward.discoball_Minutes;
+                    totalReward.battlepass += reward.battlepass;
+                    totalReward.cardsPack += reward.cardsPack;
+                    totalReward.cards.push(...reward.cards);
+                    totalReward.isChest ||= reward.isChest;
+                }
+            }
+
+            if(this.getIsBankTakeAvailable()) {
+                totalReward.gold += this.bonusBank;
+            }
+
+            this.unpickedRewards = [];
+            this.unpickedRewards.push(totalReward);
+    
+            SaveData.instance.saveEvent(this.eventId);
+        }
+    }
+
+
+    takeUnpickedRewards() {
+        if(!this.isUnpickedRewardAvailable()) {
+            return;
+        }
+    
+        this.applyRewards(this.unpickedRewards);
+    
+        this.unpickedRewards = [];
+    
+        SaveData.instance.saveEvent(this.eventId);
+    
+        this.node.emit("refresh");
     }
 }
 
