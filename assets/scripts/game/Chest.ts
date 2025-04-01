@@ -164,25 +164,27 @@ export class Chest extends Component {
             }
 
             for(let i = 0; i < levelsData.length; i++) {
-                switch(levelsData[i].difficulty) {
-                    case "common":
-                        starsCounter = starsCounter + 1;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 1;
-                        }
-                        break;
-                    case "hard":
-                        starsCounter = starsCounter + 3;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 3;
-                        }
-                        break;
-                    case "superhard":
-                        starsCounter = starsCounter + 5;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 5;
-                        }
-                        break;
+                if(levelsData[i] && levelsData[i] !== undefined) {
+                    switch(levelsData[i].difficulty) {
+                        case "common":
+                            starsCounter = starsCounter + 1;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 1;
+                            }
+                            break;
+                        case "hard":
+                            starsCounter = starsCounter + 3;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 3;
+                            }
+                            break;
+                        case "superhard":
+                            starsCounter = starsCounter + 5;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 5;
+                            }
+                            break;
+                    }
                 }
             }
         }
@@ -203,25 +205,27 @@ export class Chest extends Component {
             for(let i = startLevel; i < endLevel; i++) {
                 let levelData = GameData.instance.getLevelDataByNumber(i);
 
-                switch(levelData.difficulty) {
-                    case "common":
-                        starsCounter = starsCounter + 1;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 1;
-                        }
-                        break;
-                    case "hard":
-                        starsCounter = starsCounter + 3;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 3;
-                        }
-                        break;
-                    case "superhard":
-                        starsCounter = starsCounter + 5;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 5;
-                        }
-                        break;
+                if(levelData && levelData !== undefined) {
+                    switch(levelData.difficulty) {
+                        case "common":
+                            starsCounter = starsCounter + 1;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 1;
+                            }
+                            break;
+                        case "hard":
+                            starsCounter = starsCounter + 3;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 3;
+                            }
+                            break;
+                        case "superhard":
+                            starsCounter = starsCounter + 5;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 5;
+                            }
+                            break;
+                    }
                 }
             }
         }
@@ -258,25 +262,27 @@ export class Chest extends Component {
             for(let i = startLevel; i < endLevel; i++) {
                 let levelData = GameData.instance.getLevelDataByNumber(i);
 
-                switch(levelData.difficulty) {
-                    case "common":
-                        starsCounter = starsCounter + 1;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 1;
-                        }
-                        break;
-                    case "hard":
-                        starsCounter = starsCounter + 3;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 3;
-                        }
-                        break;
-                    case "superhard":
-                        starsCounter = starsCounter + 5;
-                        if(progress > i) {
-                            starsCollected = starsCollected + 5;
-                        }
-                        break;
+                if(levelData && levelData !== undefined) {
+                    switch(levelData.difficulty) {
+                        case "common":
+                            starsCounter = starsCounter + 1;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 1;
+                            }
+                            break;
+                        case "hard":
+                            starsCounter = starsCounter + 3;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 3;
+                            }
+                            break;
+                        case "superhard":
+                            starsCounter = starsCounter + 5;
+                            if(progress > i) {
+                                starsCollected = starsCollected + 5;
+                            }
+                            break;
+                    }
                 }
             }
         }
