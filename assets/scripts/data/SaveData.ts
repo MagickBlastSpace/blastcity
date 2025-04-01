@@ -539,7 +539,6 @@ export class SaveData extends Component {
                         eventComp.setSpecialPredictions(eventData.specialPredictions);
                         eventComp.setSpecialHints(eventData.specialHints);
 
-                        eventComp.setLastTimestamp(eventData.lastAttemptTimestamp);
                         eventComp.setMultiplayerChannel(eventData.multiplayerChannel);
                         
                         eventComp.setIsTutorialComplete(eventData.isTutorialComplete);
@@ -569,6 +568,8 @@ export class SaveData extends Component {
                         if (eventData.bots !== undefined) {
                             eventComp.setBots(eventData.bots);
                         }
+
+                        eventComp.setLastTimestamp(eventData.lastAttemptTimestamp); //always last
                     } else {
                         //console.log("No event " + eventComp.getEventId() + " data found");
                     }
