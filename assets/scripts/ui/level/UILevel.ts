@@ -66,7 +66,7 @@ export class UILevel extends UIFrameBase {
 
 
     onLoad() {
-        this.loadAssets();
+        //this.loadAssets();
     }
     
     start() {
@@ -189,7 +189,7 @@ export class UILevel extends UIFrameBase {
     }
 
 
-    loadAssets() {
+    /*loadAssets() {
         assetManager.loadBundle("gameplay_ui", (err, bundle) => {
             if (err) {
                 console.error(`Failed to load bundle: game`, err);
@@ -225,7 +225,7 @@ export class UILevel extends UIFrameBase {
                 this.picture_win.spriteFrame = spriteFrame;
             });
         });
-    }
+    }*/
     
 }
 
