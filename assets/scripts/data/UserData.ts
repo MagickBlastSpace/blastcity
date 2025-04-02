@@ -665,12 +665,38 @@ export class UserData extends Component {
         return this.isPremium;
     }
 
-    buyPremium() {
-        this.isPremium = true;
+    async buyPremium() {
+        if (gamepush.payments.isAvailable) {
+            console.log("payments available: premium");
 
-        gamepush.player.set('energy:max', this.energyMax_Premium);
+            await gamepush.payments.purchase({ tag: "battlepass" });
 
-        this.node.emit("premium_purchase");
+            this.isPremium = true;
+
+            gamepush.player.set('energy:max', this.energyMax_Premium);
+
+            this.node.emit("premium_purchase");
+
+            SaveData.instance.saveUserData();
+
+            await gamepush.player.sync();
+
+            await gamepush.payments.consume({ tag: "battlepass" });
+
+            console.log("payment successfull: battlepass");
+        }
+        else {
+            console.log("payments not available");
+        }
+        
+    }
+
+    removePremium() {
+        this.isPremium = false;
+
+        gamepush.player.set('energy:max', this.energyMax_Free);
+
+        //this.node.emit("premium_purchase");
 
         SaveData.instance.saveUserData();
     }

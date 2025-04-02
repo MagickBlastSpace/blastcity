@@ -100,12 +100,18 @@ export const languages = {
     "vreward": "Reward",
     "vdescription": "Complete all Winemaking stages to earn the grand prize!",
     "start": "Start",
-    "continue": "Continue"
+    "continue": "Continue",
+    "bpendtimer": "Completed",
+    "bpenddescription": "The Battle Pass is over! A new Battle Pass is coming soon!",
+    "bpendrewards1": "Battle Pass Rewards!",
+    "bpendrewards2": "Here are the rewards you didn't claim!",
+    "bpendrewards3": "Tap to receive"
   },
   "misc": {
     "min": "Min",
     "days": "d",
-    "hours": "h"
+    "hours": "h",
+    "misc.loading": "Loading"
   },
   "info": {
     "odyssey1": "Start with 100 players!",
@@ -190,6 +196,14 @@ export const languages = {
     "savetext":	"Save before quit?",
     "exit":	"Quit",
     "save":	"Save"
+  },
+  "combat": {
+    "logo": "Tap to skip"
+  },
+  "rewards": {
+    "level": "Level",
+    "continue": "Continue",
+    "bravo": "Bravo!"
   }
 };
 

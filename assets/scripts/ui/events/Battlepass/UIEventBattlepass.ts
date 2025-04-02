@@ -4,6 +4,7 @@ import { UIEventBattlepassItem } from './UIEventBattlepassItem';
 import { UserData } from '../../../data/UserData';
 import { UIEventBattlepassBonusBank } from './UIEventBattlepassBonusBank';
 import { ResolutionManager } from '../../../utils/ResolutionManager';
+import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventBattlepass')
@@ -14,7 +15,16 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     @property(Button)
     closeBtn: Button = null;
     @property(Button)
+    closeBtn_Duplicate: Button = null;
+    @property(Button)
     takeUnpickedBtn: Button = null;
+    @property(Button)
+    startBtn: Button = null;
+
+    @property(UIPopupFrameBase)
+    endPopup: UIPopupFrameBase;
+    @property(UIPopupFrameBase)
+    startPopup: UIPopupFrameBase;
 
     @property(Label)
     progressLabel: Label = null;
@@ -44,7 +54,11 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     start() {
         this.activateBtn.node.on(Button.EventType.CLICK, this.onActivateBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        if(this.closeBtn_Duplicate) {
+            this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        }
         this.takeUnpickedBtn.node.on(Button.EventType.CLICK, this.onTakeUnpickedClick, this);
+        this.startBtn.node.on(Button.EventType.CLICK, this.onStartClick, this);
 
         let data = this.eventController.getData();
 
@@ -109,7 +123,19 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
         this.bonusSafeComp.refresh(isPrem, this.eventController.getIsBankTakeAvailable(), this.eventController.getBonusBank());
 
-        this.takeUnpickedBtn.node.active = this.eventController.isUnpickedRewardAvailable();
+        if(this.eventController.isUnpickedRewardAvailable() || this.eventController.getIsComplete()) {
+            this.endPopup.show();
+        }
+        else {
+            this.endPopup.hideClean();
+        }
+
+        if(!this.eventController.getIsStarted()) {
+            this.startPopup.show();
+        }
+        else {
+            this.startPopup.hideClean();
+        }
     }
 
 
@@ -154,6 +180,14 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     onTakeUnpickedClick() {
         this.eventController.takeUnpickedRewards();
+
+        this.endPopup.hide();
+    }
+
+    onStartClick() {
+        this.eventController.activateEvent();
+
+        this.startPopup.hide();
     }
 }
 

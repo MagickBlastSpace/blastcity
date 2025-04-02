@@ -33,10 +33,18 @@ export class BattlepassEvent extends RocketFeverEvent {
         this.currentStage = 1;
         this.collectedRockets = 0;
 
-        this.isStarted = true;
-        this.isComplete = false;
+        this.isStarted = false;
+        //this.isComplete = false;
 
         this.eventId = "battlepass";
+    }
+
+    activateEvent(): void {
+        super.activateEvent();
+
+        this.currentStage = 1;
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 
 
@@ -54,8 +62,6 @@ export class BattlepassEvent extends RocketFeverEvent {
             this.startTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 8, 0, 0, 0));
             this.endTime = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 2, 1, 8, 0, 0, 0));
         }
-    
-        this.lastAttemptTimestamp = Date.now();
     
         console.log("bp Start time: " + this.startTime);
         console.log("bp End time: " + this.endTime);
@@ -254,7 +260,11 @@ export class BattlepassEvent extends RocketFeverEvent {
 
 
     restartEvent(): void {
+        this.isComplete = true;
+
         this.saveUnpickedRewards();
+
+        UserData.instance.removePremium();
 
         super.restartEvent();
     }
@@ -336,6 +346,7 @@ export class BattlepassEvent extends RocketFeverEvent {
         this.applyRewards(this.unpickedRewards);
     
         this.unpickedRewards = [];
+        this.isComplete = false;
     
         SaveData.instance.saveEvent(this.eventId);
     
