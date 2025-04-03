@@ -157,7 +157,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
         let percent = curStage / this.eventController.getTotalStages();
 
-        let isPortrait = ResolutionManager.instance.isPortraitOrientation();
+        //let isPortrait = ResolutionManager.instance.isPortraitOrientation();
+        let isPortrait = true;
         if(isPortrait) {
             percent = 1 - percent;
         }

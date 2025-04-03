@@ -139,7 +139,7 @@ export class ResolutionManager extends Component {
             this.popups[i].setScale(new Vec3(1, 1, 1));
         }
         for(let i = 0; i < this.popups_v2.length; i++) {
-            this.popups_v2[i].setScale(new Vec3(1, 1, 1));
+            this.popups_v2[i].setScale(new Vec3(0.6, 0.6, 1));
         }
         for(let i = 0; i < this.popupComponents.length; i++) {
             this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
