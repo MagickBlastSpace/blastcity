@@ -111,11 +111,11 @@ export class LavaAdventureEvent extends EventBase {
             newReward.gold = rewardGold;
 
             this.unpickedRewards.push(newReward);
+
+            console.log("Lava Adventure completed! Player rewarded:", rewardGold, "coins");
         }
 
         this.currentStep = 0;
-
-        console.log("Lava Adventure completed! Player rewarded:", rewardGold, "coins");
 
         this.isCompletedToday = true;
 
