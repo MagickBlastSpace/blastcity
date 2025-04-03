@@ -5,6 +5,7 @@ import { MovesShopStageData } from '../../data/GameData';
 import { MovesShop } from '../../game/boosters/MovesShop';
 import { Level } from '../../game/Level';
 import { UserData } from '../../data/UserData';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelMovesShop')
@@ -63,7 +64,7 @@ export class UILevelMovesShop extends Component {
 
             const totalMoves = this.movesShop.getTotalMovesCount();
 
-            this.stageDataLabel.string = "Buy " + totalMoves + " Moves"; 
+            this.stageDataLabel.string = Localization.instance.getLabelByKey("combat.failbuy") + " " + totalMoves + " " + Localization.instance.getLabelByKey("combat.failmoves"); 
 
             this.additinalStageDataLabel.string = "";
             if(this.isAdditionalDataAvailable(this.data)) {

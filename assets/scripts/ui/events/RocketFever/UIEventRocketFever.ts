@@ -126,7 +126,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
             this.progressLabel.string = "";
 
-            this.infoLabel.string = "Collect rockets to win rewards";
+            this.infoLabel.string = this.eventController.getEventId() === "rocket_fever" ? Localization.instance.getLabelByKey("events.rfdescription") : Localization.instance.getLabelByKey("events.atdescription");
         }
         
         this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;

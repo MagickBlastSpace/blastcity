@@ -21,6 +21,8 @@ export class Localization extends Component {
         //const i18n = require('LanguageData');
         i18n.init(langId);
         i18n.updateSceneRenderers();
+
+        this.node.emit("lang_change");
     }
 
 

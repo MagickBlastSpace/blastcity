@@ -17,7 +17,9 @@ export const languages = {
     "Difficulty_Hard": "Hard",
     "Difficulty_Superhard": "Super Hard",
     "Difficulty_Bonus": "Bonus",
-    "GiftInfo": "Complete levels on the first try to start the next game with an enhanced gift!"
+    "GiftInfo": "Complete levels on the first try to start the next game with an enhanced gift!",
+    "Stage": "Round",
+    "moves": "moves!"
   },
   "rating": {
     "rating": "Player Rating",
@@ -105,13 +107,22 @@ export const languages = {
     "bpenddescription": "The Battle Pass is over! A new Battle Pass is coming soon!",
     "bpendrewards1": "Battle Pass Rewards!",
     "bpendrewards2": "Here are the rewards you didn't claim!",
-    "bpendrewards3": "Tap to receive"
+    "bpendrewards3": "Tap to receive",
+    "rewardavailable": "Receive",
+    "ocname": "Olympus Cup",
+    "ocdescription": "Complete the level to win unlimited lives and take part in the Olympus Cup event!",
+    "argname": "Argonauts",
+    "argdescription": "Collect as a clan and open chests!",
+    "argjoinclan": "Join the clan to participate in the event!",
+    "ocdescription2": "Complete levels to win cups and compete with other players for valuable prizes!",
+    "restart": "Restart",
+    "lrcooldown": "Will be available:"
   },
   "misc": {
     "min": "Min",
     "days": "d",
     "hours": "h",
-    "misc.loading": "Loading"
+    "loading": "Loading"
   },
   "info": {
     "odyssey1": "Start with 100 players!",
@@ -171,7 +182,8 @@ export const languages = {
     "offer4": "Giant Treasure",
     "offer5": "Treasure of Olympus",
     "offer6": "Zeus' Stash",
-    "name": "Shop"
+    "name": "Shop",
+    "more": "More offers!"
   },
   "profile": {
     "name": "Profile",
@@ -198,7 +210,13 @@ export const languages = {
     "save":	"Save"
   },
   "combat": {
-    "logo": "Tap to skip"
+    "logo": "Tap to skip",
+    "retry": "Replay",
+    "continue": "Continue?",
+    "failbuy": "Buy",
+    "faildescription": "Get extra moves for watching an ad!",
+    "failbutton": "Watch",
+    "failmoves": "moves"
   },
   "rewards": {
     "level": "Level",

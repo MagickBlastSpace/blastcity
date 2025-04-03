@@ -16,6 +16,7 @@ import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
 import { AudioController } from '../../utils/AudioController';
 import { Level } from '../../game/Level';
 import { ChestRewardData } from '../../data/ChestData';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -89,6 +90,8 @@ export class UIStartFrame extends UIFrameBase {
         this.playBtn.node.active = false;
 
         this.effectsManager.setEventBtns(this.eventBtns);
+
+        //Localization.instance.node.on("lang_change", () => this.refresh());
     }
 
     onPlayBtnClick() {
@@ -105,12 +108,12 @@ export class UIStartFrame extends UIFrameBase {
             }
 
             let currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
-            this.levelLabel.string = "Раунд";
+            this.levelLabel.string = Localization.instance.getLabelByKey("StartFrame.Stage");
             this.levelCountLabel.string = currentLevelNumber;
         }
         else {
             let currentLevelNumber = UserData.instance.getProgress() + 1;
-            this.levelLabel.string = "Уровень";
+            this.levelLabel.string = Localization.instance.getLabelByKey("StartFrame.Level");
             this.levelCountLabel.string = currentLevelNumber;
         }
 

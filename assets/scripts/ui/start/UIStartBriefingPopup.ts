@@ -19,6 +19,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     levelLabel: Label = null;
     @property(Label)
     difficultyLabel: Label = null;
+    @property(Label)
+    levelReq: Label = null;
 
     @property(Sprite)
     frame: Sprite = null;
@@ -115,6 +117,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         for(let i = 0; i < this.startBonuses.length; i++) {
             this.startBonuses[i].checkAutopick();
         }
+
+        this.levelReqLabel.string = this.l10n.instance.getLabelByKey("events.levelreq") + " 28";
     }
 
     show() {

@@ -28,33 +28,56 @@ export class UIResources extends Component {
     start() {
         UserData.instance.node.on("resources_update", (gold, stars) => this.refresh(gold, stars));
 
-        this.energyLabel.string = gamepush.player.get('energy');
-        this.goldLabel.string = UserData.instance.getResource("gold");
-        this.starsLabel.string = UserData.instance.getResource("stars");
+        if(this.energyLabel) {
+            this.energyLabel.string = gamepush.player.get('energy');
+        }
+        
+        if(this.goldLabel) {
+            this.goldLabel.string = UserData.instance.getResource("gold");
+        }
+        
+        if(this.starsLabel) {
+            this.starsLabel.string = UserData.instance.getResource("stars");
+        }
     }
 
     update(deltaTime: number) {
-        this.endlessLivesTimer.string = UserData.instance.getRemainingTimeString("endless_lives");
+        if(this.endlessLivesTimer) {
+            this.endlessLivesTimer.string = UserData.instance.getRemainingTimeString("endless_lives");
+        }
 
         let energySeconds = gamepush.player.get('energy:secondsLeft');
 
-        this.energyTimer.string = energySeconds <= 0 ? "MAX" : this.getSecondsLeftHuman();
-        this.energyLabel.string = gamepush.player.get('energy');
-
-        if(this.endlessLivesTimer.string !== "") {
-            this.endlessLivesPanel.active = true;
-
-            return;
+        if(this.energyTimer) {
+            this.energyTimer.string = energySeconds <= 0 ? "MAX" : this.getSecondsLeftHuman();
         }
-
+        if(this.energyLabel) {
+            this.energyLabel.string = gamepush.player.get('energy');
+        }
+        
+        if(this.endlessLivesTimer) {
+            if(this.endlessLivesTimer.string !== "") {
+                this.endlessLivesPanel.active = true;
+    
+                return;
+            }
+        }
+        
         this.endlessLivesPanel.active = false;
     }
 
     refresh(gold: number, stars: number) {
-        this.goldLabel.string = gold;
-        this.starsLabel.string = stars;
-
-        this.energyLabel.string = gamepush.player.get('energy');
+        if(this.goldLabel) {
+            this.goldLabel.string = gold;
+        }
+        
+        if(this.starsLabel) {
+            this.starsLabel.string = stars;
+        }
+        
+        if(this.energyLabel) {
+            this.energyLabel.string = gamepush.player.get('energy');
+        }
     }
 
 

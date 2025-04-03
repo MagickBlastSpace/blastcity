@@ -11,6 +11,7 @@ import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIMainMenu } from '../main/UIMainMenu';
 import { Field } from '../../game/Field';
 import { ResolutionManager } from '../../utils/ResolutionManager';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -106,11 +107,12 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         let isKingLeague = this.isKingLeagueMode();
 
         let currentLevelNumber = isKingLeague ? UserData.instance.getKingLeagueProgress(): UserData.instance.getProgress();
-        let lvlString = isKingLeague ? "Round " + currentLevelNumber : "Level " + currentLevelNumber;
+        //let lvlString = isKingLeague ? "Round " + currentLevelNumber : "Level " + currentLevelNumber;
+        let lvlString = isKingLeague ? Localization.instance.getLabelByKey("StartFrame.Stage") + " " + currentLevelNumber : Localization.instance.getLabelByKey("StartFrame.Level") + " " + currentLevelNumber;
 
-        this.levelLabel.string = isSuccess ? lvlString : "Continue?";
+        this.levelLabel.string = isSuccess ? lvlString : Localization.instance.getLabelByKey("combat.continue");
 
-        this.buttonLabel.string = isSuccess ? "Continue" : "Replay";
+        this.buttonLabel.string = isSuccess ? Localization.instance.getLabelByKey("combat.continue") : Localization.instance.getLabelByKey("combat.replay");
         this.goldLabel.string = "x" + goldEarned;
 
         this.movesShop.node.active = !isSuccess;
@@ -147,15 +149,15 @@ export class UILevelResultFrame extends UIPopupFrameBase {
                 this.frame.spriteFrame = this.hard;
                 this.header.spriteFrame = this.header_hard;
 
-                this.showAdBtn.node.active = true;
-                this.adLabel.string = "x3";
+                //this.showAdBtn.node.active = true;
+                //this.adLabel.string = "x3";
             }
             else if(levelData.difficulty === "superhard") {
                 this.frame.spriteFrame = this.superHard;
                 this.header.spriteFrame = this.header_superHard;
 
-                this.showAdBtn.node.active = true;
-                this.adLabel.string = "x5";
+                //this.showAdBtn.node.active = true;
+                //this.adLabel.string = "x5";
             }
             else {
                 this.frame.spriteFrame = this.common;
