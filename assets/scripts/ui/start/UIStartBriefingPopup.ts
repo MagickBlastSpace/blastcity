@@ -20,7 +20,7 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     @property(Label)
     difficultyLabel: Label = null;
     @property(Label)
-    levelReq: Label = null;
+    levelReqLabel: Label = null;
 
     @property(Sprite)
     frame: Sprite = null;
@@ -118,7 +118,7 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
             this.startBonuses[i].checkAutopick();
         }
 
-        this.levelReqLabel.string = this.l10n.instance.getLabelByKey("events.levelreq") + " 28";
+        this.levelReqLabel.string = this.l10n.getLabelByKey("events.levelreq") + " 28";
     }
 
     show() {
@@ -139,6 +139,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         this.hide();
         
         this.node.emit("play");
+
+        console.log("Briefing play event");
     }
 
     onPlayRewardedBtnClick() {

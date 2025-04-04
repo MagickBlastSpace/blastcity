@@ -82,7 +82,7 @@ export class UIEventTeamTreasure extends UIEventPopupFrameBase {
         }
 
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
-        this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : "Join Clan";
+        this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : Localization.instance.getLabelByKey("events.argjoinclan");
 
         let rewardsData = this.eventController.getRewardsData();
         let isPicked = this.eventController.getIsRewardPicked();

@@ -102,6 +102,14 @@ export class UIStartFrame extends UIFrameBase {
 
 
     refresh() {
+        this.chest.refresh();
+
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].refresh();
+        }
+
+        ResolutionManager.instance.adjustResolution();
+
         if(this.kingLeague.isKingLeagueMode()) {
             if(!this.kingLeague.getIsStarted() && this.isLevelsLoaded && this.kingLeague.canParticipate()) {
                 this.scheduleOpenEventByName("KingLeague");
@@ -116,14 +124,6 @@ export class UIStartFrame extends UIFrameBase {
             this.levelLabel.string = Localization.instance.getLabelByKey("StartFrame.Level");
             this.levelCountLabel.string = currentLevelNumber;
         }
-
-        this.chest.refresh();
-
-        for(let i = 0; i < this.eventBtns.length; i++) {
-            this.eventBtns[i].refresh();
-        }
-
-        ResolutionManager.instance.adjustResolution();
     }
 
     show() {
@@ -182,6 +182,8 @@ export class UIStartFrame extends UIFrameBase {
             this.field.spawnInitialBoard(GameData.instance.getCurrentLevel());
 
             this.node.emit("play");
+
+            console.log("StartFrame play event");
         }
         catch (error) {
             console.log(error);

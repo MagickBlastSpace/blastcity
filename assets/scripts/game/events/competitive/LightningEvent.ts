@@ -7,6 +7,7 @@ import { UserData } from '../../../data/UserData';
 import { LevelProgressStatisticsData } from '../../../data/Statistics';
 import { PlayerEventData } from '../../../data/EventData';
 import { Net } from '../../../net/Net';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('LightningEvent')
@@ -226,19 +227,19 @@ export class LightningEvent extends KingsCupEvent {
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
-        return "Cooldown: " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return Localization.instance.getLabelByKey("events.lrcooldown") + ": " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
     getRemainingPlaytimeString(): string {
         if (this.isPlaytimeOver() || !this.isStarted) {
-            return "Finished";
+            return Localization.instance.getLabelByKey("events.bpendtimer");
         }
     
         const now = Date.now();
         const playEndTime = this.lastAttemptTimestamp + this.PLAYTIME_MINUTES * 60 * 1000;
     
         if (now >= playEndTime) {
-            return "Finished";
+            return Localization.instance.getLabelByKey("events.bpendtimer");
         }
     
         const timeDiff = playEndTime - now;

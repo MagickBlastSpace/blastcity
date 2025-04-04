@@ -3,6 +3,7 @@ import { EventBase } from './EventBase';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { EventRewardData } from '../../data/EventData';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('LavaAdventureEvent')
@@ -94,7 +95,7 @@ export class LavaAdventureEvent extends EventBase {
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
-        return "Cooldown: " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return Localization.instance.getLabelByKey("events.lrcooldown") + ": " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
 

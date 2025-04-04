@@ -85,6 +85,19 @@ export class UIMainMenu extends UIFrameBase {
             }
         });
 
+        this.startFrame.on("play", () => this.play());
+        this.startFrame.on("assets_ready", () => {
+            this.updateBackgroundGraphics();
+            
+            AudioController.instance.loadSoundsAssets();
+        });
+        
+        this.chest.node.on("complete", () => this.updateBackgroundGraphics());
+        this.chest.node.on("reward", (data) => this.showChestReward(data));
+
+        SaveData.instance.loadStartBonusesData();
+        SaveData.instance.loadButlersGiftData();
+
         this.shopBtn.node.on(Button.EventType.CLICK, this.onBtnShopClick, this);
         this.clanBtn.node.on(Button.EventType.CLICK, this.onBtnClanClick, this);
         this.playBtn.node.on(Button.EventType.CLICK, this.onBtnPlayClick, this);
@@ -96,24 +109,6 @@ export class UIMainMenu extends UIFrameBase {
 
         this.setAllBtnsPassive();
         this.onBtnPlayClick();
-
-        this.startFrame.on("play", () => this.play());
-        this.startFrame.on("assets_ready", () => {
-            this.updateBackgroundGraphics();
-            
-            AudioController.instance.loadSoundsAssets();
-        });
-        this.chest.node.on("complete", () => this.updateBackgroundGraphics());
-        this.chest.node.on("reward", (data) => this.showChestReward(data));
-
-        SaveData.instance.loadStartBonusesData();
-        SaveData.instance.loadButlersGiftData();
-        //SaveData.instance.loadLevelProgressData();
-
-        /*console.log("platform: " + gamepush.platform.type + " - " + gamepush.platform.hasIntegratedAuth);
-
-        let sdk = gamepush.platform.getSDK();
-        console.log("sdk: " + sdk);*/
     }
 
 
@@ -128,6 +123,8 @@ export class UIMainMenu extends UIFrameBase {
     }
 
     play() {
+        console.log("play event handle");
+
         this.hide();
 
         this.adsTimer.startGameplayTimer();

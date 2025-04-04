@@ -57,13 +57,17 @@ export class UIResources extends Component {
         
         if(this.endlessLivesTimer) {
             if(this.endlessLivesTimer.string !== "") {
-                this.endlessLivesPanel.active = true;
+                if(this.endlessLivesPanel) {
+                    this.endlessLivesPanel.active = true;
+                }
     
                 return;
             }
         }
         
-        this.endlessLivesPanel.active = false;
+        if(this.endlessLivesPanel) {
+            this.endlessLivesPanel.active = false;
+        }
     }
 
     refresh(gold: number, stars: number) {

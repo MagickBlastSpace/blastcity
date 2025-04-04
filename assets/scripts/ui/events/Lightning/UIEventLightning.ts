@@ -66,17 +66,15 @@ export class UIEventLightning extends UIEventPopupFrameBase {
     }
 
     update(deltaTime: number) {
-        if(!this.isInited) {
-            return;
+        if(this.isInited) {
+            this.cooldownTimeLabel.string = this.eventController.getRemainingCooldownString();
+            this.playTimeLabel.string = this.eventController.getRemainingPlaytimeString();
+            this.timeLabel.string = this.eventController.getRemainingTimeString();
         }
 
-        if(!this.node.active) {
+        /*if(!this.node.active) {
             return;
-        }
-
-        this.cooldownTimeLabel.string = this.eventController.getRemainingCooldownString();
-        this.playTimeLabel.string = this.eventController.getRemainingPlaytimeString();
-        this.timeLabel.string = this.eventController.getRemainingTimeString();
+        }*/
     }
 
 
