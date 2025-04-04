@@ -2,6 +2,7 @@ import { _decorator, Component, Node, Label, Sprite, Button, SpriteFrame, Progre
 import { UIEventRocketFeverItem } from '../RocketFever/UIEventRocketFeverItem';
 import { RocketFeverEventData } from '../../../data/EventData';
 import { UserData } from '../../../data/UserData';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventBattlepassItem')
@@ -50,6 +51,8 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
         this.rewardLabel_Premium.string = "";
 
+        let minString = Localization.instance.getLabelByKey("misc.min");
+
         if(data.rewards.length > 1) {
             if(data.rewards[1].gold > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.gold;
@@ -88,24 +91,24 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
             if(data.rewards[1].bomb_Minutes > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.bomb;
-                this.rewardLabel_Premium.string = data.rewards[1].bomb_Minutes + " Min";
+                this.rewardLabel_Premium.string = data.rewards[1].bomb_Minutes + " " + minString;
             }
             if(data.rewards[1].rocket_Minutes > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.rocket;
-                this.rewardLabel_Premium.string = data.rewards[1].rocket_Minutes + " Min";
+                this.rewardLabel_Premium.string = data.rewards[1].rocket_Minutes + " " + minString;
             }
             if(data.rewards[1].discoball_Minutes > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.discoball;
-                this.rewardLabel_Premium.string = data.rewards[1].discoball_Minutes + " Min";
+                this.rewardLabel_Premium.string = data.rewards[1].discoball_Minutes + " " + minString;
             }
 
             if(data.rewards[1].endlessLives_Minutes > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.lives;
-                this.rewardLabel_Premium.string = data.rewards[1].endlessLives_Minutes + " Min";
+                this.rewardLabel_Premium.string = data.rewards[1].endlessLives_Minutes + " " + minString;
             }
             if(data.rewards[1].modifierX2_Minutes > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.x2;
-                this.rewardLabel_Premium.string = data.rewards[1].modifierX2_Minutes + " Min";
+                this.rewardLabel_Premium.string = data.rewards[1].modifierX2_Minutes + " " + minString;
             }
             if(data.rewards[1].cardsPack > 0) {
                 this.rewardIcon_Premium.spriteFrame = this.cards;

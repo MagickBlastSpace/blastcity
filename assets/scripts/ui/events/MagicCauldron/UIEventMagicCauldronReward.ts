@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Label, Sprite, SpriteFrame } from 'cc';
 import { EventRewardData } from '../../../data/EventData';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldronReward')
@@ -35,6 +36,8 @@ export class UIEventMagicCauldronReward extends Component {
     refresh(data: EventRewardData) {
         this.rewardLabel.string = "";
         this.rewardIcon.spriteFrame = null;
+
+        let minString = Localization.instance.getLabelByKey("misc.min");
 
         if(data) {
             if(data.gold > 0) {
@@ -74,24 +77,24 @@ export class UIEventMagicCauldronReward extends Component {
 
             if(data.bomb_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.bomb;
-                this.rewardLabel.string = data.bomb_Minutes + " Min";
+                this.rewardLabel.string = data.bomb_Minutes + " " + minString;
             }
             if(data.rocket_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.rocket;
-                this.rewardLabel.string = data.rocket_Minutes + " Min";
+                this.rewardLabel.string = data.rocket_Minutes + " " + minString;
             }
             if(data.discoball_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.discoball;
-                this.rewardLabel.string = data.discoball_Minutes + " Min";
+                this.rewardLabel.string = data.discoball_Minutes + " " + minString;
             }
 
             if(data.endlessLives_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.lives;
-                this.rewardLabel.string = data.endlessLives_Minutes + " Min";
+                this.rewardLabel.string = data.endlessLives_Minutes + " " + minString;
             }
             if(data.modifierX2_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.x2;
-                this.rewardLabel.string = data.modifierX2_Minutes + " Min";
+                this.rewardLabel.string = data.modifierX2_Minutes + " " + minString;
             }
         }
     }

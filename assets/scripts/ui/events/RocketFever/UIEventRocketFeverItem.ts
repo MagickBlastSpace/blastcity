@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Label, Sprite, SpriteFrame, sp, Button } from 'cc';
 import { RocketFeverEventData } from '../../../data/EventData';
+import { Localization } from '../../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventRocketFeverItem')
@@ -75,6 +76,8 @@ export class UIEventRocketFeverItem extends Component {
 
         this.rewardLabel.string = "";
 
+        let minString = Localization.instance.getLabelByKey("misc.min");
+
         if(data.rewards.length > 0) {
             if(data.rewards[0].gold > 0) {
                 this.rewardIcon.spriteFrame = this.gold;
@@ -113,24 +116,24 @@ export class UIEventRocketFeverItem extends Component {
 
             if(data.rewards[0].bomb_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.bomb;
-                this.rewardLabel.string = data.rewards[0].bomb_Minutes + " Min";
+                this.rewardLabel.string = data.rewards[0].bomb_Minutes + " " + minString;
             }
             if(data.rewards[0].rocket_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.rocket;
-                this.rewardLabel.string = data.rewards[0].rocket_Minutes + " Min";
+                this.rewardLabel.string = data.rewards[0].rocket_Minutes + " " + minString;
             }
             if(data.rewards[0].discoball_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.discoball;
-                this.rewardLabel.string = data.rewards[0].discoball_Minutes + " Min";
+                this.rewardLabel.string = data.rewards[0].discoball_Minutes + " " + minString;
             }
 
             if(data.rewards[0].endlessLives_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.lives;
-                this.rewardLabel.string = data.rewards[0].endlessLives_Minutes + " Min";
+                this.rewardLabel.string = data.rewards[0].endlessLives_Minutes + " " + minString;
             }
             if(data.rewards[0].modifierX2_Minutes > 0) {
                 this.rewardIcon.spriteFrame = this.x2;
-                this.rewardLabel.string = data.rewards[0].modifierX2_Minutes + " Min";
+                this.rewardLabel.string = data.rewards[0].modifierX2_Minutes + " " + minString;
             }
             if(data.rewards[0].cardsPack > 0) {
                 this.rewardIcon.spriteFrame = this.cards;

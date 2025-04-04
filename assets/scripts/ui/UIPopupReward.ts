@@ -4,6 +4,7 @@ import { UIPopupFrameBase } from './UIPopupFrameBase';
 import { ShopItemData } from '../data/GameData';
 import { UserData } from '../data/UserData';
 import { ChestRewardData } from '../data/ChestData';
+import { Localization } from '../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIPopupReward')
@@ -313,6 +314,8 @@ export class UIPopupReward extends UIPopupFrameBase {
 
         this.rewardIndex = this.rewardIndex + 1;
 
+        let minString = Localization.instance.getLabelByKey("misc.min");
+
         if(data) {
             if(data.gold > 0) {
                 if(this.itemIndex >= this.rewardNodes.length || this.itemIndex >= this.rewardLabels.length || this.itemIndex >= this.rewardIcons.length) {
@@ -421,7 +424,7 @@ export class UIPopupReward extends UIPopupFrameBase {
                 this.rewardNodes[this.itemIndex].active = true;
 
                 this.rewardIcons[this.itemIndex].spriteFrame = this.bomb;
-                this.rewardLabels[this.itemIndex].string = data.bomb_Minutes + " Min";
+                this.rewardLabels[this.itemIndex].string = data.bomb_Minutes + " " + minString;
 
                 this.itemIndex = this.itemIndex + 1;
             }
@@ -433,7 +436,7 @@ export class UIPopupReward extends UIPopupFrameBase {
                 this.rewardNodes[this.itemIndex].active = true;
 
                 this.rewardIcons[this.itemIndex].spriteFrame = this.rocket;
-                this.rewardLabels[this.itemIndex].string = data.rocket_Minutes + " Min";
+                this.rewardLabels[this.itemIndex].string = data.rocket_Minutes + " " + minString;
 
                 this.itemIndex = this.itemIndex + 1;
             }
@@ -445,7 +448,7 @@ export class UIPopupReward extends UIPopupFrameBase {
                 this.rewardNodes[this.itemIndex].active = true;
 
                 this.rewardIcons[this.itemIndex].spriteFrame = this.discoball;
-                this.rewardLabels[this.itemIndex].string = data.discoball_Minutes + " Min";
+                this.rewardLabels[this.itemIndex].string = data.discoball_Minutes + " " + minString;
 
                 this.itemIndex = this.itemIndex + 1;
             }
@@ -458,7 +461,7 @@ export class UIPopupReward extends UIPopupFrameBase {
                 this.rewardNodes[this.itemIndex].active = true;
 
                 this.rewardIcons[this.itemIndex].spriteFrame = this.lives;
-                this.rewardLabels[this.itemIndex].string = data.endlessLives_Minutes + " Min";
+                this.rewardLabels[this.itemIndex].string = data.endlessLives_Minutes + " " + minString;
 
                 this.itemIndex = this.itemIndex + 1;
             }
@@ -470,7 +473,7 @@ export class UIPopupReward extends UIPopupFrameBase {
                 this.rewardNodes[this.itemIndex].active = true;
 
                 this.rewardIcons[this.itemIndex].spriteFrame = this.x2;
-                this.rewardLabels[this.itemIndex].string = data.modifierX2_Minutes + " Min";
+                this.rewardLabels[this.itemIndex].string = data.modifierX2_Minutes + " " + minString;
 
                 this.itemIndex = this.itemIndex + 1;
             }
