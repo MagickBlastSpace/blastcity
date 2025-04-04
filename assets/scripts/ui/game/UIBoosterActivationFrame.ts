@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Button, Label } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIBoosterActivationFrame')
@@ -47,25 +48,25 @@ export class UIBoosterActivationFrame extends UIPopupFrameBase {
 
         switch(booster) {
             case "hammer":
-                this.description.string = "Коснись предмета, чтобы разбить его!";
+                this.description.string = Localization.instance.getLabelByKey("info.hammer");
 
                 this.hammer.active = true;
 
                 break;
             case "arrow":
-                this.description.string = "Коснись строки, чтобы уничтожить её!";
+                this.description.string = Localization.instance.getLabelByKey("info.bow");
 
                 this.bow.active = true;
                 
                 break;
             case "cannon":
-                this.description.string = "Коснись столбца, чтобы уничтожить его!";
+                this.description.string = Localization.instance.getLabelByKey("info.sword");
 
                 this.cannon.active = true;
                 
                 break;
             case "jester":
-                this.description.string = "Нажми на кнопку, чтобы перемешать поле!";
+                this.description.string = Localization.instance.getLabelByKey("info.shuffle");
 
                 this.jester.active = true;
 

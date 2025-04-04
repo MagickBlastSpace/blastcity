@@ -71,13 +71,13 @@ export class UILevelMovesShop extends Component {
                 this.additinalStageDataLabel.string = "+";
 
                 if(this.data.rockets > 0) {
-                    this.additinalStageDataLabel.string += " Rockets x" + this.data.rockets;
+                    this.additinalStageDataLabel.string += Localization.instance.getLabelByKey("combat.rocket") + " x" + this.data.rockets;
                 }
                 if(this.data.bombs > 0) {
-                    this.additinalStageDataLabel.string += " Bombs x" + this.data.bombs;
+                    this.additinalStageDataLabel.string += Localization.instance.getLabelByKey("combat.bomb") + " x" + this.data.bombs;
                 }
                 if(this.data.discoballs > 0) {
-                    this.additinalStageDataLabel.string += " Discoballs x" + this.data.discoballs;
+                    this.additinalStageDataLabel.string += Localization.instance.getLabelByKey("combat.dball") + " x" + this.data.discoballs;
                 }
             }
 
@@ -88,7 +88,7 @@ export class UILevelMovesShop extends Component {
         }
         else {
             this.additinalStageDataLabel.string = "";
-            this.stageDataLabel.string = "Extra moves not available";
+            this.stageDataLabel.string = Localization.instance.getLabelByKey("combat.extramovesend");
 
             this.buyBtn.node.active = false;
         }

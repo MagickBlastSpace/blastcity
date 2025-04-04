@@ -116,7 +116,26 @@ export const languages = {
     "argjoinclan": "Join the clan to participate in the event!",
     "ocdescription2": "Complete levels to win cups and compete with other players for valuable prizes!",
     "restart": "Restart",
-    "lrcooldown": "Will be available:"
+    "lrcooldown": "Will be available:",
+    "lrmindescription": "Start Lightning Rush!",
+    "pmindescription": "Start the Pegasus Race!",
+    "rewardfirst": "First place will receive this award!",
+    "rewardsecond": "Second place will receive this award!",
+    "rewardsthird": "Third place will receive this award!",
+    "rewardrest": "The remaining winners will receive this award!",
+    "rewardend": "Unclaimed reward available!",
+    "cgname": "Clan gift",
+    "cgnamegold": "Gold Clan Offer",
+    "cgnamesilver": "Silver Clan Offer",
+    "cgnamebronze": "Bronze Clan Offer",
+    "cgyou": "You will receive:",
+    "cgclan": "Your Clan will receive:",
+    "endlessname": "Infinite Treasure",
+    "endlessfree": "For free",
+    "endlessdescription": "Collect all the rewards in this level to unlock new ones!",
+    "cgdescription1": "All members of your Clan will receive",
+    "cgdescription2": "minutes of endless lives!",
+    "bpextramoves": "+5 extra moves for each level!"
   },
   "misc": {
     "min": "Min",
@@ -143,7 +162,12 @@ export const languages = {
     "v1":	"Complete the levels!",
     "v2":	"Collect grapes!",
     "v3":	"Find the recipe you need!",
-    "v4":	"Unlock rewards!"
+    "v4":	"Unlock rewards!",
+    "hammer": "Dice anywhere to break it!",
+    "bow": "Tap anywhere to clear the entire row!",
+    "sword": "Tap anywhere to clear the entire column!",
+    "shuffle": "Click the button to shuffle!",
+    "shufflebutton": "Shuffle"
   },
   "tutorial": {
     "balloon": "Tap cubes next to a VASE to collect it!",
@@ -216,12 +240,27 @@ export const languages = {
     "failbuy": "Buy",
     "faildescription": "Get extra moves for watching an ad!",
     "failbutton": "Watch",
-    "failmoves": "moves"
+    "failmoves": "moves",
+    "extramovesend": "Additional turns are over",
+    "failataf": "You will lose Athena's gift and red tiles!",
+    "failatrp": "You will lose the Athena's gift and rockets!",
+    "failat": "You will lose Athena's gift!",
+    "rocket": "Rockets",
+    "bomb": "Bombs",
+    "dball": "Discoballs"
   },
   "rewards": {
     "level": "Level",
     "continue": "Continue",
     "bravo": "Bravo!"
+  },
+  "popup": {
+    "rewards1": "Rewards received!",
+    "rewards2": "Tap to claim"
+  },
+  "energy": {
+    "name": "Not enough lives",
+    "description": "Buy 5 extra lives?"
   }
 };
 
