@@ -16,9 +16,25 @@ export class UIEventTeamTreasureRewardItem extends Component {
     @property(Node)
     done: Node = null;
 
+    @property(Node)
+    infoReward: Node = null;
+
+    @property(Button)
+    infoRewardBtn: Button = null;
+    @property(Button)
+    closeInfoRewardBtn: Button = null;
+
 
     start() {
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
+
+        if(this.infoRewardBtn && this.infoRewardBtn !== undefined) {
+            this.infoRewardBtn.node.on(Button.EventType.CLICK, this.onInfoRewardClick, this);
+        }
+
+        if(this.closeInfoRewardBtn && this.closeInfoRewardBtn !== undefined) {
+            this.closeInfoRewardBtn.node.on(Button.EventType.CLICK, this.onCloseInfoRewardClick, this);
+        }
     }
 
     refresh(data: EventRewardData, isPicked: boolean, progress: number) {
@@ -35,6 +51,15 @@ export class UIEventTeamTreasureRewardItem extends Component {
 
     onTakeRewardBtnClick() {
         this.node.emit("pick", this.index);
+    }
+
+
+    onInfoRewardClick() {
+        this.infoReward.active = true;
+    }
+
+    onCloseInfoRewardClick() {
+        this.infoReward.active = false;
     }
 }
 
