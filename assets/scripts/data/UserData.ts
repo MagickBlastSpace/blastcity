@@ -328,10 +328,15 @@ export class UserData extends Component {
         SaveData.instance.saveUserData();
     }
 
-    subResource(resourceType: string, value: number) {
+    subResource(resourceType: string, value: number): boolean {
         switch(resourceType) {
             case "gold":
-                this.Gold -= value;
+                if(this.Gold >= value) {
+                    this.Gold -= value;
+                }
+                else {
+                    return false;
+                }
                 break;
 
             case "bomb":
@@ -383,6 +388,8 @@ export class UserData extends Component {
         this.node.emit("resources_update", this.Gold, this.Stars);
 
         SaveData.instance.saveUserData();
+
+        return true;
     }
 
 

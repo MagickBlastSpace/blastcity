@@ -27,11 +27,18 @@ export class UIEnergyRefill extends UIPopupFrameBase {
     async onRefillBtnClick() {
         this.isRefilling = true;
 
+        let isEnoughGold = UserData.instance.subResource("gold", 1000);
+
+        if(!isEnoughGold) {
+            //show shop
+            this.isRefilling = false;
+
+            return;
+        }
+
         gamepush.player.set('energy', gamepush.player.getMaxValue('energy'));
     
         await gamepush.player.sync();
-    
-        UserData.instance.subResource("gold", 1000);
 
         this.isRefilling = false;
 

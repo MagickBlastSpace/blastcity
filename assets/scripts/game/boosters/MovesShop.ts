@@ -59,7 +59,11 @@ export class MovesShop extends Component {
 
         this.startBonuses.clear();
 
-        UserData.instance.subResource("gold", curData.price);
+        let isEnoughGold = UserData.instance.subResource("gold", curData.price);
+        if(!isEnoughGold) {
+            //show gold shop
+            return false;
+        }
 
         for(let i = 0; i < curData.rockets; i++) {
             this.startBonuses.activateBonusFromShop("rocket");

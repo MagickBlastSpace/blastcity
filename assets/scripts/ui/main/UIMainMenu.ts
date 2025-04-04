@@ -65,6 +65,9 @@ export class UIMainMenu extends UIFrameBase {
     @property(UIAssetsLoadingFrame)
     assetsLoadingFrame: UIAssetsLoadingFrame;
 
+    @property(Node)
+    resourcesNode: Node = null;
+
 
     onLoad() {
         macro.ENABLE_MULTI_TOUCH = false;
@@ -94,6 +97,8 @@ export class UIMainMenu extends UIFrameBase {
         
         this.chest.node.on("complete", () => this.updateBackgroundGraphics());
         this.chest.node.on("reward", (data) => this.showChestReward(data));
+
+        this.resourcesNode.on("shop", () => this.onBtnShopClick());
 
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();

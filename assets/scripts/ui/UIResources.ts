@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Component, Node, Label, Button } from 'cc';
 import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
@@ -22,6 +22,9 @@ export class UIResources extends Component {
     @property(Node)
     endlessLivesPanel: Node = null;
 
+    @property(Button)
+    shopBtn: Button = null;
+
     //private lastEnergySeconds: number = 0;
 
 
@@ -38,6 +41,10 @@ export class UIResources extends Component {
         
         if(this.starsLabel) {
             this.starsLabel.string = UserData.instance.getResource("stars");
+        }
+
+        if(this.shopBtn) {
+            this.shopBtn.node.on(Button.EventType.CLICK, this.onShopBtnClick, this);
         }
     }
 
@@ -98,6 +105,10 @@ export class UIResources extends Component {
 
     pad(num: number) {
         return String(num).padStart(2, '0');
+    }
+
+    onShopBtnClick() {
+        this.node.emit("shop");
     }
 }
 
