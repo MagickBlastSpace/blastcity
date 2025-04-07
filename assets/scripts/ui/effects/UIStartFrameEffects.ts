@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Prefab, instantiate, Vec2, Vec3, UITransform } from 'cc';
 import { UIEventButton } from '../start/UIEventButton';
 import { EventProgressData } from '../../data/EventData';
+import { UIChest } from '../chest/UIChest';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrameEffects')
@@ -14,6 +15,11 @@ export class UIStartFrameEffects extends Component {
 
     @property(Node)
     playBtn: Node = null;
+
+    @property(Node)
+    chest: Node = null;
+    @property(UIChest)
+    chestComp: UIChest;
 
     @property([UIEventButton])
     eventBtns: UIEventButton[] = [];
@@ -31,7 +37,7 @@ export class UIStartFrameEffects extends Component {
         for(let i = 0; i < data.length; i++) {
 
             let event = data[i].eventName;
-            let eventPos = this.findEventPosition(event);
+            let eventPos = event === "chest" ? this.findChestPosition() : this.findEventPosition(event);
             let startPos = this.findStartPosition();
 
             this.scheduleOnce(() => {
@@ -40,6 +46,8 @@ export class UIStartFrameEffects extends Component {
 
             totalTime += timeBetweenEffects;
         }
+
+        return totalTime;
     }
 
 
@@ -49,6 +57,8 @@ export class UIStartFrameEffects extends Component {
         const itemComp = item.getComponent("UIEventProgressEffect");
         itemComp.setIcon(event);
         itemComp.setCount(count);
+
+        item.on("event_progress_done", (eName) => this.onEventProgressDone(eName));
 
         itemComp.init(startPos, eventPos);
     }
@@ -87,13 +97,22 @@ export class UIStartFrameEffects extends Component {
     }
 
     findStartPosition(): Vec2 {
+        return this.findNodePosition(this.playBtn);
+    }
+
+    findChestPosition(): Vec2 {
+        return this.findNodePosition(this.chest);
+    }
+
+
+    findNodePosition(nodeToObserve: Node): Vec2 {
         let worldPosition = new Vec3(0, 0, 0);
     
-        const uiTransform = this.playBtn.getComponent(UITransform);
+        const uiTransform = nodeToObserve.getComponent(UITransform);
         if (uiTransform) {
             worldPosition = uiTransform.convertToWorldSpaceAR(new Vec3(0, 0, 0));
         } else {
-            console.error("UITransform component is missing on the playBtn node");
+            console.error("UITransform component is missing on the nodeToObserve node");
         }
 
         const localUiTransform = this.node.getComponent(UITransform);
@@ -105,6 +124,11 @@ export class UIStartFrameEffects extends Component {
         }
     
         return new Vec2(worldPosition.x, worldPosition.y);
+    }
+
+
+    onEventProgressDone(eName: string) {
+        this.node.emit("event_progress_done", eName);
     }
 }
 

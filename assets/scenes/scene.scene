@@ -69,7 +69,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 4761
+      "__id__": 4763
     },
     "_id": "7b2dc026-88d5-4e1b-8f76-c916ba7bb4f8"
   },
@@ -41832,7 +41832,7 @@
     "__prefab": null,
     "MIN_LEVEL_REQUIRED": 0,
     "END_TIME_OFFSET": 0,
-    "isTutorialComplete": false,
+    "isTutorialComplete": true,
     "level": {
       "__id__": 14
     },
@@ -46844,6 +46844,7 @@
       }
     ],
     "rewardPopup": null,
+    "chest": null,
     "_id": "5daRrtGONCGaUDLrd8PogO"
   },
   {
@@ -46871,43 +46872,43 @@
     "__type__": "InitEventData",
     "startHour": 8,
     "durationHours": 0,
-    "startDayOfWeek": 5,
-    "durationDays": 3
+    "startDayOfWeek": 1,
+    "durationDays": 7
   },
   {
     "__type__": "InitEventData",
     "startHour": 8,
     "durationHours": 0,
     "startDayOfWeek": 1,
-    "durationDays": 4
+    "durationDays": 7
   },
   {
     "__type__": "InitEventData",
     "startHour": 8,
     "durationHours": 0,
     "startDayOfWeek": 1,
-    "durationDays": 4
-  },
-  {
-    "__type__": "InitEventData",
-    "startHour": 8,
-    "durationHours": 0,
-    "startDayOfWeek": 5,
-    "durationDays": 3
+    "durationDays": 7
   },
   {
     "__type__": "InitEventData",
     "startHour": 8,
     "durationHours": 0,
     "startDayOfWeek": 1,
-    "durationDays": 4
+    "durationDays": 7
   },
   {
     "__type__": "InitEventData",
     "startHour": 8,
     "durationHours": 0,
-    "startDayOfWeek": 5,
-    "durationDays": 3
+    "startDayOfWeek": 1,
+    "durationDays": 7
+  },
+  {
+    "__type__": "InitEventData",
+    "startHour": 8,
+    "durationHours": 0,
+    "startDayOfWeek": 1,
+    "durationDays": 7
   },
   {
     "__type__": "InitEventData",
@@ -46920,8 +46921,8 @@
     "__type__": "InitEventData",
     "startHour": 8,
     "durationHours": 0,
-    "startDayOfWeek": 5,
-    "durationDays": 3
+    "startDayOfWeek": 1,
+    "durationDays": 7
   },
   {
     "__type__": "InitEventData",
@@ -62567,8 +62568,8 @@
     ],
     "value": {
       "__type__": "cc.Vec3",
-      "x": -1490,
-      "y": -14.249999999999886,
+      "x": -1490.0000000000002,
+      "y": -14.25,
       "z": 0
     }
   },
@@ -62588,8 +62589,8 @@
     ],
     "value": {
       "__type__": "cc.Vec3",
-      "x": 1490,
-      "y": 183.70000000000016,
+      "x": 1490.0000000000002,
+      "y": 183.70000000000005,
       "z": 0
     }
   },
@@ -63049,8 +63050,8 @@
     ],
     "value": {
       "__type__": "cc.Size",
-      "width": 3654,
-      "height": 2008.0000000000002
+      "width": 3654.0000000000005,
+      "height": 2008
     }
   },
   {
@@ -63246,8 +63247,8 @@
     ],
     "value": {
       "__type__": "cc.Size",
-      "width": 3654,
-      "height": 2008.0000000000002
+      "width": 3654.0000000000005,
+      "height": 2008
     }
   },
   {
@@ -70023,7 +70024,7 @@
     "profile": {
       "__id__": 2447
     },
-    "_id": "079uaSItxKbYhGZ654jWr+"
+    "_id": "24suoTPxNPqI2PIUpmuEyt"
   },
   {
     "__type__": "cc.Node",
@@ -84909,6 +84910,9 @@
       },
       {
         "__id__": 4759
+      },
+      {
+        "__id__": 4761
       }
     ],
     "nestedPrefabInstanceRoots": [
@@ -97103,30 +97107,52 @@
     ]
   },
   {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 1569
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "chest"
+    ],
+    "target": {
+      "__id__": 2270
+    },
+    "targetInfo": {
+      "__id__": 4762
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "00mkY1cGlGPqJ4bbwtP8Ac"
+    ]
+  },
+  {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 4762
-    },
-    "shadows": {
-      "__id__": 4763
-    },
-    "_skybox": {
       "__id__": 4764
     },
-    "fog": {
+    "shadows": {
       "__id__": 4765
     },
-    "octree": {
+    "_skybox": {
       "__id__": 4766
     },
-    "skin": {
+    "fog": {
       "__id__": 4767
     },
-    "lightProbeInfo": {
+    "octree": {
       "__id__": 4768
     },
-    "postSettings": {
+    "skin": {
       "__id__": 4769
+    },
+    "lightProbeInfo": {
+      "__id__": 4770
+    },
+    "postSettings": {
+      "__id__": 4771
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false

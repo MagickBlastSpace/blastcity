@@ -31,7 +31,11 @@ export class Chest extends Component {
     start() {
         SaveData.instance.loadChest();
 
-        UserData.instance.node.on("stars", (value) => this.updateStageData(true));
+        UserData.instance.node.on("stars", (value) => {
+            this.updateStageData(true);
+
+            this.node.emit("progress", value);
+        });
         GameData.instance.node.on("levels_loaded", () => this.updateStageData(false));
     }
 

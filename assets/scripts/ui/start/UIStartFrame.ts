@@ -91,6 +91,8 @@ export class UIStartFrame extends UIFrameBase {
 
         this.effectsManager.setEventBtns(this.eventBtns);
 
+        this.effectsManager.node.on("event_progress_done", (eName) => this.refreshEventBtn(eName));
+
         //Localization.instance.node.on("lang_change", () => this.refresh());
     }
 
@@ -102,7 +104,7 @@ export class UIStartFrame extends UIFrameBase {
 
 
     refresh() {
-        this.chest.refresh();
+        //this.chest.refresh();
 
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].refresh();
@@ -131,8 +133,12 @@ export class UIStartFrame extends UIFrameBase {
 
         this.refresh();
 
-        this.effectsManager.initEventsProgressEffects(this.eventsController.getProgressData());
+        let totalTime = this.effectsManager.initEventsProgressEffects(this.eventsController.getProgressData()) + 1.2;
         this.eventsController.clearProgressData();
+
+        this.scheduleOnce(() => {
+            this.chest.refresh();
+        }, totalTime);
     }
 
 
@@ -257,6 +263,22 @@ export class UIStartFrame extends UIFrameBase {
 
     playGameplaySoundtrack() {
         AudioController.instance.playGameplaySoundtrack();
+    }
+
+    refreshEventBtn(eName: string) {
+        if(eName === "chest") {
+            this.chest.refresh();
+
+            return;
+        }
+
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            if(this.eventBtns[i].getEventName() === eName) {
+                this.eventBtns[i].refresh();
+
+                return;
+            }
+        }
     }
 }
 

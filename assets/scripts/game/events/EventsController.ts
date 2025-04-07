@@ -18,6 +18,9 @@ export class EventsController extends Component {
     @property(UIPopupReward)
     rewardPopup: UIPopupReward;
 
+    @property(Node)
+    chest: Node;
+
     private progressQueue: EventProgressData[] = [];
 
 
@@ -40,6 +43,8 @@ export class EventsController extends Component {
             this.events[i].on("progress", (count) => this.handleEventProgress(eventComp.getEventId(), count));
             this.events[i].on("reward", (data) => this.handleEventReward(data));
         }
+
+        this.chest.on("progress", (count) => this.handleEventProgress("chest", count));
 
         Net.instance.requestEventsChannels();
         Net.instance.requestClansChannels();

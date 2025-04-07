@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, ProgressBar, Label, Button, Vec3 } from 'cc';
+import { _decorator, Component, Node, ProgressBar, Label, Button, Vec3, tween } from 'cc';
 import { Chest } from '../../game/Chest';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { GameData } from '../../data/GameData';
@@ -40,6 +40,8 @@ export class UIChest extends Component {
             return;
         }
 
+        tween(this.node).stop();
+
         if(this.progressBar) {
             this.progressBar.node.active = !this.chest.isStageComplete();
         }
@@ -55,6 +57,14 @@ export class UIChest extends Component {
         if(this.chest.isStageComplete()) {
             let scale = ResolutionManager.instance.isPortraitOrientation() ? 2 : 1.1;
             this.node.setScale(new Vec3(scale, scale, 1));
+
+            tween(this.node)
+                .to(0.05, { scale: new Vec3(scale - 0.08, scale + 0.08, 1) }, { easing: 'linear' })
+                .to(0.07, { scale: new Vec3(scale + 0.03, scale - 0.03, 1) }, { easing: 'elasticInOut' })
+                .to(0.07, { scale: new Vec3(scale - 0.03, scale + 0.03, 1) }, { easing: 'elasticInOut' })
+                .to(0.07, { scale: new Vec3(scale, scale, scale) }, { easing: 'elasticInOut' })
+                .repeatForever()
+                .start();
         }
         else {
             let scale = ResolutionManager.instance.isPortraitOrientation() ? 1.8 : 0.9;
@@ -65,6 +75,23 @@ export class UIChest extends Component {
 
             if(this.progressBar) {
                 this.progressBar.progress = collectables / stageStep;
+
+                let newProgress = collectables / stageStep;
+
+                if(newProgress > this.progressBar.progress) {
+                    //shake
+                    tween(this.node)
+                        .to(0.05, { scale: new Vec3(scale - 0.08, scale + 0.08, 1) }, { easing: 'linear' })
+                        .to(0.07, { scale: new Vec3(scale + 0.03, scale - 0.03, 1) }, { easing: 'elasticInOut' })
+                        .to(0.07, { scale: new Vec3(scale - 0.03, scale + 0.03, 1) }, { easing: 'elasticInOut' })
+                        .to(0.07, { scale: new Vec3(scale, scale, scale) }, { easing: 'elasticInOut' })
+                        .start();
+                }
+
+                tween(this.progressBar)
+                    .to(0.8, { progress: newProgress })
+                    //.call(() => this.setProgress())
+                    .start();
             }
 
             if(this.progressLabel) {
