@@ -1947,7 +1947,7 @@ export class Field extends Component {
 
     
     onTileClick(tile: Node) {
-        if(!this.isClickAvailable || tile === null || this.isLevelComplete || this.isBonusPoolActivated) {
+        if(!this.isClickAvailable || tile === null || this.isLevelComplete || this.isBonusPoolActivated || this.isTutorialActive) {
 
             this.node.emit("game_state", this.tileArray, this.statusArray);
 
