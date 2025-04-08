@@ -11,6 +11,9 @@ export class UILevelGoal extends Component {
     @property(Sprite)
     icon: Sprite = null;
 
+    @property(Node)
+    isComplete: Node = null;
+
     private goalId: string = "";
 
     
@@ -19,6 +22,8 @@ export class UILevelGoal extends Component {
             this.node.active = false;
             return;
         }
+
+        this.isComplete.active = goal.count === 0 && goal.id !== "coin";
         
         this.node.active = true;
         this.count.string = goal.count;
