@@ -1,5 +1,6 @@
 import { _decorator, Component, Node } from 'cc';
 import { RocketFeverEvent } from './RocketFeverEvent';
+import { SaveData } from '../../data/SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('TreasureBookEvent')
@@ -15,6 +16,12 @@ export class TreasureBookEvent extends RocketFeverEvent {
     handleLevelCompletion(statistics: LevelProgressStatisticsData) {
         if(this.isComplete || !this.canParticipate() || !this.isStarted || !this.isEventAvailable()) {
             return;
+        }
+
+        if(this.lastAttemptTimestamp === 0) {
+            this.lastAttemptTimestamp = Date.now();
+
+            SaveData.instance.saveEvent(this.eventId);
         }
 
         this.collectedRockets = this.collectedRockets + statistics.redDestroyed;

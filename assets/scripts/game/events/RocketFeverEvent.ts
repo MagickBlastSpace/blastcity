@@ -33,7 +33,7 @@ export class RocketFeverEvent extends WeeklyEventBase {
         this.currentStage = 0;
         this.collectedRockets = 0;
 
-        this.isStarted = false;
+        this.isStarted = true;
         this.isComplete = false;
 
         this.eventId = "rocket_fever";
@@ -43,6 +43,12 @@ export class RocketFeverEvent extends WeeklyEventBase {
     handleLevelCompletion(statistics: LevelProgressStatisticsData) {
         if(this.isComplete || !this.canParticipate() || !this.isStarted || !this.isEventAvailable()) {
             return;
+        }
+
+        if(this.lastAttemptTimestamp === 0) {
+            this.lastAttemptTimestamp = Date.now();
+
+            SaveData.instance.saveEvent(this.eventId);
         }
 
         this.collectedRockets = this.collectedRockets + statistics.rocketsDestroyed;

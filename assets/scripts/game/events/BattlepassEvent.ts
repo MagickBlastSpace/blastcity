@@ -26,25 +26,34 @@ export class BattlepassEvent extends RocketFeverEvent {
 
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
-        this.calculateStartEndTimeMonthly();
+        //this.calculateStartEndTimeMonthly();
+
+        //test start
+        const now = new Date();
+        this.startTime = new Date(now);
+        this.startTime.setUTCHours(startHourUTC, 0, 0, 0);
+
+        this.endTime = new Date(this.startTime.getTime() + 24 * 60 * 60 * 1000);
+
+        let timeDiff = this.startTime.getTime() - now.getTime();
+
+        while(timeDiff > 0) {
+            this.startTime.setUTCDate(this.startTime.getUTCDate() - 1);
+            this.endTime = new Date(this.startTime.getTime() + 24 * 60 * 60 * 1000);
+
+            timeDiff = this.startTime.getTime() - now.getTime();
+        }
+        //test end
 
         this.node.emit("init");
 
         this.currentStage = 1;
         this.collectedRockets = 0;
 
-        this.isStarted = false;
+        this.isStarted = true;
         //this.isComplete = false;
 
         this.eventId = "battlepass";
-    }
-
-    activateEvent(): void {
-        super.activateEvent();
-
-        this.currentStage = 1;
-
-        SaveData.instance.saveEvent(this.eventId);
     }
 
 
@@ -85,6 +94,10 @@ export class BattlepassEvent extends RocketFeverEvent {
         }
         else if(statistics.levelDifficulty === "superhard") {
             earnedPoints = 5;
+        }
+
+        if(this.lastAttemptTimestamp === 0) {
+            this.lastAttemptTimestamp = Date.now();
         }
 
         this.collectedRockets = this.collectedRockets + earnedPoints;
@@ -158,6 +171,10 @@ export class BattlepassEvent extends RocketFeverEvent {
 
             this.applyReward(this.eventData[index].rewards[0]);
 
+            if(this.lastAttemptTimestamp === 0) {
+                this.lastAttemptTimestamp = Date.now();
+            }
+
             SaveData.instance.saveEvent(this.eventId);
         }
 
@@ -169,6 +186,10 @@ export class BattlepassEvent extends RocketFeverEvent {
             this.takenRewards_Premium.push(index);
 
             this.applyReward(this.eventData[index].rewards[1]);
+
+            if(this.lastAttemptTimestamp === 0) {
+                this.lastAttemptTimestamp = Date.now();
+            }
 
             SaveData.instance.saveEvent(this.eventId);
         }
@@ -347,6 +368,10 @@ export class BattlepassEvent extends RocketFeverEvent {
     
         this.unpickedRewards = [];
         this.isComplete = false;
+
+        if(this.lastAttemptTimestamp === 0) {
+            this.lastAttemptTimestamp = Date.now();
+        }
     
         SaveData.instance.saveEvent(this.eventId);
     

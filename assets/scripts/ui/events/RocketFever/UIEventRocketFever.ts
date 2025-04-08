@@ -16,6 +16,8 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
     startBtn: Button = null;
     @property(Button)
     closeBtn: Button = null;
+    @property(Button)
+    rewardsBtn: Button = null;
 
     @property(Label)
     progressLabel: Label = null;
@@ -58,6 +60,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
     start() {
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        this.rewardsBtn.node.on(Button.EventType.CLICK, this.onRewardsBtnClick, this);
 
         let data = this.eventController.getData();
 
@@ -94,13 +97,13 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
         this.isEventComplete = this.eventController.getIsComplete();
 
         if(this.isEventStarted && !this.isEventComplete) {
-            this.infoContainer.active = false;
-            this.rewardsContainer.active = true;
+            this.infoContainer.active = true;
+            this.rewardsContainer.active = false;
 
             this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
             this.progressBar.progress = this.eventController.getTimeProgress();
 
-            this.infoLabel.string = "";
+            this.infoLabel.string = this.eventController.getEventId() === "rocket_fever" ? Localization.instance.getLabelByKey("events.rfdescription") : Localization.instance.getLabelByKey("events.atdescription");
         }
         else if(this.isEventComplete) {
             this.infoContainer.active = true;
@@ -129,7 +132,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
             this.infoLabel.string = this.eventController.getEventId() === "rocket_fever" ? Localization.instance.getLabelByKey("events.rfdescription") : Localization.instance.getLabelByKey("events.atdescription");
         }
         
-        this.startBtn.node.active = !this.isEventStarted && !this.isEventComplete;
+        //this.startBtn.node.active = this.isEventStarted && !this.isEventComplete;
 
         let data = this.eventController.getData();
 
@@ -152,7 +155,7 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
         this.refresh();
 
-        this.scrollToCurrentStage();
+        //this.scrollToCurrentStage();
     }
 
 
@@ -179,13 +182,29 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
 
 
     onStartBtnClick() {
-        this.eventController.activateEvent();
+        //this.eventController.activateEvent();
 
-        this.refresh();
+        //this.refresh();
+
+        this.onPlay();
     }
 
     onCloseBtnClick() {
         this.hide();
+    }
+
+    onInfoBtnClick() {
+        this.rewardsContainer.active = false;
+    }
+
+    onRewardsBtnClick() {
+        if(this.rewardsContainer.active) {
+            return;
+        }
+
+        this.rewardsContainer.active = true;
+
+        this.scrollToCurrentStage();
     }
 }
 

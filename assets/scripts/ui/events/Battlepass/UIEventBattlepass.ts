@@ -126,16 +126,6 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         if(this.eventController.isUnpickedRewardAvailable() || this.eventController.getIsComplete()) {
             this.endPopup.show();
         }
-        else {
-            this.endPopup.hideClean();
-        }
-
-        if(!this.eventController.getIsStarted()) {
-            this.startPopup.show();
-        }
-        else {
-            this.startPopup.hideClean();
-        }
     }
 
 
@@ -183,10 +173,12 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.eventController.takeUnpickedRewards();
 
         this.endPopup.hide();
+
+        this.startPopup.show();
     }
 
     onStartClick() {
-        this.eventController.activateEvent();
+        //this.eventController.activateEvent();
 
         this.startPopup.hide();
     }
