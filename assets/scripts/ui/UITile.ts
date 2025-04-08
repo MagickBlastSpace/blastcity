@@ -227,7 +227,7 @@ export class UITile extends Component {
         }
     }
     
-    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string, disableNode: Node) {
+    /*playAdditionalAnimation(skeleton: sp.Skeleton, animation: string, disableNode: Node) {
         try {
             const spineNode = skeleton ? skeleton.node : this.spine.node;
             spineNode.active = true;
@@ -261,7 +261,47 @@ export class UITile extends Component {
         } catch (error) {
             console.error('Error setting additional spine animation:', error);
         }
+    }*/
+
+    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string, disableNode: Node) {
+        try {
+            const originalSpine = skeleton ? skeleton : this.spine;
+            const originalNode = originalSpine.node;
+    
+            // Clone the original node
+            const clonedNode = instantiate(originalNode);
+            const clonedSkeleton = clonedNode.getComponent(sp.Skeleton);
+    
+            // Ensure it's active
+            clonedNode.active = true;
+    
+            // Optional: disable a node during animation
+            if (disableNode) {
+                disableNode.active = false;
+            }
+    
+            // Set position and parent
+            this.animationsLayout.addChild(clonedNode);
+            clonedNode.setPosition(this.currentX, this.currentY);
+    
+            // Play animation on cloned skeleton
+            if (clonedSkeleton) {
+                clonedSkeleton.setCompleteListener(() => {
+                    clonedNode.destroy();
+                    if (disableNode) {
+                        disableNode.active = true;
+                    }
+                });
+    
+                clonedSkeleton.setAnimation(0, animation, false);
+            } else {
+                console.error("Cloned skeleton missing sp.Skeleton component");
+            }
+        } catch (error) {
+            console.error('Error setting additional spine animation:', error);
+        }
     }
+        
     
 
     /*playAnimationsSequence(animations: string[], isGoal: boolean) {
