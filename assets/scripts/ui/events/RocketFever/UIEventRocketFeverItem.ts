@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Label, Sprite, SpriteFrame, sp, Button } from 'cc';
-import { RocketFeverEventData } from '../../../data/EventData';
+import { EventRewardData, RocketFeverEventData } from '../../../data/EventData';
 import { Localization } from '../../../utils/Localization';
+import { UIRewardInfoMinified } from '../../UIRewardInfoMinified';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventRocketFeverItem')
@@ -61,13 +62,30 @@ export class UIEventRocketFeverItem extends Component {
 
     @property(Button)
     takeBtn: Button = null;
+    @property(Button)
+    showInfoBtn: Button = null;
+
+    @property(Node)
+    info_Common: Node = null;
+    @property(Node)
+    info_x2: Node = null;
+    @property(Node)
+    info_Chest: Node = null;
+    @property(UIRewardInfoMinified)
+    info_Chest_Comp: UIRewardInfoMinified;
 
     private stageIndex: number = 0;
     private isComplete: boolean = false;
 
+    private reward: EventRewardData;
+
 
     start() {
         this.takeBtn.node.on(Button.EventType.CLICK, this.onTakeBtnClick, this);
+
+        if(this.showInfoBtn) {
+            this.showInfoBtn.node.on(Button.EventType.CLICK, this.onShowInfoBtnClick, this);
+        }
     }
 
 
@@ -77,6 +95,8 @@ export class UIEventRocketFeverItem extends Component {
         this.rewardLabel.string = "";
 
         let minString = Localization.instance.getLabelByKey("misc.min");
+
+        this.reward = data.rewards[0];
 
         if(data.rewards.length > 0) {
             if(data.rewards[0].gold > 0) {
@@ -171,6 +191,24 @@ export class UIEventRocketFeverItem extends Component {
 
     onTakeBtnClick() {
         this.node.emit("take", this.stageIndex);
+    }
+
+    onShowInfoBtnClick() {
+        if(this.complete.active) {
+            return;
+        }
+
+        if(this.reward.isChest) {
+            this.info_Chest.active = true;
+
+            this.info_Chest_Comp.initReward(this.reward);
+        }
+        else if(this.reward.modifierX2_Minutes > 0) {
+            this.info_x2.active = true;
+        }
+        else {
+            this.info_Common.active = true;
+        }
     }
 }
 
