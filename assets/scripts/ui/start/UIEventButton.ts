@@ -56,6 +56,8 @@ export class UIEventButton extends Component {
         //this.loadAssets();
 
         this.eventController.node.on("refresh", () => this.refresh());
+
+        this.refresh();
     }
 
     update(deltaTime: number) {

@@ -106,9 +106,9 @@ export class UIStartFrame extends UIFrameBase {
     refresh() {
         //this.chest.refresh();
 
-        for(let i = 0; i < this.eventBtns.length; i++) {
+        /*for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].refresh();
-        }
+        }*/
 
         ResolutionManager.instance.adjustResolution();
 
@@ -138,6 +138,10 @@ export class UIStartFrame extends UIFrameBase {
 
         this.scheduleOnce(() => {
             this.chest.refresh();
+
+            for(let i = 0; i < this.eventBtns.length; i++) {
+                this.eventBtns[i].refresh();
+            }
         }, totalTime);
     }
 

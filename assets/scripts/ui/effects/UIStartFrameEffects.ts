@@ -30,7 +30,7 @@ export class UIStartFrameEffects extends Component {
     }
 
 
-    initEventsProgressEffects(data: EventProgressData[]) {
+    initEventsProgressEffects(data: EventProgressData[]): number {
         let timeBetweenEffects = 0.8;
         let totalTime = 0;
 
