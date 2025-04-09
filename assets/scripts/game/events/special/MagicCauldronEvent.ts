@@ -144,7 +144,9 @@ export class MagicCauldronEvent extends SpecialEventBase {
 
     private checkStageCompletion() {
         if(this.isPredicted()) {
-            this.applyRewards(this.eventData[this.currentStage].rewards);
+            //this.applyRewards(this.eventData[this.currentStage].rewards);
+            this.unpickedRewards = [];
+            this.unpickedRewards.push(this.eventData[this.currentStage].rewards[0]);
 
             this.hints = [];
             this.poolToPredict = [];
@@ -180,6 +182,13 @@ export class MagicCauldronEvent extends SpecialEventBase {
         this.node.emit("stage_end");
 
         return isPredicted;
+    }
+
+
+    takeUnpickedRewards() {
+        this.applyRewards(this.unpickedRewards);
+
+        this.unpickedRewards = [];
     }
 
 

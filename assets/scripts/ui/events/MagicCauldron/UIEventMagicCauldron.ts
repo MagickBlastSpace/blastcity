@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, ProgressBar, ScrollView, tween, Vec2, Widget } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, ScrollView, tween, Vec2, Widget, instantiate, UITransform } from 'cc';
 import { UIFrameBase } from '../../UIFrameBase';
 import { SpecialEventBase } from '../../../game/events/special/SpecialEventBase';
 import { UIEventMagicCauldronItem } from './UIEventMagicCauldronItem';
@@ -34,6 +34,10 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     minigameContainer: Node = null;
     @property(Node)
     completeContainer: Node = null;
+    @property(Node)
+    goalNode: Node = null;
+    @property(Node)
+    effectsLayout: Node = null;
 
     @property([UIEventMagicCauldronItem])
     items: UIEventMagicCauldronItem[] = [];
@@ -58,6 +62,8 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     private lastHistorySize: number = 0;
 
     private scrollDuration: number = 2;
+
+    private flightDuration: number = 0.5;
 
 
     /*onLoad() {
@@ -182,24 +188,60 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
 
         let rewardData = this.eventController.getReward();
         this.reward.refresh(rewardData);
+
+        this.eventController.takeUnpickedRewards();
     }
 
     stageEnd() {
         let hints = this.eventController.getSpecialHints();
-
+    
         let timeStep = 0.2;
         let totalTime = timeStep * hints.length;
+    
+        let isStageComplete = true;
+    
+        for (let i = 0; i < hints.length && i < this.items.length; i++) {
+            let isComplete = hints[i] !== "undefined";
 
-        for(let i = 0; i < hints.length && i < this.items.length; i++) {
+            if (!isComplete) {
+                isStageComplete = false;
+            }
+
             this.scheduleOnce(() => {
-                this.items[i].setIndicator(hints[i] !== "undefined");
+                this.items[i].setIndicator(isComplete);
             }, timeStep * i);
         }
+    
+        if (isStageComplete) {
+            for (let i = 0; i < this.items.length; i++) {
+                this.scheduleOnce(() => {
+                    const original = this.items[i].node;
+                    const clone = instantiate(original);
 
+                    clone.getComponent("UIEventMagicCauldronItem").removeIndicator();
+                    
+                    this.effectsLayout.addChild(clone);
+                    clone.setWorldPosition(original.getWorldPosition());
+                    
+                    const goalWorldPos = this.goalNode.getWorldPosition();
+                    const localGoalPos = clone.parent.getComponent(UITransform)
+                        .convertToNodeSpaceAR(goalWorldPos);
+
+                    tween(clone)
+                        .to(this.flightDuration, { position: localGoalPos }, { easing: 'quadInOut' })
+                        .call(() => {
+                            clone.destroy();
+                        })
+                        .start();
+                }, totalTime);
+            }
+        }
+    
         this.scheduleOnce(() => {
             this.refresh();
-        }, totalTime + 0.5);
+        }, totalTime + this.flightDuration);
     }
+    
 
 
     show() {

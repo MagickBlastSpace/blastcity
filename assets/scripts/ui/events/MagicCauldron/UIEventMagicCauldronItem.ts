@@ -81,6 +81,10 @@ export class UIEventMagicCauldronItem extends Component {
     setIndicator(isActive: boolean) {
         this.indicator.spriteFrame = isActive ? this.active : this.passive;
     }
+
+    removeIndicator() {
+        this.indicator.spriteFrame = null;
+    }
 }
 
 
