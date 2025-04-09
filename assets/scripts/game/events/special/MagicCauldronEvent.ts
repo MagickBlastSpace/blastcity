@@ -189,6 +189,8 @@ export class MagicCauldronEvent extends SpecialEventBase {
         this.applyRewards(this.unpickedRewards);
 
         this.unpickedRewards = [];
+
+        SaveData.instance.saveEvent(this.eventId);
     }
 
 
@@ -323,6 +325,10 @@ export class MagicCauldronEvent extends SpecialEventBase {
             return this.eventData[this.eventData.length - 1].rewards[0];
         }
         return this.eventData[this.currentStage].rewards[0];
+    }
+
+    getGrandRewardData(): EventRewardData {
+        return this.grandRewardData[0];
     }
 
 

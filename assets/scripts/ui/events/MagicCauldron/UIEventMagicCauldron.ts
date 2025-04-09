@@ -8,6 +8,7 @@ import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventMagicCauldronReward } from './UIEventMagicCauldronReward';
 import { UIEventMagicCauldronHistoryShelf } from './UIEventMagicCauldronHistoryShelf';
 import { Localization } from '../../../utils/Localization';
+import { UIRewardInfoMinified } from '../../UIRewardInfoMinified';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventMagicCauldron')
@@ -17,6 +18,8 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     startBtn: Button = null;
     @property(Button)
     closeBtn: Button = null;
+    @property(Button)
+    showRewardInfoBtn: Button = null;
 
     @property(ProgressBar)
     progressBar: ProgressBar = null;
@@ -38,6 +41,11 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     goalNode: Node = null;
     @property(Node)
     effectsLayout: Node = null;
+
+    @property(Node)
+    rewardInfo: Node = null;
+    @property(UIRewardInfoMinified)
+    rewardInfoComp: UIRewardInfoMinified;
 
     @property([UIEventMagicCauldronItem])
     items: UIEventMagicCauldronItem[] = [];
@@ -82,6 +90,7 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
     start() {
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        this.showRewardInfoBtn.node.on(Button.EventType.CLICK, this.onShowRewardInfoBtnClick, this);
 
         this.eventController.node.on("refresh", () => this.refresh());
         this.eventController.node.on("stage_end", () => this.stageEnd());
@@ -294,6 +303,13 @@ export class UIEventMagicCauldron extends UIEventPopupFrameBase {
                 }
             })
             .start();
+    }
+
+
+    onShowRewardInfoBtnClick() {
+        this.rewardInfo.active = true;
+
+        this.rewardInfoComp.initReward(this.eventController.getGrandRewardData());
     }
 }
 
