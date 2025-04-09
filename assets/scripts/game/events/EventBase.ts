@@ -73,7 +73,12 @@ export class EventBase extends Component {
         const timeDiff = this.endTime.getTime() - now.getTime();
 
         if (timeDiff < 0) {
+            if(this.lastAttemptTimestamp !== 0) {
+                this.lastAttemptTimestamp = Date.now();
+            }
+
             this.restartEvent();
+
             return "Event ended. Restarting...";
         }
 
