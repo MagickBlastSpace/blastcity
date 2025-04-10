@@ -39,7 +39,8 @@ export const languages = {
     "requestlabel": "sent you a friend request",
     "requestaccept": "Accept",
     "requestreject": "Reject",
-    "weekly": "Weekly Contest"
+    "weekly": "Weekly Contest",
+    "week": "Weekly"
   },
   "clans": {
     "clans": "Clans",
@@ -135,7 +136,13 @@ export const languages = {
     "endlessdescription": "Collect all the rewards in this level to unlock new ones!",
     "cgdescription1": "All members of your Clan will receive",
     "cgdescription2": "minutes of endless lives!",
-    "bpextramoves": "+5 extra moves for each level!"
+    "bpextramoves": "+5 extra moves for each level!",
+    "ppname": "Trojan Horse",
+    "ppdescription": "Complete levels to win helmets and get valuable rewards!",
+    "cbname": "Battle of Clans",
+    "cbdescription": "Complete levels with your entire clan and compete with other players for valuable rewards!",
+    "cbclans": "Clans",
+    "cbmyclan": "My clan"
   },
   "misc": {
     "min": "Min",

@@ -6,6 +6,7 @@ import { SaveData } from './SaveData';
 import { CollectionEvent } from '../game/events/special/CollectionEvent';
 import { PlayerEventData } from './EventData';
 import { Net } from '../net/Net';
+import { Localization } from '../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserData')
@@ -581,7 +582,7 @@ export class UserData extends Component {
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
-        return "Cooldown: " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return Localization.instance.getLabelByKey("events.lrcooldown") + ": " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
 

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, instantiate } from 'cc';
+import { _decorator, Component, Node, Button, instantiate, Label } from 'cc';
 import { UIEventKingsCup } from '../KingsCup/UIEventKingsCup';
 import { UIEventSkyRacePlayerItem } from '../SkyRace/UIEventSkyRacePlayerItem';
 import { Localization } from '../../../utils/Localization';
@@ -22,6 +22,9 @@ export class UIEventTeamBattle extends UIEventKingsCup {
     @property(Node)
     teamItemsLayout: Node = null;
 
+    @property(Label)
+    timeLabel_Duplicate_2: Label = null;
+
 
     start() {
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartBtnClick, this);
@@ -33,6 +36,14 @@ export class UIEventTeamBattle extends UIEventKingsCup {
         this.takeRewardBtn.node.on(Button.EventType.CLICK, this.onTakeRewardBtnClick, this);
 
         this.onShowBattleBtnClick();
+    }
+
+    update(deltaTime: number) {
+        super.update(deltaTime);
+
+        if(this.timeLabel_Duplicate_2) {
+            this.timeLabel_Duplicate_2.string = this.eventController.getRemainingTimeString();
+        }
     }
 
 
@@ -61,7 +72,7 @@ export class UIEventTeamBattle extends UIEventKingsCup {
         }
 
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
-        this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : "Join Clan";
+        this.levelRequired.string = this.eventController.isJoinedClan() ? this.levelRequired.string : Localization.instance.getLabelByKey("events.argjoinclan");
 
         let teamsData = this.eventController.sortTeamsByProgress();
 
