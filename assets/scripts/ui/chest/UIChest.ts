@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, ProgressBar, Label, Button, Vec3, tween } from 'cc';
+import { _decorator, Component, Node, ProgressBar, Label, Button, Vec3, tween, Vec2 } from 'cc';
 import { Chest } from '../../game/Chest';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { GameData } from '../../data/GameData';
@@ -28,6 +28,12 @@ export class UIChest extends Component {
     @property(UIRewardInfoMinified)
     rewardInfoComp: UIRewardInfoMinified;
 
+    @property(Node)
+    content: Node = null;
+
+    private originalContentPos: Vec2;
+    private shakeTween: any = null;
+
 
     onLoad() {
         //window.addEventListener('resize', this.refreshScale.bind(this));
@@ -44,70 +50,97 @@ export class UIChest extends Component {
         GameData.instance.node.on("levels_loaded", () => this.refresh());
     }
 
+    private shakeTween: Tween<Node> | null = null;
+
     refresh() {
-        if(!this.chest) {
-            return;
+        if (!this.chest) return;
+
+        // Stop shake tween only if it's running
+        if (this.shakeTween) {
+            this.shakeTween.stop();
+            this.shakeTween = null;
         }
 
-        tween(this.node).stop();
-
-        if(this.progressBar) {
+        if (this.progressBar) {
             this.progressBar.node.active = !this.chest.isStageComplete();
         }
 
-        if(this.progressLabel) {
+        if (this.progressLabel) {
             this.progressLabel.node.active = !this.chest.isStageComplete();
         }
-        
-        if(this.rewardBtn) {
+
+        if (this.rewardBtn) {
             this.rewardBtn.node.active = this.chest.isStageComplete();
         }
 
-        if(this.chest.isStageComplete()) {
+        if (this.chest.isStageComplete()) {
             let scale = ResolutionManager.instance.isPortraitOrientation() ? 2 : 1.1;
             this.node.setScale(new Vec3(scale, scale, 1));
 
-            tween(this.node)
-                .to(0.05, { scale: new Vec3(scale - 0.08, scale + 0.08, 1) }, { easing: 'linear' })
-                .to(0.07, { scale: new Vec3(scale + 0.03, scale - 0.03, 1) }, { easing: 'elasticInOut' })
-                .to(0.07, { scale: new Vec3(scale - 0.03, scale + 0.03, 1) }, { easing: 'elasticInOut' })
-                .to(0.07, { scale: new Vec3(scale, scale, scale) }, { easing: 'elasticInOut' })
-                .repeatForever()
-                .start();
-        }
-        else {
+            console.log("endless shaking");
+
+            this.startShake();
+        } else {
             let scale = ResolutionManager.instance.isPortraitOrientation() ? 1.8 : 0.9;
             this.node.setScale(new Vec3(scale, scale, 1));
 
-            let collectables = this.chest.getCollectables();
-            let stageStep = this.chest.getStageStep();
+            if (this.progressBar) {
+                let newProgress = this.chest.getCollectables() / this.chest.getStageStep();
 
-            if(this.progressBar) {
-                this.progressBar.progress = collectables / stageStep;
-
-                let newProgress = collectables / stageStep;
-
-                if(newProgress > this.progressBar.progress) {
-                    //shake
+                if (newProgress > this.progressBar.progress) {
                     tween(this.node)
                         .to(0.05, { scale: new Vec3(scale - 0.08, scale + 0.08, 1) }, { easing: 'linear' })
                         .to(0.07, { scale: new Vec3(scale + 0.03, scale - 0.03, 1) }, { easing: 'elasticInOut' })
                         .to(0.07, { scale: new Vec3(scale - 0.03, scale + 0.03, 1) }, { easing: 'elasticInOut' })
                         .to(0.07, { scale: new Vec3(scale, scale, scale) }, { easing: 'elasticInOut' })
                         .start();
-                }
 
-                tween(this.progressBar)
-                    .to(0.8, { progress: newProgress })
-                    //.call(() => this.setProgress())
-                    .start();
+                    tween(this.progressBar)
+                        .to(0.8, { progress: newProgress })
+                        .start();
+                } else {
+                    this.progressBar.progress = newProgress;
+                }
             }
 
-            if(this.progressLabel) {
-                this.progressLabel.string = collectables + "/" + stageStep;
+            if (this.progressLabel) {
+                this.progressLabel.string = `${this.chest.getCollectables()}/${this.chest.getStageStep()}`;
             }
         }
     }
+
+
+    startShake() {
+        const shakeAmount = 5;
+        const shakeDuration = 0.1;
+    
+        if (this.content && !this.shakeTween) {
+            this.shakeTween = tween(this.content)
+                .repeatForever(
+                    tween()
+                        .by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
+                        .by(shakeDuration, { position: new Vec3(-shakeAmount * 2, 0, 0) })
+                        .by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
+                        .by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) })
+                        .by(shakeDuration, { position: new Vec3(0, -shakeAmount * 2, 0) })
+                        .by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) })
+                )
+                .start();
+        }
+    }
+
+    stopShake() {
+        if (this.content && this.shakeTween) {
+            this.shakeTween.stop();
+    
+            this.shakeTween = null;
+
+            if(this.originalContentPos && !this.originalContentPos === undefined) {
+                this.content.setPosition(new Vec3(this.originalContentPos.x, this.originalContentPos.y, 0));
+            }
+        }
+    }
+
 
     refreshScale(isPortrait: boolean) {
         if(this.chest.isStageComplete()) {
