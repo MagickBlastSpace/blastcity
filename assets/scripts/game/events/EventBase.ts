@@ -20,6 +20,8 @@ export class EventBase extends Component {
 
     private unpickedRewards: EventRewardData[] = [];
 
+    private isPositionUpdated: boolean = false;
+
     @property
     MIN_LEVEL_REQUIRED = 0;
     @property
@@ -358,6 +360,15 @@ export class EventBase extends Component {
     }
 
     setBots(bots: PlayerEventData[]) {}
+
+
+    getIsPositionUpdated(): boolean {
+        return false;
+    }
+
+    resetPositionUpdated() {
+        this.isPositionUpdated = false;
+    }
 }
 
 

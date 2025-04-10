@@ -107,6 +107,12 @@ export class UIEventButton extends Component {
         let isAvailable = this.eventController.isInteractable();
 
         this.node.active = isAvailable;
+
+        if(this.eventController.getIsPositionUpdated()) {
+            this.showEventPrefab();
+
+            this.eventController.resetPositionUpdated();
+        }
     }
 
     setProgress() {

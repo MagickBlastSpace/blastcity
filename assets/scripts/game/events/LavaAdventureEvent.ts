@@ -129,6 +129,8 @@ export class LavaAdventureEvent extends EventBase {
             return;
         }
 
+        this.isPositionUpdated = true;
+
         this.currentStep = this.currentStep + 1;
         this.currentPlayers = this.currentPlayers - (Math.floor(Math.random() * (this.PLAYERS_REMOVE_COUNT_MAX - this.PLAYERS_REMOVE_COUNT_MIN + 1)) + this.PLAYERS_REMOVE_COUNT_MIN);
         this.currentPlayers = this.currentPlayers < 1 ? 1 : this.currentPlayers;
@@ -147,6 +149,8 @@ export class LavaAdventureEvent extends EventBase {
         if(!this.canParticipate() || !this.isStarted || !this.isEventAvailable()) {
             return;
         }
+
+        this.isPositionUpdated = true;
 
         this.handleEventCompletion();
 
@@ -222,6 +226,10 @@ export class LavaAdventureEvent extends EventBase {
         }
 
         return true;
+    }
+
+    getIsPositionUpdated(): boolean {
+        return this.isPositionUpdated;
     }
 }   
 
