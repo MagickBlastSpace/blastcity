@@ -3,6 +3,7 @@ import { Chest } from '../../game/Chest';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { GameData } from '../../data/GameData';
 import { ChestRewardData } from '../../data/ChestData';
+import { UIRewardInfoMinified } from '../UIRewardInfoMinified';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIChest')
@@ -19,6 +20,13 @@ export class UIChest extends Component {
 
     @property(Button)
     rewardBtn: Button = null;
+    @property(Button)
+    showRewardInfoBtn: Button = null;
+
+    @property(Node)
+    rewardInfo: Node = null;
+    @property(UIRewardInfoMinified)
+    rewardInfoComp: UIRewardInfoMinified;
 
 
     onLoad() {
@@ -29,6 +37,7 @@ export class UIChest extends Component {
         this.chest.node.on("refresh", this.refresh);
 
         this.rewardBtn.node.on(Button.EventType.CLICK, this.onRewardBtnClick, this);
+        this.showRewardInfoBtn.node.on(Button.EventType.CLICK, this.onShowRewardInfoBtnClick, this);
 
         this.refresh();
 
@@ -116,6 +125,13 @@ export class UIChest extends Component {
         this.chest.completeStage();
 
         this.refresh();
+    }
+
+
+    onShowRewardInfoBtnClick() {
+        this.rewardInfo.active = true;
+
+        this.rewardInfoComp.initReward_Chest(this.chest.getCurrentReward());
     }
 }
 

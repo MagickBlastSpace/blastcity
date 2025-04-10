@@ -308,6 +308,11 @@ export class Chest extends Component {
     closestUpperHundred(num: number): number {
         return Math.ceil(num / 100) * 100;
     }
+
+
+    getCurrentReward(): ChestRewardData {
+        return this.data[this.stage].rewards[0];
+    }
 }
 
 

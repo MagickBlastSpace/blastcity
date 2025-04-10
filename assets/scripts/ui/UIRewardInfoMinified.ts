@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, Button } from 'cc';
 import { EventRewardData } from '../data/EventData';
+import { ChestRewardData } from '../data/ChestData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIRewardInfoMinified')
@@ -46,6 +47,55 @@ export class UIRewardInfoMinified extends Component {
     }
 
     initReward(data: EventRewardData) {
+        this.setAllInactive();
+
+        this.curIdx = 0;
+
+        if(data) {
+            if(data.gold > 0) {
+                this.setNextReward(this.gold);
+            }
+
+            if(data.startBonus_Bomb > 0 || data.bomb_Minutes > 0) {
+                this.setNextReward(this.bomb);
+            }
+
+            if(data.startBonus_Rocket > 0 || data.rocket_Minutes > 0) {
+                this.setNextReward(this.rocket);
+            }
+
+            if(data.discoball_Minutes > 0 || data.startBonus_Discoball > 0) {
+                this.setNextReward(this.discoball);
+            }
+
+            if(data.booster_Hammer > 0) {
+                this.setNextReward(this.hammer);
+            }
+
+            if(data.booster_Bow > 0) {
+                this.setNextReward(this.bow);
+            }
+
+            if(data.booster_Cannon > 0) {
+                this.setNextReward(this.cannon);
+            }
+
+            if(data.booster_Jester > 0) {
+                this.setNextReward(this.jester);
+            }
+
+            if(data.endlessLives_Minutes > 0) {
+                this.setNextReward(this.lives);
+            }
+
+            if(data.modifierX2_Minutes > 0) {
+                this.setNextReward(this.x2);
+            }
+        }
+    }
+
+
+    initReward_Chest(data: ChestRewardData) {
         this.setAllInactive();
 
         this.curIdx = 0;
