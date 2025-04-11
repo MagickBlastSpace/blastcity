@@ -8,24 +8,32 @@ const { ccclass, property } = _decorator;
 @ccclass('Shop')
 export class Shop extends Component {
 
-    async buy(data: ShopItemData) {
-        if (gamepush.payments.isAvailable) {
-            console.log("payments available: " + data.tag);
-
-            await gamepush.payments.purchase({ tag: data.tag });
-
-            this.consume(data);
-
-            await gamepush.player.sync();
-
-            await gamepush.payments.consume({ tag: data.tag });
-
-            console.log("payment successfull: " + data.tag);
+    async buy(data: ShopItemData): Promise<boolean> {
+        if (!gamepush.payments.isAvailable) {
+            console.log("Payments not available");
+            return false;
         }
-        else {
-            console.log("payments not available");
+    
+        try {
+            console.log("Attempting purchase: " + data.tag);
+    
+            const result = await gamepush.payments.purchase({ tag: data.tag });
+    
+            console.log("Purchase result:", result); // для дебага
+    
+            // Если `purchase` не выбросила ошибку, считаем покупку успешной:
+            this.consume(data);
+    
+            await gamepush.player.sync();
+            await gamepush.payments.consume({ tag: data.tag });
+    
+            return true;
+        } catch (err) {
+            console.warn("Purchase error:", err);
+            return false;
         }
     }
+    
 
 
     consume(data: ShopItemData) {
@@ -51,6 +59,8 @@ export class Shop extends Component {
         for(let i = 0; i < cards.length; i++) {
             data.cards.push(cards[i]);
         }
+
+        //clan gift
 
         this.node.emit("buy", data);
     }

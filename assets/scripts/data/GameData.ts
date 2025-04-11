@@ -114,6 +114,9 @@ export class ShopItemData {
     cardsPack = 0;
     @property
     cards = [];
+
+    @property
+    clanGift_endlessLives_Minutes = 0;
 }
 
 
@@ -418,6 +421,8 @@ export class GameData extends Component {
     shopItems: ShopItemData[] = [];
     @property([ShopItemData])
     shopBundles: ShopItemData[] = [];
+    @property([ShopItemData])
+    clanGiftBundles: ShopItemData[] = [];
 
     private levelStage: number = -1;
     private maxProgress: number = 0;
