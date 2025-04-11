@@ -142,7 +142,9 @@ export const languages = {
     "cbname": "Battle of Clans",
     "cbdescription": "Complete levels with your entire clan and compete with other players for valuable rewards!",
     "cbclans": "Clans",
-    "cbmyclan": "My clan"
+    "cbmyclan": "My clan",
+    "lrnextstep": "Collect more tiles to get this reward!",
+    "lrdoublereward": "The number of rewards for levels will temporarily double!"
   },
   "misc": {
     "min": "Min",
@@ -268,6 +270,10 @@ export const languages = {
   "energy": {
     "name": "Not enough lives",
     "description": "Buy 5 extra lives?"
+  },
+  "collection": {
+    "name1": "Spring Collection",
+    "mainprize": "Main prize"
   }
 };
 

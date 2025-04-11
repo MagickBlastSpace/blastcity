@@ -24,6 +24,7 @@ export class LavaAdventureEvent extends EventBase {
     private currentPlayers: number = 0;
 
     private isCompletedToday: boolean = false;
+    private playersRemoveCount: number = 0;
 
 
     onLoad() {
@@ -132,7 +133,8 @@ export class LavaAdventureEvent extends EventBase {
         this.isPositionUpdated = true;
 
         this.currentStep = this.currentStep + 1;
-        this.currentPlayers = this.currentPlayers - (Math.floor(Math.random() * (this.PLAYERS_REMOVE_COUNT_MAX - this.PLAYERS_REMOVE_COUNT_MIN + 1)) + this.PLAYERS_REMOVE_COUNT_MIN);
+        this.playersRemoveCount = Math.floor(Math.random() * (this.PLAYERS_REMOVE_COUNT_MAX - this.PLAYERS_REMOVE_COUNT_MIN + 1)) + this.PLAYERS_REMOVE_COUNT_MIN;
+        this.currentPlayers = this.currentPlayers - this.playersRemoveCount;
         this.currentPlayers = this.currentPlayers < 1 ? 1 : this.currentPlayers;
 
         if(this.currentStep >= this.TOTAL_LEVELS) {
@@ -230,6 +232,10 @@ export class LavaAdventureEvent extends EventBase {
 
     getIsPositionUpdated(): boolean {
         return this.isPositionUpdated;
+    }
+
+    getPlayersRemoveCount(): number { 
+        return this.playersRemoveCount;
     }
 }   
 

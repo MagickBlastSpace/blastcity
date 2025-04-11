@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, tween, Vec3, Prefab, instantiate, Widget } from 'cc';
+import { _decorator, Component, Node, Button, Label, tween, Vec3, Prefab, instantiate, Widget, UITransform } from 'cc';
 import { UIEventPopupFrameBase } from './UIEventPopupFrameBase';
 import { UserData } from '../../data/UserData';
 import { Localization } from '../../utils/Localization';
@@ -104,6 +104,8 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
             
             let playerPos = this.stgPositions[this.eventController.getCurrentStage()].position;
 
+            this.playPlayerFallEffect(this.eventController.getPlayersRemoveCount());
+
             tween(this.player)
                 .to(0.5, { position: playerPos })
                 .start();
@@ -135,6 +137,39 @@ export class UIEventLavaAdventure extends UIEventPopupFrameBase {
 
         this.player.removeAllChildren();
     }
+
+    private playPlayerFallEffect(count: number) {
+        const worldPos = this.player.getWorldPosition(); // позиция контейнера
+        const parent = this.player; // или другой UI-контейнер, куда кидать клоны
+    
+        for (let i = 0; i < count; i++) {
+            // Клонируем игрока
+            const clone = instantiate(this.playerPrefab);
+            parent.addChild(clone);
+    
+            // Позиционируем туда, где контейнер
+            const localPos = parent.getComponent(UITransform).convertToNodeSpaceAR(worldPos);
+            clone.setPosition(localPos);
+            clone.active = true;
+    
+            // Немного рандома в стартовую позицию
+            const offsetX = (Math.random() - 0.5) * 100;
+            const offsetY = (Math.random() * 50) + 50;
+            const peakPos = new Vec3(localPos.x + offsetX, localPos.y + offsetY, 0);
+    
+            // Позиция "воды" - чуть ниже экрана или низа контейнера
+            const sinkY = localPos.y - 150 - Math.random() * 50;
+            const sinkPos = new Vec3(localPos.x + offsetX, sinkY, 0);
+    
+            // Полет вверх + падение
+            tween(clone)
+                .to(0.3, { position: peakPos }, { easing: 'quadOut' })
+                .to(0.6, { position: sinkPos, scale: new Vec3(0.6, 0.2, 1), opacity: 100 }, { easing: 'quadIn' }) // эффект "тонет"
+                .call(() => clone.destroy())
+                .start();
+        }
+    }
+    
 
 
     show() {
