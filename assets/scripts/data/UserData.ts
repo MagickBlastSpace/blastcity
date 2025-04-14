@@ -145,15 +145,23 @@ export class UserData extends Component {
 
                 gamepush.player.add('stat_energy_recieved', 1);
                 gamepush.player.sync();
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
             }
             else if(message.target === "PERSONAL" && message.tags.includes("endless_lives_minutes_15")) {
                 this.addResource("endless_lives_minutes", 15);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
             }
             else if(message.target === "PERSONAL" && message.tags.includes("endless_lives_minutes_30")) {
                 this.addResource("endless_lives_minutes", 30);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
             }
             else if(message.target === "PERSONAL" && message.tags.includes("endless_lives_minutes_60")) {
                 this.addResource("endless_lives_minutes", 60);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
             }
         });
 
