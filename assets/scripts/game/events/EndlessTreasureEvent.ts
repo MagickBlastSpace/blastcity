@@ -20,6 +20,8 @@ export class EndlessTreasureEvent extends WeeklyEventBase {
 
     private PAYABLE_STAGES: number[] = [3, 9, 15];
 
+    private isComplete: boolean = false;
+
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
@@ -48,7 +50,12 @@ export class EndlessTreasureEvent extends WeeklyEventBase {
 
             this.applyReward(this.rewards[this.currentStage]);
 
-            this.currentStage = this.currentStage + 1;
+            if(this.currentStage < this.rewards.length - 1) {
+                this.currentStage = this.currentStage + 1;
+            }
+            else {
+                this.isComplete = true;
+            }
 
             SaveData.instance.saveEvent(this.eventId);
 
@@ -57,8 +64,13 @@ export class EndlessTreasureEvent extends WeeklyEventBase {
         else {
             this.applyReward(this.rewards[this.currentStage]);
 
-            this.currentStage = this.currentStage + 1;
-
+            if(this.currentStage < this.rewards.length - 1) {
+                this.currentStage = this.currentStage + 1;
+            }
+            else {
+                this.isComplete = true;
+            }
+            
             SaveData.instance.saveEvent(this.eventId);
 
             this.node.emit("refresh");
@@ -132,6 +144,27 @@ export class EndlessTreasureEvent extends WeeklyEventBase {
         this.currentStage = stage;
 
         this.node.emit("refresh");
+    }
+
+
+    isInteractable(): boolean {
+        if(!this.isEventAvailable()) {
+            return false;
+        }
+
+        if(this.isComplete) {
+            return false;
+        }
+
+        return true;
+    }
+
+    getIsComplete(): boolean {
+        return this.isComplete;
+    }
+
+    setIsComplete(isComplete: boolean) {
+        this.isComplete = isComplete;
     }
 }
 

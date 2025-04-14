@@ -59,6 +59,14 @@ export class UIEventEndlessTreasure extends UIEventPopupFrameBase {
 
 
     refresh() {
+        /*let isComplete = this.eventController.getIsComplete();
+
+        if(isComplete) {
+            this.hide();
+
+            return;
+        }*/
+
         let data = this.eventController.getCurrentPoolRewards();
         let step = this.eventController.getCurrentStepInStage();
 
