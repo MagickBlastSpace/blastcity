@@ -4,6 +4,7 @@ import { _decorator, Component, Node } from 'cc';
 import { ClanData, ClanMemberData } from '../data/ClanData';
 import { Net } from '../net/Net';
 import { UserData } from '../data/UserData';
+import { EventRewardData } from '../data/EventData';
 const { ccclass, property } = _decorator;
 
 
@@ -23,6 +24,8 @@ export class Clans extends Component {
 
     private clansUpdate: ClanData[] = [];
 
+    private gifts: EventRewardData[] = [];
+
 
     onLoad() {
         this.clans = [];
@@ -41,7 +44,25 @@ export class Clans extends Component {
             this.fetchChannelsResult(result);
         });
     
-        gamepush.channels.on('fetchMembers', (result) => {});
+        gamepush.channels.on('fetchMembers', (result) => {
+            if(this.gifts.length > 0) {
+                for(let i = 0; i < result.items.length; i++) {
+                    let playerId = result.items[i].id;
+        
+                    for(let j = 0; j < this.gifts.length; j++) {
+                        if(this.gifts[j].endlessLives_Minutes > 0) {
+                            gamepush.channels.sendPersonalMessage({
+                                playerId: playerId,
+                                text: UserData.instance.getPlayerName() + " gives you " + this.gifts[j].endlessLives_Minutes + " endless lives minutes!",
+                                tags: ['gift_lives_minutes_' + this.gifts[j].endlessLives_Minutes],
+                            });
+                        }
+                    }
+                }
+
+                this.gifts = [];
+            }
+        });
     
         gamepush.channels.on('createChannel', (channel) => {
             if(!channel.tags.includes("clan")) {
@@ -234,6 +255,13 @@ export class Clans extends Component {
 
     getJoinRequestId(): number {
         return this.joinRequestId;
+    }
+
+
+    sendGiftToClanMembers(gift: EventRewardData) {
+        this.gifts.push(gift);
+
+        Net.instance.fetchMembersOfChannel(this.myClan.clanId);
     }
 }
 

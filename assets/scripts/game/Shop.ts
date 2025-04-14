@@ -3,10 +3,16 @@ declare const gamepush: any;
 import { _decorator, Component, Node } from 'cc';
 import { ShopItemData } from '../data/GameData';
 import { UserData } from '../data/UserData';
+import { Clans } from './Clans';
+import { EventRewardData } from '../data/EventData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Shop')
 export class Shop extends Component {
+
+    @property(Clans)
+    clans: Clans;
+
 
     async buy(data: ShopItemData): Promise<boolean> {
         if (!gamepush.payments.isAvailable) {
@@ -60,9 +66,37 @@ export class Shop extends Component {
             data.cards.push(cards[i]);
         }
 
-        //clan gift
+        if(data.clanGift_endlessLives_Minutes > 0) {
+            let reward = new EventRewardData();
+            reward.endlessLives_Minutes = data.clanGift_endlessLives_Minutes;
+
+            this.clans.sendGiftToClanMembers(reward);
+        }
 
         this.node.emit("buy", data);
+    }
+
+
+    async buyByTag(tag: string): Promise<boolean> {
+        if (!gamepush.payments.isAvailable) {
+            console.log("Payments not available");
+            return false;
+        }
+    
+        try {
+            console.log("Attempting purchase: " + tag);
+    
+            const result = await gamepush.payments.purchase({ tag: tag });
+    
+            console.log("Purchase by tag result:", result);
+
+            await gamepush.payments.consume({ tag: tag });
+    
+            return true;
+        } catch (err) {
+            console.warn("Purchase error:", err);
+            return false;
+        }
     }
 }
 
