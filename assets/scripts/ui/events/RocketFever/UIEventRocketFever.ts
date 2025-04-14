@@ -82,9 +82,9 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
     }
 
     update(deltaTime: number) {
-        if(!this.isInited) {
+        /*if(!this.isInited) {
             return;
-        }
+        }*/
         
         this.timeLabel.string = this.eventController.getRemainingTimeString();
     }
