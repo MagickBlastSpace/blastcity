@@ -43,6 +43,8 @@ export class UILevelMovesShop extends Component {
 
     private data: MovesShopStageData = null;
 
+    private state: number = 0;
+
 
     start() {
         this.buyBtn.node.on(Button.EventType.CLICK, this.onBuyBtnClick, this);
@@ -118,13 +120,25 @@ export class UILevelMovesShop extends Component {
     }
 
     onCloseBtnClick() {
-        this.node.emit("close");
+        if(this.state === 0) {
+            this.node.emit("show_panel_lose_progress");
+
+            this.state = this.state + 1;
+        }
+        else {
+            this.node.emit("close");
+        }
     }
 
     onActivateBpBtnClick() {
         UserData.instance.buyPremium();
 
         this.refresh();
+    }
+
+
+    setBasicState() {
+        this.state = 0;
     }
 
 

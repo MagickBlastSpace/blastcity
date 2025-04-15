@@ -61,7 +61,6 @@ export class MovesShop extends Component {
 
         let isEnoughGold = UserData.instance.subResource("gold", curData.price);
         if(!isEnoughGold) {
-            //show gold shop
             return false;
         }
 

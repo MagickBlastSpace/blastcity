@@ -410,6 +410,15 @@ export class Level extends Component {
     getDifficultyMultiplier(): number {
         return this.difficultyMultiplier;
     }
+
+
+    getRedTilesStat(): number {
+        return this.stats.redDestroyed;
+    }
+
+    getRocketsStat(): number {
+        return this.stats.rocketsDestroyed;
+    }
 }
 
 

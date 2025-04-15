@@ -12,6 +12,7 @@ import { UIMainMenu } from '../main/UIMainMenu';
 import { Field } from '../../game/Field';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { Localization } from '../../utils/Localization';
+import { EventBase } from '../../game/events/EventBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -25,6 +26,12 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     levelLabel: Label = null;
     @property(Label)
     adLabel: Label = null;
+    @property(Label)
+    progressLoseLabel: Label = null;
+    @property(Label)
+    rocketsCount: Label = null;
+    @property(Label)
+    redTilesCount: Label = null;
 
     @property(Sprite)
     frame: Sprite = null;
@@ -47,6 +54,17 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     @property(Sprite)
     picture: Sprite = null;
 
+    @property(Sprite)
+    bgStageLose: Sprite = null;
+    @property(SpriteFrame)
+    bgStageLose_0: SpriteFrame = null;
+    @property(SpriteFrame)
+    bgStageLose_1: SpriteFrame = null;
+    @property(SpriteFrame)
+    bgStageLose_2: SpriteFrame = null;
+    @property(SpriteFrame)
+    bgStageLose_3: SpriteFrame = null;
+
     @property(Button)
     playBtn: Button = null;
     @property(Button)
@@ -62,6 +80,10 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     winPanel: Node = null;
     @property(Node)
     giftPanel: Node = null;
+    @property(Node)
+    rocketsCountNode: Node = null;
+    @property(Node)
+    redTilesCountNode: Node = null;
 
     @property(UIMainMenu)
     mainFrame: UIMainMenu = null;
@@ -76,6 +98,11 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     level: Level = null;
     @property(Field)
     field: Field = null;
+
+    @property(EventBase)
+    eventRocketFever: EventBase;
+    @property(EventBase)
+    eventAphrodite: EventBase;
 
     /*@property(sp.Skeleton)
     animationFireworks: sp.Skeleton = null;*/
@@ -99,6 +126,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
         this.movesShop.node.on("buy", () => this.hide());
         this.movesShop.node.on("close", () => this.onPlayBtnClick());
+        this.movesShop.node.on("show_panel_lose_progress", () => this.showPanelLoseProgress());
     }
     
     refresh(isSuccess: boolean, goldEarned: number) {
@@ -116,8 +144,10 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.goldLabel.string = "x" + goldEarned;
 
         this.movesShop.node.active = !isSuccess;
-        this.progressLose.active = !isSuccess && this.butlersGift.getStreak() > 0;
-        this.commonMovesShopPanel.active = !isSuccess && this.butlersGift.getStreak() === 0;
+        //this.commonMovesShopPanel.active = !isSuccess && this.butlersGift.getStreak() === 0;
+        this.commonMovesShopPanel.active = true;
+        this.progressLose.active = false;
+        this.movesShop.setBasicState();
         this.winPanel.active = isSuccess;
 
         this.movesShop.refresh();
@@ -167,6 +197,52 @@ export class UILevelResultFrame extends UIPopupFrameBase {
             console.error('Error setting level result:', error);
         }
     }
+
+
+    showPanelLoseProgress() {
+        this.commonMovesShopPanel.active = false;
+        this.rocketsCountNode.active = false;
+        this.redTilesCountNode.active = false;
+
+        if(this.butlersGift.getStreak() === 2) {
+            this.bgStageLose.spriteFrame = this.bgStageLose_2;
+        }
+        else if(this.butlersGift.getStreak() === 3) {
+            this.bgStageLose.spriteFrame = this.bgStageLose_3;
+        }
+        else if(this.butlersGift.getStreak() === 1) {
+            this.bgStageLose.spriteFrame = this.bgStageLose_1;
+        }
+        else {
+            this.bgStageLose.spriteFrame = this.bgStageLose_0;
+        }
+
+        if(!this.isSuccess && this.eventRocketFever.isInteractable() && this.level.getRocketsStat() > 0) {
+            this.progressLose.active = true;
+            this.rocketsCountNode.active = true;
+
+            this.progressLoseLabel.string = Localization.instance.getLabelByKey("combat.failatrp");
+
+            this.rocketsCount.string = this.level.getRocketsStat();
+        }
+        else if(!this.isSuccess && this.eventAphrodite.isInteractable() && this.level.getRedTilesStat() > 0) {
+            this.progressLose.active = true;
+            this.redTilesCountNode.active = true;
+
+            this.progressLoseLabel.string = Localization.instance.getLabelByKey("combat.failataf");
+
+            this.redTilesCount.string = this.level.getRedTilesStat();
+        }
+        else if(!this.isSuccess && this.butlersGift.getStreak() > 0) {
+            this.progressLose.active = true;
+
+            this.progressLoseLabel.string = Localization.instance.getLabelByKey("combat.failat");
+        }
+        else {
+            this.onPlayBtnClick();
+        }
+    }
+
 
     onPlayBtnClick() {
         SaveData.instance.clearLevelProgress();
