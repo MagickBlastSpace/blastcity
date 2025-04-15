@@ -100,9 +100,14 @@ export class UILevelMovesShop extends Component {
 
 
     onBuyBtnClick() {
-        this.movesShop.buyStage();
+        let isSuccess = this.movesShop.buyStage();
 
-        this.node.emit("buy");
+        if(isSuccess) {
+            this.node.emit("buy");
+        }
+        else {
+            //show mini gold shop
+        }
     }
 
     async onShowAdBtnClick() {
