@@ -31,6 +31,8 @@ export class UILevel extends UIFrameBase {
     levelResult: UIFrameBase = null;
     @property(UIFrameBase)
     levelCompletePopup: UIFrameBase = null;
+    @property(UIFrameBase)
+    levelFailPopup: UIFrameBase = null;
 
     @property(Sprite)
     sidePanel_Left: Sprite = null;
@@ -75,6 +77,7 @@ export class UILevel extends UIFrameBase {
         this.level.on("complete", (isSuccess: boolean, goldEarned: number) => this.showResult(isSuccess, goldEarned));
         this.level.on("all_goals_complete_event", (movesRemain) => this.showLevelCompletePopup());
         this.level.on("reward_move", () => this.addReward());
+        this.level.on("no_moves", () => this.showNoMovesPopup());
 
         SaveData.instance.node.on("level_progress_loaded", () => this.refreshAll());
 
@@ -151,6 +154,12 @@ export class UILevel extends UIFrameBase {
         AudioController.instance.playLevelComplete();
 
         AudioController.instance.playWin();
+    }
+
+    showNoMovesPopup() {
+        this.levelFailPopup.show();
+
+        //AudioController.instance.playLose();
     }
 
 

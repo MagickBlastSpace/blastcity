@@ -256,7 +256,8 @@ export const languages = {
     "failat": "Вы потеряете подарок Афины!",
     "rocket": "Ракет",
     "bomb": "Бомб",
-    "dball": "Дискошаров"
+    "dball": "Дискошаров",
+    "nomoves": "Не осталось ходов!"
   },
   "rewards": {
     "level": "Уровень",

@@ -172,11 +172,16 @@ export class Level extends Component {
 
         this.stats.fails++;
         if(!this.isMovesUnlimited) {
-            this.node.emit("complete", false, 0);
+            //this.node.emit("complete", false, 0);
+            this.node.emit("no_moves");
         }
 
         Statistics.instance.updateLevelStat(this.stats);
         SaveData.instance.saveStatistics();
+    }
+
+    castFailEvent() {
+        this.node.emit("complete", false, 0);
     }
 
     addExtraMoves(movesCount: number) {

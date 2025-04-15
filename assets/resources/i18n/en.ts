@@ -256,7 +256,8 @@ export const languages = {
     "failat": "You will lose Athena's gift!",
     "rocket": "Rockets",
     "bomb": "Bombs",
-    "dball": "Discoballs"
+    "dball": "Discoballs",
+    "nomoves": "No moves left!"
   },
   "rewards": {
     "level": "Level",
