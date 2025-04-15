@@ -252,6 +252,27 @@ export class SkyRaceEvent extends CompetitiveEventBase {
             }
         }
 
+        if(this.playerPlace < 0 || this.playerPlace >= 3) {
+            let finishedPlayersCount = 0;
+
+            for(let i = 0; i < sortedPlayers.length; i++) {
+                if(sortedPlayers[i].progressValue >= 15) {
+                    finishedPlayersCount = finishedPlayersCount + 1;
+                }
+            }
+
+            if(finishedPlayersCount >= 3) {
+                this.currentStep = 0;
+                this.playerPlace = -1;
+
+                this.isStarted = false;
+                this.isComplete = false;
+                this.isRewardPicked = true;
+
+                SaveData.instance.saveEvent(this.eventId);
+            }
+        }
+
         return sortedPlayers;
     }
 
