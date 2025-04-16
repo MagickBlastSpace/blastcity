@@ -3,13 +3,14 @@ declare const gamepush: any;
 import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { Field } from '../../game/Field';
-import { GameData } from '../../data/GameData';
+import { GameData, GoalData } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIEventMinified } from '../events/UIEventMinified';
 import { Localization } from '../../utils/Localization';
 import { UIStartBonusItem } from './UIStartBonusItem';
+import { UIBriefingGoalItem } from './UIBriefingGoalItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartBriefingPopup')
@@ -49,6 +50,11 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     @property(Button)
     playRewardedBtn: Button = null;
 
+    @property(Node)
+    bgNode: Node = null;
+    @property(Node)
+    goalsFailNode: Node = null;
+
     @property(UIFrameBase)
     butlersGiftInfoPopup: UIFrameBase = null;
     @property(UIFrameBase)
@@ -60,8 +66,13 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     @property([UIStartBonusItem])
     startBonuses: UIStartBonusItem[] = [];
 
+    @property([UIBriefingGoalItem])
+    goalItems: UIBriefingGoalItem[] = [];
+
     @property(Localization)
     l10n: Localization;
+
+    private isFail: boolean = false;
 
 
     start() {
@@ -72,13 +83,18 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
         this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
         this.playRewardedBtn.node.on(Button.EventType.CLICK, this.onPlayRewardedBtnClick, this);
-        this.closeBtn.node.on(Button.EventType.CLICK, this.hide, this);
+        this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         this.butlersGiftInfoBtn.node.on(Button.EventType.CLICK, this.showButlerGiftInfo, this);
 
         this.refresh();
     }
 
     refresh() {
+        this.isFail = false;
+
+        this.bgNode.active = true;
+        this.goalsFailNode.active = false;
+
         let levelData = GameData.instance.getCurrentLevel();
 
         let currentLevelNumber = UserData.instance.getProgress() + 1;
@@ -128,6 +144,25 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     }
 
 
+    init_Fail(goals: GoalData[]) {
+        this.isFail = true;
+
+        this.bgNode.active = false;
+        this.goalsFailNode.active = true;
+
+        for(let i = 0; i < goals.length || i < this.goalItems.length; i++) {
+            if(i < goals.length) {
+                this.goalItems[i].refresh(goals[i]);
+            }
+            else {
+                let goalData = new GoalData();
+                goalData.id = "common";
+                this.goalItems[i].refresh(goalData);
+            }
+        }
+    }
+
+
     onPlayBtnClick() {
         if(!UserData.instance.isEndlessLivesActive()) {
             if (gamepush.player.get('energy') <= 0) {
@@ -154,6 +189,14 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         this.hide();
         
         this.node.emit("play_rewarded");
+    }
+
+    onCloseBtnClick() {
+        if(this.isFail) {
+            this.node.emit("fail");
+        }
+
+        this.hide();
     }
 
     showButlerGiftInfo() {

@@ -13,6 +13,7 @@ import { Field } from '../../game/Field';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { Localization } from '../../utils/Localization';
 import { EventBase } from '../../game/events/EventBase';
+import { UIStartBriefingPopup } from '../start/UIStartBriefingPopup';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -86,13 +87,16 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     redTilesCountNode: Node = null;
 
     @property(UIMainMenu)
-    mainFrame: UIMainMenu = null;
+    mainFrame: UIMainMenu ;
+
+    @property(UIStartBriefingPopup)
+    briefing: UIStartBriefingPopup;
 
     @property(UILevelMovesShop)
-    movesShop: UILevelMovesShop = null;
+    movesShop: UILevelMovesShop;
 
     @property(ButlersGift)
-    butlersGift: ButlersGift = null;
+    butlersGift: ButlersGift;
 
     @property(Level)
     level: Level = null;
@@ -127,6 +131,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.movesShop.node.on("buy", () => this.hide());
         this.movesShop.node.on("close", () => this.onPlayBtnClick());
         this.movesShop.node.on("show_panel_lose_progress", () => this.showPanelLoseProgress());
+
+        this.briefing.node.on("fail", () => this.fail());
     }
     
     refresh(isSuccess: boolean, goldEarned: number) {
@@ -249,7 +255,15 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
         if(!this.isSuccess) {
             this.butlersGift.clearStreak();
+
+            this.briefing.show();
+            this.briefing.init_Fail(this.level.getGoals());
+
             this.level.fail();
+
+            this.hide();
+
+            return;
         }
 
         this.mainFrame.show();
