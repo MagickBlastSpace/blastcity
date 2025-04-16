@@ -92,7 +92,7 @@ export class MovesShop extends Component {
 
 
     getTotalMovesCount(): number {
-        const failsCount = this.level.getFailsCount();
+        const failsCount = UserData.instance.getLevelFails();
 
         let curData = this.getStageData();
         const moves = curData.moves;

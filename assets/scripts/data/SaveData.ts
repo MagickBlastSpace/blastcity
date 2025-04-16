@@ -62,7 +62,9 @@ export class SaveData extends Component {
             lastMusicVolume: UserData.instance.getLastMusicVolume(),
             lastSfxVolume: UserData.instance.getLastSfxVolume(),
 
-            helpedMessages: UserData.instance.getHelpedMessages()
+            helpedMessages: UserData.instance.getHelpedMessages(),
+
+            currentLevelFails: UserData.instance.getLevelFails()
         };
         
         cc.sys.localStorage.setItem('userData', JSON.stringify(userData));
@@ -110,6 +112,9 @@ export class SaveData extends Component {
             }
             if (userData.helpedMessages !== undefined) {
                 UserData.instance.setHelpedMessages(userData.helpedMessages);
+            }
+            if (userData.currentLevelFails !== undefined) {
+                UserData.instance.setLevelFails(userData.currentLevelFails);
             }
 
             AudioController.instance.setMusicVolume(UserData.instance.getMusicVolume());

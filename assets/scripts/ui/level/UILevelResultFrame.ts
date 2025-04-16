@@ -273,6 +273,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.node.emit("level_close");
 
         this.field.unloadAssets();
+
+        UserData.instance.resetLevelFails();
     }
 
     fail() {
@@ -288,6 +290,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
         this.node.emit("level_close");
 
         this.field.unloadAssets();
+
+        UserData.instance.addLevelFail();
     }
 
     async onShowAdBtnClick() {

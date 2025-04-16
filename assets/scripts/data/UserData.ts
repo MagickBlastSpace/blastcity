@@ -68,6 +68,8 @@ export class UserData extends Component {
     private helpedMessages: number[] = [];
     private maxMessagesStorage: number = 50;
 
+    private currentLevelFails: number = 0;
+
     @property(CollectionEvent)
     collections: CollectionEvent;
 
@@ -85,6 +87,8 @@ export class UserData extends Component {
 
         this.Gold = 5000;
         this.Stars = 0;
+
+        this.currentLevelFails = 0;
 
         this.musicVolume = 1;
         this.sfxVolume = 1;
@@ -916,6 +920,27 @@ export class UserData extends Component {
 
     isHelped(id: number): boolean {
         return this.helpedMessages.includes(id);
+    }
+
+
+    addLevelFail() {
+        this.currentLevelFails = this.currentLevelFails + 1;
+
+        SaveData.instance.saveUserData();
+    }
+
+    resetLevelFails() {
+        this.currentLevelFails = 0;
+
+        SaveData.instance.saveUserData();
+    }
+
+    getLevelFails(): number {
+        return this.currentLevelFails;
+    }
+
+    setLevelFails(fails: number) {
+        this.currentLevelFails = fails;
     }
 }
 
