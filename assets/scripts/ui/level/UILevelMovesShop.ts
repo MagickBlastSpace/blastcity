@@ -6,6 +6,7 @@ import { MovesShop } from '../../game/boosters/MovesShop';
 import { Level } from '../../game/Level';
 import { UserData } from '../../data/UserData';
 import { Localization } from '../../utils/Localization';
+import { UIMiniShopPopup } from '../shop/UIMiniShopPopup';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelMovesShop')
@@ -40,6 +41,9 @@ export class UILevelMovesShop extends Component {
     picture_1: Sprite = null;
     @property(Sprite)
     picture_2: Sprite = null;
+
+    @property(UIMiniShopPopup)
+    miniShop: UIMiniShopPopup;
 
     private data: MovesShopStageData = null;
 
@@ -108,7 +112,7 @@ export class UILevelMovesShop extends Component {
             this.node.emit("buy");
         }
         else {
-            //show mini gold shop
+            this.miniShop.show();
         }
     }
 
