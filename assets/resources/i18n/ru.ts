@@ -257,7 +257,8 @@ export const languages = {
     "rocket": "Ракет",
     "bomb": "Бомб",
     "dball": "Дискошаров",
-    "nomoves": "Не осталось ходов!"
+    "nomoves": "Не осталось ходов!",
+    "failed": "Вы проиграли"
   },
   "rewards": {
     "level": "Уровень",
