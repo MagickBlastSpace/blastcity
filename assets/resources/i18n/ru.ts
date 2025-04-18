@@ -19,7 +19,8 @@ export const languages = {
     "Difficulty_Bonus": "Бонус",
     "GiftInfo": "Проходи уровни с первого раза, чтобы начать следующую игру с усиленным даром!",
     "Stage": "Раунд",
-    "moves": "4 хода!"
+    "moves": "4 хода!",
+    "league": "Лига Олимпа"
   },
   "rating": {
     "rating": "Рейтинг Игроков",
@@ -40,7 +41,8 @@ export const languages = {
     "requestaccept": "Принять",
     "requestreject": "Отклонить",
     "weekly": "Конкурс Недели",
-    "week": "Недельные"
+    "week": "Недельные",
+    "text": "Введите имя"
   },
   "clans": {
     "clans": "Кланы",
@@ -72,7 +74,9 @@ export const languages = {
     "activity":	"Активность",
     "ahigh":	"Высокая",
     "amedium":	"Средняя",
-    "alow":	"Низкая"
+    "alow":	"Низкая",
+    "descrph": "Ввести описание Клана",
+    "helpmessage": "помог"
   },
   "events": {
     "levelreq": "Требуемый уровень",

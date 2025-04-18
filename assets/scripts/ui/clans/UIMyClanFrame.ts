@@ -8,6 +8,7 @@ import { SaveData } from '../../data/SaveData';
 import { Net } from '../../net/Net';
 import { UIClanRequestItem } from './UIClanRequestItem';
 import { UIClansAskForEnergyItem } from './UIClansAskForEnergyItem';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMyClanFrame')
@@ -146,7 +147,7 @@ export class UIMyClanFrame extends UIPopupFrameBase {
     askForEnergy() {
         gamepush.channels.sendMessage({
             channelId: this.data.clanId,
-            text: 'Asking for energy',
+            text: Localization.instance.getLabelByKey("clans.asksforhelp"),
             tags: ['ask_for_energy'],
         });
 
@@ -170,7 +171,7 @@ export class UIMyClanFrame extends UIPopupFrameBase {
         itemNode.on('help', (playerName, messageId) => {
             gamepush.channels.sendMessage({
                 channelId: this.data.clanId,
-                text: 'Help ' + playerName + ' energy request ' + messageId,
+                text: Localization.instance.getLabelByKey("clans.helpmessage") + ' ' + playerName + ' ' + messageId,
                 tags: ['help'],
             });
     

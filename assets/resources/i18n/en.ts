@@ -19,7 +19,8 @@ export const languages = {
     "Difficulty_Bonus": "Bonus",
     "GiftInfo": "Complete levels on the first try to start the next game with an enhanced gift!",
     "Stage": "Round",
-    "moves": "moves!"
+    "moves": "moves!",
+    "league": "Olympus League"
   },
   "rating": {
     "rating": "Player Rating",
@@ -40,7 +41,8 @@ export const languages = {
     "requestaccept": "Accept",
     "requestreject": "Reject",
     "weekly": "Weekly Contest",
-    "week": "Weekly"
+    "week": "Weekly",
+    "text": "Enter name"
   },
   "clans": {
     "clans": "Clans",
@@ -72,7 +74,9 @@ export const languages = {
     "activity":	"Activity",
     "ahigh":	"High",
     "amedium":	"Average",
-    "alow":	"Low"
+    "alow":	"Low",
+    "descrph": "Enter a description of the Clan",
+    "helpmessage": "helped"
   },
   "events": {
     "levelreq": "Required Level",
