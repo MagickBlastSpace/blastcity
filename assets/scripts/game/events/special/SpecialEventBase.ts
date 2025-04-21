@@ -1,6 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
 import { WeeklyEventBase } from '../WeeklyEventBase';
 import { SaveData } from '../../../data/SaveData';
+import { UserData } from '../../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('SpecialEventBase')
@@ -41,6 +42,10 @@ export class SpecialEventBase extends WeeklyEventBase {
         }
 
         this.collectable = this.collectable + 1;
+
+        if(UserData.instance.isModifierX2()) {
+            this.collectable = this.collectable + 1;
+        }
 
         SaveData.instance.saveEvent(this.eventId);
 

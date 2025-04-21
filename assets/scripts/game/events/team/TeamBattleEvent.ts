@@ -59,6 +59,10 @@ export class TeamBattleEvent extends TeamEventBase {
             earnedPoints = 5;
         }
 
+        if(UserData.instance.isModifierX2()) {
+            earnedPoints = earnedPoints * 2;
+        }
+
         this.currentStep = this.currentStep + earnedPoints;
 
         Net.instance.publishScore(this.eventId, this.eventId + "_" + this.clans.getClanId() + "_" + this.getWeekNumber(this.startTime), this.currentStep);

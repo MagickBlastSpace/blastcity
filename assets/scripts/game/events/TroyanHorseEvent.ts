@@ -1,6 +1,7 @@
 import { _decorator, Component, Node } from 'cc';
 import { TeamTreasureEvent } from './team/TeamTreasureEvent';
 import { SaveData } from '../../data/SaveData';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('TroyanHorseEvent')
@@ -37,6 +38,10 @@ export class TroyanHorseEvent extends TeamTreasureEvent {
         }
 
         this.currentStep = this.currentStep + 1;
+
+        if(UserData.instance.isModifierX2()) {
+            this.currentStep = this.currentStep + 1;
+        }
 
         SaveData.instance.saveEvent(this.eventId);
 

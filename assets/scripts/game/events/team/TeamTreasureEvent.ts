@@ -76,6 +76,10 @@ export class TeamTreasureEvent extends TeamEventBase {
 
         this.currentStep = this.currentStep + 1;
 
+        if(UserData.instance.isModifierX2()) {
+            this.currentStep = this.currentStep + 1;
+        }
+
         Net.instance.publishScore(this.eventId, this.eventId + "_" + this.clans.getClanId() + "_" + this.getWeekNumber(this.startTime), this.currentStep);
 
         SaveData.instance.saveEvent(this.eventId);

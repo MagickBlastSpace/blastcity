@@ -942,6 +942,11 @@ export class UserData extends Component {
     setLevelFails(fails: number) {
         this.currentLevelFails = fails;
     }
+
+
+    isModifierX2(): boolean {
+        return this.getRemainingTimeString("modifier_x2") !== "";
+    }
 }
 
 

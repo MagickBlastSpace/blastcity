@@ -54,6 +54,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     bgNode: Node = null;
     @property(Node)
     goalsFailNode: Node = null;
+    @property(Node)
+    x2: Node = null;
 
     @property(UIFrameBase)
     butlersGiftInfoPopup: UIFrameBase = null;
@@ -135,6 +137,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         }
 
         this.levelReqLabel.string = this.l10n.getLabelByKey("events.levelreq") + " 28";
+
+        this.x2.active = UserData.instance.isModifierX2();
     }
 
     show() {
