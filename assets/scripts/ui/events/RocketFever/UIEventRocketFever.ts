@@ -96,9 +96,11 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
         this.isEventStarted = this.eventController.getIsStarted();
         this.isEventComplete = this.eventController.getIsComplete();
 
+        let currentStage = this.eventController.getCurrentStage();
+
         if(this.isEventStarted && !this.isEventComplete) {
             this.infoContainer.active = true;
-            this.rewardsContainer.active = false;
+            this.rewardsContainer.active = this.eventController.getCollectable() > 0 || currentStage > 0;
 
             this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
             this.progressBar.progress = this.eventController.getTimeProgress();
@@ -135,8 +137,6 @@ export class UIEventRocketFever extends UIEventPopupFrameBase {
         //this.startBtn.node.active = this.isEventStarted && !this.isEventComplete;
 
         let data = this.eventController.getData();
-
-        let currentStage = this.eventController.getCurrentStage();
 
         for(let i = 0; i < data.length && i < this.items.length; i++) {
             this.items[i].refresh(i + 1, data[i], currentStage);
