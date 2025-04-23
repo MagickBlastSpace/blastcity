@@ -34,8 +34,6 @@ export class Level extends Component {
     private startMovesCount: number = 0;
     private experimentCategory: string = "";
 
-    private premiumMoves: number = 5;
-
 
     start() {
         this.field.on("move", () => this.moveCallback());
@@ -71,10 +69,6 @@ export class Level extends Component {
         this.coinsCollected = 0;
 
         this.startMovesCount = this.moves;
-
-        if(UserData.instance.getIsPremium()) {
-            this.startMovesCount += this.premiumMoves;
-        }
 
         this.resetStats();
 

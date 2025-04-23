@@ -134,8 +134,14 @@ export class UILevelMovesShop extends Component {
         }
     }
 
-    onActivateBpBtnClick() {
-        UserData.instance.buyPremium();
+    async onActivateBpBtnClick() {
+        let isPurchased = await UserData.instance.buyPremium();
+
+        if(isPurchased) {
+            this.movesShop.bpActivateExtraMoves();
+
+            this.node.emit("buy");
+        }
 
         this.refresh();
     }

@@ -23,6 +23,8 @@ export class MovesShop extends Component {
 
     private currentStage: number = 0;
 
+    private premiumExtraMovesCount: number = 5;
+
 
     start() {
         this.field.on("level_init", (level) => this.init(level));
@@ -99,6 +101,10 @@ export class MovesShop extends Component {
         const additionalMoves = failsCount >= 5 ? 5 * (failsCount - 4) : 0;
 
         return moves + additionalMoves;
+    }
+
+    bpActivateExtraMoves() {
+        this.node.emit("extra_moves", this.premiumExtraMovesCount);
     }
 }
 
