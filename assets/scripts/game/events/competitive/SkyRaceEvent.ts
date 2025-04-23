@@ -228,6 +228,11 @@ export class SkyRaceEvent extends CompetitiveEventBase {
         }
 
         sortedPlayers = this.players;
+        for(let i = 0; i < sortedPlayers.length; i++) {
+            if(sortedPlayers[i].progressValue > 15) {
+                sortedPlayers[i].progressValue = 15;
+            }
+        }
 
         //sortedPlayers.sort((a, b) => b.progressValue - a.progressValue);
         if(this.isComplete && (this.playerPlace < 0 || this.playerPlace === undefined)) {
