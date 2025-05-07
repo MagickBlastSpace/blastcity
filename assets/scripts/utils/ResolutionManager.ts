@@ -2,6 +2,7 @@ import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3
 import { UIFrameBase } from '../ui/UIFrameBase';
 import { UIChest } from '../ui/chest/UIChest';
 import { UIEventButton } from '../ui/start/UIEventButton';
+import { UILevelAdaptivity } from '../ui/level/UILevelAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('ResolutionManager')
@@ -76,6 +77,9 @@ export class ResolutionManager extends Component {
     @property(UIChest)
     chestUi: UIChest;
 
+    @property(UILevelAdaptivity)
+    levelAdaptivity: UILevelAdaptivity;
+
     public static instance: ResolutionManager = null;
 
     private orientation: string = "";
@@ -114,6 +118,8 @@ export class ResolutionManager extends Component {
             console.log("Portrait mode");
             this.setPortraitMode();
         }
+
+        this.levelAdaptivity.refresh();
 
         this.scaleItemsByScreenRatio(ratio);
     }
@@ -273,52 +279,52 @@ export class ResolutionManager extends Component {
 
     scaleItemsByScreenRatio(ratio: number) {
         if(ratio > 1.4) {
-            this.field.setScale(new Vec3(1, 1, 1));
+            //this.field.setScale(new Vec3(1, 1, 1));
 
             this.friendsSearch.bottom = 850;
         }
         else if(ratio > 1) {
-            this.field.setScale(new Vec3(1.2, 1.2, 1));
+            //this.field.setScale(new Vec3(1.2, 1.2, 1));
 
             this.friendsSearch.bottom = 600;
         }
         else if(ratio > 0.8) {
-            this.field.setScale(new Vec3(1.5, 1.5, 1));
+            //this.field.setScale(new Vec3(1.5, 1.5, 1));
 
-            this.boostersPortrait.setScale(new Vec3(1.4, 1.4, 1));
-            this.goalsPortrait.setScale(new Vec3(1.7, 1.7, 1));
+            //this.boostersPortrait.setScale(new Vec3(1.4, 1.4, 1));
+            //this.goalsPortrait.setScale(new Vec3(1.7, 1.7, 1));
 
             this.friendsSearch.bottom = 600;
         }
         else if(ratio > 0.72) {
-            this.field.setScale(new Vec3(1.8, 1.8, 1));
+            //this.field.setScale(new Vec3(1.8, 1.8, 1));
 
-            this.boostersPortrait.setScale(new Vec3(1.6, 1.6, 1));
-            this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+            //this.boostersPortrait.setScale(new Vec3(1.6, 1.6, 1));
+            //this.goalsPortrait.setScale(new Vec3(2, 2, 1));
 
             this.friendsSearch.bottom = 350;
         }
         else if(ratio > 0.6) {
-            this.field.setScale(new Vec3(1.8, 1.8, 1));
+            //this.field.setScale(new Vec3(1.8, 1.8, 1));
 
-            this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
-            this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+            //this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
+            //this.goalsPortrait.setScale(new Vec3(2, 2, 1));
 
             this.friendsSearch.bottom = 250;
         }
         else if(ratio > 0.5) {
-            this.field.setScale(new Vec3(2, 2, 1));
+            //this.field.setScale(new Vec3(2, 2, 1));
 
-            this.boostersPortrait.setScale(new Vec3(2, 2, 1));
-            this.goalsPortrait.setScale(new Vec3(2, 2, 1));
+            //this.boostersPortrait.setScale(new Vec3(2, 2, 1));
+            //this.goalsPortrait.setScale(new Vec3(2, 2, 1));
 
             this.friendsSearch.bottom = 250;
         }
         else {
-            this.field.setScale(new Vec3(2.2, 2.2, 1));
+            //this.field.setScale(new Vec3(2.2, 2.2, 1));
 
-            this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
-            this.goalsPortrait.setScale(new Vec3(2.2, 2.2, 1));
+            //this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
+            //this.goalsPortrait.setScale(new Vec3(2.2, 2.2, 1));
 
             this.friendsSearch.bottom = 250;
         }
