@@ -5,6 +5,7 @@ import { UIStartFrame } from '../start/UIStartFrame';
 import { SaveData } from '../../data/SaveData';
 import { Statistics } from '../../data/Statistics';
 import { UserData } from '../../data/UserData';
+import { EventsController } from '../../game/events/EventsController';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelConstructor')
@@ -30,6 +31,8 @@ export class UILevelConstructor extends Component {
     cheatToLastLevelBtn: Button = null;
     @property(Button)
     showLevelStatsBtn: Button = null;
+    @property(Button)
+    switchEventsBtn: Button = null;
 
     @property(Button)
     showMatrixBtn: Button = null;
@@ -39,6 +42,9 @@ export class UILevelConstructor extends Component {
 
     @property(UIStartFrame)
     startFrame: UIStartFrame = null;
+
+    @property(EventsController)
+    eventsController: EventsController;
 
 
     start() {
@@ -52,6 +58,7 @@ export class UILevelConstructor extends Component {
         this.clearGlobalSaveBtn.node.on(Button.EventType.CLICK, this.clearGlobalSave, this);
         this.showLevelStatsBtn.node.on(Button.EventType.CLICK, this.showLevelStats, this);
         this.cheatToLastLevelBtn.node.on(Button.EventType.CLICK, this.cheatToLastLevel, this);
+        this.switchEventsBtn.node.on(Button.EventType.CLICK, this.switchEvents, this);
 
         this.showMatrixBtn.node.on(Button.EventType.CLICK, this.onShowMatrixBtnClick, this);
     }
@@ -168,6 +175,15 @@ export class UILevelConstructor extends Component {
 
     cheatToLastLevel() {
         SaveData.instance.cheatToLastLevel();
+    }
+
+
+    switchEvents() {
+        this.eventsController.debug_SwitchEvents();
+
+        this.scheduleOnce(() => {
+            this.startFrame.show();
+        }, 0.5);
     }
 }
 

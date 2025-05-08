@@ -74,6 +74,22 @@ export class EventsController extends Component {
 
         this.rewardPopup.init(data);
     }
+
+
+    debug_SwitchEvents() {
+        for(let i = 0; i < this.eventsData.length; i++) {
+            if(this.eventsData[i].startDayOfWeek === 1 && this.eventsData[i].durationDays === 4) {
+                this.eventsData[i].startDayOfWeek = 5;
+                this.eventsData[i].durationDays = 3;
+            }
+            else if(this.eventsData[i].startDayOfWeek === 5 && this.eventsData[i].durationDays === 3) {
+                this.eventsData[i].startDayOfWeek = 1;
+                this.eventsData[i].durationDays = 4;
+            }
+        }
+
+        this.init();
+    }
 }
 
 
