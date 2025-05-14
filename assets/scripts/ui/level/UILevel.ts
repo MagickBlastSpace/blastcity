@@ -19,8 +19,8 @@ export class UILevel extends UIFrameBase {
     movesCount: Label = null;
     @property(Label)
     movesCount_Duplicate: Label = null;
-    @property(Label)
-    goalLabel: Label = null;
+    /*@property(Label)
+    goalLabel: Label = null;*/
 
     @property([UILevelGoal])
     goalItems: [UILevelGoal] = [];
@@ -86,7 +86,7 @@ export class UILevel extends UIFrameBase {
     }
 
     init() {
-        this.goalLabel.string = "Goals";
+        //this.goalLabel.string = "Goals";
 
         this.isRewarding = false;
     }
@@ -165,7 +165,7 @@ export class UILevel extends UIFrameBase {
 
     setRewardingMode() {
         this.isRewarding = true;
-        this.goalLabel.string = "Reward";
+        //this.goalLabel.string = "Reward";
 
         let rewardGoals = [];
         this.rewardGoal = new GoalData();
