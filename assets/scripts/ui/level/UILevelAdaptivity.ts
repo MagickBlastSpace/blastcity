@@ -1,9 +1,10 @@
 import { _decorator, Component, Node, UITransform, Size, Vec3, view, Layout, Widget } from 'cc';
 import { UIField } from '../UIField';
+import { UIAdaptivityBase } from '../UIAdaptivityBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelAdaptivity')
-export class UILevelAdaptivity extends Component {
+export class UILevelAdaptivity extends UIAdaptivityBase {
 
     @property(Node)
     upperPanel: Node = null;
