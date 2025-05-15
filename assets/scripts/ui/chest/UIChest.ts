@@ -143,14 +143,14 @@ export class UIChest extends Component {
 
 
     refreshScale(isPortrait: boolean) {
-        if(this.chest.isStageComplete()) {
+        /*if(this.chest.isStageComplete()) {
             let scale = isPortrait ? 1.1 : 2;
             this.node.setScale(new Vec3(scale, scale, 1));
         }
         else {
             let scale = isPortrait ? 0.9 : 1.8;
             this.node.setScale(new Vec3(scale, scale, 1));
-        }
+        }*/
     }
 
 

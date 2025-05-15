@@ -2,7 +2,7 @@ import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3
 import { UIFrameBase } from '../ui/UIFrameBase';
 import { UIChest } from '../ui/chest/UIChest';
 import { UIEventButton } from '../ui/start/UIEventButton';
-import { UILevelAdaptivity } from '../ui/level/UILevelAdaptivity';
+import { UIAdaptivityBase } from '../ui/UIAdaptivityBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('ResolutionManager')
@@ -31,9 +31,6 @@ export class ResolutionManager extends Component {
     @property(Node)
     goalsPortrait: Node = null;
 
-    @property(Node)
-    mainMenuBtns: Node = null;
-
     @property([Node])
     mainMenuScalableItems: Node[] = [];
     @property([Node])
@@ -41,10 +38,6 @@ export class ResolutionManager extends Component {
     @property([Node])
     clansScalableItems: Node[] = [];
 
-    @property([Node])
-    eventBtns: Node[] = [];
-    @property([Node])
-    eventProgressBtns: Node[] = [];
     @property([Node])
     popups: Node[] = [];
     @property([Node])
@@ -54,17 +47,7 @@ export class ResolutionManager extends Component {
 
     @property([UIEventButton])
     eventBtnsComp: UIEventButton[] = [];
-    @property([Widget])
-    eventBtnsWidgets: Widget[] = [];
-    @property([Layout])
-    eventBtnsLs: Layout[] = [];
-    @property(Widget)
-    mainMenuBtnsWidget: Widget = null;
 
-    @property(Widget)
-    playBtn: Widget = null;
-    @property(Widget)
-    rewardBtn: Widget = null;
     @property(Widget)
     kingLeagueBtn: Widget = null;
     @property([Widget])
@@ -74,11 +57,8 @@ export class ResolutionManager extends Component {
     @property(Widget)
     friendsSearch: Widget = null;
 
-    @property(UIChest)
-    chestUi: UIChest;
-
-    @property(UILevelAdaptivity)
-    levelAdaptivity: UILevelAdaptivity;
+    @property([UIAdaptivityBase])
+    adaptiveFrames: UIAdaptivityBase[] = [];
 
     public static instance: ResolutionManager = null;
 
@@ -119,7 +99,9 @@ export class ResolutionManager extends Component {
             this.setPortraitMode();
         }
 
-        this.levelAdaptivity.refresh();
+        for(let i = 0; i < this.adaptiveFrames.length; i++) {
+            this.adaptiveFrames[i].refresh();
+        }
 
         this.scaleItemsByScreenRatio(ratio);
     }
@@ -131,7 +113,6 @@ export class ResolutionManager extends Component {
         this.enableLandscapeNodes(true);
         this.enablePortraitNodes(false);
 
-        this.mainMenuBtns.setScale(new Vec3(1, 1, 1));
         for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
             this.mainMenuScalableItems[i].setScale(new Vec3(1, 1, 1));
         }
@@ -150,33 +131,10 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.popupComponents.length; i++) {
             this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
         }
-        for(let i = 0; i < this.eventBtns.length; i++) {
-            this.eventBtns[i].setScale(new Vec3(1.4, 1.4, 1.4));
-        }
-        for(let i = 0; i < this.eventProgressBtns.length; i++) {
-            this.eventProgressBtns[i].setScale(new Vec3(1.4, 1.4, 1.4));
-        }
-
-        for(let i = 0; i < this.eventBtnsWidgets.length; i++) {
-            this.eventBtnsWidgets[i].top = 37.5;
-            this.eventBtnsWidgets[i].bottom = 37.5;
-        }
-
-        for(let i = 0; i < this.eventBtnsLs.length; i++) {
-            this.eventBtnsLs[i].spacingY = 25;
-
-            this.eventBtnsLs[i].updateLayout();
-        }
 
         for(let i = 0; i < this.eventBtnsComp.length; i++) {
             this.eventBtnsComp[i].updateAdaptivity();
         }
-
-        this.playBtn.bottom = 400;
-        this.playBtn.center = 0;
-
-        this.rewardBtn.bottom = 400;
-        this.rewardBtn.center = 0;
 
         this.kingLeagueBtn.bottom = 970;
         this.kingLeagueBtn.center = 0;
@@ -185,11 +143,7 @@ export class ResolutionManager extends Component {
             this.resources[i].top = 250;
         }
 
-        this.mainMenuBtnsWidget.bottom = 0;
-
         this.tutorialPopup.top = 120;
-
-        this.chestUi.refreshScale(true);
     }
 
     setPortraitMode() {
@@ -198,7 +152,6 @@ export class ResolutionManager extends Component {
         this.enableLandscapeNodes(false);
         this.enablePortraitNodes(true);
 
-        this.mainMenuBtns.setScale(new Vec3(1.66, 1.66, 1));
         for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
             this.mainMenuScalableItems[i].setScale(new Vec3(2, 2, 1));
         }
@@ -217,33 +170,10 @@ export class ResolutionManager extends Component {
         for(let i = 0; i < this.popupComponents.length; i++) {
             this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
         }
-        for(let i = 0; i < this.eventBtns.length; i++) {
-            this.eventBtns[i].setScale(new Vec3(2.2, 2.2, 2.2));
-        }
-        for(let i = 0; i < this.eventProgressBtns.length; i++) {
-            this.eventProgressBtns[i].setScale(new Vec3(3, 3, 3));
-        }
-
-        for(let i = 0; i < this.eventBtnsWidgets.length; i++) {
-            this.eventBtnsWidgets[i].top = 1000;
-            this.eventBtnsWidgets[i].bottom = 500;
-        }
-
-        for(let i = 0; i < this.eventBtnsLs.length; i++) {
-            this.eventBtnsLs[i].spacingY = 125;
-
-            this.eventBtnsLs[i].updateLayout();
-        }
 
         for(let i = 0; i < this.eventBtnsComp.length; i++) {
             this.eventBtnsComp[i].updateAdaptivity();
         }
-
-        this.playBtn.bottom = 800;
-        this.playBtn.center = 0;
-
-        this.rewardBtn.bottom = 800;
-        this.rewardBtn.center = 0;
 
         this.kingLeagueBtn.bottom = 2400;
         this.kingLeagueBtn.center = 0;
@@ -252,15 +182,7 @@ export class ResolutionManager extends Component {
             this.resources[i].top = 400;
         }
 
-        this.mainMenuBtnsWidget.bottom = 0;
-
         this.tutorialPopup.top = 1000;
-
-        //this.friendsSearch.bottom = -100;
-
-        this.chestUi.refreshScale(false);
-
-        //this.mainBtns.updateAlignment();
     }
 
 
@@ -279,53 +201,24 @@ export class ResolutionManager extends Component {
 
     scaleItemsByScreenRatio(ratio: number) {
         if(ratio > 1.4) {
-            //this.field.setScale(new Vec3(1, 1, 1));
-
             this.friendsSearch.bottom = 850;
         }
         else if(ratio > 1) {
-            //this.field.setScale(new Vec3(1.2, 1.2, 1));
-
             this.friendsSearch.bottom = 600;
         }
         else if(ratio > 0.8) {
-            //this.field.setScale(new Vec3(1.5, 1.5, 1));
-
-            //this.boostersPortrait.setScale(new Vec3(1.4, 1.4, 1));
-            //this.goalsPortrait.setScale(new Vec3(1.7, 1.7, 1));
-
             this.friendsSearch.bottom = 600;
         }
         else if(ratio > 0.72) {
-            //this.field.setScale(new Vec3(1.8, 1.8, 1));
-
-            //this.boostersPortrait.setScale(new Vec3(1.6, 1.6, 1));
-            //this.goalsPortrait.setScale(new Vec3(2, 2, 1));
-
             this.friendsSearch.bottom = 350;
         }
         else if(ratio > 0.6) {
-            //this.field.setScale(new Vec3(1.8, 1.8, 1));
-
-            //this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
-            //this.goalsPortrait.setScale(new Vec3(2, 2, 1));
-
             this.friendsSearch.bottom = 250;
         }
         else if(ratio > 0.5) {
-            //this.field.setScale(new Vec3(2, 2, 1));
-
-            //this.boostersPortrait.setScale(new Vec3(2, 2, 1));
-            //this.goalsPortrait.setScale(new Vec3(2, 2, 1));
-
             this.friendsSearch.bottom = 250;
         }
         else {
-            //this.field.setScale(new Vec3(2.2, 2.2, 1));
-
-            //this.boostersPortrait.setScale(new Vec3(1.8, 1.8, 1));
-            //this.goalsPortrait.setScale(new Vec3(2.2, 2.2, 1));
-
             this.friendsSearch.bottom = 250;
         }
 
