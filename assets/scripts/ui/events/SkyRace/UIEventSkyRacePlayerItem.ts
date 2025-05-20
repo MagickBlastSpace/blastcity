@@ -85,7 +85,7 @@ export class UIEventSkyRacePlayerItem extends Component {
             }
         }
 
-        this.loadAvatar(data.playerId);
+        //this.loadAvatar(data.playerId);
         
         if (!this.slider) {
             //console.warn("Slider component is not assigned.");
@@ -162,7 +162,7 @@ export class UIEventSkyRacePlayerItem extends Component {
 
 
     async loadAvatar(id: number) {
-        if(id === 0) {
+        /*if(id === 0) {
             return;
         }
         
@@ -185,6 +185,16 @@ export class UIEventSkyRacePlayerItem extends Component {
 
         catch (error) {
             console.log('Error fetching players:', error);
+        }*/
+    }
+
+    setPlayerInfo(player: any) {
+        if(this.avatar) {
+            this.avatar.spriteFrame = Profile.instance.getAvatarById(player.state["avatar_id"]);
+        }
+
+        if(this.clanName) {
+            this.clanName.string = player.state["clanname"];
         }
     }
 

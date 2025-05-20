@@ -50,29 +50,6 @@ export class UIEventWeeklyContestPlayerItem extends UIEventKingsCupPlayerItem {
 
         this.clanLabel.string = "";
         this.playerId = data.playerId;
-
-        try {
-            let ids = [data.playerId];
-            const result = await Net.instance.getPlayersByIds(ids);
-            
-            const { players } = result;
-            
-            if(players.length > 0) {
-                this.clanLabel.string = players[0].state["clanname"];
-
-                if(this.avatar) {
-                    this.avatar.spriteFrame = Profile.instance.getAvatarById(players[0].state["avatar_id"]);
-                }
-
-                if(this.frame) {
-                    this.frame.spriteFrame = Profile.instance.getFrameById(players[0].state["frame_id"]);
-                }
-            }
-        }
-
-        catch (error) {
-            console.log('Error fetching players:', error);
-        }
     }
 
 

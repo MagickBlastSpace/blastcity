@@ -1,6 +1,8 @@
 import { _decorator, Component, Node, Label, Prefab, instantiate, Button } from 'cc';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventWeeklyContestPlayerItem } from './UIEventWeeklyContestPlayerItem';
+import { PlayerEventData } from '../../../data/EventData';
+import { Net } from '../../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventWeeklyContest')
@@ -58,6 +60,8 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
 
             this.items[i].refresh(data[i]);
         }
+
+        this.loadPlayersInfo(data);
     }
 
 
@@ -65,6 +69,27 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
         super.show();
 
         this.eventController.updateMultiplayerData();
+    }
+
+
+    async loadPlayersInfo(data: PlayerEventData[]) {
+        try {
+            let ids = [];
+            for(let i = 0; i < data.length; i++) {
+                ids.push(data[i].playerId);
+            }
+            const result = await Net.instance.getPlayersByIds(ids);
+            
+            const { players } = result;
+            
+            for(let i = 0; i < players.length && i < this.items.length; i++) {
+                this.items[i].setPlayerInfo(players[i]);
+            }
+        }
+
+        catch (error) {
+            console.log('Error fetching players:', error);
+        }
     }
 
 

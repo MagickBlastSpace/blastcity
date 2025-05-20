@@ -7,6 +7,8 @@ import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { ResolutionManager } from '../../../utils/ResolutionManager';
 import { Localization } from '../../../utils/Localization';
+import { Net } from '../../../net/Net';
+import { PlayerEventData } from '../../../data/EventData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventSkyRace')
@@ -88,6 +90,8 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
 
         this.updateWidgetAlignment(ResolutionManager.instance.isPortraitOrientation());
+
+        this.loadPlayersInfo(data);
     }
 
 
@@ -102,6 +106,26 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
         this.frameWidget.right = isPortrait ? 0 : 650;
         
         this.frameWidget.updateAlignment();*/
+    }
+
+    async loadPlayersInfo(data: PlayerEventData[]) {
+        try {
+            let ids = [];
+            for(let i = 0; i < data.length; i++) {
+                ids.push(data[i].playerId);
+            }
+            const result = await Net.instance.getPlayersByIds(ids);
+            
+            const { players } = result;
+            
+            for(let i = 0; i < players.length && i < this.items.length; i++) {
+                this.items[i].setPlayerInfo(players[i]);
+            }
+        }
+
+        catch (error) {
+            console.log('Error fetching players:', error);
+        }
     }
 
 

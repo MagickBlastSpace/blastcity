@@ -67,6 +67,8 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
                 this.items[i].refresh(members[i]);
             }
 
+            this.loadPlayersInfo(members);
+
             if (this.scroll) {
                 this.scroll.scrollToTop(0.1, true);
             }
@@ -81,6 +83,27 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
         super.show();
 
         this.refresh();
+    }
+
+
+    async loadPlayersInfo(data: PlayerEventData[]) {
+        try {
+            let ids = [];
+            for(let i = 0; i < data.length; i++) {
+                ids.push(data[i].playerId);
+            }
+            const result = await Net.instance.getPlayersByIds(ids);
+            
+            const { players } = result;
+            
+            for(let i = 0; i < players.length && i < this.items.length; i++) {
+                this.items[i].setPlayerInfo(players[i]);
+            }
+        }
+
+        catch (error) {
+            console.log('Error fetching players:', error);
+        }
     }
 
 

@@ -56,6 +56,8 @@ export class UIEventKingsCup extends UIEventSkyRace {
         this.rewardLayout.active = isRewardAvailable;
 
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
+
+        this.loadPlayersInfo(data);
     }
 
     updateWidgetAlignment(isPortrait) {}

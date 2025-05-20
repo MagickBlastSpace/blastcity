@@ -5,6 +5,8 @@ import { EventBase } from '../../../game/events/EventBase';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { Localization } from '../../../utils/Localization';
+import { PlayerEventData } from '../../../data/EventData';
+import { Net } from '../../../net/Net';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventLightning')
@@ -108,6 +110,8 @@ export class UIEventLightning extends UIEventPopupFrameBase {
             this.items[i].refresh(data[i]);
         }
 
+        this.loadPlayersInfo(data);
+
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
     }
 
@@ -116,6 +120,27 @@ export class UIEventLightning extends UIEventPopupFrameBase {
         super.show();
 
         this.eventController.updateMultiplayerData();
+    }
+
+
+    async loadPlayersInfo(data: PlayerEventData[]) {
+        try {
+            let ids = [];
+            for(let i = 0; i < data.length; i++) {
+                ids.push(data[i].playerId);
+            }
+            const result = await Net.instance.getPlayersByIds(ids);
+            
+            const { players } = result;
+            
+            for(let i = 0; i < players.length && i < this.items.length; i++) {
+                this.items[i].setPlayerInfo(players[i]);
+            }
+        }
+
+        catch (error) {
+            console.log('Error fetching players:', error);
+        }
     }
 
 
