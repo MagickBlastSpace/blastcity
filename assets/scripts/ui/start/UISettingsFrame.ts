@@ -3,6 +3,7 @@ import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { AudioController } from '../../utils/AudioController';
 import { UserData } from '../../data/UserData';
 import { Localization } from '../../utils/Localization';
+import { BattlepassEvent } from '../../game/events/BattlepassEvent';
 const { ccclass, property } = _decorator;
 
 @ccclass('UISettingsFrame')
@@ -29,6 +30,9 @@ export class UISettingsFrame extends UIPopupFrameBase {
 
     @property(Localization)
     localization: Localization;
+
+    @property(BattlepassEvent)
+    bp: BattlepassEvent;
 
 
     start() {
@@ -90,6 +94,8 @@ export class UISettingsFrame extends UIPopupFrameBase {
     onToggleDevMode(toggle: Toggle) {
         UserData.instance.setDevMode(toggle.isChecked);
         console.log('Developer mode is now:', toggle.isChecked);
+
+        this.bp.setDebugMode(toggle.isChecked);
     }
 
     onToggleAphrodite(toggle: Toggle) {

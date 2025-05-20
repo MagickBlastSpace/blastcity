@@ -16,6 +16,9 @@ export class BattlepassEvent extends RocketFeverEvent {
     private bankMultiplier: number = 10;
     private isBankTaken: boolean = false;
 
+    /*Debug*/
+    private isDebugMode: boolean = false;
+
 
     start() {
         this.level.on("complete_statistics", (stats) => this.handleLevelCompletion(stats));
@@ -376,6 +379,31 @@ export class BattlepassEvent extends RocketFeverEvent {
         SaveData.instance.saveEvent(this.eventId);
     
         this.node.emit("refresh");
+    }
+
+
+    /*Debug*/
+    cheatKeys(count: number) {
+        this.collectedRockets = this.collectedRockets + count;
+
+        this.bonusBank = this.bonusBank + count * this.bankMultiplier;
+        if(this.bonusBank > this.bonusBank_Max) {
+            this.bonusBank = this.bonusBank_Max;
+        }
+
+        this.checkStageCompletion();
+
+        SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("refresh");
+    }
+
+    setDebugMode(isDebug: boolean) {
+        this.isDebugMode = isDebug;
+    }
+
+    getIsDebugMode(): boolean {
+        return this.isDebugMode;
     }
 }
 

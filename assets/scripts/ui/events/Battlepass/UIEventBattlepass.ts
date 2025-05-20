@@ -50,6 +50,14 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     private items: [UIEventBattlepassItem] = [];
 
+    /*Debug*/
+    @property(Button)
+    addKeyBtn: Button = null;
+    @property(Button)
+    add10KeyBtn: Button = null;
+    @property(Button)
+    add100KeyBtn: Button = null;
+
 
     start() {
         this.activateBtn.node.on(Button.EventType.CLICK, this.onActivateBtnClick, this);
@@ -90,6 +98,11 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
         const percent = this.eventController.getCurrentStage() / this.eventController.getTotalStages();
         this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
+
+        /*Debug*/
+        this.addKeyBtn.node.on(Button.EventType.CLICK, this.onAddKeyClick, this);
+        this.add10KeyBtn.node.on(Button.EventType.CLICK, this.onAdd10KeyClick, this);
+        this.add100KeyBtn.node.on(Button.EventType.CLICK, this.onAdd100KeyClick, this);
     }
 
     update(deltaTime: number) {
@@ -135,6 +148,9 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.refresh();
 
         this.scrollToCurrentStage();
+
+        /*Debug*/
+        this.showDebugUI(this.eventController.getIsDebugMode());
     }
 
 
@@ -181,6 +197,27 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         //this.eventController.activateEvent();
 
         this.startPopup.hide();
+    }
+
+
+    /*Debug*/
+    onAddKeyClick() {
+        this.eventController.cheatKeys(1);
+    }
+
+    onAdd10KeyClick() {
+        this.eventController.cheatKeys(10);
+    }
+
+    onAdd100KeyClick() {
+        this.eventController.cheatKeys(100);
+    }
+
+
+    showDebugUI(isActive: boolean) {
+        this.addKeyBtn.node.active = isActive;
+        this.add10KeyBtn.node.active = isActive;
+        this.add100KeyBtn.node.active = isActive;
     }
 }
 
