@@ -237,8 +237,10 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     }
 
 
-    onActivateBtnClick() {
-        UserData.instance.buyPremium();
+    async onActivateBtnClick() {
+        this.activateBtn.node.active = false;
+
+        await UserData.instance.buyPremium();
 
         this.refresh();
     }
