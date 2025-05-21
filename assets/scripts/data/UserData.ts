@@ -437,6 +437,9 @@ export class UserData extends Component {
                 return this.Cannons;
             case "jester":
                 return this.Jesters;
+
+            case "cards":
+                return this.collections.getCollectedCardsCount() + this.collections.getDuplicatesCount();
         }
 
         return 0;

@@ -65,6 +65,39 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     @property(Button)
     clearBtn: Button = null;
 
+    @property(Node)
+    debugInfoLayout: Node = null;
+
+    @property(Label)
+    gold: Label = null;
+    @property(Label)
+    rockets: Label = null;
+    @property(Label)
+    bombs: Label = null;
+    @property(Label)
+    discoballs: Label = null;
+
+    @property(Label)
+    rocketsTime: Label = null;
+    @property(Label)
+    bombsTime: Label = null;
+    @property(Label)
+    discoballsTime: Label = null;
+
+    @property(Label)
+    hammers: Label = null;
+    @property(Label)
+    bows: Label = null;
+    @property(Label)
+    cannons: Label = null;
+    @property(Label)
+    jesters: Label = null;
+
+    @property(Label)
+    livesTime: Label = null;
+    @property(Label)
+    cards: Label = null;
+
 
     start() {
         this.activateBtn.node.on(Button.EventType.CLICK, this.onActivateBtnClick, this);
@@ -146,6 +179,28 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         }
 
         this.safeGold.active = this.eventController.isMaxStage();
+
+        /*Debug*/
+        if(this.eventController.getIsDebugMode()) {
+            this.gold.string = "Gold: " + UserData.instance.getResource("gold");
+
+            this.bombs.string = "Bombs: " + UserData.instance.getResource("bomb");
+            this.rockets.string = "Rockets: " + UserData.instance.getResource("rocket");
+            this.discoballs.string = "Disco: " + UserData.instance.getResource("discoball");
+
+            this.bombsTime.string = "B Time: " + UserData.instance.getRemainingTimeString("bomb");
+            this.rocketsTime.string = "R Time: " + UserData.instance.getRemainingTimeString("rocket");
+            this.discoballsTime.string = "D Time: " + UserData.instance.getRemainingTimeString("discoball");
+
+            this.livesTime.string = "Lives Time: " + UserData.instance.getRemainingTimeString("endless_lives");
+
+            this.hammers.string = "Hammers: " + UserData.instance.getResource("hammer");
+            this.bows.string = "Arrows: " + UserData.instance.getResource("bow");
+            this.cannons.string = "Cannons: " + UserData.instance.getResource("cannon");
+            this.jesters.string = "Jesters: " + UserData.instance.getResource("jester");
+
+            this.cards.string = "Cards: " + UserData.instance.getResource("cards");
+        }
     }
 
 
@@ -227,6 +282,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.add100KeyBtn.node.active = isActive;
         this.endBtn.node.active = isActive;
         this.clearBtn.node.active = isActive;
+
+        this.debugInfoLayout.active = isActive;
     }
 
 

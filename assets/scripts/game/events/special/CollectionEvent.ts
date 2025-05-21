@@ -219,6 +219,10 @@ export class CollectionEvent extends SpecialEventBase {
         return this.collectedCards.length;
     }
 
+    getDuplicatesCount(): number {
+        return this.duplicates.length;
+    }
+
     getDuplicatesCountById(id: string): number {
         return this.duplicates.filter(item => item === id).length;
     }
