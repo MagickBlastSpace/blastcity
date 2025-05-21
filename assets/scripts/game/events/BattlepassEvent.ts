@@ -13,8 +13,6 @@ export class BattlepassEvent extends RocketFeverEvent {
 
     private bonusBank: number = 0;
     private bonusBank_Max: number = 5000;
-    private bankMultiplier: number = 10;
-    private isBankTaken: boolean = false;
 
     /*Debug*/
     private isDebugMode: boolean = false;
@@ -105,11 +103,6 @@ export class BattlepassEvent extends RocketFeverEvent {
 
         this.collectedRockets = this.collectedRockets + earnedPoints;
 
-        this.bonusBank = this.bonusBank + earnedPoints * this.bankMultiplier;
-        if(this.bonusBank > this.bonusBank_Max) {
-            this.bonusBank = this.bonusBank_Max;
-        }
-
         this.checkStageCompletion();
 
         SaveData.instance.saveEvent(this.eventId);
@@ -119,7 +112,22 @@ export class BattlepassEvent extends RocketFeverEvent {
 
     checkStageCompletion() {
         if(this.eventData.length <= this.currentStage) {
-            this.handleEventCompletion();
+            if(this.collectedRockets >= 10) {
+                this.collectedRockets = this.collectedRockets - 10;
+
+                this.currentStage = this.currentStage + 1;
+
+                this.bonusBank = this.bonusBank + 100;
+                if(this.bonusBank > this.bonusBank_Max) {
+                    this.bonusBank = this.bonusBank_Max;
+                }
+
+                this.checkStageCompletion();
+            }
+            else {
+                SaveData.instance.saveEvent(this.eventId);
+            }
+
             return;
         }
 
@@ -209,41 +217,9 @@ export class BattlepassEvent extends RocketFeverEvent {
         this.bonusBank = value;
     }
 
-    getIsBankTaken(): boolean {
-        return this.isBankTaken;
-    }
-
-    setIsBankTaken(isTaken: boolean) {
-        this.isBankTaken = isTaken;
-    }
-
-
-    takeBonusBank() {
-        if(!this.getIsBankTakeAvailable()) {
-            return;
-        }
-
-        UserData.instance.addResource("gold", this.bonusBank);
-
-        this.bonusBank = 0;
-        this.isBankTaken = true;
-
-        SaveData.instance.saveEvent(this.eventId);
-
-        this.node.emit("refresh");
-    }
-
-    getIsBankTakeAvailable(): boolean {
-        return !this.isBankTaken && this.isComplete;
-    }
-
 
     isRewardAvailable(): boolean {
         if(this.isUnpickedRewardAvailable()) {
-            return true;
-        }
-
-        if(this.getIsBankTakeAvailable()) {
             return true;
         }
 
@@ -350,9 +326,7 @@ export class BattlepassEvent extends RocketFeverEvent {
                 }
             }
 
-            if(this.getIsBankTakeAvailable()) {
-                totalReward.gold += this.bonusBank;
-            }
+            totalReward.gold += this.bonusBank;
 
             this.unpickedRewards = [];
             this.unpickedRewards.push(totalReward);
@@ -382,14 +356,25 @@ export class BattlepassEvent extends RocketFeverEvent {
     }
 
 
+    isMaxStage(): boolean {
+        return this.eventData.length <= this.currentStage;
+    }
+
+    getCurrentStageStep(): number {
+        if(this.isMaxStage()) {
+            return 10;
+        }
+        if(!this.isStarted || this.isComplete) {
+            return 0;
+        }
+
+        return this.eventData[this.currentStage].stageStep;
+    }
+
+
     /*Debug*/
     cheatKeys(count: number) {
         this.collectedRockets = this.collectedRockets + count;
-
-        this.bonusBank = this.bonusBank + count * this.bankMultiplier;
-        if(this.bonusBank > this.bonusBank_Max) {
-            this.bonusBank = this.bonusBank_Max;
-        }
 
         this.checkStageCompletion();
 

@@ -299,6 +299,12 @@ export class EventBase extends Component {
         this.unpickedRewards = rewards;
     }
 
+    getBonusBank(): number {
+        return 0;
+    }
+
+    setBonusBank(value: number) {}
+
 
     applyRewards(rewards: EventRewardData[]) {
         for(let i = 0; i < rewards.length; i++) {

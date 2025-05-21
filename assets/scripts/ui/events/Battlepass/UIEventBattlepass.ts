@@ -48,6 +48,9 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     @property(UIEventBattlepassBonusBank)
     bonusSafeComp: UIEventBattlepassBonusBank;
 
+    @property(Node)
+    safeGold: Node = null;
+
     private items: [UIEventBattlepassItem] = [];
 
     /*Debug*/
@@ -92,10 +95,6 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
         this.itemsLayout.addChild(this.bonusSafe);
 
-        this.bonusSafe.on("take", () => {
-            this.eventController.takeBonusBank();
-        });
-
         const percent = this.eventController.getCurrentStage() / this.eventController.getTotalStages();
         this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
 
@@ -134,11 +133,13 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
         this.progressBar.progress = this.eventController.getTimeProgress();
 
-        this.bonusSafeComp.refresh(isPrem, this.eventController.getIsBankTakeAvailable(), this.eventController.getBonusBank());
+        this.bonusSafeComp.refresh(isPrem, this.eventController.getBonusBank());
 
         if(this.eventController.isUnpickedRewardAvailable() || this.eventController.getIsComplete()) {
             this.endPopup.show();
         }
+
+        this.safeGold.active = this.eventController.isMaxStage();
     }
 
 

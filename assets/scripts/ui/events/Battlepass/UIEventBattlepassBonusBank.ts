@@ -9,9 +9,6 @@ export class UIEventBattlepassBonusBank extends Component {
     @property(Node)
     passiveContainer: Node = null;
 
-    @property(Button)
-    takeBtn: Button = null;
-
     @property(Label)
     gold: Label = null;
 
@@ -19,26 +16,15 @@ export class UIEventBattlepassBonusBank extends Component {
     progressBar: ProgressBar = null;
 
 
-    start() {
-        this.takeBtn.node.on(Button.EventType.CLICK, this.onTakeBtnClick, this);
-    }
-
-    refresh(isPremium: boolean, isTakeAvailable: boolean, count: number) {
+    refresh(isPremium: boolean, count: number) {
         this.activeContainer.active = isPremium;
         this.passiveContainer.active = !isPremium;
-
-        this.takeBtn.node.active = isTakeAvailable;
 
         this.gold.string = count + "/ 5000";
 
         tween(this.progressBar)
             .to(0.8, { progress: count / 5000 })
             .start();
-    }
-
-
-    onTakeBtnClick() {
-        this.node.emit("take");
     }
 }
 
