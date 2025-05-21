@@ -149,6 +149,10 @@ export class SaveData extends Component {
         gamepush.player.sync();
     }
 
+    clearEventSave(eventId: string) {
+        cc.sys.localStorage.removeItem('event_' + eventId);
+    }
+
     cheatToLastLevel() {
         gamepush.player.set('score', 700);
         gamepush.player.set('score_king_league', 0);
@@ -512,7 +516,9 @@ export class SaveData extends Component {
                     isRewardPicked: eventComp.getIsRewardPicked(),
                     unpickedRewards: eventComp.getUnpickedRewards(),
 
-                    bots: eventComp.getBots()
+                    bots: eventComp.getBots(),
+
+                    bonusBank: eventComp.getBonusBank()
                 };
         
                 try {
@@ -572,6 +578,9 @@ export class SaveData extends Component {
                         }
                         if (eventData.bots !== undefined) {
                             eventComp.setBots(eventData.bots);
+                        }
+                        if (eventData.bonusBank !== undefined) {
+                            eventComp.setBonusBank(eventData.bonusBank);
                         }
 
                         eventComp.setLastTimestamp(eventData.lastAttemptTimestamp); //always last

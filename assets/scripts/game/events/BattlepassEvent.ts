@@ -267,6 +267,8 @@ export class BattlepassEvent extends RocketFeverEvent {
         UserData.instance.removePremium();
 
         super.restartEvent();
+
+        this.node.emit("refresh");
     }
 
 
@@ -276,7 +278,7 @@ export class BattlepassEvent extends RocketFeverEvent {
 
             let isPrem = UserData.instance.getIsPremium();
     
-            for (let i = 0; i < this.currentStage; i++) {
+            for (let i = 0; i < this.currentStage && i < this.eventData.length; i++) {
                 if (!this.takenRewards.includes(i)) {
                     let reward = this.eventData[i]?.rewards[0];
 
@@ -389,6 +391,21 @@ export class BattlepassEvent extends RocketFeverEvent {
 
     getIsDebugMode(): boolean {
         return this.isDebugMode;
+    }
+
+
+    setEnd() {
+        const now = new Date();
+    
+        this.endTime = now;
+    
+        console.log("bp terminated");
+    }
+
+    clearSave() {
+        SaveData.instance.clearEventSave(this.eventId);
+
+        console.log("bp cleared");
     }
 }
 

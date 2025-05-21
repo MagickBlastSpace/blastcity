@@ -60,6 +60,10 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     add10KeyBtn: Button = null;
     @property(Button)
     add100KeyBtn: Button = null;
+    @property(Button)
+    endBtn: Button = null;
+    @property(Button)
+    clearBtn: Button = null;
 
 
     start() {
@@ -102,6 +106,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.addKeyBtn.node.on(Button.EventType.CLICK, this.onAddKeyClick, this);
         this.add10KeyBtn.node.on(Button.EventType.CLICK, this.onAdd10KeyClick, this);
         this.add100KeyBtn.node.on(Button.EventType.CLICK, this.onAdd100KeyClick, this);
+        this.endBtn.node.on(Button.EventType.CLICK, this.onEndClick, this);
+        this.clearBtn.node.on(Button.EventType.CLICK, this.onClearClick, this);
     }
 
     update(deltaTime: number) {
@@ -219,6 +225,19 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.addKeyBtn.node.active = isActive;
         this.add10KeyBtn.node.active = isActive;
         this.add100KeyBtn.node.active = isActive;
+        this.endBtn.node.active = isActive;
+        this.clearBtn.node.active = isActive;
+    }
+
+
+    onEndClick() {
+        this.eventController.setEnd();
+    }
+
+    onClearClick() {
+        this.eventController.clearSave();
+
+        this.hide();
     }
 }
 
