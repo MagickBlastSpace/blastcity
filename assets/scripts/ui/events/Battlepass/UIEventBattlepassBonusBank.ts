@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, tween, ProgressBar } from 'cc';
+import { _decorator, Component, Node, Button, Label, tween, ProgressBar, Sprite, SpriteFrame } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventBattlepassBonusBank')
@@ -15,12 +15,21 @@ export class UIEventBattlepassBonusBank extends Component {
     @property(ProgressBar)
     progressBar: ProgressBar = null;
 
+    @property(Sprite)
+    safeIcon: Sprite = null;
+    @property(SpriteFrame)
+    common: SpriteFrame = null;
+    @property(SpriteFrame)
+    premium: SpriteFrame = null;
 
-    refresh(isPremium: boolean, count: number) {
-        this.activeContainer.active = isPremium;
+
+    refresh(isPremium: boolean, count: number, isMaxStage: boolean) {
+        this.activeContainer.active = isMaxStage;
         this.passiveContainer.active = !isPremium;
 
         this.gold.string = count + "/ 5000";
+
+        this.safeIcon.spriteFrame = isPremium ? this.premium : this.common;
 
         tween(this.progressBar)
             .to(0.8, { progress: count / 5000 })

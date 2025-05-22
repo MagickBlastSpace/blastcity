@@ -179,7 +179,7 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
         this.progressBar.progress = this.eventController.getTimeProgress();
 
-        this.bonusSafeComp.refresh(isPrem, this.eventController.getBonusBank());
+        this.bonusSafeComp.refresh(isPrem, this.eventController.getBonusBank(), this.eventController.isMaxStage());
 
         if(this.eventController.isUnpickedRewardAvailable() || this.eventController.getIsComplete()) {
             this.endPopup.show();
