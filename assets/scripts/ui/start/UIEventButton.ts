@@ -262,6 +262,8 @@ export class UIEventButton extends Component {
                 else {
                     ResolutionManager.instance.addPopup(instantiatedNode);
                 }
+
+                ResolutionManager.instance.addAdaptiveFrame(instantiatedNode);
                 
                 instantiatedNode.active = false;
                 

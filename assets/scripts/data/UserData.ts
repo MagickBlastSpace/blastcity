@@ -759,6 +759,7 @@ export class UserData extends Component {
         this.isPremium = false;
 
         gamepush.player.set('energy:max', this.energyMax_Free);
+        gamepush.player.sync();
 
         //this.node.emit("premium_purchase");
 

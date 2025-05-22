@@ -5,6 +5,7 @@ import { UserData } from '../../../data/UserData';
 import { UIEventBattlepassBonusBank } from './UIEventBattlepassBonusBank';
 import { ResolutionManager } from '../../../utils/ResolutionManager';
 import { UIPopupFrameBase } from '../../UIPopupFrameBase';
+import { UIEventBattlepassAdaptive } from './UIEventBattlepassAdaptive';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventBattlepass')
@@ -50,6 +51,9 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     @property(Node)
     safeGold: Node = null;
+
+    @property(UIEventBattlepassAdaptive)
+    adaptivity: UIEventBattlepassAdaptive;
 
     private items: [UIEventBattlepassItem] = [];
 
@@ -116,17 +120,20 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
             const item = itemNode.getComponent('UIEventBattlepassItem');
 
             itemNode.on("take", (stageIndex) => {
-                this.eventController.takeReward(stageIndex - 1);
+                this.eventController.takeReward(stageIndex);
             });
             itemNode.on("take_premium", (stageIndex) => {
-                this.eventController.takeReward_Premium(stageIndex - 1);
+                this.eventController.takeReward_Premium(stageIndex);
             });
 
             this.items.push(item);
+
+            const adaptivityItem = itemNode.getComponent('UIEventBattlepassItemAdaptivity');
+            this.adaptivity.addAdaptiveItem(adaptivityItem);
         }
 
         for(let i = 0; i < data.length && i < this.items.length; i++) {
-            this.items[i].refresh(i + 1, data[i], this.eventController.getCurrentStage());
+            this.items[i].refresh(i, data[i], this.eventController.getCurrentStage());
             this.items[i].refreshAvailability(this.eventController.isRewardTaken(i), this.eventController.isRewardTaken_Premium(i));
         }
 
@@ -164,7 +171,7 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         let data = this.eventController.getData();
 
         for(let i = 0; i < data.length && i < this.items.length; i++) {
-            this.items[i].refresh(i + 1, data[i], this.eventController.getCurrentStage());
+            this.items[i].refresh(i, data[i], this.eventController.getCurrentStage());
             this.items[i].refreshAvailability(this.eventController.isRewardTaken(i), this.eventController.isRewardTaken_Premium(i));
         }
 
@@ -179,6 +186,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         }
 
         this.safeGold.active = this.eventController.isMaxStage();
+
+        this.adaptivity.refresh();
 
         /*Debug*/
         if(this.eventController.getIsDebugMode()) {

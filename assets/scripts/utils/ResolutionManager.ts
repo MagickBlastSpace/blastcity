@@ -233,6 +233,11 @@ export class ResolutionManager extends Component {
 
 
     addPopup(popup: Node) {
+        const adaptivityComp = popup.getComponent("UIAdaptivityBase");
+        if (adaptivityComp) {
+            return;
+        }
+
         this.popups.push(popup);
 
         let popupComponent = popup.getComponent("UIFrameBase");
@@ -243,12 +248,24 @@ export class ResolutionManager extends Component {
     }
 
     addPopup_v2(popup: Node) {
+        const adaptivityComp = popup.getComponent("UIAdaptivityBase");
+        if (adaptivityComp) {
+            return;
+        }
+        
         this.popups_v2.push(popup);
 
         let popupComponent = popup.getComponent("UIFrameBase");
 
         if(popupComponent) {
             this.popupComponents.push(popupComponent);
+        }
+    }
+
+    addAdaptiveFrame(frame: Node) {
+        const adaptivityComp = frame.getComponent("UIAdaptivityBase");
+        if (adaptivityComp) {
+            this.adaptiveFrames.push(adaptivityComp);
         }
     }
 }

@@ -268,6 +268,9 @@ export class BattlepassEvent extends RocketFeverEvent {
 
         super.restartEvent();
 
+        this.takenRewards = [];
+        this.takenRewards_Premium = [];
+
         this.node.emit("refresh");
     }
 
@@ -297,9 +300,13 @@ export class BattlepassEvent extends RocketFeverEvent {
                     totalReward.rocket_Minutes += reward.rocket_Minutes;
                     totalReward.discoball_Minutes += reward.discoball_Minutes;
                     totalReward.battlepass += reward.battlepass;
-                    totalReward.cardsPack += reward.cardsPack;
-                    totalReward.cards.push(...reward.cards);
-                    totalReward.isChest ||= reward.isChest;
+                    //totalReward.cardsPack += reward.cardsPack;
+                    let cards = UserData.instance.openCardsPack(reward.cardsPack);
+
+                    for(let i = 0; i < cards.length; i++) {
+                        totalReward.cards.push(cards[i]);
+                    }
+                    //totalReward.isChest ||= reward.isChest;
                 }
 
                 if(isPrem) {
@@ -321,9 +328,13 @@ export class BattlepassEvent extends RocketFeverEvent {
                         totalReward.rocket_Minutes += reward.rocket_Minutes;
                         totalReward.discoball_Minutes += reward.discoball_Minutes;
                         totalReward.battlepass += reward.battlepass;
-                        totalReward.cardsPack += reward.cardsPack;
-                        totalReward.cards.push(...reward.cards);
-                        totalReward.isChest ||= reward.isChest;
+   
+                        let cards = UserData.instance.openCardsPack(reward.cardsPack);
+
+                        for(let i = 0; i < cards.length; i++) {
+                            totalReward.cards.push(cards[i]);
+                        }
+                        //totalReward.isChest ||= reward.isChest;
                     }
                 }
             }

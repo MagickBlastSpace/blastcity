@@ -29,6 +29,9 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
     @property(ProgressBar)
     progressBar: ProgressBar = null;
 
+    @property(SpriteFrame)
+    specialPremium: SpriteFrame = null;
+
 
     start() {
         this.takeBtn.node.on(Button.EventType.CLICK, this.onTakeBtnClick, this);
@@ -43,7 +46,7 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
         let isPremium = UserData.instance.getIsPremium();
 
-        this.isComplete = currentStage >= stageNumber;
+        this.isComplete = currentStage > stageNumber;
 
         this.complete_Premium.active = this.isComplete && isPremium;
 
@@ -114,6 +117,11 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
                 this.rewardIcon_Premium.spriteFrame = this.cards;
                 this.rewardLabel_Premium.string = "";
             }
+
+            if(stageNumber === 0) {
+                this.rewardIcon_Premium.spriteFrame = this.specialPremium;
+                this.rewardLabel_Premium.string = "8 MAX";
+            }
         }
 
         if(stageNumber % 5 === 0 && stageNumber > 0) {
@@ -126,12 +134,12 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
             this.rewardLabel_Premium.string = "";
         }
 
-        if(currentStage >= stageNumber) {
+        if(currentStage > stageNumber) {
             tween(this.progressBar)
                 .to(0, { progress: 1.0 })
                 .start();
         }
-        else if(currentStage < stageNumber - 1) {
+        else if(currentStage < stageNumber) {
             tween(this.progressBar)
                 .to(0, { progress: 0.0 })
                 .start();

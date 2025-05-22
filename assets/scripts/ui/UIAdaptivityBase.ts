@@ -3,6 +3,10 @@ const { ccclass, property } = _decorator;
 
 @ccclass('UIAdaptivityBase')
 export class UIAdaptivityBase extends Component {
+    start() {
+        this.refresh();
+    }
+    
     refresh() {}
 }
 

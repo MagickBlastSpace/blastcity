@@ -331,7 +331,7 @@ export class EventBase extends Component {
         UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
 
         let cards = UserData.instance.openCardsPack(reward.cardsPack);
-        reward.cards = [];
+        //reward.cards = [];
         for(let i = 0; i < cards.length; i++) {
             reward.cards.push(cards[i]);
         }
