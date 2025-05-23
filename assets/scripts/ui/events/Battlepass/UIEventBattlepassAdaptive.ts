@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Layout, Widget, view, UITransform, Vec3, Size } from 'cc';
+import { _decorator, Component, Node, Layout, Widget, view, UITransform, Vec3, Size, Mask } from 'cc';
 import { UIAdaptivityBase } from '../../UIAdaptivityBase';
 const { ccclass, property } = _decorator;
 
@@ -31,6 +31,14 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
     @property(Node)
     captionRight: Node = null;
 
+    @property([Node])
+    popups: Node[] = [];
+
+    @property(Node)
+    mask: Node = null;
+    @property(Node)
+    outline: Node = null;
+
     @property(Widget)
     progress_Widget: Widget = null;
     @property(Widget)
@@ -61,6 +69,8 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
     private basic_BtnInfo_Size: number = 140;
     private basic_BtnActivate_Size: number = 500;
 
+    private basic_popup_Size: number = 1452;
+
     
     refresh() {
         const visibleSize = view.getVisibleSize();
@@ -69,7 +79,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
         let h = visibleSize.height;
     
         if (w > h) {
-            w = w / 3.5;
+            w = w / 4;
 
             const x = 0.3094 * w;
 
@@ -129,6 +139,18 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.captionRight_Widget.right = paddingSide;
 
             this.caption_Widget.top = -0.2 * x;
+
+            const popupScale = w / this.basic_popup_Size;
+            for(let i = 0; i < this.popups.length; i++) {
+                this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+            }
+
+            this.mask.getComponent(Mask).enabled = true;
+            this.outline.active = true;
+
+            const mask_H = h * 0.95;
+            this.mask.getComponent(UITransform).setContentSize(new Size(w, mask_H));
+            this.outline.getComponent(UITransform).setContentSize(new Size(w + 10, mask_H + 10));
 
         } else {
             const x = 0.3094 * w;
@@ -192,6 +214,14 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.captionRight_Widget.right = paddingSide;
 
             this.caption_Widget.top = -0.2 * x;
+
+            const popupScale = w / this.basic_popup_Size;
+            for(let i = 0; i < this.popups.length; i++) {
+                this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+            }
+
+            this.mask.getComponent(Mask).enabled = false;
+            this.outline.active = false;
         }
 
         for(let i = 0; i < this.items.length; i++) {

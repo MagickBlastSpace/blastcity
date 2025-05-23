@@ -29,7 +29,7 @@ export class UIEventBattlepassItemAdaptivity extends UIAdaptivityBase {
         let h = visibleSize.height;
     
         if (w > h) {   
-            w = w / 3.5;
+            w = w / 4;
 
             const x = 0.3094 * w;
 
