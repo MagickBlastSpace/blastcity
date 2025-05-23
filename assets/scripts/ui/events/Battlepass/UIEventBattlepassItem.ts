@@ -32,6 +32,9 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
     @property(SpriteFrame)
     specialPremium: SpriteFrame = null;
 
+    @property(Node)
+    stage_Complete: Node = null;
+
 
     start() {
         this.takeBtn.node.on(Button.EventType.CLICK, this.onTakeBtnClick, this);
@@ -120,7 +123,7 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
             if(stageNumber === 0) {
                 this.rewardIcon_Premium.spriteFrame = this.specialPremium;
-                this.rewardLabel_Premium.string = "8 MAX";
+                this.rewardLabel_Premium.string = "";
             }
         }
 
@@ -136,12 +139,12 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
         if(currentStage > stageNumber) {
             tween(this.progressBar)
-                .to(0, { progress: 1.0 })
+                .to(0.01, { progress: 1.0 })
                 .start();
         }
         else if(currentStage < stageNumber) {
             tween(this.progressBar)
-                .to(0, { progress: 0.0 })
+                .to(0.01, { progress: 0.0 })
                 .start();
         }
         else {
@@ -149,6 +152,22 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
                 .to(2, { progress: 0.5 })
                 .start();
         }
+
+
+        this.complete.active = currentStage > stageNumber;
+        this.current.active = currentStage === stageNumber;
+
+        if(currentStage > stageNumber) {
+            this.numberIcon.spriteFrame = this.complete_number;
+        }
+        else if(currentStage === stageNumber) {
+            this.numberIcon.spriteFrame = this.current_number;
+        }
+        else {
+            this.numberIcon.spriteFrame = this.next_number;
+        }
+
+        this.stage_Complete.active = currentStage > stageNumber;
     }
 
 

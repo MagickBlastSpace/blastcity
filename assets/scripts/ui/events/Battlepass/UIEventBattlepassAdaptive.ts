@@ -37,8 +37,8 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
     panel_Widget: Widget = null;
     @property(Widget)
     scroll_Widget: Widget = null;
-    /*@property(Widget)
-    caption_Widget: Widget = null;*/
+    @property(Widget)
+    caption_Widget: Widget = null;
 
     @property(Widget)
     btnInfo_Widget: Widget = null;
@@ -57,6 +57,9 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
 
     private basic_Safe_Size: number = 1508;
     private basic_ProgressBar_Size: number = 570;
+    private basic_BtnClose_Size: number = 200;
+    private basic_BtnInfo_Size: number = 140;
+    private basic_BtnActivate_Size: number = 500;
 
     
     refresh() {
@@ -98,37 +101,34 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             const paddingSide = 0.21 * x;
             
             const btn_Info_Size = 0.273 * x;
+            const btn_Info_Scale = btn_Info_Size / this.basic_BtnInfo_Size;
             const btn_Info_Padding_Top = 0.301 * x;
-            this.btnInfo.getComponent(UITransform).setContentSize(new Size(btn_Info_Size, btn_Info_Size));
+            this.btnInfo.setScale(new Vec3(btn_Info_Scale, btn_Info_Scale, 1));
             this.btnInfo_Widget.top = btn_Info_Padding_Top;
             this.btnInfo_Widget.left = paddingSide;
 
             const btn_Close_Size = 0.383 * x;
+            const btn_Close_Scale = btn_Close_Size / this.basic_BtnClose_Size;
             const btn_Close_Padding_Top = 0.421 * x;
-            this.btnClose.getComponent(UITransform).setContentSize(new Size(btn_Close_Size, btn_Close_Size));
+            this.btnClose.setScale(new Vec3(btn_Close_Scale, btn_Close_Scale, 1));
             this.btnClose_Widget.top = btn_Close_Padding_Top;
             this.btnClose_Widget.right = paddingSide;
 
-            const btn_Activate_H = 0.328 * x;
-            const btn_Activate_W = x;
-            this.btnActivate.getComponent(UITransform).setContentSize(new Size(btn_Activate_W, btn_Activate_H));
+            const btnActivateScale = x / this.basic_BtnActivate_Size;
+            this.btnActivate.setScale(new Vec3(btnActivateScale, btnActivateScale, 1));
             this.btnActivate_Widget.right = paddingSide;
 
             const progressBarScale = x / this.basic_ProgressBar_Size;
             this.progressBar.setScale(new Vec3(progressBarScale, progressBarScale, 1));
             this.progressBar_Widget.left = paddingSide;
 
-            const captionLeft_H = 0.328 * x;
-            const captionLeft_W = x;
-            this.captionLeft.getComponent(UITransform).setContentSize(new Size(captionLeft_W, captionLeft_H));
+            this.captionLeft.setScale(new Vec3(btnActivateScale, btnActivateScale, 1));
             this.captionLeft_Widget.left = paddingSide;
 
-            const captionRight_H = 0.328 * x;
-            const captionRight_W = x;
-            this.captionRight.getComponent(UITransform).setContentSize(new Size(captionRight_W, captionRight_H));
+            this.captionRight.setScale(new Vec3(btnActivateScale, btnActivateScale, 1));
             this.captionRight_Widget.right = paddingSide;
 
-            //this.caption_Widget.top = -0.3 * x;
+            this.caption_Widget.top = -0.2 * x;
 
         } else {
             const x = 0.3094 * w;
@@ -191,7 +191,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.captionRight.getComponent(UITransform).setContentSize(new Size(captionRight_W, captionRight_H));
             this.captionRight_Widget.right = paddingSide;
 
-            //this.caption_Widget.top = -0.3 * x;
+            this.caption_Widget.top = -0.2 * x;
         }
 
         for(let i = 0; i < this.items.length; i++) {

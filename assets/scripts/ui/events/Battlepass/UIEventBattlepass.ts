@@ -18,6 +18,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     @property(Button)
     closeBtn_Duplicate: Button = null;
     @property(Button)
+    closeFrame: Button = null;
+    @property(Button)
     takeUnpickedBtn: Button = null;
     @property(Button)
     startBtn: Button = null;
@@ -108,6 +110,9 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         if(this.closeBtn_Duplicate) {
             this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+        }
+        if(this.closeFrame) {
+            this.closeFrame.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         }
         this.takeUnpickedBtn.node.on(Button.EventType.CLICK, this.onTakeUnpickedClick, this);
         this.startBtn.node.on(Button.EventType.CLICK, this.onStartClick, this);
