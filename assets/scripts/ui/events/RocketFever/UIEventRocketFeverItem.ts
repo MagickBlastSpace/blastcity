@@ -35,8 +35,8 @@ export class UIEventRocketFeverItem extends Component {
     x2: SpriteFrame = null;
     @property(SpriteFrame)
     lives: SpriteFrame = null;
-    @property(SpriteFrame)
-    cards: SpriteFrame = null;
+    @property([SpriteFrame])
+    cardsIcons: SpriteFrame[] = [];
     @property(SpriteFrame)
     chestIcon: SpriteFrame = null;
 
@@ -156,7 +156,7 @@ export class UIEventRocketFeverItem extends Component {
                 this.rewardLabel.string = data.rewards[0].modifierX2_Minutes + " " + minString;
             }
             if(data.rewards[0].cardsPack > 0) {
-                this.rewardIcon.spriteFrame = this.cards;
+                this.rewardIcon.spriteFrame = this.cardsIcons[data.rewards[0].cardsPack];
                 this.rewardLabel.string = "";
             }
             if(data.rewards[0].isChest) {

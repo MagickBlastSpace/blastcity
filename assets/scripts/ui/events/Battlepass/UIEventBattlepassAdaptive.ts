@@ -195,24 +195,20 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.btnClose_Widget.top = btn_Close_Padding_Top;
             this.btnClose_Widget.right = paddingSide;
 
-            const btn_Activate_H = 0.328 * x;
-            const btn_Activate_W = x;
-            this.btnActivate.getComponent(UITransform).setContentSize(new Size(btn_Activate_W, btn_Activate_H));
+            const btnActivateScale = x / this.basic_BtnActivate_Size;
+            this.btnActivate.setScale(new Vec3(btnActivateScale, btnActivateScale, 1));
             this.btnActivate_Widget.right = paddingSide;
 
             const progressBarScale = x / this.basic_ProgressBar_Size;
             this.progressBar.setScale(new Vec3(progressBarScale, progressBarScale, 1));
             this.progressBar_Widget.left = paddingSide;
 
-            const captionLeft_H = 0.328 * x;
-            const captionLeft_W = x;
-            this.captionLeft.getComponent(UITransform).setContentSize(new Size(captionLeft_W, captionLeft_H));
+            this.captionLeft.setScale(new Vec3(btnActivateScale, btnActivateScale, 1));
             this.captionLeft_Widget.left = paddingSide;
 
-            const captionRight_H = 0.328 * x;
-            const captionRight_W = x;
-            this.captionRight.getComponent(UITransform).setContentSize(new Size(captionRight_W, captionRight_H));
+            this.captionRight.setScale(new Vec3(btnActivateScale, btnActivateScale, 1));
             this.captionRight_Widget.right = paddingSide;
+
 
             this.caption_Widget.top = -0.25 * x;
 
