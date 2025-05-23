@@ -176,7 +176,7 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
         this.progressLabel.string = this.eventController.getCollectable() + "/" + this.eventController.getCurrentStageStep();
         
-        this.activateBtn.node.active = !isPrem;
+        this.showActivateBtn.node.active = !isPrem;
 
         let data = this.eventController.getData();
 
@@ -257,7 +257,7 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
 
     async onActivateBtnClick() {
-        this.activateBtn.node.active = false;
+        this.showActivateBtn.node.active = false;
 
         await UserData.instance.buyPremium();
 
