@@ -65,6 +65,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
 
     private basic_Safe_Size: number = 1508;
     private basic_ProgressBar_Size: number = 570;
+    private basic_Caption_Size: number = 1470;
     private basic_BtnClose_Size: number = 200;
     private basic_BtnInfo_Size: number = 140;
     private basic_BtnActivate_Size: number = 500;
@@ -96,9 +97,9 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             const currentSize = uiTransform.contentSize;
             uiTransform.setContentSize(new Size(w, currentSize.height));
 
-            const caption_H = 0.301 * x;
             const caption_W = 2.8142 * x;
-            this.caption.getComponent(UITransform).setContentSize(new Size(caption_W, caption_H));
+            const caption_Scale = caption_W / this.basic_Caption_Size;
+            this.caption.setScale(new Vec3(caption_Scale, caption_Scale, 1));
 
             this.progress_Widget.top = banner_H;
             this.panel_Widget.top = banner_H + prgoress_H;
@@ -138,7 +139,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.captionRight.setScale(new Vec3(btnActivateScale, btnActivateScale, 1));
             this.captionRight_Widget.right = paddingSide;
 
-            this.caption_Widget.top = -0.2 * x;
+            this.caption_Widget.top = -0.25 * x;
 
             const popupScale = w / this.basic_popup_Size;
             for(let i = 0; i < this.popups.length; i++) {
@@ -168,9 +169,9 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             const currentSize = uiTransform.contentSize;
             uiTransform.setContentSize(new Size(w, currentSize.height));
 
-            const caption_H = 0.301 * x;
             const caption_W = 2.8142 * x;
-            this.caption.getComponent(UITransform).setContentSize(new Size(caption_W, caption_H));
+            const caption_Scale = caption_W / this.basic_Caption_Size;
+            this.caption.setScale(new Vec3(caption_Scale, caption_Scale, 1));
 
             this.progress_Widget.top = banner_H;
             this.panel_Widget.top = banner_H + prgoress_H;
@@ -213,7 +214,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.captionRight.getComponent(UITransform).setContentSize(new Size(captionRight_W, captionRight_H));
             this.captionRight_Widget.right = paddingSide;
 
-            this.caption_Widget.top = -0.2 * x;
+            this.caption_Widget.top = -0.25 * x;
 
             const popupScale = w / this.basic_popup_Size;
             for(let i = 0; i < this.popups.length; i++) {

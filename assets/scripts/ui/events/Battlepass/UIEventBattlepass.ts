@@ -23,11 +23,15 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     takeUnpickedBtn: Button = null;
     @property(Button)
     startBtn: Button = null;
+    @property(Button)
+    showActivateBtn: Button = null;
 
     @property(UIPopupFrameBase)
     endPopup: UIPopupFrameBase;
     @property(UIPopupFrameBase)
     startPopup: UIPopupFrameBase;
+    @property(UIPopupFrameBase)
+    activatePopup: UIPopupFrameBase;
 
     @property(Label)
     progressLabel: Label = null;
@@ -107,6 +111,7 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     start() {
         this.activateBtn.node.on(Button.EventType.CLICK, this.onActivateBtnClick, this);
+        this.showActivateBtn.node.on(Button.EventType.CLICK, this.onShowActivateBtnClick, this);
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
         if(this.closeBtn_Duplicate) {
             this.closeBtn_Duplicate.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
@@ -256,6 +261,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
         await UserData.instance.buyPremium();
 
+        this.activatePopup.hide();
+
         this.refresh();
     }
 
@@ -275,6 +282,10 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         //this.eventController.activateEvent();
 
         this.startPopup.hide();
+    }
+
+    onShowActivateBtnClick() {
+        this.activatePopup.show();
     }
 
 
