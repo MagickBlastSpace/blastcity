@@ -41,8 +41,8 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
 
     @property(Widget)
     progress_Widget: Widget = null;
-    @property(Widget)
-    panel_Widget: Widget = null;
+    /*@property(Widget)
+    panel_Widget: Widget = null;*/
     @property(Widget)
     scroll_Widget: Widget = null;
     @property(Widget)
@@ -61,6 +61,9 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
     @property(Widget)
     captionRight_Widget: Widget = null;
 
+    @property(Widget)
+    background: Widget = null;
+
     private items: UIAdaptivityBase[] = [];
 
     private basic_Safe_Size: number = 1508;
@@ -78,6 +81,8 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
     
         let w = visibleSize.width;
         let h = visibleSize.height;
+
+        let real_W = visibleSize.width;
     
         if (w > h) {
             w = w / 4;
@@ -102,8 +107,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.caption.setScale(new Vec3(caption_Scale, caption_Scale, 1));
 
             this.progress_Widget.top = banner_H;
-            this.panel_Widget.top = banner_H + prgoress_H;
-            this.scroll_Widget.top = banner_H + prgoress_H + panel_H;
+            this.scroll_Widget.top = banner_H + prgoress_H;
             this.scroll_Widget.bottom = 0;
 
             const safeScale = w / this.basic_Safe_Size;
@@ -153,6 +157,10 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.mask.getComponent(UITransform).setContentSize(new Size(w, mask_H));
             this.outline.getComponent(UITransform).setContentSize(new Size(w + 10, mask_H + 10));
 
+            const backgroundPadding = 0.14 * real_W
+            this.background.left = backgroundPadding;
+            this.background.right = backgroundPadding;
+
         } else {
             const x = 0.3094 * w;
 
@@ -174,8 +182,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             this.caption.setScale(new Vec3(caption_Scale, caption_Scale, 1));
 
             this.progress_Widget.top = banner_H;
-            this.panel_Widget.top = banner_H + prgoress_H;
-            this.scroll_Widget.top = banner_H + prgoress_H + panel_H;
+            this.scroll_Widget.top = banner_H + prgoress_H;
             this.scroll_Widget.bottom = 0;
 
             const safeScale = w / this.basic_Safe_Size;
