@@ -156,7 +156,7 @@ export class UIEventRocketFeverItem extends Component {
                 this.rewardLabel.string = data.rewards[0].modifierX2_Minutes + " " + minString;
             }
             if(data.rewards[0].cardsPack > 0) {
-                this.rewardIcon.spriteFrame = this.cardsIcons[data.rewards[0].cardsPack];
+                this.rewardIcon.spriteFrame = this.cardsIcons[data.rewards[0].cardsPack - 1];
                 this.rewardLabel.string = "";
             }
             if(data.rewards[0].isChest) {

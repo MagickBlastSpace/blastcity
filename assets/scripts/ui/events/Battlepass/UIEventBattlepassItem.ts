@@ -3,6 +3,7 @@ import { UIEventRocketFeverItem } from '../RocketFever/UIEventRocketFeverItem';
 import { RocketFeverEventData } from '../../../data/EventData';
 import { UserData } from '../../../data/UserData';
 import { Localization } from '../../../utils/Localization';
+import { UIRewardInfoMinified } from '../../UIRewardInfoMinified';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventBattlepassItem')
@@ -35,15 +36,42 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
     @property(Node)
     stage_Complete: Node = null;
 
+    @property(Button)
+    showInfo_Premium: Button = null;
+
+    @property(Node)
+    info_Done: Node = null;
+    @property(Node)
+    info_Done_Premium: Node = null;
+    @property(Node)
+    info_Common_Premium: Node = null;
+    @property(Node)
+    info_x2_Premium: Node = null;
+    @property(Node)
+    info_Chest_Premium: Node = null;
+    @property(UIRewardInfoMinified)
+    info_Chest_Comp_Premium: UIRewardInfoMinified;
+
+    private data: RocketFeverEventData;
+
 
     start() {
         this.takeBtn.node.on(Button.EventType.CLICK, this.onTakeBtnClick, this);
         this.takeBtn_Premium.node.on(Button.EventType.CLICK, this.onTakePremiumBtnClick, this);
+
+        if(this.showInfoBtn) {
+            this.showInfoBtn.node.on(Button.EventType.CLICK, this.onShowInfoBtnClick, this);
+        }
+        if(this.showInfo_Premium) {
+            this.showInfo_Premium.node.on(Button.EventType.CLICK, this.onShowInfoBtnClick_Premium, this);
+        }
     }
 
 
     refresh(stageNumber: number, data: RocketFeverEventData, currentStage: number) {
         super.refresh(stageNumber, data, currentStage);
+
+        this.data = data;
 
         this.stageIndex = stageNumber;
 
@@ -117,7 +145,7 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
                 this.rewardLabel_Premium.string = data.rewards[1].modifierX2_Minutes + " " + minString;
             }
             if(data.rewards[1].cardsPack > 0) {
-                this.rewardIcon_Premium.spriteFrame = this.cardsIcons[data.rewards[1].cardsPack];
+                this.rewardIcon_Premium.spriteFrame = this.cardsIcons[data.rewards[1].cardsPack - 1];
                 this.rewardLabel_Premium.string = "";
             }
 
@@ -188,6 +216,41 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
     onTakePremiumBtnClick() {
         this.node.emit("take_premium", this.stageIndex);
+    }
+
+
+    onShowInfoBtnClick() {
+        if(this.complete.active) {
+            this.info_Done.active = true;
+        }
+        else if(this.data.rewards[0].isChest) {
+            this.info_Chest.active = true;
+
+            this.info_Chest_Comp.initReward(this.data.rewards[0]);
+        }
+        else if(this.data.rewards[0].modifierX2_Minutes > 0) {
+            this.info_x2.active = true;
+        }
+        else {
+            this.info_Common.active = true;
+        }
+    }
+
+    onShowInfoBtnClick_Premium() {
+        if(this.complete.active) {
+            this.info_Done_Premium.active = true;
+        }
+        else if(this.data.rewards[1].isChest) {
+            this.info_Chest_Premium.active = true;
+
+            this.info_Chest_Comp_Premium.initReward(this.data.rewards[1]);
+        }
+        else if(this.data.rewards[1].modifierX2_Minutes > 0) {
+            this.info_x2_Premium.active = true;
+        }
+        else {
+            this.info_Common_Premium.active = true;
+        }
     }
 }
 
