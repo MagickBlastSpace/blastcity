@@ -4,6 +4,7 @@ import { EventProgressData, EventRewardData, InitEventData } from '../../data/Ev
 import { SaveData } from '../../data/SaveData';
 import { Net } from '../../net/Net';
 import { UIPopupReward } from '../../ui/UIPopupReward';
+import { UIEventBattlepassBonusBankReward } from '../../ui/events/Battlepass/UIEventBattlepassBonusBankReward';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventsController')
@@ -17,6 +18,8 @@ export class EventsController extends Component {
 
     @property(UIPopupReward)
     rewardPopup: UIPopupReward;
+    @property(UIEventBattlepassBonusBankReward)
+    bonusBankRewardPopup: UIEventBattlepassBonusBankReward;
 
     @property(Node)
     chest: Node;
@@ -42,6 +45,7 @@ export class EventsController extends Component {
 
             this.events[i].on("progress", (count) => this.handleEventProgress(eventComp.getEventId(), count));
             this.events[i].on("reward", (data) => this.handleEventReward(data));
+            this.events[i].on("reward_bonus_bank", (count) => this.handleBonusBankReward(count));
         }
 
         this.chest.on("progress", (count) => this.handleEventProgress("chest", count));
@@ -73,6 +77,12 @@ export class EventsController extends Component {
         this.rewardPopup.show();
 
         this.rewardPopup.init(data);
+    }
+
+    handleBonusBankReward(count: number) {
+        this.bonusBankRewardPopup.show();
+
+        this.bonusBankRewardPopup.init(count);
     }
 
 

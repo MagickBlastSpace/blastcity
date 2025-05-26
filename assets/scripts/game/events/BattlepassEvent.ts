@@ -334,12 +334,13 @@ export class BattlepassEvent extends RocketFeverEvent {
                         for(let i = 0; i < cards.length; i++) {
                             totalReward.cards.push(cards[i]);
                         }
-                        //totalReward.isChest ||= reward.isChest;
                     }
                 }
             }
 
-            totalReward.gold += this.bonusBank;
+            if(!isPrem) {
+                this.bonusBank = 0;
+            }
 
             this.unpickedRewards = [];
             this.unpickedRewards.push(totalReward);
@@ -355,6 +356,12 @@ export class BattlepassEvent extends RocketFeverEvent {
         }
     
         this.applyRewards(this.unpickedRewards);
+
+        if(this.bonusBank > 0) {
+            this.applyBonusBankReward();
+
+            this.bonusBank = 0;
+        }
     
         this.unpickedRewards = [];
         this.isComplete = false;
@@ -366,6 +373,13 @@ export class BattlepassEvent extends RocketFeverEvent {
         SaveData.instance.saveEvent(this.eventId);
     
         this.node.emit("refresh");
+    }
+
+
+    applyBonusBankReward() {
+        UserData.instance.addResource("gold", this.bonusBank);
+
+        this.node.emit("reward_bonus_bank", this.bonusBank);
     }
 
 
