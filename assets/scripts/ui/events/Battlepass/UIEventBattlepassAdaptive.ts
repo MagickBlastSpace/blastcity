@@ -33,6 +33,8 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
 
     @property([Node])
     popups: Node[] = [];
+    @property(Node)
+    info: Node = null;
 
     @property(Node)
     mask: Node = null;
@@ -149,6 +151,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             for(let i = 0; i < this.popups.length; i++) {
                 this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
             }
+            this.info.setScale(new Vec3(popupScale, popupScale, 1));
 
             this.mask.getComponent(Mask).enabled = true;
             this.outline.active = true;
@@ -191,14 +194,16 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             const paddingSide = 0.21 * x;
             
             const btn_Info_Size = 0.273 * x;
+            const btn_Info_Scale = btn_Info_Size / this.basic_BtnInfo_Size;
             const btn_Info_Padding_Top = 0.301 * x;
-            this.btnInfo.getComponent(UITransform).setContentSize(new Size(btn_Info_Size, btn_Info_Size));
+            this.btnInfo.setScale(new Vec3(btn_Info_Scale, btn_Info_Scale, 1));
             this.btnInfo_Widget.top = btn_Info_Padding_Top;
             this.btnInfo_Widget.left = paddingSide;
 
             const btn_Close_Size = 0.383 * x;
+            const btn_Close_Scale = btn_Close_Size / this.basic_BtnClose_Size;
             const btn_Close_Padding_Top = 0.421 * x;
-            this.btnClose.getComponent(UITransform).setContentSize(new Size(btn_Close_Size, btn_Close_Size));
+            this.btnClose.setScale(new Vec3(btn_Close_Scale, btn_Close_Scale, 1));
             this.btnClose_Widget.top = btn_Close_Padding_Top;
             this.btnClose_Widget.right = paddingSide;
 
@@ -223,6 +228,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             for(let i = 0; i < this.popups.length; i++) {
                 this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
             }
+            this.info.setScale(new Vec3(popupScale, popupScale, 1));
 
             this.mask.getComponent(Mask).enabled = false;
             this.outline.active = false;
