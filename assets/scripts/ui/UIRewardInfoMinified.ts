@@ -45,6 +45,9 @@ export class UIRewardInfoMinified extends Component {
     @property(Button)
     closeBtn: Button = null;
 
+    @property([Node])
+    backs: Node[] = [];
+
     private curIdx: number = 0;
 
 
@@ -197,6 +200,8 @@ export class UIRewardInfoMinified extends Component {
             return;
         }
 
+        this.setBackByIndex(this.curIdx);
+
         this.rewardNodes[this.curIdx].active = true;
         this.rewardIcons[this.curIdx].spriteFrame = sp;
 
@@ -219,6 +224,29 @@ export class UIRewardInfoMinified extends Component {
 
         for(let i = 0; i < this.rewardNodesDivider.length; i++) {
             this.rewardNodesDivider[i].active = false;
+        }
+    }
+
+    setAllBacksInactive() {
+        for(let i = 0; i < this.backs.length; i++) {
+            this.backs[i].active = false;
+        }
+    }
+
+    setBackByIndex(idx: number) {
+        this.setAllBacksInactive();
+
+        if(idx < 2) {
+            this.backs[0].active = true;
+        }
+        else if(idx < 3) {
+            this.backs[1].active = true;
+        }
+        else if(idx < 4) {
+            this.backs[2].active = true;
+        }
+        else {
+            this.backs[3].active = true;
         }
     }
 
