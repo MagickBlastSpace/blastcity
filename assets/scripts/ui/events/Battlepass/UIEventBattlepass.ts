@@ -170,6 +170,8 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
 
     refresh() {
+        this.adaptivity.refresh();
+        
         this.eventController.refresh();
 
         let isPrem = UserData.instance.getIsPremium();
@@ -196,8 +198,6 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         }
 
         this.safeGold.active = this.eventController.isMaxStage();
-
-        this.adaptivity.refresh();
 
         /*Debug*/
         if(this.eventController.getIsDebugMode()) {
