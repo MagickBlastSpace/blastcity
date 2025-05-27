@@ -229,6 +229,8 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
         else {
             this.info_Common.active = true;
         }
+
+        this.node.emit("info_init", this.stageIndex, false);
     }
 
     onShowInfoBtnClick_Premium() {
@@ -245,6 +247,38 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
         }
         else {
             this.info_Common_Premium.active = true;
+        }
+
+        this.node.emit("info_init", this.stageIndex, true);
+    }
+
+
+    hideInfoIfNot(index: number, isPrem: boolean) {
+        if(index !== this.stageIndex) {
+            this.info_Common.active = false;
+            this.info_Done.active = false;
+            this.info_Chest.active = false;
+            this.info_x2.active = false;
+
+            this.info_Common_Premium.active = false;
+            this.info_Done_Premium.active = false;
+            this.info_Chest_Premium.active = false;
+            this.info_x2_Premium.active = false;
+
+            return;
+        }
+
+        if(isPrem) {
+            this.info_Common.active = false;
+            this.info_Done.active = false;
+            this.info_Chest.active = false;
+            this.info_x2.active = false;
+        }
+        else {
+            this.info_Common_Premium.active = false;
+            this.info_Done_Premium.active = false;
+            this.info_Chest_Premium.active = false;
+            this.info_x2_Premium.active = false;
         }
     }
 }

@@ -135,6 +135,9 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
             itemNode.on("take_premium", (stageIndex) => {
                 this.eventController.takeReward_Premium(stageIndex);
             });
+            itemNode.on("info_init", (index, isPrem) => {
+                this.closeAllInfoExcept(index, isPrem);
+            });
 
             this.items.push(item);
 
@@ -171,7 +174,7 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     refresh() {
         this.adaptivity.refresh();
-        
+
         this.eventController.refresh();
 
         let isPrem = UserData.instance.getIsPremium();
@@ -286,6 +289,13 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
 
     onShowActivateBtnClick() {
         this.activatePopup.show();
+    }
+
+
+    closeAllInfoExcept(index: number, isPrem: boolean) {
+        for(let i = 0; i < this.items.length; i++) {
+            this.items[i].hideInfoIfNot(index, isPrem);
+        }
     }
 
 
