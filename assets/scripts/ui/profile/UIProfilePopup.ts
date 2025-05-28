@@ -132,6 +132,8 @@ export class UIProfilePopup extends UIPopupFrameBase {
                     this.avatar.spriteFrame = this.profile.getAvatarById(players[0].state["avatar_id"]);
                     this.frame.spriteFrame = this.profile.getFrameById(players[0].state["frame_id"]);
                     this.badge.spriteFrame = this.profile.getBadgeById(players[0].state["badge_id"]);
+                    this.playerName.color = this.profile.getNameById(players[0].state["name_color_id"]);
+                    this.playerName.outlineColor = this.profile.getOutlineById(players[0].state["name_color_id"]);
 
                     for(let i = 0; i < this.colors.length; i++) {
                         this.colors[i].color = this.profile.getColorById(players[0].state["color_id"]);
@@ -164,6 +166,8 @@ export class UIProfilePopup extends UIPopupFrameBase {
             this.avatar.spriteFrame = this.profile.getCurrentAvatar();
             this.frame.spriteFrame = this.profile.getCurrentFrame();
             this.badge.spriteFrame = this.profile.getCurrentBadge();
+            this.playerName.color = this.profile.getCurrentName();
+            this.playerName.outlineColor = this.profile.getCurrentOutline();
 
             for(let i = 0; i < this.colors.length; i++) {
                 this.colors[i].color = this.profile.getCurrentColor();

@@ -1,4 +1,5 @@
-import { _decorator, Component, Node, SpriteFrame, Sprite, Button, Color, tween, Vec3 } from 'cc';
+import { _decorator, Component, Node, SpriteFrame, Sprite, Button, Color, tween, Vec3, Label } from 'cc';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIProfileChangeItem')
@@ -13,6 +14,9 @@ export class UIProfileChangeItem extends Component {
     @property(Sprite)
     iconBadge: Sprite = null;
 
+    @property(Label)
+    nickName: Label = null;
+
     @property(Button)
     clickBtn: Button = null;
 
@@ -20,6 +24,9 @@ export class UIProfileChangeItem extends Component {
     active: Node = null;
     @property(Node)
     locked: Node = null;
+
+    @property
+    isPremium: boolean = false;
 
     private isLocked: boolean = false;
 
@@ -47,13 +54,20 @@ export class UIProfileChangeItem extends Component {
                 this.iconBadge.node.active = true;
                 this.iconBadge.spriteFrame = spf;
 
-                break;
+                break;       
         }
     }
 
     initColor(col: Color) {
         this.iconColor.node.active = true;
         this.iconColor.color = col;
+    }
+
+    initNickName(col: Color, outlineCol: Color) {
+        this.nickName.string = UserData.instance.getPlayerName();
+
+        this.nickName.color = col;
+        this.nickName.outlineColor = outlineCol;
     }
 
 
@@ -75,6 +89,10 @@ export class UIProfileChangeItem extends Component {
         this.locked.active = isLocked;
 
         this.isLocked = isLocked;
+    }
+
+    setLockedPremium() {
+        this.setLocked(this.isPremium && !UserData.instance.getIsPremium());
     }
 
 

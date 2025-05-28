@@ -14,11 +14,16 @@ export class Profile extends Component {
     colors: Color[] = [];
     @property([SpriteFrame])
     badges: SpriteFrame[] = [];
+    @property([Color])
+    nickNameColors: Color[] = [];
+    @property([Color])
+    nickNameOutlinesColors: Color[] = [];
 
     private avatarId: number = 0;
     private frameId: number = 0;
     private colorId: number = 0;
     private badgeId: number = 0;
+    private nameId: number = 0;
 
     private badgeNames: string[] = ["", "badge_winter"];
 
@@ -35,6 +40,7 @@ export class Profile extends Component {
         this.setFrameId(gamepush.player.get('frame_id'));
         this.setColorId(gamepush.player.get('color_id'));
         this.setBadgeId(gamepush.player.get('badge_id'));
+        this.setNameId(gamepush.player.get('name_color_id'));
     }
 
     getAvatars(): SpriteFrame[] {
@@ -53,6 +59,14 @@ export class Profile extends Component {
         return this.badges;
     }
 
+    getNicknames(): Color[] {
+        return this.nickNameColors;
+    }
+
+    getOutlines(): Color[] {
+        return this.nickNameOutlinesColors;
+    }
+
 
     getAvatarId(): number {
         return this.avatarId;
@@ -68,6 +82,10 @@ export class Profile extends Component {
 
     getBadgeId(): number {
         return this.badgeId;
+    }
+
+    getNameId(): number {
+        return this.nameId;
     }
 
 
@@ -111,6 +129,15 @@ export class Profile extends Component {
         this.node.emit("refresh");
     }
 
+    setNameId(id: number) {
+        this.nameId = id;
+
+        gamepush.player.set('name_color_id', this.nameId);
+        gamepush.player.sync();
+
+        this.node.emit("refresh");
+    }
+
 
     getCurrentAvatar(): SpriteFrame {
         return this.avatars[this.avatarId];
@@ -126,6 +153,14 @@ export class Profile extends Component {
 
     getCurrentBadge(): SpriteFrame {
         return this.badges[this.badgeId];
+    }
+
+    getCurrentName(): Color {
+        return this.nickNameColors[this.nameId];
+    }
+
+    getCurrentOutline(): Color {
+        return this.nickNameOutlinesColors[this.nameId];
     }
 
 
@@ -155,6 +190,20 @@ export class Profile extends Component {
             return this.badges[id];
         }
         return this.badges[0];
+    }
+
+    getNameById(id: number): Color {
+        if(id < this.nickNameColors.length) {
+            return this.nickNameColors[id];
+        }
+        return this.nickNameColors[0];
+    }
+
+    getOutlineById(id: number): Color {
+        if(id < this.nickNameOutlinesColors.length) {
+            return this.nickNameOutlinesColors[id];
+        }
+        return this.nickNameOutlinesColors[0];
     }
 
 

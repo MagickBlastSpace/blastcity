@@ -18,6 +18,8 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
     items_Color: UIProfileChangeItem[] = [];
     @property([UIProfileChangeItem])
     items_Badge: UIProfileChangeItem[] = [];
+    @property([UIProfileChangeItem])
+    items_Nickname: UIProfileChangeItem[] = [];
 
     @property(Profile)
     profile: Profile;
@@ -62,6 +64,7 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
     private frameIndexValue: number = 0;
     private colorIndexValue: number = 0;
     private badgeIndexValue: number = 0;
+    private nameIndexValue: number = 0;
 
     private isUpdated: boolean = false;
     private isNameUpdated: boolean = false;
@@ -135,6 +138,25 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
             }
         }
 
+        let nickNames = this.profile.getNicknames();
+        let outlines = this.profile.getOutlines();
+
+        for(let i = 0; i < this.items_Nickname.length; i++) {
+            if(i >= nickNames.length || i >= outlines.length) {
+                this.items_Nickname[i].node.active = false;
+            }
+            else {
+                this.items_Nickname[i].initNickName(nickNames[i], outlines[i]);
+                this.items_Nickname[i].node.on("click", () => {
+                    this.nameIndexValue = i;
+
+                    this.isUpdated = true;
+
+                    this.refresh();
+                });
+            }
+        }
+
         let badges = this.profile.getBadges();
 
         for(let i = 0; i < this.items_Badge.length; i++) {
@@ -181,6 +203,7 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.frameIndexValue = this.profile.getFrameId();
         this.colorIndexValue = this.profile.getColorId();
         this.badgeIndexValue = this.profile.getBadgeId();
+        this.nameIndexValue = this.profile.getNameId();
 
         this.refresh();
     }
@@ -193,6 +216,7 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.items_Frame[this.frameIndexValue].setActive(true);
         this.items_Color[this.colorIndexValue].setActive(true);
         this.items_Badge[this.badgeIndexValue].setActive(true);
+        this.items_Nickname[this.nameIndexValue].setActive(true);
 
         this.avatar.spriteFrame = this.profile.getAvatarById(this.avatarIndexValue);
         this.frame.spriteFrame = this.profile.getFrameById(this.frameIndexValue);
@@ -200,9 +224,17 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         for(let i = 0; i < this.colors.length; i++) {
             this.colors[i].color = this.profile.getColorById(this.colorIndexValue);
         }
+        this.playerName.color = this.profile.getNameById(this.nameIndexValue);
+        this.playerName.outlineColor = this.profile.getOutlineById(this.nameIndexValue);
 
         for(let i = 0; i < this.items_Badge.length; i++) {
             this.items_Badge[i].setLocked(!this.profile.isBadgeAvailable(i));
+        }
+        for(let i = 0; i < this.items_Frame.length; i++) {
+            this.items_Frame[i].setLockedPremium();
+        }
+        for(let i = 0; i < this.items_Nickname.length; i++) {
+            this.items_Nickname[i].setLockedPremium();
         }
 
         this.saveBtn.node.active = this.isNameUpdated || this.isUpdated;
@@ -223,6 +255,10 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
 
         for(let i = 0; i < this.items_Badge.length; i++) {
             this.items_Badge[i].setActive(false);
+        }
+
+        for(let i = 0; i < this.items_Nickname.length; i++) {
+            this.items_Nickname[i].setActive(false);
         }
     }
 
@@ -247,6 +283,7 @@ export class UIProfileChangePopup extends UIPopupFrameBase {
         this.profile.setFrameId(this.frameIndexValue);
         this.profile.setColorId(this.colorIndexValue);
         this.profile.setBadgeId(this.badgeIndexValue);
+        this.profile.setNameId(this.nameIndexValue);
 
         if(this.isNameUpdated) {
             UserData.instance.updateName(this.playerName.string);

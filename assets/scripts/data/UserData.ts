@@ -7,6 +7,7 @@ import { CollectionEvent } from '../game/events/special/CollectionEvent';
 import { PlayerEventData } from './EventData';
 import { Net } from '../net/Net';
 import { Localization } from '../utils/Localization';
+import { Clans } from '../game/Clans';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserData')
@@ -72,6 +73,8 @@ export class UserData extends Component {
 
     @property(CollectionEvent)
     collections: CollectionEvent;
+    @property(Clans)
+    clans: Clans;
 
     @property([PlayerEventData])
     players: PlayerEventData[] = [];
@@ -722,6 +725,8 @@ export class UserData extends Component {
             await gamepush.payments.consume({ tag: "battlepass" });
 
             console.log("payment successfull: battlepass");
+
+            this.sendClanPremiumGift();
     
             return true;
         } catch (err) {
@@ -988,6 +993,15 @@ export class UserData extends Component {
 
     isModifierX2(): boolean {
         return this.getRemainingTimeString("modifier_x2") !== "";
+    }
+
+
+    sendClanPremiumGift() {
+        gamepush.channels.sendMessage({
+            channelId: this.clans.getClanId(),
+            text: this.getPlayerName() + " купил Боевой Пропуск!",
+            tags: ['clan_premium_gift'],
+        });
     }
 }
 
