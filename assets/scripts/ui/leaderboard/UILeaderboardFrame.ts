@@ -5,6 +5,7 @@ import { UITab } from '../main/UITab';
 import { UIProfilePopup } from '../profile/UIProfilePopup';
 import { ClanData } from '../../data/ClanData';
 import { UIClanInfoPopup } from '../clans/UIClanInfoPopup';
+import { UILeaderboardAdaptivity } from './adaptivity/UILeaderboardAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardFrame')
@@ -27,6 +28,9 @@ export class UILeaderboardFrame extends UIFrameBase {
 
     @property(UIClanInfoPopup)
     clanPopup: UIClanInfoPopup = null;
+
+    @property(UILeaderboardAdaptivity)
+    adaptivity: UILeaderboardAdaptivity;
 
 
     start() {
@@ -53,6 +57,8 @@ export class UILeaderboardFrame extends UIFrameBase {
         super.show();
 
         this.showFrame(1);
+
+        this.adaptivity.refresh();
     }
 
     hide() {
