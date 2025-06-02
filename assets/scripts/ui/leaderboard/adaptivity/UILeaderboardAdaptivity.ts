@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Layout, Widget, view, UITransform, Vec3, Size, Mask } from 'cc';
 import { UIAdaptivityBase } from '../../UIAdaptivityBase';
+import { UIEventWeeklyContestAdaptivity } from '../../events/WeeklyContest/UIEventWeeklyContestAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardAdaptivity')

@@ -3,6 +3,7 @@ import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { UIEventWeeklyContestPlayerItem } from './UIEventWeeklyContestPlayerItem';
 import { PlayerEventData } from '../../../data/EventData';
 import { Net } from '../../../net/Net';
+import { UIEventWeeklyContestAdaptivity } from './UIEventWeeklyContestAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventWeeklyContest')
@@ -19,6 +20,9 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
 
     @property(Node)
     playerItemsLayout: Node = null;
+
+    @property(UIEventWeeklyContestAdaptivity)
+    adaptivity: UIEventWeeklyContestAdaptivity;
 
 
     start() {
@@ -54,6 +58,7 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
                 item.init(i + 1);
         
                 this.items.push(item);
+                this.adaptivity.addItem(item.getComponent("UILeaderboardItemAdaptivity"));
 
                 itemNode.on("profile", (data) => this.showProfile(data));
             }
@@ -62,6 +67,8 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
         }
 
         this.loadPlayersInfo(data);
+
+        this.adaptivity.refresh();
     }
 
 
