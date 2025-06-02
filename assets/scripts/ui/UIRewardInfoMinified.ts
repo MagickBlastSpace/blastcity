@@ -234,6 +234,10 @@ export class UIRewardInfoMinified extends Component {
     }
 
     setBackByIndex(idx: number) {
+        if(this.backs.length < 4) {
+            return;
+        }
+        
         this.setAllBacksInactive();
 
         if(idx < 2) {
