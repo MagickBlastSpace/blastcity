@@ -52,24 +52,16 @@ export class UILevelAdaptivity extends UIAdaptivityBase {
 
 
     start() {
-
+        this.refresh();
     }
-
+    
     refresh() {
         const visibleSize = view.getVisibleSize();
     
         const w = visibleSize.width;
         const h = visibleSize.height;
-
-        /*const canvasSize = this.node.getComponent(UITransform).contentSize;
-        const w = canvasSize.width;
-        const h = canvasSize.height;*/
-
-        console.log("width:", w);
-        console.log("height:", h);
     
         if (w > h) {
-            // Горизонтальный режим
             const x = 0.125 * h;
             const y = ( (0.140 * w) - (0.93 * x) ) / 2;
             const fieldSize = 6 * x;
@@ -104,7 +96,6 @@ export class UILevelAdaptivity extends UIAdaptivityBase {
             this.goals_Layout.updateLayout();
 
         } else {
-            // Вертикальный режим
             const x = 0.225 * w;
             const bottomPanelSize = 0.179 * h;
             const y = (bottomPanelSize - x) / 3;
@@ -114,17 +105,11 @@ export class UILevelAdaptivity extends UIAdaptivityBase {
             const fieldSize = 4.211 * x;
             const fieldScale = fieldSize / this.basicFieldSize;
     
-            console.log("x:", x);
-            console.log("y:", y);
-            console.log("upper panel:", upperPanelSize);
-            console.log("bottom panel:", bottomPanelSize);
-            console.log("fieldScale:", fieldScale);
-    
             this.upperPanel.getComponent(UITransform).setContentSize(new Size(w, upperPanelSize));
-            this.upperPanel.setPosition(0, h / 2 - upperPanelSize / 2);
+            //this.upperPanel.setPosition(0, h / 2 - upperPanelSize / 2);
     
             this.bottomPanel.getComponent(UITransform).setContentSize(new Size(w, bottomPanelSize));
-            this.bottomPanel.setPosition(0, -h / 2 + bottomPanelSize / 2);
+            //this.bottomPanel.setPosition(0, -h / 2 + bottomPanelSize / 2);
     
             this.field.setScale(new Vec3(fieldScale, fieldScale, 1));
     
@@ -145,7 +130,6 @@ export class UILevelAdaptivity extends UIAdaptivityBase {
             this.goals_Widget.bottom = z;
         }
     }
-    
 }
 
 

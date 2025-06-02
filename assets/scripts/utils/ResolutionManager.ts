@@ -1,4 +1,4 @@
-import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget, Layout } from 'cc';
+import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget, Layout, director } from 'cc';
 import { UIFrameBase } from '../ui/UIFrameBase';
 import { UIChest } from '../ui/chest/UIChest';
 import { UIEventButton } from '../ui/start/UIEventButton';
@@ -62,17 +62,20 @@ export class ResolutionManager extends Component {
 
     private orientation: string = "";
 
+    private boundOnWindowResize: () => void;
+
 
     onLoad() {
         ResolutionManager.instance = this;
 
-        window.addEventListener('resize', this.onWindowResize.bind(this));
+        this.boundOnWindowResize = this.onWindowResize.bind(this);
+        window.addEventListener('resize', this.boundOnWindowResize);
 
         this.adjustResolution();
     }
 
     onDestroy() {
-        window.removeEventListener('resize', this.onWindowResize.bind(this));
+        window.removeEventListener('resize', this.boundOnWindowResize);
     }
 
     onWindowResize() {
@@ -97,11 +100,17 @@ export class ResolutionManager extends Component {
             this.setPortraitMode();
         }
 
+        //director.once(director.EVENT_AFTER_DRAW, this.updateAdaptiveFrames, this);
+        this.updateAdaptiveFrames();
+
+        this.scaleItemsByScreenRatio(ratio);
+    }
+
+
+    updateAdaptiveFrames() {
         for(let i = 0; i < this.adaptiveFrames.length; i++) {
             this.adaptiveFrames[i].refresh();
         }
-
-        this.scaleItemsByScreenRatio(ratio);
     }
 
 
