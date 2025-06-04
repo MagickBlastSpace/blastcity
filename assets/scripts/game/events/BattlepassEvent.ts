@@ -27,10 +27,10 @@ export class BattlepassEvent extends RocketFeverEvent {
 
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
-        //this.calculateStartEndTimeMonthly();
+        this.calculateStartEndTimeMonthly();
 
         //test start
-        const now = new Date();
+        /*const now = new Date();
         this.startTime = new Date(now);
         this.startTime.setUTCHours(startHourUTC, 0, 0, 0);
 
@@ -43,7 +43,7 @@ export class BattlepassEvent extends RocketFeverEvent {
             this.endTime = new Date(this.startTime.getTime() + 24 * 60 * 60 * 1000);
 
             timeDiff = this.startTime.getTime() - now.getTime();
-        }
+        }*/
         //test end
 
         this.node.emit("init");
@@ -52,7 +52,7 @@ export class BattlepassEvent extends RocketFeverEvent {
         this.collectedRockets = 0;
 
         this.isStarted = true;
-        //this.isComplete = false;
+        this.isComplete = false;
 
         this.eventId = "battlepass";
     }
@@ -352,6 +352,14 @@ export class BattlepassEvent extends RocketFeverEvent {
 
     takeUnpickedRewards() {
         if(!this.isUnpickedRewardAvailable()) {
+            this.isComplete = false;
+
+            if(this.lastAttemptTimestamp === 0) {
+                this.lastAttemptTimestamp = Date.now();
+            }
+        
+            SaveData.instance.saveEvent(this.eventId);
+
             return;
         }
     
@@ -396,6 +404,15 @@ export class BattlepassEvent extends RocketFeverEvent {
         }
 
         return this.eventData[this.currentStage].stageStep;
+    }
+
+
+    isInteractable(): boolean {
+        if(!this.isEventAvailable()) {
+            return false;
+        }
+
+        return true;
     }
 
 
