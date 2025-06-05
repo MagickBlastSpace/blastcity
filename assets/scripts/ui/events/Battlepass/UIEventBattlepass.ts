@@ -241,17 +241,13 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
     scrollToCurrentStage() {
         let curStage = this.eventController.getCurrentStage() - 1;
 
-        if(curStage < 0) {
-            curStage = 0;
+        if(curStage < 1) {
+            curStage = 1;
         }
 
         let percent = curStage / this.eventController.getTotalStages();
 
-        //let isPortrait = ResolutionManager.instance.isPortraitOrientation();
-        let isPortrait = true;
-        if(isPortrait) {
-            percent = 1 - percent;
-        }
+        percent = 1 - percent;
 
         this.scheduleOnce(() => {
             this.scrollView.scrollTo(new Vec2(0, percent), 0.5);
