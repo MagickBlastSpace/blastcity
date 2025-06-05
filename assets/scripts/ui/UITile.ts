@@ -99,6 +99,7 @@ export class UITile extends Component {
         this.currentY = posY;
 
         this.destroyLayout = this.node.parent;
+
         this.animationsLayout = this.destroyLayout.parent;
 
         if(this.content === null || this.content === undefined) {
@@ -468,6 +469,10 @@ export class UITile extends Component {
                 this.content.setPosition(new Vec3(this.originalContentPos.x, this.originalContentPos.y, 0));
             }
         }
+    }
+
+    setAnimationsLayout(layout: Node) {
+        this.animationsLayout = layout;
     }
 }
 

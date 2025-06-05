@@ -94,6 +94,7 @@ export class UIField extends Component {
         posY = isTripleHeight ? posY + this.tileSize / 2 : posY;
 
         tileUi.init(posX, posY, layout, false, tileType);
+        tileUi.setAnimationsLayout(this.animationsLayout);
 
         tile.on("render_line", (start, end) => this.renderLine(start, end));
         tile.on("clear_lines", () => this.clearLines());
@@ -116,6 +117,7 @@ export class UIField extends Component {
         let posY = statusComponent.getRow() * (this.tileSize + this.tileSpacing) + this.yOffset;
 
         tileUi.init(posX, posY, layout, true, tileType);
+        tileUi.setAnimationsLayout(this.animationsLayout);
     }
 
     initTutorialItem(item: Node, row: number, col: number) {
@@ -133,6 +135,7 @@ export class UIField extends Component {
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
         tileUi.init(posX, posY, layout, true, "tutorial");
+        tileUi.setAnimationsLayout(this.animationsLayout);
     }
 
     
