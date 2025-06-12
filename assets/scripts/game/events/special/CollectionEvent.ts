@@ -31,17 +31,74 @@ export class CollectionEvent extends SpecialEventBase {
 
     private badgeName: string = "badge_winter";
 
+    private season_Prefix = "sw_";
+
 
     start() {}
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
-        super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
-
         this.eventId = "collection";
+
+        super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
         this.isStarted = true;
 
         this.lastAttemptTimestamp = Date.now();
+    }
+
+
+    private calculateStartEndTime(startHourUTC: number, durationDays: number): void {
+        const isSummerWinter = gamepush.events.has('summer_winter');
+        const isAutumnSpring = gamepush.events.has('autumn_spring');
+
+        if(isSummerWinter) {
+            console.log("Summer Winter Season!");
+
+            this.season_Prefix = "sw_";
+
+            const eventInfo = gamepush.events.getEvent('summer_winter');
+
+            const { event, isJoined, stats, rewards, achievements, products } = eventInfo;
+
+            if (event) {
+                const rawStart = event.dateStart;
+                const rawEnd = event.dateEnd;
+
+                const formattedStart = rawStart.replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
+                const formattedEnd = rawEnd.replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
+
+                this.startTime = new Date(formattedStart);
+                this.endTime = new Date(formattedEnd);
+            }
+        }
+        else if(isAutumnSpring) {
+            console.log("Autumn Spring Season!");
+
+            this.season_Prefix = "as_";
+
+            const eventInfo = gamepush.events.getEvent('autumn_spring');
+
+            const { event, isJoined, stats, rewards, achievements, products } = eventInfo;
+
+            if (event) {
+                const rawStart = event.dateStart;
+                const rawEnd = event.dateEnd;
+
+                const formattedStart = rawStart.replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
+                const formattedEnd = rawEnd.replace(/([+-]\d{2})(\d{2})$/, "$1:$2");
+
+                this.startTime = new Date(formattedStart);
+                this.endTime = new Date(formattedEnd);
+            }
+        }
+        else {
+            console.log("Get Season Failed!");
+
+            super.calculateStartEndTime(startHourUTC, durationDays);
+        }
+
+        console.log("Start time: " + this.eventId + " " + this.startTime);
+        console.log("End time: " + this.eventId + " " + this.endTime);
     }
 
 
@@ -538,6 +595,11 @@ export class CollectionEvent extends SpecialEventBase {
 
     setIsTotalRewardTaken(isTaken: boolean) {
         this.isTotalRewardTaken = isTaken;
+    }
+
+
+    getSeasonPrefix(): string {
+        return this.season_Prefix;
     }
 }
 

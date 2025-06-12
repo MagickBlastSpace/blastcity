@@ -796,6 +796,10 @@ export class UserData extends Component {
         return this.collections.findCollectionIdByCard(id);
     }
 
+    getCollectionSeasonPrefix(): string {
+        return this.collections.getSeasonPrefix();
+    }
+
 
     async checkForItemsFromFriends() {
         for(let i = 0; i < this.friendsList.length; i++) {

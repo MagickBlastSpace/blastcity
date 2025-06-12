@@ -68,11 +68,13 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
         this.progress.string = controller.getProgressByCollectionId(data.id) + "/" + data.cards.length;
 
+        const season_Prefix = controller.getSeasonPrefix();
+
         for(let i = 0; i < this.cards.length && i < data.cards.length; i++) {
             let isCollected = controller.isCollected(data.cards[i].id);
             let duplicates = controller.getDuplicatesCountById(data.cards[i].id);
 
-            this.cards[i].init(data.id, data.cards[i], isCollected, duplicates);
+            this.cards[i].init(season_Prefix + data.id, data.cards[i], isCollected, duplicates);
         }
 
         let progressValue = controller.getProgressByCollectionId(data.id) / data.cards.length;

@@ -143,6 +143,8 @@ export class UICollectionItem extends Component {
         this.isComplete.active = controller.isCollectionComplete(data.id);
         this.takeReward.active = !controller.isCollectionRewardTaken(data.id);
 
+        const season_Prefix = controller.getSeasonPrefix();
+
         assetManager.loadBundle("covers", (err, bundle) => {
             if (err) {
                 console.error(`Failed to load bundle: covers`, err);
@@ -151,13 +153,13 @@ export class UICollectionItem extends Component {
 
             console.log(`Successfully loaded bundle: covers"`);
 
-            bundle.load(data.id + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+            bundle.load(season_Prefix + data.id + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
                 if (err) {
-                    console.error(`Failed to load prefab: ` + data.id, err);
+                    console.error(`Failed to load prefab: ` + season_Prefix + data.id, err);
                     return;
                 }
 
-                console.log(`Successfully loaded prefab: ` + data.id);
+                console.log(`Successfully loaded prefab: ` + season_Prefix + data.id);
 
                 this.image.spriteFrame = spriteFrame;
             });

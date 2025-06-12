@@ -60,6 +60,8 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
 
             this.showNextTutorialPage();
         }
+
+        this.eventController.setChecked();
     }
 
 

@@ -499,8 +499,9 @@ export class UIPopupReward extends UIPopupFrameBase {
                         }
     
                         let collectionId = UserData.instance.getCollectionIdByCard(data.cards[i]);
+                        let prefix = UserData.instance.getCollectionSeasonPrefix();
     
-                        assetManager.loadBundle(collectionId, (err, bundle) => {
+                        assetManager.loadBundle(prefix + collectionId, (err, bundle) => {
                             if (err) {
                                 console.error(`Failed to load bundle: ` + collectionId, err);
                                 return;
