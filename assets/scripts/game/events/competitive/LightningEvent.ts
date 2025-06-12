@@ -117,6 +117,7 @@ export class LightningEvent extends KingsCupEvent {
 
         this.isStarted = true;
         this.isComplete = false;
+        this.isChecked = true;
 
         this.collectables = 0;
 
@@ -301,6 +302,8 @@ export class LightningEvent extends KingsCupEvent {
         this.lastAttemptTimestamp = 0;
 
         this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
+
+        this.isChecked = false;
 
         SaveData.instance.saveEvent(this.eventId);
     }

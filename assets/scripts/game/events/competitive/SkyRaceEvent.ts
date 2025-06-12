@@ -106,6 +106,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
         this.isStarted = true;
         this.isComplete = false;
+        this.isChecked = true;
 
         this.isRewardPicked = false;
 
@@ -144,6 +145,7 @@ export class SkyRaceEvent extends CompetitiveEventBase {
 
     private handleEventCompletion() {
         this.isComplete = true;
+        this.isChecked = false;
 
         this.sortPlayersByProgress();
         this.playerPlace = this.players.findIndex(player => player.playerId === UserData.instance.getPlayerId());

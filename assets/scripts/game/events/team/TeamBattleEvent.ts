@@ -173,6 +173,8 @@ export class TeamBattleEvent extends TeamEventBase {
         }
 
         super.restartEvent();
+
+        this.isChecked = false;
     }
 
     private handleEventCompletion() {

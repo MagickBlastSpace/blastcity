@@ -151,6 +151,7 @@ export class KingsCupEvent extends WeeklyContestEvent {
 
         this.isStarted = true;
         this.isComplete = false;
+        this.isChecked = true;
 
         this.lastAttemptTimestamp = Date.now();
 
@@ -262,6 +263,8 @@ export class KingsCupEvent extends WeeklyContestEvent {
         if(this.playerPlace > -1 && this.playerPlace < this.rewards.length) {
             this.unpickedRewards.push(this.rewards[this.playerPlace]);
         }
+
+        this.isChecked = false;
 
         super.restartEvent();
     }

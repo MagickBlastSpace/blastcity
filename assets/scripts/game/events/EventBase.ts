@@ -22,6 +22,8 @@ export class EventBase extends Component {
 
     private isPositionUpdated: boolean = false;
 
+    private isChecked: boolean = false;
+
     @property
     MIN_LEVEL_REQUIRED = 0;
     @property
@@ -374,6 +376,19 @@ export class EventBase extends Component {
 
     resetPositionUpdated() {
         this.isPositionUpdated = false;
+    }
+
+
+    setChecked() {
+        this.isChecked = true;
+    }
+
+    getIsChecked(): boolean {
+        return this.isChecked;
+    }
+
+    getRewardsCount(): number {
+        return 0;
     }
 }
 

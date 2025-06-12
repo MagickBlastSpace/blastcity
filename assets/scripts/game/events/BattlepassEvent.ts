@@ -14,6 +14,8 @@ export class BattlepassEvent extends RocketFeverEvent {
     private bonusBank: number = 0;
     private bonusBank_Max: number = 5000;
 
+    private isChecked: boolean = false;
+
     /*Debug*/
     private isDebugMode: boolean = false;
 
@@ -55,6 +57,8 @@ export class BattlepassEvent extends RocketFeverEvent {
         this.isComplete = false;
 
         this.eventId = "battlepass";
+
+        this.isChecked = false;
     }
 
 
@@ -122,6 +126,8 @@ export class BattlepassEvent extends RocketFeverEvent {
                     this.bonusBank = this.bonusBank_Max;
                 }
 
+                this.isChecked = false;
+
                 this.checkStageCompletion();
             }
             else {
@@ -135,6 +141,8 @@ export class BattlepassEvent extends RocketFeverEvent {
             this.collectedRockets = this.collectedRockets - this.eventData[this.currentStage].stageStep;
 
             this.currentStage = this.currentStage + 1;
+
+            this.isChecked = false;
 
             this.checkStageCompletion();
         }
@@ -219,6 +227,10 @@ export class BattlepassEvent extends RocketFeverEvent {
 
 
     isRewardAvailable(): boolean {
+        if(this.isChecked) {
+            return false;
+        }
+
         if(this.isUnpickedRewardAvailable()) {
             return true;
         }
@@ -413,6 +425,42 @@ export class BattlepassEvent extends RocketFeverEvent {
         }
 
         return true;
+    }
+
+    getTimeProgress(): number {
+        let duration = this.getEventDuration();
+
+        const now = new Date();
+        let timePassed = (now.getTime() - this.startTime.getTime()) / (1000 * 60 * 60);
+
+        let timeProgress = timePassed / duration;
+
+        return timeProgress;
+    }
+
+    getCollectablesProgress(): number {
+        return this.getCollectable() / this.getCurrentStageStep();
+    }
+
+
+    getRewardsCount(): number {
+        let count = 0;
+
+        let isPrem = UserData.instance.getIsPremium();
+
+        for(let i = 0; i < this.currentStage; i++) {
+            if(!this.takenRewards.includes(i)) {
+                count = count + 1;
+            }
+
+            if(isPrem) {
+                if(!this.takenRewards_Premium.includes(i)) {
+                    count = count + 1;
+                }
+            }
+        }
+
+        return count;
     }
 
 
