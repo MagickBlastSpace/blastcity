@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Layout, Widget, view, UITransform, Vec3, Size, Mask } from 'cc';
 import { UIAdaptivityBase } from '../../UIAdaptivityBase';
+import { UICollectionItemAdaptivity } from './UICollectionItemAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionFrameAdaptivity')
@@ -20,6 +21,12 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
     progress_Widget: Widget = null;
     @property(Widget)
     scroll_Widget: Widget = null;
+
+    @property(Layout)
+    layout: Layout = null;
+
+    @property([UICollectionItemAdaptivity])
+    items: UICollectionItemAdaptivity[] = [];
 
     private basic_header_H: number = 153;
     private basic_banner_H: number = 642;
@@ -44,6 +51,10 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
             }
         } else {
             this.makeMobileVariation(w, h);
+        }
+
+        for(let i = 0; i < this.items.length; i++) {
+            this.items[i].refresh();
         }
     }
 
@@ -73,10 +84,6 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
 
         this.progressContainer.setScale(new Vec3(progress_Scale, progress_Scale, 1));
 
-        /*const scroll_H = h * this.mobileScaleMul - banner_H - progress_H;
-        const scroll_W = w * this.mobileScaleMul;
-        this.scroll.getComponent(UITransform).setContentSize(new Size(scroll_W, scroll_H));*/
-
         const headerPadding = (1.3425 - 0.165) * x;
 
         this.header_Widget.top = headerPadding;
@@ -90,6 +97,19 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
 
         this.scroll_Widget.top = scrollPadding;
         this.scroll_Widget.bottom = scrollPadding_bottom;
+
+        const layoutSpacingX = -0.12 * x;
+        const layoutSpacingY = 0.055 * x;
+
+        this.layout.spacingX = layoutSpacingX;
+        this.layout.spacingY = layoutSpacingY;
+
+        this.layout.updateLayout();
+    }
+
+
+    addItem(item: UICollectionItemAdaptivity) {
+        this.items.push(item);
     }
 }
 
