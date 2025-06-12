@@ -53,6 +53,7 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
     info_Chest_Comp_Premium: UIRewardInfoMinified;
 
     private data: RocketFeverEventData;
+    private isCurrent: boolean = false;
 
 
     start() {
@@ -173,14 +174,16 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
             console.log(stageNumber + ": progress set 1");
             this.progressBar.progress = 1.0;
         }
-        else if(currentStage === stageNumber) {
+        /*else if(currentStage === stageNumber) {
             tween(this.progressBar)
                 .to(2, { progress: 0.5 })
                 .start();
-        }
+        }*/
+
+        this.isCurrent = currentStage === stageNumber;
 
         this.complete.active = currentStage > stageNumber;
-        this.current.active = currentStage === stageNumber;
+        this.current.active = this.isCurrent;
 
         if(currentStage > stageNumber) {
             this.numberIcon.spriteFrame = this.complete_number;
@@ -202,6 +205,16 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
         this.complete.active = this.isComplete && isFreeTaken;
         this.complete_Premium.active = this.isComplete && isPremium && isPremiumTaken;
+    }
+
+    refreshProgress(progress: number) {
+        if(!this.isCurrent) {
+            return;
+        }
+
+        tween(this.progressBar)
+            .to(2, { progress: progress })
+            .start();
     }
 
 

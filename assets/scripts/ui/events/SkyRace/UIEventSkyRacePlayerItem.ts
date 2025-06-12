@@ -196,6 +196,11 @@ export class UIEventSkyRacePlayerItem extends Component {
         if(this.clanName) {
             this.clanName.string = player.state["clanname"];
         }
+
+        /*if(this.playerName) {
+            this.playerName.color = Profile.instance.getNameById(player.state["name_color_id"]);
+            this.playerName.outlineColor = Profile.instance.getOutlineById(player.state["name_color_id"]);
+        }*/
     }
 
 

@@ -694,7 +694,7 @@ export class Field extends Component {
             this.activateBonusPool();
         });
         tileNode.on("respawn", (timeToRespawn) => {
-            this.scheduleRespawn(timeToRespawn, true);
+            this.scheduleRespawn(timeToRespawn, false); //true
         });
         tileNode.on("damage_all", (tileId) => {
             this.setAllDamagedByType(tileId);
@@ -1033,8 +1033,8 @@ export class Field extends Component {
 
     activateBonusByIndex(index: number, byOrder: boolean) {
         if(index >= this.bonusPool.length) {
-            this.scheduleRespawn(0, false);
-            this.scheduleRespawn(0.2, false); //additional respawn to fix bug after complex combos
+            this.scheduleRespawn(0, true);
+            this.scheduleRespawn(0.2, true); //additional respawn to fix bug after complex combos
 
             return;
         }

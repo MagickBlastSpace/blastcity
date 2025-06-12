@@ -25,17 +25,17 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 94
-      },
-      {
         "__id__": 96
       },
       {
         "__id__": 98
+      },
+      {
+        "__id__": 100
       }
     ],
     "_prefab": {
-      "__id__": 100
+      "__id__": 102
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -86,10 +86,13 @@
     "_components": [
       {
         "__id__": 91
+      },
+      {
+        "__id__": 93
       }
     ],
     "_prefab": {
-      "__id__": 93
+      "__id__": 95
     },
     "_lpos": {
       "__type__": "cc.Vec3",
@@ -575,7 +578,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -170.7675810810814,
+      "y": -154,
       "z": 0
     },
     "_lrot": {
@@ -2124,8 +2127,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 2800,
-      "height": 2041.5351621621628
+      "width": 3654,
+      "height": 2008
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2137,6 +2140,44 @@
   {
     "__type__": "cc.CompPrefabInfo",
     "fileId": "29Hr4L6p1Ht5LIXUF9nOxH"
+  },
+  {
+    "__type__": "cc.Widget",
+    "_name": "",
+    "_objFlags": 0,
+    "__editorExtras__": {},
+    "node": {
+      "__id__": 2
+    },
+    "_enabled": true,
+    "__prefab": {
+      "__id__": 94
+    },
+    "_alignFlags": 45,
+    "_target": {
+      "__id__": 1
+    },
+    "_left": 0,
+    "_right": 0,
+    "_top": 0,
+    "_bottom": 0,
+    "_horizontalCenter": 0,
+    "_verticalCenter": 0,
+    "_isAbsLeft": true,
+    "_isAbsRight": true,
+    "_isAbsTop": true,
+    "_isAbsBottom": true,
+    "_isAbsHorizontalCenter": true,
+    "_isAbsVerticalCenter": true,
+    "_originalWidth": 2800,
+    "_originalHeight": 2041.5351621621628,
+    "_alignMode": 2,
+    "_lockFlags": 0,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.CompPrefabInfo",
+    "fileId": "e25oPjyVdPqKATYZXB6NkF"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -2161,12 +2202,12 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 95
+      "__id__": 97
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 2395,
-      "height": 5316
+      "width": 3654,
+      "height": 2008
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -2189,7 +2230,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 97
+      "__id__": 99
     },
     "clickEvents": [],
     "_interactable": true,
@@ -2248,7 +2289,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 99
+      "__id__": 101
     },
     "contentNode": {
       "__id__": 2

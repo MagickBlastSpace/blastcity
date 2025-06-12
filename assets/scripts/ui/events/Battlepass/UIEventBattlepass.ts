@@ -148,6 +148,7 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         for(let i = 0; i < data.length && i < this.items.length; i++) {
             this.items[i].refresh(i, data[i], this.eventController.getCurrentStage());
             this.items[i].refreshAvailability(this.eventController.isRewardTaken(i), this.eventController.isRewardTaken_Premium(i));
+            this.items[i].refreshProgress(this.eventController.getCollectablesProgress());
         }
 
         this.itemsLayout.addChild(this.bonusSafe);
@@ -188,11 +189,12 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
         for(let i = 0; i < data.length && i < this.items.length; i++) {
             this.items[i].refresh(i, data[i], this.eventController.getCurrentStage());
             this.items[i].refreshAvailability(this.eventController.isRewardTaken(i), this.eventController.isRewardTaken_Premium(i));
+            this.items[i].refreshProgress(this.eventController.getCollectablesProgress());
         }
 
         this.stageLabel.string = this.eventController.getCurrentStage() + 1;
 
-        this.progressBar.progress = this.eventController.getTimeProgress();
+        this.progressBar.progress = this.eventController.getCollectablesProgress();
 
         this.bonusSafeComp.refresh(isPrem, this.eventController.getBonusBank(), this.eventController.isMaxStage());
 

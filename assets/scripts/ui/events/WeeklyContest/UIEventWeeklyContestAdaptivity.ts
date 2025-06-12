@@ -40,6 +40,8 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
     private basic_header_size: number = 1224;
     private basic_info_size: number = 107;
 
+    private mobileScaleMul: number = 0.5;
+
 
     refresh() {
         const visibleSize = view.getVisibleSize();
@@ -71,7 +73,7 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
 
 
     makeMobileVariation(w: number, h: number) {
-        const x = 0.262 * w;
+        const x = 0.262 * w  * this.mobileScaleMul;
 
         const banner_H = 2.276 * x;
         const banner_W = 3.596 * x;
@@ -118,11 +120,11 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
     makeDesktopVariation(w: number, h: number) {
         const x = 0.125 * h;
 
-        const banner_H = h - (1.92 + 1.15 + 2.2 + 0.62) * x;
+        const banner_H = h - (1.92 + 1.15 + 2 + 0.62) * x;
         const banner_W = 7.52 * x;
         this.banner.getComponent(UITransform).setContentSize(new Size(banner_W, banner_H))
 
-        const bannerPaddingTop = (2.8 + 0.62) * x;
+        const bannerPaddingTop = (2 + 0.62) * x;
         this.banner_Widget.top = bannerPaddingTop;
 
         const scroll_H = 1.92 * x;

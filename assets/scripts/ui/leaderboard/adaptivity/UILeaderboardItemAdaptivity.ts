@@ -21,19 +21,14 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
 
     private basic_H: number = 470;
 
+    private mobileScaleMul: number = 0.5;
+
 
     refresh() {
         const visibleSize = view.getVisibleSize();
     
         let w = visibleSize.width;
         let h = visibleSize.height;
-    
-        if (w > h) {   
-            
-
-        } else {
-            
-        }
 
         if (w > h) {
             const ratio = w / h;
@@ -88,7 +83,7 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
     }
 
     makeMobileVariation(w: number, h: number) {
-        const x = 0.262 * w;
+        const x = 0.262 * w * this.mobileScaleMul;
 
         const container_H = 0.5769 * x;
         const container_W = 3.436 * x;

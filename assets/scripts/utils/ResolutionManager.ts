@@ -108,10 +108,14 @@ export class ResolutionManager extends Component {
 
 
     updateAdaptiveFrames() {
-        for(let i = 0; i < this.adaptiveFrames.length; i++) {
-            this.adaptiveFrames[i].refresh();
+        for (let i = 0; i < this.adaptiveFrames.length; i++) {
+            const frame = this.adaptiveFrames[i];
+            if (frame.node && frame.node.activeInHierarchy) {
+                frame.refresh();
+            }
         }
     }
+
 
 
     setLandscapeMode() {

@@ -31,6 +31,13 @@ export class UIEventButton extends Component {
 
     @property(Node)
     rewardIndicator: Node = null;
+    @property(Node)
+    warningIndicator: Node = null;
+    @property(Node)
+    countIndicator: Node = null;
+
+    @property(Label)
+    countLabel: Label = null;
 
     @property
     is_v2: boolean = false;
@@ -96,6 +103,13 @@ export class UIEventButton extends Component {
         if(this.rewardIndicator) {
             this.rewardIndicator.active = this.eventController.isRewardAvailable();
         }
+        if(this.warningIndicator) {
+            this.warningIndicator.active = this.eventController.isRewardAvailable() && !this.eventController.getIsChecked();
+        }
+        if(this.countIndicator) {
+            this.countIndicator.active = this.eventController.getIsChecked() && this.eventController.getRewardsCount() > 0;
+            this.countLabel.string = this.eventController.getRewardsCount();
+        }
 
         let timeStr = this.eventController.getRemainingTimeString();
         if(timeStr === "00:00:00" || timeStr === "00 d 00 h") {
@@ -148,6 +162,8 @@ export class UIEventButton extends Component {
             
             if(!this.eventPopup_portrait.node.active) {
                 this.eventPopup_portrait.show();
+
+                this.refresh();
             }
         }
         else if(this.eventPopup) {
@@ -157,6 +173,8 @@ export class UIEventButton extends Component {
             
             if(!this.eventPopup.node.active) {
                 this.eventPopup.show();
+
+                this.refresh();
             }
         }
     }
