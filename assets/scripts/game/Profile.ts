@@ -25,7 +25,7 @@ export class Profile extends Component {
     private badgeId: number = 0;
     private nameId: number = 0;
 
-    private badgeNames: string[] = ["", "badge_winter"];
+    private badgeNames: string[] = ["", "badge_greek_1", "badge_greek_2"];
 
     public static instance: Profile = null;
 

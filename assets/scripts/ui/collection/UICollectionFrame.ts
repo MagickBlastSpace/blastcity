@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, Label, instantiate, ProgressBar, tween, Button } from 'cc';
+import { _decorator, Component, Node, Prefab, Label, instantiate, ProgressBar, tween, Button, Sprite, SpriteFrame } from 'cc';
 import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 import { UICollectionItem } from './UICollectionItem';
 import { CollectionData } from '../../data/CollectionData';
@@ -13,6 +13,19 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     timeLabel: Label = null;
     @property(Label)
     progress: Label = null;
+
+    @property(Label)
+    mainReward_1: Label = null;
+    @property(Label)
+    mainReward_2: Label = null;
+
+    @property(Sprite)
+    badge: Sprite = null;
+
+    @property([SpriteFrame])
+    sw_badges: SpriteFrame[] = [];
+    @property([SpriteFrame])
+    as_badges: SpriteFrame[] = [];
 
     @property([UICollectionItem])
     items: UICollectionItem[] = [];
@@ -102,7 +115,22 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         this.isComplete.active = this.eventController.isTotalComplete();
         this.takeReward.active = !this.eventController.getIsTotalRewardTaken();
 
-        this.duplicateExchange.init(this.eventController.getTotalDuplicatesStars())
+        this.duplicateExchange.init(this.eventController.getTotalDuplicatesStars());
+
+        let curStage = this.eventController.getCurrentStage();
+
+        this.mainReward_1.string = curStage === 0 ? "10000" : "15000";
+        this.mainReward_1.string = curStage === 0 ? "x10" : "x15";
+
+        let season = this.eventController.getSeasonPrefix();
+
+        if(season === "sw_") {
+            this.badge.spriteFrame = this.sw_badges[curStage];
+        }
+        else {
+            this.badge.spriteFrame = this.as_badges[curStage];
+        }
+        
     }
 
 

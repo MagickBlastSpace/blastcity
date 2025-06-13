@@ -53,6 +53,8 @@ export class UICollectionItem extends Component {
 
     @property(ProgressBar)
     progressBar: ProgressBar = null;
+    @property(Node)
+    progressContainer: Node = null;
 
     private data: CollectionData;
 
@@ -142,6 +144,7 @@ export class UICollectionItem extends Component {
 
         this.isComplete.active = controller.isCollectionComplete(data.id);
         this.takeReward.active = !controller.isCollectionRewardTaken(data.id);
+        this.progressContainer.active = !controller.isCollectionComplete(data.id);
 
         const season_Prefix = controller.getSeasonPrefix();
 

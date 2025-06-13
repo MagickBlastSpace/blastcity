@@ -29,7 +29,8 @@ export class CollectionEvent extends SpecialEventBase {
 
     private isTotalRewardTaken: boolean = false;
 
-    private badgeName: string = "badge_winter";
+    private sw_badgeNames: string[] = ["badge_greek_1", "badge_greek_2"];
+    private as_badgeNames: string[] = ["badge_winter_1", "badge_winter_2"];
 
     private season_Prefix = "sw_";
 
@@ -358,22 +359,39 @@ export class CollectionEvent extends SpecialEventBase {
             return;
         }
 
-        this.applyReward(this.totalRewards[0]);
+        this.applyReward(this.totalRewards[this.currentStage]);
+
+        this.takeBadge();
 
         this.isTotalRewardTaken = true;
 
+        if(this.currentStage < 1) {
+            this.currentStage = this.currentStage + 1;
+
+            this.collectedCards = [];
+            this.duplicates = [];
+
+            this.isTotalRewardTaken = false;
+        }
+        
         SaveData.instance.saveEvent(this.eventId);
 
         this.node.emit("refresh");
 
         gamepush.player.add('stat_collections_finished', 1);
         gamepush.player.sync();
-
-        this.takeBadge();
     }
 
     async takeBadge() {
-        await gamepush.rewards.give({ tag: this.badgeName });
+        let badgeName = "";
+        if(this.getSeasonPrefix() === "sw_" && this.currentStage < this.sw_badgeNames.length) {
+            badgeName = this.sw_badgeNames[this.currentStage];
+        }
+        else if(this.getSeasonPrefix() === "as_" && this.currentStage < this.as_badgeNames.length) {
+            badgeName = this.as_badgeNames[this.currentStage];
+        }
+
+        await gamepush.rewards.give({ tag: badgeName });
 
         await gamepush.player.sync();
     }
