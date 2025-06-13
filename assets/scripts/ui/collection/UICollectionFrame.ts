@@ -55,6 +55,16 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     @property(UICollectionDuplicateExchange)
     duplicateExchange: UICollectionDuplicateExchange;
 
+    @property(Node)
+    commonInfoPopup: Node = null;
+    @property([Node])
+    rewardPopups: Node[] = [];
+
+    @property(Button)
+    commonInfoBtn: Button = null;
+    @property(Button)
+    rewardInfoBtn: Button = null;
+
 
     start() {
         this.eventController.node.on("refresh", () => this.refresh());
@@ -72,6 +82,9 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         this.openExchangeBtn.node.on(Button.EventType.CLICK, this.onOpenExchangeBtnClick, this);
 
         this.duplicateExchange.node.on("exchange", (data) => this.exchangeDuplicates(data));
+
+        this.commonInfoBtn.node.on(Button.EventType.CLICK, this.onCommonInfoBtnClick, this);
+        this.rewardInfoBtn.node.on(Button.EventType.CLICK, this.onRewardInfoBtnClick, this);
     }
 
     update(deltaTime: number) {
@@ -175,6 +188,19 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
     sendCard(player: string, card: string) {
         this.eventController.sendCard(player, card);
+    }
+
+
+    onCommonInfoBtnClick() {
+        this.commonInfoPopup.active = true;
+    }
+
+    onRewardInfoBtnClick() {
+        let stage = this.eventController.getCurrentStage();
+
+        if(stage < this.rewardPopups.length) {
+            this.rewardPopups[stage].active = true;
+        }
     }
 }
 
