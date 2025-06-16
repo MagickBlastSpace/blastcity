@@ -203,21 +203,21 @@ export class EventBase extends Component {
     setHp(newHp: number) {}
 
 
-    getSpecialPool(): stirng[] {
+    getSpecialPool(): string[] {
         let pool = [];
         return pool;
     }
 
     setSpecialPool(pool: string[]) {}
 
-    getSpecialPredictions(): stirng[] {
+    getSpecialPredictions(): string[] {
         let predictions = [];
         return predictions;
     }
 
     setSpecialPredictions(predictions: string[]) {}
 
-    getSpecialHints(): stirng[] {
+    getSpecialHints(): string[] {
         let pool = [];
         return pool;
     }

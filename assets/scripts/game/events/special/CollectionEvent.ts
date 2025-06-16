@@ -21,6 +21,8 @@ export class CollectionEvent extends SpecialEventBase {
 
     private collectedCards: string[] = [];
 
+    private uncheckedCards: string[] = [];
+
     private duplicates: string[] = [];
 
     private completedCollections: string[] = [];
@@ -167,6 +169,8 @@ export class CollectionEvent extends SpecialEventBase {
             }
             else {
                 this.collectedCards.push(cards[i]);
+
+                this.uncheckedCards.push(cards[i]);
             }
         }
 
@@ -574,6 +578,30 @@ export class CollectionEvent extends SpecialEventBase {
     }
 
 
+    /*Check*/
+    checkCard(id: string) {
+        this.uncheckedCards = this.uncheckedCards.filter(item => item !== id);
+
+        this.node.emit("refresh");
+    }
+
+    getUncheckedCardsCountByCollection(collection: CollectionData): number {
+        let count = 0;
+
+        for(let i = 0; i < collection.cards.length; i++) {
+            if(this.isCardUnchecked(collection.cards[i].id)) {
+                count = count + 1;
+            }
+        }
+
+        return count;
+    }
+
+    isCardUnchecked(id: string): boolean {
+        return this.uncheckedCards.includes(id);
+    }
+
+
     /*Save*/
     getSpecialPool(): string[] {
         return this.collectedCards;
@@ -597,6 +625,18 @@ export class CollectionEvent extends SpecialEventBase {
         }
 
         this.duplicates = predictions;
+    }
+
+    getSpecialHints(): string[] {
+        return this.uncheckedCards;
+    }
+
+    setSpecialHints(pool: string[]) {
+        if(!pool) {
+            return;
+        }
+
+        this.uncheckedCards = pool;
     }
 
     getCompletedCollections(): string[] {

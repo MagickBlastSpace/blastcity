@@ -157,6 +157,8 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
         this.sendPopup.init(collectionId, data, isCollected, duplicates);
 
         this.sendPopup.show();
+
+        this.node.emit("check", data.id);
     }
 
     sendCard(player: number, card: string) {

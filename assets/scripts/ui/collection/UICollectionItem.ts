@@ -56,6 +56,11 @@ export class UICollectionItem extends Component {
     @property(Node)
     progressContainer: Node = null;
 
+    @property(Label)
+    indicatorCount: Label = null;
+    @property(Node)
+    indicator: Node = null;
+
     private data: CollectionData;
 
 
@@ -145,6 +150,10 @@ export class UICollectionItem extends Component {
         this.isComplete.active = controller.isCollectionComplete(data.id);
         this.takeReward.active = !controller.isCollectionRewardTaken(data.id);
         this.progressContainer.active = !controller.isCollectionComplete(data.id);
+
+        let unchecked = controller.getUncheckedCardsCountByCollection(data);
+        this.indicator.active = unchecked > 0;
+        this.indicatorCount.string = unchecked;
 
         const season_Prefix = controller.getSeasonPrefix();
 
