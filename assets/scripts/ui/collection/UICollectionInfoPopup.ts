@@ -4,6 +4,7 @@ import { CollectionCardData, CollectionData } from '../../data/CollectionData';
 import { UICollectionCard } from './UICollectionCard';
 import { EventBase } from '../../game/events/EventBase';
 import { UICollectionDuplicateSend } from './UICollectionDuplicateSend';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionInfoPopup')
@@ -86,6 +87,8 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
         }
 
         this.rewardLabel.string = "";
+
+        this.name_.string = Localization.instance.getLabelByKey("collection_data." + season_Prefix + data.id);
 
         if(data.rewards.length > 0) {
             if(data.rewards[0].gold > 0) {

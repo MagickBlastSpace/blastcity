@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Label, Button, assetManager, SpriteFrame, Sprite, ProgressBar, tween } from 'cc';
 import { CollectionData } from '../../data/CollectionData';
 import { EventBase } from '../../game/events/EventBase';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionItem')
@@ -156,6 +157,8 @@ export class UICollectionItem extends Component {
         this.indicatorCount.string = unchecked;
 
         const season_Prefix = controller.getSeasonPrefix();
+
+        this.name_.string = Localization.instance.getLabelByKey("collection_data." + season_Prefix + data.id);
 
         assetManager.loadBundle("covers", (err, bundle) => {
             if (err) {

@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Label, assetManager, SpriteFrame, Sprite, Button } from 'cc';
 import { CollectionCardData } from '../../data/CollectionData';
+import { Localization } from '../../utils/Localization';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionCard')
@@ -61,8 +62,9 @@ export class UICollectionCard extends Component {
         this.isCollected = isCollected;
         this.duplicatesCount = duplicates;
 
-        this.name_.string = data.name_;
-        this.nameDuplicate.string = data.name_;
+        let nameString = Localization.instance.getLabelByKey("collection_data." + collectionId + "_" + data.id);
+        this.name_.string = nameString;
+        this.nameDuplicate.string = nameString;
 
         for(let i = 0; i < this.stars.length; i++) {
             this.stars[i].active = i < data.stars;
