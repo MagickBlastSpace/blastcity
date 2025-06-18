@@ -33,11 +33,16 @@ export class UICollectionItemAdaptivity extends UIAdaptivityBase {
     }
 
     makeDesktopVariation(w: number, h: number) {
-        
+        const x = 0.1294 * h;
+
+        const container_Size = 1.2692 * x;
+        const container_Scale = container_Size / this.basic_container_size;
+
+        this.container.setScale(new Vec3(container_Scale, container_Scale, 1));
     }
 
     makeTabletVariation(w: number, h: number) {
-        
+        this.makeDesktopVariation(w, h);
     }
 
     makeMobileVariation(w: number, h: number) {
