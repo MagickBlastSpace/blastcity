@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, ProgressBar, tween, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, tween, Sprite, SpriteFrame, assetManager } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { CollectionCardData, CollectionData } from '../../data/CollectionData';
 import { UICollectionCard } from './UICollectionCard';
@@ -43,6 +43,9 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     x2: SpriteFrame = null;
     @property(SpriteFrame)
     lives: SpriteFrame = null;
+
+    @property(Sprite)
+    bg: Sprite = null;
 
     @property([UICollectionCard])
     cards: UICollectionCard[] = [];
@@ -148,6 +151,29 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
                 this.rewardLabel.string = data.rewards[0].modifierX2_Minutes + " Min";
             }
         }
+
+        const parts = data.id.split("_");
+        const colNum = parts[parts.length - 1];
+
+        assetManager.loadBundle("collection_bg", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: collection_bg`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: collection_bg`);
+
+            bundle.load("bg_" + colNum + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: ` + "bg_" + colNum, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: ` + "bg_" + colNum);
+
+                this.bg.spriteFrame = spriteFrame;
+            });
+        });
     }
 
 
