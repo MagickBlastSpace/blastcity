@@ -42,6 +42,11 @@ export class UICollectionCard extends Component {
 
     @property(Sprite)
     image: Sprite = null;
+    @property(Sprite)
+    copyImg: Sprite = null;
+
+    @property(Node)
+    copy: Node = null;
 
     @property(Button)
     sendBtn: Button = null;
@@ -108,6 +113,35 @@ export class UICollectionCard extends Component {
                 console.log(`Successfully loaded prefab: ` + data.id);
 
                 this.image.spriteFrame = spriteFrame;
+            });
+        });
+
+        this.copy.active = duplicates > 0;
+
+        if(duplicates <= 0) {
+            return;
+        }
+
+        const parts = collectionId.split("_");
+        const colNum = parts[parts.length - 1];
+
+        assetManager.loadBundle("copy", (err, bundle) => {
+            if (err) {
+                console.error(`Failed to load bundle: copy`, err);
+                return;
+            }
+
+            console.log(`Successfully loaded bundle: copy`);
+
+            bundle.load("card_copy_" + colNum + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load prefab: ` + "card_copy_" + colNum, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded prefab: ` + "card_copy_" + colNum);
+
+                this.copyImg.spriteFrame = spriteFrame;
             });
         });
     }
