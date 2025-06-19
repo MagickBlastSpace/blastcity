@@ -51,6 +51,9 @@ export class UICollectionCard extends Component {
     @property(Button)
     sendBtn: Button = null;
 
+    @property(Node)
+    newMarker: Node = null;
+
     private collectionId: string;
     private data: CollectionCardData;
     private isCollected: boolean;
@@ -144,6 +147,11 @@ export class UICollectionCard extends Component {
                 this.copyImg.spriteFrame = spriteFrame;
             });
         });
+    }
+
+
+    setNewMarker(isActive: boolean) {
+        this.newMarker.active = isActive;
     }
 
 

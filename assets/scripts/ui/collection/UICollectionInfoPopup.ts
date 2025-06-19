@@ -53,6 +53,11 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     @property(ProgressBar)
     progressBar: ProgressBar = null;
 
+    @property(Node)
+    progressNode: Node = null;
+    @property(Node)
+    complete: Node = null;
+
     @property(UICollectionDuplicateSend)
     sendPopup: UICollectionDuplicateSend;
 
@@ -78,7 +83,10 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
             let isCollected = controller.isCollected(data.cards[i].id);
             let duplicates = controller.getDuplicatesCountById(data.cards[i].id);
 
+            let isNew = controller.isCardUnchecked(data.cards[i].id);
+
             this.cards[i].init(season_Prefix + data.id, data.cards[i], isCollected, duplicates);
+            this.cards[i].setNewMarker(isNew);
         }
 
         let progressValue = controller.getProgressByCollectionId(data.id) / data.cards.length;
@@ -92,6 +100,9 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
         this.rewardLabel.string = "";
 
         this.name_.string = Localization.instance.getLabelByKey("collection_data." + season_Prefix + data.id);
+
+        this.complete.active = controller.isCollectionComplete(data.id);
+        this.progressNode.active = !controller.isCollectionComplete(data.id);
 
         if(data.rewards.length > 0) {
             if(data.rewards[0].gold > 0) {
