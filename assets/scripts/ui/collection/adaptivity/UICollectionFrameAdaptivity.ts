@@ -50,6 +50,9 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
     @property([Node])
     landscapeNodes: Node[] = [];
 
+    @property([Node])
+    popups: Node[] = [];
+
     private basic_header_H: number = 153;
     private basic_banner_H: number = 642;
     private basic_progress_H: number = 620;
@@ -60,6 +63,8 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
     private basic_progress_right_W: number = 1212;
     private basic_progress_left_W: number = 1184;
     private basic_progress_left_W_ls: number = 1857;
+
+    private basic_popup_Size: number = 1452;
 
     private mobileScaleMul: number = 0.5;
 
@@ -171,6 +176,11 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         const btnChestScale = btnChest_size / this.basic_btnChest_size;
 
         this.btnChest.setScale(new Vec3(btnChestScale / banner_Scale, btnChestScale / banner_Scale, 1));
+
+        const popupScale = w / 4 / this.basic_popup_Size;
+        for(let i = 0; i < this.popups.length; i++) {
+            this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+        }
     }
 
     makeTabletVariation(w: number, h: number) {
@@ -214,9 +224,6 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.progressRight.setPosition(new Vec3(0, 72, 0));
         this.progressLeft.setPosition(new Vec3(0, -207, 0));
 
-        /*this.progressRight_Widget.bottom = 217;
-        this.progressLeft_Widget.bottom = 52;*/
-
         const headerPadding = (1.3425 - 0.165) * x;
 
         this.header_Widget.top = headerPadding;
@@ -246,15 +253,20 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.banner_Widget.left = 0;
         this.banner_Widget.right = 0;
 
-        let btnInfo_size = 0.2762 * x * this.mobileScaleMul;
+        let btnInfo_size = 0.2762 * x;
         const btnInfoScale = btnInfo_size / this.basic_btnInfo_size;
 
         this.btnInfo.setScale(new Vec3(btnInfoScale / banner_Scale, btnInfoScale / banner_Scale, 1));
 
-        let btnChest_size = 0.4805 * x * this.mobileScaleMul;
+        let btnChest_size = 0.4805 * x;
         const btnChestScale = btnChest_size / this.basic_btnChest_size;
 
         this.btnChest.setScale(new Vec3(btnChestScale / banner_Scale, btnChestScale / banner_Scale, 1));
+
+        const popupScale = w / this.basic_popup_Size * this.mobileScaleMul;
+        for(let i = 0; i < this.popups.length; i++) {
+            this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+        }
     }
 
 
