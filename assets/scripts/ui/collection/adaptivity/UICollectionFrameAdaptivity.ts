@@ -149,10 +149,10 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.progress_Widget.right = sidePadding;
 
         const scrollPadding = banner_H + progress_H;
-        const scrollPadding_bottom = 0.3 * x;
+        //const scrollPadding_bottom = 0.3 * x;
 
         this.scroll_Widget.top = scrollPadding;
-        this.scroll_Widget.bottom = scrollPadding_bottom;
+        this.scroll_Widget.bottom = 0;
         this.scroll_Widget.left = sidePadding;
         this.scroll_Widget.right = sidePadding;
 
@@ -177,7 +177,7 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
 
         this.btnChest.setScale(new Vec3(btnChestScale / banner_Scale, btnChestScale / banner_Scale, 1));
 
-        const popupScale = w / 4 / this.basic_popup_Size;
+        const popupScale = w / 4.5 / this.basic_popup_Size;
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
         }

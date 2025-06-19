@@ -58,6 +58,9 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     @property(Node)
     complete: Node = null;
 
+    @property(Node)
+    mainMenuButtons: Node = null;
+
     @property(UICollectionDuplicateSend)
     sendPopup: UICollectionDuplicateSend;
 
@@ -203,6 +206,19 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
     sendCard(player: number, card: string) {
         this.node.emit("send", player, card);
+    }
+
+
+    show() {
+        super.show();
+
+        this.mainMenuButtons.active = false;
+    }
+
+    hide() {
+        super.hide();
+
+        this.mainMenuButtons.active = true;
     }
 }
 
