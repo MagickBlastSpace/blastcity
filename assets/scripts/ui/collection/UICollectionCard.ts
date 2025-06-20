@@ -11,15 +11,13 @@ export class UICollectionCard extends Component {
     @property(Label)
     nameDuplicate: Label = null;
 
-    @property([Node])
-    stars: Node[] = [];
-    @property([Sprite])
-    starsImg: Sprite[] = [];
+    @property(Sprite)
+    starsImg: Sprite = null;
 
-    @property(SpriteFrame)
-    star_block: SpriteFrame = null;
-    @property(SpriteFrame)
-    star_active: SpriteFrame = null;
+    @property([SpriteFrame])
+    star_blocks: SpriteFrame[] = [];
+    @property([SpriteFrame])
+    star_actives: SpriteFrame[] = [];
 
     @property(Sprite)
     cardShirt: Sprite = null;
@@ -74,15 +72,9 @@ export class UICollectionCard extends Component {
         this.name_.string = nameString;
         this.nameDuplicate.string = nameString;
 
-        for(let i = 0; i < this.stars.length; i++) {
-            this.stars[i].active = i < data.stars;
-        }
+        this.starsImg.spriteFrame = isCollected ? this.star_actives[data.stars - 1] : this.star_blocks[data.stars - 1];
 
         this.unlocked.active = isCollected;
-
-        for(let i = 0; i < this.starsImg.length; i++) {
-            this.starsImg[i].spriteFrame = isCollected ? this.star_active : this.star_block;
-        }
 
         if(isCollected && data.type === "gold") {
             this.cardShirt.spriteFrame = this.card_active_gold;

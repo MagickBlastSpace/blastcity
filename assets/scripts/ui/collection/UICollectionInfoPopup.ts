@@ -13,6 +13,14 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     @property(Button)
     closeBtn: Button = null;
 
+    @property(Button)
+    nextBtn: Button = null;
+    @property(Button)
+    prevBtn: Button = null;
+
+    @property(Label)
+    pageLabel: Label = null;
+
     @property(Label)
     name_: Label = null;
     @property(Label)
@@ -64,9 +72,18 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     @property(UICollectionDuplicateSend)
     sendPopup: UICollectionDuplicateSend;
 
+    private curPage: number = 0;
+
+    private collections: CollectionData[] = [];
+
+    private eventController: EventBase;
+
 
     start() {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
+
+        this.nextBtn.node.on(Button.EventType.CLICK, this.onNextBtnClick, this);
+        this.prevBtn.node.on(Button.EventType.CLICK, this.onPrevBtnClick, this);
 
         for(let i = 0; i < this.cards.length; i++) {
             this.cards[i].node.on("send", (collectionId, data, isCollected, duplicates) => this.showSendPopup(collectionId, data, isCollected, duplicates));
@@ -75,8 +92,15 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
         this.sendPopup.node.on("send", (player, card) => this.sendCard(player, card));
     }
 
-    init(data: CollectionData, controller: EventBase) {
+    init(data: CollectionData, controller: EventBase, pageNumber: number) {
         this.name_.string = data.name_;
+
+        this.eventController = controller;
+
+        this.curPage = pageNumber;
+        this.collections = this.eventController.getCollections();
+
+        this.pageLabel.string = (this.curPage + 1) + "/" + this.collections.length;
 
         this.progress.string = controller.getProgressByCollectionId(data.id) + "/" + data.cards.length;
 
@@ -219,6 +243,27 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
         super.hide();
 
         this.mainMenuButtons.active = true;
+    }
+
+
+    onNextBtnClick() {
+        if(this.curPage >= this.collections.length) {
+            return;
+        }
+
+        this.curPage = this.curPage + 1;
+
+        this.init(this.collections[this.curPage], this.eventController, this.curPage);
+    }
+
+    onPrevBtnClick() {
+        if(this.curPage <= 0) {
+            return;
+        }
+
+        this.curPage = this.curPage - 1;
+
+        this.init(this.collections[this.curPage], this.eventController, this.curPage);
     }
 }
 

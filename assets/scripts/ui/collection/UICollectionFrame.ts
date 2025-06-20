@@ -72,7 +72,7 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         this.init(this.eventController);
 
         for(let i = 0; i < this.items.length; i++) {
-            this.items[i].node.on("click", (data) => this.showCollection(data));
+            this.items[i].node.on("click", (data) => this.showCollection(data, i));
             this.items[i].node.on("reward", (data) => this.onReward(data));
         }
 
@@ -108,7 +108,7 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         
                 let item = itemNode.getComponent("UICollectionItem");
 
-                itemNode.on("click", (data) => this.showCollection(data));
+                itemNode.on("click", (data) => this.showCollection(data, i));
         
                 this.items.push(item);
             }
@@ -160,8 +160,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     }
 
 
-    showCollection(collection: CollectionData) {
-        this.collectionInfoPopup.init(collection, this.eventController);
+    showCollection(collection: CollectionData, pageNumber: number) {
+        this.collectionInfoPopup.init(collection, this.eventController, pageNumber);
 
         this.collectionInfoPopup.show();
     }
