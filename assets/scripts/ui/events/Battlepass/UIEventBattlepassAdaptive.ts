@@ -119,7 +119,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             
             const btn_Info_Size = 0.273 * x;
             const btn_Info_Scale = btn_Info_Size / this.basic_BtnInfo_Size;
-            const btn_Info_Padding_Top = 0.501 * x;
+            const btn_Info_Padding_Top = 0.451 * x;
             this.btnInfo.setScale(new Vec3(btn_Info_Scale, btn_Info_Scale, 1));
             this.btnInfo_Widget.top = btn_Info_Padding_Top;
             this.btnInfo_Widget.left = paddingSide;
@@ -195,7 +195,7 @@ export class UIEventBattlepassAdaptive extends UIAdaptivityBase {
             
             const btn_Info_Size = 0.273 * x;
             const btn_Info_Scale = btn_Info_Size / this.basic_BtnInfo_Size;
-            const btn_Info_Padding_Top = 0.501 * x;
+            const btn_Info_Padding_Top = 0.451 * x;
             this.btnInfo.setScale(new Vec3(btn_Info_Scale, btn_Info_Scale, 1));
             this.btnInfo_Widget.top = btn_Info_Padding_Top;
             this.btnInfo_Widget.left = paddingSide;
