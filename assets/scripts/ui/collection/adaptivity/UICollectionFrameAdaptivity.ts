@@ -149,19 +149,28 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.progress_Widget.right = sidePadding;
 
         const scrollPadding = banner_H + progress_H;
-        //const scrollPadding_bottom = 0.3 * x;
 
         this.scroll_Widget.top = scrollPadding;
         this.scroll_Widget.bottom = 0;
         this.scroll_Widget.left = sidePadding;
         this.scroll_Widget.right = sidePadding;
 
-        const layoutSpacingX = -0.12 * x;
+        let layoutSpacingX = -0.12 * x;
         const layoutSpacingY = 0.055 * x;
+        const scrollSidePadding = 0.4 * x;
+
+        const containerWidth = w - sidePadding * 2;
+        const columns = 5;
+        const itemWidth = 1.2692 * x;
+
+        layoutSpacingX = (containerWidth - itemWidth * columns - scrollSidePadding * 2) / (columns - 1);
 
         this.layout.spacingX = layoutSpacingX;
-        this.layout.spacingY = layoutSpacingY;
-
+        this.layout.spacingY = layoutSpacingX;
+        this.layout.paddingLeft = scrollSidePadding;
+        this.layout.paddingRight = scrollSidePadding;
+        this.layout.paddingTop = 0.3 * x;
+        this.layout.paddingBottom = 0.3 * x;
         this.layout.updateLayout();
 
         this.banner_Widget.left = sidePadding;
@@ -211,15 +220,15 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
 
         this.progressContainer.setScale(new Vec3(progress_Scale, progress_Scale, 1));
 
-        const progress_r_W = 3.1436 * x * this.mobileScaleMul;
+        const progress_r_W = 3.1436 * x;
         const progressRight_Scale = progress_r_W / this.basic_progress_right_W;
 
-        this.progressRight.setScale(new Vec3(progressRight_Scale, progressRight_Scale, 1));
+        this.progressRight.setScale(new Vec3(progressRight_Scale / progress_Scale, progressRight_Scale / progress_Scale, 1));
 
-        const progress_l_W = 2.5635 * x * this.mobileScaleMul;
+        const progress_l_W = 2.5635 * x;
         const progressLeft_Scale = progress_l_W / this.basic_progress_left_W;
 
-        this.progressLeft.setScale(new Vec3(progressLeft_Scale, progressLeft_Scale, 1));
+        this.progressLeft.setScale(new Vec3(progressLeft_Scale / progress_Scale, progressLeft_Scale / progress_Scale, 1));
 
         this.progressRight.setPosition(new Vec3(0, 72, 0));
         this.progressLeft.setPosition(new Vec3(0, -207, 0));
@@ -242,12 +251,22 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.scroll_Widget.left = 0;
         this.scroll_Widget.right = 0;
 
-        const layoutSpacingX = -0.12 * x;
+        let layoutSpacingX = -0.12 * x;
         const layoutSpacingY = 0.055 * x;
+        const scrollSidePadding = 0.04 * x;
+
+        const containerWidth = w * this.mobileScaleMul;
+        const columns = 3;
+        const itemWidth = x;
+
+        layoutSpacingX = (containerWidth - itemWidth * columns - scrollSidePadding * 2) / (columns - 1);
 
         this.layout.spacingX = layoutSpacingX;
-        this.layout.spacingY = layoutSpacingY;
-
+        this.layout.spacingY = layoutSpacingX + 0.3 * x;
+        this.layout.paddingLeft = scrollSidePadding;
+        this.layout.paddingRight = scrollSidePadding;
+        this.layout.paddingTop = 0.3 * x;
+        this.layout.paddingBottom = 0.3 * x;
         this.layout.updateLayout();
 
         this.banner_Widget.left = 0;

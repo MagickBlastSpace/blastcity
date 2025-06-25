@@ -168,17 +168,12 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
         Tween.stopAllByTarget(this.progressBar);
 
-        this.progressBar.progress = 0.0;
+        //this.progressBar.progress = 0.0;
         
         if(currentStage > stageNumber) {
             console.log(stageNumber + ": progress set 1");
             this.progressBar.progress = 1.0;
         }
-        /*else if(currentStage === stageNumber) {
-            tween(this.progressBar)
-                .to(2, { progress: 0.5 })
-                .start();
-        }*/
 
         this.isCurrent = currentStage === stageNumber;
 

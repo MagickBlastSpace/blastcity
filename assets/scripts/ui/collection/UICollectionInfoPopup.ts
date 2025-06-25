@@ -118,11 +118,12 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
         let progressValue = controller.getProgressByCollectionId(data.id) / data.cards.length;
         
-        if(this.progressBar) {
+        this.progressBar.progress = progressValue;
+        /*if(this.progressBar) {
             tween(this.progressBar)
                 .to(0.8, { progress: progressValue })
                 .start();
-        }
+        }*/
 
         this.rewardLabel.string = "";
 
@@ -247,7 +248,7 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
 
     onNextBtnClick() {
-        if(this.curPage >= this.collections.length) {
+        if(this.curPage >= this.collections.length - 1) {
             return;
         }
 

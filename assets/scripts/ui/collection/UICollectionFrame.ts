@@ -134,7 +134,7 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         let curStage = this.eventController.getCurrentStage();
 
         this.mainReward_1.string = curStage === 0 ? "10000" : "15000";
-        this.mainReward_1.string = curStage === 0 ? "x10" : "x15";
+        this.mainReward_2.string = curStage === 0 ? "x10" : "x15";
 
         let season = this.eventController.getSeasonPrefix();
 

@@ -32,7 +32,7 @@ export class UIMainMenuFrame extends Component {
         }
 
         if(this.connectedFrame && this.connectedFrame !== undefined) {
-            this.connectedFrame.hide();
+            this.connectedFrame.hideClean();
         }
 
         this.node.active = false;
