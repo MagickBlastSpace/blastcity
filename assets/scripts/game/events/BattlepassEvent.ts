@@ -1,3 +1,5 @@
+declare const gamepush: any;
+
 import { _decorator, Component, Node } from 'cc';
 import { RocketFeverEvent } from './RocketFeverEvent';
 import { SaveData } from '../../data/SaveData';
@@ -103,6 +105,9 @@ export class BattlepassEvent extends RocketFeverEvent {
 
         if(this.lastAttemptTimestamp === 0) {
             this.lastAttemptTimestamp = Date.now();
+
+            gamepush.player.set("timestamp_battlepass", this.lastAttemptTimestamp);
+            gamepush.player.sync();
         }
 
         this.collectedRockets = this.collectedRockets + earnedPoints;
@@ -192,6 +197,9 @@ export class BattlepassEvent extends RocketFeverEvent {
 
             if(this.lastAttemptTimestamp === 0) {
                 this.lastAttemptTimestamp = Date.now();
+            
+                gamepush.player.set("timestamp_battlepass", this.lastAttemptTimestamp);
+                gamepush.player.sync();
             }
 
             SaveData.instance.saveEvent(this.eventId);
@@ -208,6 +216,9 @@ export class BattlepassEvent extends RocketFeverEvent {
 
             if(this.lastAttemptTimestamp === 0) {
                 this.lastAttemptTimestamp = Date.now();
+
+                gamepush.player.set("timestamp_battlepass", this.lastAttemptTimestamp);
+                gamepush.player.sync();
             }
 
             SaveData.instance.saveEvent(this.eventId);
@@ -368,6 +379,9 @@ export class BattlepassEvent extends RocketFeverEvent {
 
             if(this.lastAttemptTimestamp === 0) {
                 this.lastAttemptTimestamp = Date.now();
+            
+                gamepush.player.set("timestamp_battlepass", this.lastAttemptTimestamp);
+                gamepush.player.sync();
             }
         
             SaveData.instance.saveEvent(this.eventId);
@@ -388,6 +402,9 @@ export class BattlepassEvent extends RocketFeverEvent {
 
         if(this.lastAttemptTimestamp === 0) {
             this.lastAttemptTimestamp = Date.now();
+
+            gamepush.player.set("timestamp_battlepass", this.lastAttemptTimestamp);
+            gamepush.player.sync();
         }
     
         SaveData.instance.saveEvent(this.eventId);

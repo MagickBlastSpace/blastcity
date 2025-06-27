@@ -284,6 +284,10 @@ export class UserData extends Component {
         switch(resourceType) {
             case "gold":
                 this.Gold += value;
+
+                gamepush.player.set('gold', this.Gold);
+                gamepush.player.sync();
+
                 break;
             case "stars":
                 this.Stars += value;
@@ -292,25 +296,53 @@ export class UserData extends Component {
 
             case "bomb":
                 this.StartBombs += value;
+
+                gamepush.player.set('bomb', this.StartBombs);
+                gamepush.player.sync();
+
                 break;
             case "rocket":
                 this.StartRockets += value;
+
+                gamepush.player.set('rocket', this.StartRockets);
+                gamepush.player.sync();
+
                 break;
             case "discoball":
                 this.StartDiscoballs += value;
+
+                gamepush.player.set('discoball', this.StartDiscoballs);
+                gamepush.player.sync();
+
                 break;
 
             case "hammer":
                 this.Hammers += value;
+
+                gamepush.player.set('hammer', this.Hammers);
+                gamepush.player.sync();
+
                 break;
             case "bow":
                 this.Bows += value;
+
+                gamepush.player.set('bow', this.Bows);
+                gamepush.player.sync();
+
                 break;
             case "cannon":
                 this.Cannons += value;
+
+                gamepush.player.set('cannon', this.Cannons);
+                gamepush.player.sync();
+
                 break;
             case "jester":
                 this.Jesters += value;
+
+                gamepush.player.set('jester', this.Jesters);
+                gamepush.player.sync();
+
                 break;
 
             case "bomb_minutes":   
@@ -358,6 +390,9 @@ export class UserData extends Component {
             case "gold":
                 if(this.Gold >= value) {
                     this.Gold -= value;
+
+                    gamepush.player.set('gold', this.Gold);
+                    gamepush.player.sync();
                 }
                 else {
                     return false;
@@ -367,39 +402,60 @@ export class UserData extends Component {
             case "bomb":
                 if(this.StartBombs >= value && this.getRemainingTimeString("bomb") === "") {
                     this.StartBombs -= value;
+
+                    gamepush.player.set('bomb', this.StartBombs);
+                    gamepush.player.sync();
                 }
 
                 break;
             case "rocket":
                 if(this.StartRockets >= value && this.getRemainingTimeString("rocket") === "") {
                     this.StartRockets -= value;
+
+                    gamepush.player.set('rocket', this.StartRockets);
+                    gamepush.player.sync();
                 }
 
                 break;
             case "discoball":
                 if(this.StartDiscoballs >= value && this.getRemainingTimeString("discoball") === "") {
                     this.StartDiscoballs -= value;
+
+                    gamepush.player.set('discoball', this.StartDiscoballs);
+                    gamepush.player.sync();
                 }
                 break;
     
             case "hammer":
                 if(this.Hammers >= value) {
                     this.Hammers -= value;
+
+                    gamepush.player.set('hammer', this.Hammers);
+                    gamepush.player.sync();
                 }
                 break;
             case "bow":
                 if(this.Bows >= value) {
                     this.Bows -= value;
+
+                    gamepush.player.set('bow', this.Bows);
+                    gamepush.player.sync();
                 }
                 break;
             case "cannon":
                 if(this.Cannons >= value) {
                     this.Cannons -= value;
+
+                    gamepush.player.set('cannon', this.Cannons);
+                    gamepush.player.sync();
                 }
                 break;
             case "jester":
                 if(this.Jesters >= value) {
                     this.Jesters -= value;
+
+                    gamepush.player.set('jester', this.Jesters);
+                    gamepush.player.sync();
                 }
                 break;
             
@@ -716,6 +772,8 @@ export class UserData extends Component {
             gamepush.player.set('energy:max', this.energyMax_Premium);
             gamepush.player.set('energy', this.energyMax_Premium);
 
+            gamepush.player.set('ispremium', true);
+
             this.node.emit("premium_purchase");
 
             SaveData.instance.saveUserData();
@@ -769,6 +827,8 @@ export class UserData extends Component {
         if(gamepush.player.get('energy') > this.energyMax_Free) {
             
         }
+
+        gamepush.player.set('ispremium', false);
 
         gamepush.player.sync();
 

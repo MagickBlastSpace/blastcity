@@ -73,29 +73,44 @@ export class SaveData extends Component {
     loadUserData() {
         var userData = JSON.parse(cc.sys.localStorage.getItem('userData'));
 
+        UserData.instance.setProgress(gamepush.player.get('score'));
+        UserData.instance.setIsPremium(gamepush.player.get('ispremium'));
+        UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
+
+        UserData.instance.setResource("gold", gamepush.player.get('gold'));
+
+        UserData.instance.setResource("bomb", gamepush.player.get('bomb'));
+        UserData.instance.setResource("rocket", gamepush.player.get('rocket'));
+        UserData.instance.setResource("discoball", gamepush.player.get('discoball'));
+
+        UserData.instance.setResource("hammer", gamepush.player.get('hammer'));
+        UserData.instance.setResource("bow", gamepush.player.get('bow'));
+        UserData.instance.setResource("cannon", gamepush.player.get('cannon'));
+        UserData.instance.setResource("jester", gamepush.player.get('jester'));
+
         if (userData) {
-            UserData.instance.setProgress(gamepush.player.get('score'));
-            UserData.instance.setResource("gold", userData.gold);
+            //UserData.instance.setProgress(gamepush.player.get('score'));
+            //UserData.instance.setResource("gold", userData.gold);
             if(userData.stars) {
                 UserData.instance.setResource("stars", userData.stars);
             }
 
-            UserData.instance.setResource("bomb", userData.bomb);
-            UserData.instance.setResource("rocket", userData.rocket);
-            UserData.instance.setResource("discoball", userData.discoball);
+            //UserData.instance.setResource("bomb", userData.bomb);
+            //UserData.instance.setResource("rocket", userData.rocket);
+            //UserData.instance.setResource("discoball", userData.discoball);
 
-            UserData.instance.setResource("hammer", userData.hammer);
-            UserData.instance.setResource("bow", userData.bow);
-            UserData.instance.setResource("cannon", userData.cannon);
-            UserData.instance.setResource("jester", userData.jester);
+            //UserData.instance.setResource("hammer", userData.hammer);
+            //UserData.instance.setResource("bow", userData.bow);
+            //UserData.instance.setResource("cannon", userData.cannon);
+            //UserData.instance.setResource("jester", userData.jester);
             
             UserData.instance.setEnergyAskTimestamp(userData.energyAskTimestamp);
 
             UserData.instance.setFriendsList(userData.friendsList);
-            UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
+            //UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
 
             if (userData.isPremium !== undefined) {
-                UserData.instance.setIsPremium(userData.isPremium);
+                //UserData.instance.setIsPremium(gamepush.player.get('ispremium'));
             }
 
             if (userData.musicVolume !== undefined) {
@@ -120,10 +135,10 @@ export class SaveData extends Component {
             AudioController.instance.setMusicVolume(UserData.instance.getMusicVolume());
             AudioController.instance.setSfxVolume(UserData.instance.getSfxVolume());
         }
-        else {
+        /*else {
             UserData.instance.setProgress(gamepush.player.get('score'));
             UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
-        }
+        }*/
 
         this.node.emit("user_data");
     }
@@ -532,10 +547,13 @@ export class SaveData extends Component {
     }
     
     loadEvent(eventId: string) {
+        console.log("Loading Event Data: " + eventId);
+
         for(let i = 0; i < this.events.length; i++) {
             let eventComp = this.events[i].getComponent("EventBase");
 
             if(eventComp.getEventId() === eventId) {
+
                 try {
                     var eventData = JSON.parse(cc.sys.localStorage.getItem('event_' + eventComp.getEventId()));
             
@@ -583,12 +601,29 @@ export class SaveData extends Component {
                             eventComp.setBonusBank(eventData.bonusBank);
                         }
 
-                        eventComp.setLastTimestamp(eventData.lastAttemptTimestamp); //always last
+                        //eventComp.loadInventoryFromGP();
+     
+                        if(eventId !== "battlepass" && eventId !== "collection") {
+                            eventComp.setLastTimestamp(eventData.lastAttemptTimestamp); //always last
+                        }
+                        
                     } else {
                         //console.log("No event " + eventComp.getEventId() + " data found");
                     }
+
                 } catch (error) {
                     console.error("Error loading event " + eventComp.getEventId() + ": ", error);
+                }
+
+                eventComp.loadInventoryFromGP();
+
+                if(eventId === "collection") {
+                    console.log("collection timestamp load");
+                    eventComp.setLastTimestamp(gamepush.player.get('timestamp_collection'));
+                }
+                else if(eventId === "battlepass") {
+                    console.log("battlepass timestamp load");
+                    eventComp.setLastTimestamp(gamepush.player.get('timestamp_battlepass'));
                 }
             }
         }

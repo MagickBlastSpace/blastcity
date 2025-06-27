@@ -390,6 +390,9 @@ export class EventBase extends Component {
     getRewardsCount(): number {
         return 0;
     }
+
+
+    loadInventoryFromGP() {}
 }
 
 

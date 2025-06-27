@@ -40,13 +40,11 @@ export class CollectionEvent extends SpecialEventBase {
     start() {}
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
-        this.eventId = "collection";
-
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
 
         this.isStarted = true;
 
-        this.lastAttemptTimestamp = Date.now();
+        this.eventId = "collection";
     }
 
 
@@ -173,6 +171,20 @@ export class CollectionEvent extends SpecialEventBase {
                 this.uncheckedCards.push(cards[i]);
             }
         }
+
+        const collectedString = JSON.stringify(this.collectedCards);
+        const duplicatesString = JSON.stringify(this.duplicates);
+
+        gamepush.player.set('collections_inventory', collectedString);
+        gamepush.player.set('duplicates_inventory', duplicatesString);
+
+        if(this.lastAttemptTimestamp === 0) {
+            this.lastAttemptTimestamp = Date.now();
+        
+            gamepush.player.set("timestamp_collection", this.lastAttemptTimestamp);
+        }
+
+        gamepush.player.sync();
 
         SaveData.instance.saveEvent(this.eventId);
     }
@@ -658,6 +670,24 @@ export class CollectionEvent extends SpecialEventBase {
 
     getSeasonPrefix(): string {
         return this.season_Prefix;
+    }
+
+    loadInventoryFromGP() {
+        console.log("Collection inventory loading started");
+
+        try {
+            const collectedString = gamepush.player.get('collections_inventory');
+            const duplicatesString = gamepush.player.get('duplicates_inventory');
+
+            this.collectedCards = collectedString ? JSON.parse(collectedString) : [];
+            this.duplicates = duplicatesString ? JSON.parse(duplicatesString) : [];
+
+            console.log('Инвентарь успешно загружен из GamePush');
+        } catch (error) {
+            console.error('Ошибка при загрузке инвентаря из GamePush:', error);
+            this.collectedCards = [];
+            this.duplicates = [];
+        }
     }
 }
 
