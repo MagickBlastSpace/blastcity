@@ -56,7 +56,7 @@ export class UILeaderboardFrame extends UIFrameBase {
     show() {
         super.show();
 
-        this.showFrame(1);
+        this.showFrame(0);
 
         this.adaptivity.refresh();
     }

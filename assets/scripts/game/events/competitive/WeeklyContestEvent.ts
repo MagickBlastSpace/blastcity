@@ -87,7 +87,7 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
 
     public sortPlayersByProgress(): PlayerEventData[] {
-        return this.players;
+        return this.players.sort((a, b) => b.progressValue - a.progressValue);
     }
 
 
@@ -121,6 +121,17 @@ export class WeeklyContestEvent extends SkyRaceEvent {
                     this.players.push(player);
                 }
             }
+
+            //TEMP
+            if(this.players.length < 10) {
+                let bots = UserData.instance.getRandomPlayers(10 - this.players.length);
+
+                for(let i = 0; i < bots.length; i++) {
+                    bots[i].progressValue = Math.floor(Math.random() * 11) + 10;
+                    this.players.push(bots[i]);
+                }
+            }
+            //TEMP
 
             this.node.emit("refresh");
 
