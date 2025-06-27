@@ -40,7 +40,7 @@ export class Bottle extends SpecTileBase {
             
             this.node.emit("destroy_tile", this.row, this.col);
 
-            this.node.emit("respawn", 0.2);
+            this.node.emit("respawn_block_inaction", 0.2);
         }
         
         return true;

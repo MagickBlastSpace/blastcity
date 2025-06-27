@@ -696,6 +696,9 @@ export class Field extends Component {
         tileNode.on("respawn", (timeToRespawn) => {
             this.scheduleRespawn(timeToRespawn, false); //true
         });
+        tileNode.on("respawn_block_inaction", (timeToRespawn) => {
+            this.scheduleRespawn(timeToRespawn, true);
+        });
         tileNode.on("damage_all", (tileId) => {
             this.setAllDamagedByType(tileId);
         });
@@ -2598,6 +2601,28 @@ export class Field extends Component {
 
     getTutorialTiles(): SpecialTileData[] {
         return this.tutorialTiles;
+    }
+
+
+    getTilesCountByType(t: string): number {
+        let count = 0;
+
+        for(let i = 0; i < this.numRows; i++) {
+            for(let j = 0; j < this.numCols; j++) {
+                const tile = this.tileArray[i][j];
+                if(tile !== null) {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.isSpecialTile()) {
+                        let tileType = tileComp.getTileType();
+                        if(t === tileType) {
+                            count = count + 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        return count;
     }
 }
 

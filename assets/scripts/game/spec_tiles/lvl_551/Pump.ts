@@ -94,6 +94,12 @@ export class Pump extends SpecTileBase {
         for(let i = 0; i < goals.length; i++) {
             if(goals[i].id === "balloon") {
                 this.goalCount = goals[i].count;
+
+                const fieldComp = this.fieldNode.getComponent("Field");
+                let bCount = fieldComp.getTilesCountByType("balloon");
+
+                this.goalCount = this.goalCount - bCount;
+                
                 return;
             }
         }
