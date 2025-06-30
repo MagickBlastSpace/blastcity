@@ -1048,6 +1048,14 @@ export class Field extends Component {
             this.bonusIndex = this.bonusIndex + 1;
         }
         
+        let bonusTileComp = bonusTile.getComponent("TileBase");
+        if(bonusTileComp) {
+            let bonusTileType = bonusTileComp.getTileType();
+            if(bonusTileType === "multi" || bonusTileType === "super") {
+                this.setPrimaryColors();
+            }
+        }
+        
         let isBonusDestroyed = this.findAndDestroyMatches(bonusTile, false);
 
         if(!byOrder) {
