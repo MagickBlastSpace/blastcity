@@ -21,7 +21,7 @@ export class EmptyTile extends TileBase {
         }
         
         let checkRow = this.row - 1;
-        while(checkRow > 0) {
+        while(checkRow >= 0) {
             const tile = field[checkRow][this.col];
             if(tile === null) {
                 return false;
