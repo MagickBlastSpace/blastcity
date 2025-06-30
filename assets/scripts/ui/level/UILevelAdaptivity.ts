@@ -52,7 +52,7 @@ export class UILevelAdaptivity extends UIAdaptivityBase {
 
 
     start() {
-        this.refresh();
+        this.scheduleOnce(() => this.refresh(), 0.1);
     }
     
     refresh() {
@@ -102,7 +102,7 @@ export class UILevelAdaptivity extends UIAdaptivityBase {
             const upperPanelSize = 0.266 * h;
             const z = (upperPanelSize - 1.504 * x) / 4.375;
     
-            const fieldSize = 4.211 * x;
+            const fieldSize = 4 * x; //4.211
             const fieldScale = fieldSize / this.basicFieldSize;
     
             this.upperPanel.getComponent(UITransform).setContentSize(new Size(w, upperPanelSize));

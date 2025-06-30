@@ -71,7 +71,8 @@ export class ResolutionManager extends Component {
         this.boundOnWindowResize = this.onWindowResize.bind(this);
         window.addEventListener('resize', this.boundOnWindowResize);
 
-        this.adjustResolution();
+        //this.adjustResolution();
+        this.scheduleOnce(() => this.adjustResolution(), 0.1);
     }
 
     onDestroy() {
