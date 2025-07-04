@@ -156,21 +156,23 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.scroll_Widget.right = sidePadding;
 
         let layoutSpacingX = -0.12 * x;
-        const layoutSpacingY = 0.055 * x;
+        const layoutSpacingY = 0.4 * x;
         const scrollSidePadding = 0.4 * x;
 
         const containerWidth = w - sidePadding * 2;
         const columns = 5;
         const itemWidth = 1.2692 * x;
 
-        layoutSpacingX = (containerWidth - itemWidth * columns - scrollSidePadding * 2) / (columns - 1);
+        const safetyMargin = 0.05 * itemWidth * columns;
+
+        layoutSpacingX = (containerWidth - itemWidth * columns - scrollSidePadding * 2 - safetyMargin) / (columns - 1); 
 
         this.layout.spacingX = layoutSpacingX;
-        this.layout.spacingY = layoutSpacingX;
+        this.layout.spacingY = layoutSpacingY;
         this.layout.paddingLeft = scrollSidePadding;
         this.layout.paddingRight = scrollSidePadding;
         this.layout.paddingTop = 0.3 * x;
-        this.layout.paddingBottom = 0.3 * x;
+        this.layout.paddingBottom = 1.1 * x;
         this.layout.updateLayout();
 
         this.banner_Widget.left = sidePadding;
@@ -252,21 +254,24 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.scroll_Widget.right = 0;
 
         let layoutSpacingX = -0.12 * x;
-        const layoutSpacingY = 0.055 * x;
+        const layoutSpacingY = 0.3 * x;
         const scrollSidePadding = 0.04 * x;
 
         const containerWidth = w * this.mobileScaleMul;
         const columns = 3;
         const itemWidth = x;
 
-        layoutSpacingX = (containerWidth - itemWidth * columns - scrollSidePadding * 2) / (columns - 1);
+        const safetyMargin = 0.01 * itemWidth * columns;
+
+        layoutSpacingX = (containerWidth - itemWidth * columns - scrollSidePadding * 2 - safetyMargin) / (columns - 1); 
 
         this.layout.spacingX = layoutSpacingX;
-        this.layout.spacingY = layoutSpacingX + 0.3 * x;
+        //this.layout.spacingY = layoutSpacingX + 0.3 * x;
+        this.layout.spacingY = layoutSpacingY;
         this.layout.paddingLeft = scrollSidePadding;
         this.layout.paddingRight = scrollSidePadding;
         this.layout.paddingTop = 0.3 * x;
-        this.layout.paddingBottom = 0.3 * x;
+        this.layout.paddingBottom = 1.1 * x;
         this.layout.updateLayout();
 
         this.banner_Widget.left = 0;
@@ -282,7 +287,7 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
 
         this.btnChest.setScale(new Vec3(btnChestScale / banner_Scale, btnChestScale / banner_Scale, 1));
 
-        const popupScale = w / this.basic_popup_Size * this.mobileScaleMul;
+        const popupScale = 0.8 * w / this.basic_popup_Size * this.mobileScaleMul;
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
         }
