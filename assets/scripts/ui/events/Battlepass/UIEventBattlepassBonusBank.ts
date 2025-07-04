@@ -8,6 +8,8 @@ export class UIEventBattlepassBonusBank extends Component {
     activeContainer: Node = null;
     @property(Node)
     passiveContainer: Node = null;
+    @property(Node)
+    waitContainer: Node = null;
 
     @property(Label)
     gold: Label = null;
@@ -26,6 +28,7 @@ export class UIEventBattlepassBonusBank extends Component {
     refresh(isPremium: boolean, count: number, isMaxStage: boolean) {
         this.activeContainer.active = isMaxStage;
         this.passiveContainer.active = !isPremium;
+        this.waitContainer.active = isPremium && !isMaxStage;
 
         this.gold.string = count + "/ 5000";
 
