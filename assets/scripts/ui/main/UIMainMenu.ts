@@ -114,6 +114,8 @@ export class UIMainMenu extends UIFrameBase {
 
         this.setAllBtnsPassive();
         this.onBtnPlayClick();
+
+        this.updateButtonsAdaptivity();
     }
 
 
@@ -164,6 +166,8 @@ export class UIMainMenu extends UIFrameBase {
         this.buttonsUi[index].setActiveIcon(true);
 
         this.framesUi[index].show();
+
+        this.updateButtonsAdaptivity();
     }
 
     onSettingsBtnClick() {
@@ -237,6 +241,13 @@ export class UIMainMenu extends UIFrameBase {
         this.rewardPopup.show();
 
         this.rewardPopup.init_Chest(data);
+    }
+
+
+    updateButtonsAdaptivity() {
+        for(let i = 0; i < this.buttonsUi.length; i++) {
+            this.buttonsUi[i].refreshAdaptivity();
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, SpriteFrame, Sprite, Widget } from 'cc';
+import { _decorator, Component, Node, SpriteFrame, Sprite, Widget, view, UITransform, Size, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenuButton')
@@ -12,16 +12,73 @@ export class UIMainMenuButton extends Component {
     @property(SpriteFrame)
     passive: SpriteFrame = null;
 
+    @property(Node)
+    activeNode: Node = null;
+    @property(Node)
+    passiveNode: Node = null;
+
+    @property(Node)
+    picture_passive: Node = null;
+    @property(Node)
+    picture_active: Node = null;
+
     @property(Widget)
     widget: Widget = null;
 
+    private isActive: boolean = false;
+
+    private basic_icon_width_passive: number = 232;
+    private basic_icon_width_active: number = 291;
+
 
     setActiveIcon(isActive: boolean) {
+        this.isActive = isActive;
+
         this.icon.spriteFrame = isActive ? this.active : this.passive;
 
-        this.widget.bottom = 0;
+        this.activeNode.active = isActive;
+        this.passiveNode.active = !isActive;
+    }
 
-        this.widget.updateAlignment();
+
+    refreshAdaptivity() {
+        const visibleSize = view.getVisibleSize();
+    
+        const w = visibleSize.width;
+        const h = visibleSize.height;
+    
+        if (w > h) {
+            const x = 0.0896 * h;
+
+            const container_w = this.isActive ? 2.5833 * x : 1.25 * x;
+            const container_h = x;
+            this.icon.node.getComponent(UITransform).setContentSize(new Size(container_w, container_h));
+
+            this.widget.bottom = 0;
+            this.widget.updateAlignment();
+
+            const pictureScale_Active = 0.9444 * x / this.basic_icon_width_active;
+            const pictureScale_Passive = 0.6944 * x / this.basic_icon_width_passive;
+
+            this.picture_active.setScale(new Vec3(pictureScale_Active, pictureScale_Active, 1));
+            this.picture_passive.setScale(new Vec3(pictureScale_Passive, pictureScale_Passive, 1));
+
+        } else {
+            const x = 0.1607 * w;
+            
+            const container_w = this.isActive ? 2.0632 * x : x;
+            const container_h = 1.2316 * x;
+            this.icon.node.getComponent(UITransform).setContentSize(new Size(container_w, container_h));
+
+            this.widget.bottom = 0;
+            this.widget.updateAlignment();
+
+            const pictureScale_Active = 1.1684 * x / this.basic_icon_width_active;
+            const pictureScale_Passive = 0.8632 * x / this.basic_icon_width_passive;
+
+            this.picture_active.setScale(new Vec3(pictureScale_Active, pictureScale_Active, 1));
+            this.picture_passive.setScale(new Vec3(pictureScale_Passive, pictureScale_Passive, 1));
+        }
     }
 }
 
