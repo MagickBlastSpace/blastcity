@@ -20,6 +20,18 @@ export class UICollectionDuplicateSend extends UIPopupFrameBase {
     @property(UICollectionDuplicateSendPlayers)
     playersPopup: UICollectionDuplicateSendPlayers;
 
+    @property(Node)
+    silver_not_collected: Node = null;
+    @property(Node)
+    silver_single: Node = null;
+    @property(Node)
+    silver_collected: Node = null;
+
+    @property(Node)
+    gold_not_collected: Node = null;
+    @property(Node)
+    gold_collected: Node = null;
+
     private data: CollectionCardData;
 
 
@@ -35,7 +47,13 @@ export class UICollectionDuplicateSend extends UIPopupFrameBase {
 
         this.card.init(collectionId, data, isCollected, duplicates);
 
-        this.sendBtn.node.active = duplicates > 0;
+        //this.sendBtn.node.active = duplicates > 0;
+        this.silver_not_collected.active = !isCollected && data.type === "silver";
+        this.silver_single.active = isCollected && duplicates === 0 && data.type === "silver";
+        this.silver_collected.active = isCollected && duplicates > 0 && data.type === "silver";
+
+        this.gold_not_collected.active = !isCollected && data.type === "gold";
+        this.gold_collected.active = isCollected && data.type === "gold";
     }
 
 

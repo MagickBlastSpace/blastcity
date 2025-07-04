@@ -4,6 +4,7 @@ import { UICollectionItem } from './UICollectionItem';
 import { CollectionData } from '../../data/CollectionData';
 import { UIFrameBase } from '../UIFrameBase';
 import { UICollectionDuplicateExchange } from './UICollectionDuplicateExchange';
+import { UIEventButton } from '../start/UIEventButton';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionFrame')
@@ -65,6 +66,9 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     @property(Button)
     rewardInfoBtn: Button = null;
 
+    @property([UIEventButton])
+    eventBtns: UIEventButton[] = [];
+
 
     start() {
         this.eventController.node.on("refresh", () => this.refresh());
@@ -86,6 +90,12 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
         this.commonInfoBtn.node.on(Button.EventType.CLICK, this.onCommonInfoBtnClick, this);
         this.rewardInfoBtn.node.on(Button.EventType.CLICK, this.onRewardInfoBtnClick, this);
+
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].node.on("click", () => this.onEventBtnClick(i), this);
+            //this.eventBtns[i].node.on("play", () => this.onEventPlay());
+            //this.eventBtns[i].node.on("event_play", () => this.onEventPlay());
+        }
     }
 
     update(deltaTime: number) {
@@ -152,6 +162,10 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         super.show();
 
         this.refresh();
+
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].refresh();
+        }
     }
 
 
@@ -207,6 +221,19 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
     checkCard(card: string) {
         this.eventController.checkCard(card);
+    }
+
+
+    onEventBtnClick(index: number) {
+        this.hideAllPopups();
+
+        this.eventBtns[index].showEventPrefab();
+    }
+
+    hideAllPopups() {
+        for(let i = 0; i < this.eventBtns.length; i++) {
+            this.eventBtns[i].hideClean();
+        }
     }
 }
 

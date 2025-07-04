@@ -66,8 +66,8 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     @property(Node)
     complete: Node = null;
 
-    @property(Node)
-    mainMenuButtons: Node = null;
+    @property([Node])
+    mainMenuButtonsNodes: Node[] = [];
 
     @property(UICollectionDuplicateSend)
     sendPopup: UICollectionDuplicateSend;
@@ -237,13 +237,17 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     show() {
         super.show();
 
-        this.mainMenuButtons.active = false;
+        for(let i = 0; i < this.mainMenuButtonsNodes.length; i++) {
+            this.mainMenuButtonsNodes[i].active = false;
+        }
     }
 
     hide() {
         super.hide();
 
-        this.mainMenuButtons.active = true;
+        for(let i = 0; i < this.mainMenuButtonsNodes.length; i++) {
+            this.mainMenuButtonsNodes[i].active = true;
+        }
     }
 
 
