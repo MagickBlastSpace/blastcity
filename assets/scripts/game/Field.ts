@@ -1139,7 +1139,7 @@ export class Field extends Component {
             this.giveDamage(tile, "extra_hit", true, delay);
         }
         else {
-            this.giveStatusDamage(row, col, false);
+            this.giveStatusDamage(row, col, true); //true - not destroy empty bubbles, false - destroy empty bubbles
         }
     }
 
