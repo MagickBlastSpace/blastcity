@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Button, Label, ProgressBar, tween, Sprite, SpriteFrame, assetManager } from 'cc';
+import { _decorator, Component, Node, Button, Label, ProgressBar, tween, Sprite, SpriteFrame, assetManager, UIOpacity } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { CollectionCardData, CollectionData } from '../../data/CollectionData';
 import { UICollectionCard } from './UICollectionCard';
@@ -71,6 +71,9 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
     @property(UICollectionDuplicateSend)
     sendPopup: UICollectionDuplicateSend;
+
+    @property(Label)
+    cardSendText: Label = null;
 
     private curPage: number = 0;
 
@@ -231,6 +234,10 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
     sendCard(player: number, card: string) {
         this.node.emit("send", player, card);
+
+        this.showCardSendTextWithFade();
+
+        this.init(this.collections[this.curPage], this.eventController, this.curPage);
     }
 
 
@@ -269,6 +276,23 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
         this.curPage = this.curPage - 1;
 
         this.init(this.collections[this.curPage], this.eventController, this.curPage);
+    }
+
+
+    showCardSendTextWithFade() {
+        const durationFade = 0.5;
+        const holdTime = 3.0;
+
+        const uiOpacity = this.cardSendText.getComponent(UIOpacity) 
+            || this.cardSendText.addComponent(UIOpacity);
+
+        uiOpacity.opacity = 0;
+
+        tween(uiOpacity)
+            .to(durationFade, { opacity: 255 })         
+            .delay(holdTime)                            
+            .to(durationFade, { opacity: 0 })           
+            .start();
     }
 }
 

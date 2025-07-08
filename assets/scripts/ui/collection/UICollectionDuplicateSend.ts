@@ -34,6 +34,8 @@ export class UICollectionDuplicateSend extends UIPopupFrameBase {
 
     private data: CollectionCardData;
 
+    private colId: string;
+
 
     start() {
         this.sendBtn.node.on(Button.EventType.CLICK, this.onSendBtnClick, this);
@@ -44,6 +46,7 @@ export class UICollectionDuplicateSend extends UIPopupFrameBase {
 
     init(collectionId: string, data: CollectionCardData, isCollected: boolean, duplicates: number) {
         this.data = data;
+        this.colId = collectionId;
 
         this.card.init(collectionId, data, isCollected, duplicates);
 
@@ -59,6 +62,8 @@ export class UICollectionDuplicateSend extends UIPopupFrameBase {
 
     onSendBtnClick() {
         this.playersPopup.show();
+
+        this.playersPopup.init(this.data, this.colId);
     }
 
     onCloseBtnClick() {
