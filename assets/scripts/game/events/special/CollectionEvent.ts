@@ -2,7 +2,7 @@ declare const gamepush: any;
 
 import { _decorator, Component, Node } from 'cc';
 import { SpecialEventBase } from './SpecialEventBase';
-import { CollectionData, CollectionRewardData } from '../../../data/CollectionData';
+import { CollectionCardData, CollectionData, CollectionRewardData } from '../../../data/CollectionData';
 import { SaveData } from '../../../data/SaveData';
 import { UserData } from '../../../data/UserData';
 const { ccclass, property } = _decorator;
@@ -335,6 +335,20 @@ export class CollectionEvent extends SpecialEventBase {
         }
 
         return "";
+    }
+
+    findCardDataByCard(id: string): CollectionCardData {
+        let data = new CollectionCardData();
+
+        for(let i = 0; i < this.eventData.length; i++) {
+            for(let j = 0; j < this.eventData[i].cards.length; j++) {
+                if(this.eventData[i].cards[j].id === id) {
+                    return this.eventData[i].cards[j];
+                }
+            }
+        }
+
+        return data;
     }
 
     getTotalProgressValue(): number {

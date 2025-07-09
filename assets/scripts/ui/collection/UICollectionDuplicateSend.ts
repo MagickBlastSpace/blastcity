@@ -75,6 +75,13 @@ export class UICollectionDuplicateSend extends UIPopupFrameBase {
 
         this.hide();
     }
+
+
+    show() {
+        super.show();
+
+        this.playersPopup.hideClean();
+    }
 }
 
 

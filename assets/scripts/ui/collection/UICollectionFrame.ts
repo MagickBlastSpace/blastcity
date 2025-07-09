@@ -5,6 +5,8 @@ import { CollectionData } from '../../data/CollectionData';
 import { UIFrameBase } from '../UIFrameBase';
 import { UICollectionDuplicateExchange } from './UICollectionDuplicateExchange';
 import { UIEventButton } from '../start/UIEventButton';
+import { UICollectionCardRecievePopup } from './UICollectionCardRecievePopup';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionFrame')
@@ -233,6 +235,20 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     hideAllPopups() {
         for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].hideClean();
+        }
+    }
+
+
+    showNextTutorialPage() {}
+
+    onInfoBtnClick() {
+        let curStage = this.eventController.getCurrentStage();
+
+        if(curStage === 0) {
+            this.infoPopups[0].show();
+        }
+        else {
+            this.infoPopups[1].show();
         }
     }
 }

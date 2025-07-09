@@ -75,3 +75,14 @@ export class CollectionData {
     @property([CollectionCardData])
     cards: CollectionCardData[] = [];
 }
+
+
+
+@ccclass('CollectionCardSenderData')
+export class CollectionCardSenderData {
+    @property
+    id = "";
+
+    @property
+    playerId = 0;
+}

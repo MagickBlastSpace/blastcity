@@ -36,6 +36,8 @@ export class UIEventSkyRacePlayerItem extends Component {
 
     @property(Sprite)
     avatar: Sprite = null;
+    @property(Sprite)
+    badge: Sprite = null;
 
     @property(Button)
     takeRewardBtn: Button = null;
@@ -123,6 +125,10 @@ export class UIEventSkyRacePlayerItem extends Component {
             this.avatar.spriteFrame = null;
         }
 
+        if(this.badge && this.badge !== undefined) {
+            this.badge.spriteFrame = null;
+        }
+
         if(this.slider) {
             this.slider.progress = 0;
         }
@@ -191,6 +197,10 @@ export class UIEventSkyRacePlayerItem extends Component {
     setPlayerInfo(player: any) {
         if(this.avatar) {
             this.avatar.spriteFrame = Profile.instance.getAvatarById(player.state["avatar_id"]);
+        }
+
+        if(this.badge && this.badge !== undefined) {
+            this.badge.spriteFrame = Profile.instance.getBadgeById(player.state["badge_id"]);
         }
 
         if(this.clanName) {

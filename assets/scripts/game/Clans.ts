@@ -26,6 +26,8 @@ export class Clans extends Component {
 
     private gifts: EventRewardData[] = [];
 
+    private isItemsFromTeamChecked: boolean = false;
+
 
     onLoad() {
         this.clans = [];
@@ -45,6 +47,9 @@ export class Clans extends Component {
         });
     
         gamepush.channels.on('fetchMembers', (result) => {
+
+            this.checkForItemsFromTeam(result);
+
             if(this.gifts.length > 0) {
                 for(let i = 0; i < result.items.length; i++) {
                     let playerId = result.items[i].id;
@@ -262,6 +267,34 @@ export class Clans extends Component {
         this.gifts.push(gift);
 
         Net.instance.fetchMembersOfChannel(this.myClan.clanId);
+    }
+
+
+    async checkForItemsFromTeam(result: any) {
+        /*if(this.isItemsFromTeamChecked) {
+            return;
+        }
+
+        this.isItemsFromTeamChecked = true;*/
+
+
+
+        for(let i = 0; i < result.items.length; i++) {
+            let id = result.items[i].id;
+
+            const response = await gamepush.channels.fetchPersonalMessages({
+                playerId: id,
+                tags: ['collection_card'],
+                limit: 100,
+                offset: 0,
+            });
+
+            response.items.forEach((message) => {
+                UserData.instance.addRecievedCard(message.text, id);
+
+                gamepush.channels.deleteMessage({ messageId: message.id });
+            });
+        }
     }
 }
 

@@ -12,6 +12,9 @@ import { UIPopupReward } from '../UIPopupReward';
 import { UIProfilePopup } from '../profile/UIProfilePopup';
 import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
 import { ChestRewardData } from '../../data/ChestData';
+import { UICollectionCardRecievePopup } from '../collection/UICollectionCardRecievePopup';
+import { Net } from '../../net/Net';
+import { Clans } from '../../game/Clans';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -68,6 +71,12 @@ export class UIMainMenu extends UIFrameBase {
     @property(Node)
     resourcesNode: Node = null;
 
+    @property(UICollectionCardRecievePopup)
+    recievePopup: UICollectionCardRecievePopup;
+
+    @property(Clans)
+    clans: Clans = null;
+
 
     onLoad() {
         macro.ENABLE_MULTI_TOUCH = false;
@@ -112,10 +121,20 @@ export class UIMainMenu extends UIFrameBase {
         this.settingsBtn.node.on(Button.EventType.CLICK, this.onSettingsBtnClick, this);
         this.profileBtn.node.on(Button.EventType.CLICK, this.onProfileBtnClick, this);
 
+        this.recievePopup.node.on("check", (id) => {
+            this.removeRecievedCard(id);
+            this.checkRecievedCards();
+        });
+
         this.setAllBtnsPassive();
         this.onBtnPlayClick();
 
         this.updateButtonsAdaptivity();
+
+        
+        this.scheduleOnce(() => {
+            Net.instance.fetchMembersOfChannel(this.clans.getClanId());
+        }, 5);
     }
 
 
@@ -168,6 +187,8 @@ export class UIMainMenu extends UIFrameBase {
         this.framesUi[index].show();
 
         this.updateButtonsAdaptivity();
+
+        this.checkRecievedCards();
     }
 
     onSettingsBtnClick() {
@@ -247,6 +268,23 @@ export class UIMainMenu extends UIFrameBase {
     updateButtonsAdaptivity() {
         for(let i = 0; i < this.buttonsUi.length; i++) {
             this.buttonsUi[i].refreshAdaptivity();
+        }
+    }
+
+
+    removeRecievedCard(id: string) {
+        UserData.instance.removeRecievedCard(id);
+    }
+
+    checkRecievedCards() {
+        let recievedCards = UserData.instance.getRecievedCards();
+
+        if(recievedCards.length > 0) {
+            this.recievePopup.hideClean();
+
+            this.recievePopup.init(recievedCards[0].id, recievedCards[0].playerId);
+
+            this.recievePopup.show();
         }
     }
 }

@@ -8,6 +8,7 @@ import { PlayerEventData } from './EventData';
 import { Net } from '../net/Net';
 import { Localization } from '../utils/Localization';
 import { Clans } from '../game/Clans';
+import { CollectionCardSenderData } from './CollectionData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserData')
@@ -78,6 +79,9 @@ export class UserData extends Component {
 
     @property([PlayerEventData])
     players: PlayerEventData[] = [];
+
+    @property([CollectionCardSenderData])
+    recievedCards: CollectionCardSenderData[] = [];
 
 
     onLoad() {
@@ -180,6 +184,12 @@ export class UserData extends Component {
                 console.log("Collection card accepted: " + message.text);
 
                 this.collections.applyNewCards(newCards);
+
+                let recieveData = new CollectionCardSenderData();
+                recieveData.id = message.text;
+                recieveData.playerId = message.authorId;
+
+                this.recievedCards.push(recieveData);
 
                 gamepush.channels.deleteMessage({ messageId: message.id });
             }
@@ -876,6 +886,12 @@ export class UserData extends Component {
 
                 this.collections.applyNewCards(newCards);
 
+                let recieveData = new CollectionCardSenderData();
+                recieveData.id = message.text;
+                recieveData.playerId = message.authorId;
+
+                this.recievedCards.push(recieveData);
+
                 gamepush.channels.deleteMessage({ messageId: message.id });
             });
         }
@@ -1066,6 +1082,28 @@ export class UserData extends Component {
             text: this.getPlayerName() + " купил Боевой Пропуск!",
             tags: ['clan_premium_gift'],
         });
+    }
+
+
+    getRecievedCards(): CollectionCardSenderData[] {
+        return this.recievedCards;
+    }
+
+    removeRecievedCard(id: string) {
+        this.recievedCards = this.recievedCards.filter(card => card.id !== id);
+    }
+
+    addRecievedCard(id: string, playerId: number) {
+        let newCards = [];
+        newCards.push(id);
+
+        this.collections.applyNewCards(newCards);
+
+        let recieveData = new CollectionCardSenderData();
+        recieveData.id = id;
+        recieveData.playerId = playerId;
+
+        this.recievedCards.push(recieveData);
     }
 }
 
