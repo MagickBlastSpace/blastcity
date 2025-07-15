@@ -14,9 +14,6 @@ export class UICollectionDuplicateExchange extends UIPopupFrameBase {
     @property(Label)
     stars: Label = null;
 
-    @property(Node)
-    mainMenuButtons: Node = null;
-
 
     start() {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
@@ -41,14 +38,10 @@ export class UICollectionDuplicateExchange extends UIPopupFrameBase {
 
     show() {
         super.show();
-
-        this.mainMenuButtons.active = false;
     }
 
     hide() {
         super.hide();
-
-        this.mainMenuButtons.active = true;
     }
 }
 
