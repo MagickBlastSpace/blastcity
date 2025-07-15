@@ -154,9 +154,17 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
                 this.rewardIcon_Premium.spriteFrame = this.specialPremium;
                 this.rewardLabel_Premium.string = "";
             }
+
+            if(data.rewards[1].isChest) {
+                this.rewardIcon_Premium.spriteFrame = this.chestsIcons[data.rewards[1].cardsPack];
+            }
+
+            if(data.rewards[0].isChest) {
+                this.rewardIcon.spriteFrame = this.chestsIcons[data.rewards[0].cardsPack];
+            }
         }
 
-        if(stageNumber % 5 === 0 && stageNumber > 0) {
+        /*if(stageNumber % 5 === 0 && stageNumber > 0) {
             let chestIndex = stageNumber / 5;
 
             this.rewardIcon_Premium.spriteFrame = chestIndex < this.chestsIcons.length ? this.chestsIcons[chestIndex] : this.chestsIcons[this.chestsIcons.length - 1];
@@ -164,7 +172,7 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
             this.rewardIcon.spriteFrame = this.chestsIcons[0];
             this.rewardLabel.string = "";
             this.rewardLabel_Premium.string = "";
-        }
+        }*/
 
         Tween.stopAllByTarget(this.progressBar);
 
