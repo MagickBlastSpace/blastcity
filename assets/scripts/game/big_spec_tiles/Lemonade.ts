@@ -132,20 +132,24 @@ export class Lemonade extends BigTileBase {
         else if(damageType === "bonus") {
             if(this.strengthRed > 0) {
                 this.strengthRed--;
+                this.setAsDamaged();
             }
             else if(this.strengthBlue > 0) {
                 this.strengthBlue--;
+                this.setAsDamaged();
             }
             else if(this.strengthGreen > 0) {
                 this.strengthGreen--;
+                this.setAsDamaged();
             }
             else if(this.strengthYellow > 0) {
                 this.strengthYellow--;
+                this.setAsDamaged();
             }
             else if(this.strengthPurple > 0) {
                 this.strengthPurple--;
+                this.setAsDamaged();
             }
-            this.setAsDamaged();
         }
 
         if(this.isDamaged && !this.isReadyToDestroy()) {
