@@ -149,28 +149,31 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.progress_Widget.right = sidePadding;
 
         const scrollPadding = banner_H + progress_H;
+        let scrollSidePadding = (w - 6.8 * x) / 2;
 
         this.scroll_Widget.top = scrollPadding;
         this.scroll_Widget.bottom = 0;
-        this.scroll_Widget.left = sidePadding;
-        this.scroll_Widget.right = sidePadding;
+        this.scroll_Widget.left = scrollSidePadding;
+        this.scroll_Widget.right = scrollSidePadding;
 
         let layoutSpacingX = -0.12 * x;
         const layoutSpacingY = 0.4 * x;
-        const scrollSidePadding = 0.4 * x;
-
-        const containerWidth = w - sidePadding * 2;
+        //const scrollSidePadding = 0.4 * x;
+        
+        const containerWidth = w - scrollSidePadding * 2;
+        //let scrollSidePadding = (containerWidth - 7 * x) / 2;
         const columns = 5;
         const itemWidth = 1.2692 * x;
 
         const safetyMargin = 0.05 * itemWidth * columns;
 
-        layoutSpacingX = (containerWidth - itemWidth * columns - scrollSidePadding * 2 - safetyMargin) / (columns - 1); 
+        //layoutSpacingX = (containerWidth - itemWidth * columns - safetyMargin - scrollSidePadding * 2) / (columns - 1);
+        layoutSpacingX = (containerWidth - itemWidth * columns - safetyMargin) / (columns - 1);
 
         this.layout.spacingX = layoutSpacingX;
         this.layout.spacingY = layoutSpacingY;
-        this.layout.paddingLeft = scrollSidePadding;
-        this.layout.paddingRight = scrollSidePadding;
+        //this.layout.paddingLeft = scrollSidePadding;
+        //this.layout.paddingRight = scrollSidePadding;
         this.layout.paddingTop = 0.3 * x;
         this.layout.paddingBottom = 1.1 * x;
         this.layout.updateLayout();
@@ -189,6 +192,7 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         this.btnChest.setScale(new Vec3(btnChestScale / banner_Scale, btnChestScale / banner_Scale, 1));
 
         const popupScale = w / 4.5 / this.basic_popup_Size;
+        //const popupScale = w / this.basic_popup_Size;
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
         }
@@ -287,7 +291,8 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
 
         this.btnChest.setScale(new Vec3(btnChestScale / banner_Scale, btnChestScale / banner_Scale, 1));
 
-        const popupScale = 0.8 * w / this.basic_popup_Size * this.mobileScaleMul;
+        //const popupScale = 0.8 * w / this.basic_popup_Size * this.mobileScaleMul;
+        const popupScale = 0.8 * w / this.basic_popup_Size;
         for(let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
         }
