@@ -183,7 +183,7 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
             this.progressBar.progress = 1.0;
         }
 
-        this.isCurrent = currentStage === stageNumber;
+        this.isCurrent = currentStage === stageNumber || (currentStage + 1) === stageNumber;
 
         this.complete.active = currentStage > stageNumber;
         this.current.active = this.isCurrent;
