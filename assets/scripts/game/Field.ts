@@ -985,7 +985,24 @@ export class Field extends Component {
 
         for(let i = 0; i < commonTiles.length; i++) {
             if(!this.presetedNodes.includes(this.tileArray[commonTiles[i].x][commonTiles[i].y])) {
-                if(this.tileArray[commonTiles[i].x][commonTiles[i].y] !== null) {
+                let tile = this.tileArray[commonTiles[i].x][commonTiles[i].y];
+                if(tile !== null) {
+                    let tileComp = tile.getComponent("TileBase");
+                    if(tileComp.getMatches(this.tileArray, this.statusArray).length < 2) {
+                        unpresetedCommonTiles.push(commonTiles[i]);
+                    }
+                }
+            }
+        }
+
+        if(unpresetedCommonTiles.length > 0) {
+            return unpresetedCommonTiles;
+        }
+        
+        for(let i = 0; i < commonTiles.length; i++) {
+            if(!this.presetedNodes.includes(this.tileArray[commonTiles[i].x][commonTiles[i].y])) {
+                let tile = this.tileArray[commonTiles[i].x][commonTiles[i].y];
+                if(tile !== null) {
                     unpresetedCommonTiles.push(commonTiles[i]);
                 }
             }
