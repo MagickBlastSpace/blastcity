@@ -7,6 +7,7 @@ import { UICollectionDuplicateExchange } from './UICollectionDuplicateExchange';
 import { UIEventButton } from '../start/UIEventButton';
 import { UICollectionCardRecievePopup } from './UICollectionCardRecievePopup';
 import { UserData } from '../../data/UserData';
+import { UIEventTutorialPopup } from '../tutorial/UIEventTutorialPopup';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionFrame')
@@ -71,6 +72,12 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     @property([UIEventButton])
     eventBtns: UIEventButton[] = [];
 
+    @property(Button)
+    badgeInfoBtn: Button = null;
+
+    @property([UIEventTutorialPopup])
+    badgeInfoPopups: UIEventTutorialPopup[] = [];
+
 
     start() {
         this.eventController.node.on("refresh", () => this.refresh());
@@ -98,6 +105,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
             //this.eventBtns[i].node.on("play", () => this.onEventPlay());
             //this.eventBtns[i].node.on("event_play", () => this.onEventPlay());
         }
+
+        this.badgeInfoBtn.node.on(Button.EventType.CLICK, this.onBadgeInfoBtnClick, this);
     }
 
     update(deltaTime: number) {
@@ -249,6 +258,17 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         }
         else {
             this.infoPopups[1].show();
+        }
+    }
+
+    onBadgeInfoBtnClick() {
+        let curStage = this.eventController.getCurrentStage();
+
+        if(curStage === 0) {
+            this.badgeInfoPopups[0].show();
+        }
+        else {
+            this.badgeInfoPopups[1].show();
         }
     }
 }

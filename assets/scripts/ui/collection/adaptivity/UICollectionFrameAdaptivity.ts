@@ -175,7 +175,7 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         //this.layout.paddingLeft = scrollSidePadding;
         //this.layout.paddingRight = scrollSidePadding;
         this.layout.paddingTop = 0.3 * x;
-        this.layout.paddingBottom = 1.1 * x;
+        this.layout.paddingBottom = 1.5 * x;
         this.layout.updateLayout();
 
         this.banner_Widget.left = sidePadding;
