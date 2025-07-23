@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec3 } from 'cc';
 import { WeeklyEventBase } from './WeeklyEventBase';
 import { EventRewardData, RocketFeverEventData } from '../../data/EventData';
 import { LevelProgressStatisticsData } from '../../data/Statistics';
@@ -155,7 +155,7 @@ export class RocketFeverEvent extends WeeklyEventBase {
         return this.takenRewards.includes(index);
     }
 
-    takeReward(index: number) {
+    takeReward(index: number, pos: Vec3) {
         if(!this.takenRewards.includes(index)) {
             this.takenRewards.push(index);
 

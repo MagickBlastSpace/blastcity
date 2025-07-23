@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec3 } from 'cc';
 import { RocketFeverEvent } from './RocketFeverEvent';
 import { SaveData } from '../../data/SaveData';
 import { UserData } from '../../data/UserData';
@@ -189,11 +189,11 @@ export class BattlepassEvent extends RocketFeverEvent {
     }
 
 
-    takeReward(index: number) {
+    takeReward(index: number, pos: Vec3) {
         if(!this.takenRewards.includes(index)) {
             this.takenRewards.push(index);
 
-            this.applyReward(this.eventData[index].rewards[0]);
+            this.applyReward_Lite(this.eventData[index].rewards[0], pos);
 
             if(this.lastAttemptTimestamp === 0) {
                 this.lastAttemptTimestamp = Date.now();
@@ -208,11 +208,11 @@ export class BattlepassEvent extends RocketFeverEvent {
         this.node.emit("refresh");
     }
 
-    takeReward_Premium(index: number) {
+    takeReward_Premium(index: number, pos: Vec3) {
         if(!this.takenRewards_Premium.includes(index)) {
             this.takenRewards_Premium.push(index);
 
-            this.applyReward(this.eventData[index].rewards[1]);
+            this.applyReward_Lite(this.eventData[index].rewards[1], pos);
 
             if(this.lastAttemptTimestamp === 0) {
                 this.lastAttemptTimestamp = Date.now();

@@ -1,6 +1,6 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec3 } from 'cc';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { EventRewardData, PlayerEventData } from '../../data/EventData';
@@ -343,6 +343,46 @@ export class EventBase extends Component {
         }
 
         this.node.emit("reward", reward);
+    }
+
+    applyReward_Lite(reward: EventRewardData, pos: Vec3) {
+        UserData.instance.addResource("gold", reward.gold);
+
+        UserData.instance.addResource("bomb", reward.startBonus_Bomb);
+        UserData.instance.addResource("rocket", reward.startBonus_Rocket);
+        UserData.instance.addResource("discoball", reward.startBonus_Discoball);
+
+        UserData.instance.addResource("hammer", reward.booster_Hammer);
+        UserData.instance.addResource("bow", reward.booster_Bow);
+        UserData.instance.addResource("cannon", reward.booster_Cannon);
+        UserData.instance.addResource("jester", reward.booster_Jester);
+
+        UserData.instance.addResource("bomb_minutes", reward.bomb_Minutes);
+        UserData.instance.addResource("rocket_minutes", reward.rocket_Minutes);
+        UserData.instance.addResource("discoball_minutes", reward.discoball_Minutes);
+        UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
+        UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
+
+        let cards = UserData.instance.openCardsPack(reward.cardsPack);
+        //reward.cards = [];
+        for(let i = 0; i < cards.length; i++) {
+            reward.cards.push(cards[i]);
+        }
+
+        if(reward.isChest) {
+            gamepush.player.add('stat_chests_open', 1);
+        }
+
+        if(reward.cards.length > 0) {
+            let liteReward = new EventRewardData();
+            liteReward.cards = reward.cards;
+
+            this.scheduleOnce(() => {
+                this.node.emit("reward", liteReward);
+            }, 0.5);
+        }
+
+        this.node.emit("reward_lite", reward, pos);
     }
 
 

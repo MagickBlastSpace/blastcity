@@ -129,11 +129,11 @@ export class UIEventBattlepass extends UIEventPopupFrameBase {
             this.itemsLayout.addChild(itemNode);
             const item = itemNode.getComponent('UIEventBattlepassItem');
 
-            itemNode.on("take", (stageIndex) => {
-                this.eventController.takeReward(stageIndex);
+            itemNode.on("take", (stageIndex, btnWorldPos) => {
+                this.eventController.takeReward(stageIndex, btnWorldPos);
             });
-            itemNode.on("take_premium", (stageIndex) => {
-                this.eventController.takeReward_Premium(stageIndex);
+            itemNode.on("take_premium", (stageIndex, btnWorldPos) => {
+                this.eventController.takeReward_Premium(stageIndex, btnWorldPos);
             });
             itemNode.on("info_init", (index, isPrem) => {
                 this.closeAllInfoExcept(index, isPrem);

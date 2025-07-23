@@ -222,11 +222,15 @@ export class UIEventBattlepassItem extends UIEventRocketFeverItem {
 
 
     onTakeBtnClick() {
-        this.node.emit("take", this.stageIndex);
+        const btnWorldPos = this.takeBtn.node.getWorldPosition();
+
+        this.node.emit("take", this.stageIndex, btnWorldPos);
     }
 
     onTakePremiumBtnClick() {
-        this.node.emit("take_premium", this.stageIndex);
+        const btnWorldPos = this.takeBtn_Premium.node.getWorldPosition();
+
+        this.node.emit("take_premium", this.stageIndex, btnWorldPos);
     }
 
 

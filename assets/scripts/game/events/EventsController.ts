@@ -1,10 +1,11 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, Vec3 } from 'cc';
 import { EventBase } from './EventBase';
 import { EventProgressData, EventRewardData, InitEventData } from '../../data/EventData';
 import { SaveData } from '../../data/SaveData';
 import { Net } from '../../net/Net';
 import { UIPopupReward } from '../../ui/UIPopupReward';
 import { UIEventBattlepassBonusBankReward } from '../../ui/events/Battlepass/UIEventBattlepassBonusBankReward';
+import { UIRewardCloudManager } from '../../ui/UIRewardCloudManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventsController')
@@ -20,6 +21,8 @@ export class EventsController extends Component {
     rewardPopup: UIPopupReward;
     @property(UIEventBattlepassBonusBankReward)
     bonusBankRewardPopup: UIEventBattlepassBonusBankReward;
+    @property(UIRewardCloudManager)
+    rewardCloudManager: UIRewardCloudManager;
 
     @property(Node)
     chest: Node;
@@ -46,6 +49,7 @@ export class EventsController extends Component {
             this.events[i].on("progress", (count) => this.handleEventProgress(eventComp.getEventId(), count));
             this.events[i].on("reward", (data) => this.handleEventReward(data));
             this.events[i].on("reward_bonus_bank", (count) => this.handleBonusBankReward(count));
+            this.events[i].on("reward_lite", (data, pos) => this.handleEventRewardLite(data, pos));
         }
 
         this.chest.on("progress", (count) => this.handleEventProgress("chest", count));
@@ -77,6 +81,10 @@ export class EventsController extends Component {
         this.rewardPopup.show();
 
         this.rewardPopup.init(data);
+    }
+
+    handleEventRewardLite(data: EventRewardData, pos: Vec3) {
+        this.rewardCloudManager.init(data, pos);
     }
 
     handleBonusBankReward(count: number) {
