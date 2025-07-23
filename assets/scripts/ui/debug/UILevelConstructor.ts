@@ -46,6 +46,9 @@ export class UILevelConstructor extends Component {
     @property(EventsController)
     eventsController: EventsController;
 
+    @property([Node])
+    uiNodes: Node[] = [];
+
 
     start() {
         this.pasteBtn.node.on(Button.EventType.CLICK, this.onPasteBtnClick, this);
@@ -184,6 +187,13 @@ export class UILevelConstructor extends Component {
         this.scheduleOnce(() => {
             this.startFrame.show();
         }, 0.5);
+    }
+
+
+    setDebugMode(isDebug: boolean) {
+        for(let i = 0; i < this.uiNodes.length; i++) {
+            this.uiNodes[i].active = isDebug;
+        }
     }
 }
 

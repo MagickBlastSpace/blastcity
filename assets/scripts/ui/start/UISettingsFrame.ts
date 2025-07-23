@@ -4,6 +4,7 @@ import { AudioController } from '../../utils/AudioController';
 import { UserData } from '../../data/UserData';
 import { Localization } from '../../utils/Localization';
 import { BattlepassEvent } from '../../game/events/BattlepassEvent';
+import { UILevelConstructor } from '../debug/UILevelConstructor';
 const { ccclass, property } = _decorator;
 
 @ccclass('UISettingsFrame')
@@ -33,6 +34,9 @@ export class UISettingsFrame extends UIPopupFrameBase {
 
     @property(BattlepassEvent)
     bp: BattlepassEvent;
+
+    @property(UILevelConstructor)
+    debugConstructor: UILevelConstructor;
 
 
     start() {
@@ -96,6 +100,7 @@ export class UISettingsFrame extends UIPopupFrameBase {
         console.log('Developer mode is now:', toggle.isChecked);
 
         this.bp.setDebugMode(toggle.isChecked);
+        this.debugConstructor.setDebugMode(toggle.isChecked);
     }
 
     onToggleAphrodite(toggle: Toggle) {
