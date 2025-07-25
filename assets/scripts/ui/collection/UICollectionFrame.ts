@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Prefab, Label, instantiate, ProgressBar, tween, Button, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Component, Node, Prefab, Label, instantiate, ProgressBar, tween, Button, Sprite, SpriteFrame, Vec3 } from 'cc';
 import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 import { UICollectionItem } from './UICollectionItem';
 import { CollectionData } from '../../data/CollectionData';
@@ -86,7 +86,7 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].node.on("click", (data) => this.showCollection(data, i));
-            this.items[i].node.on("reward", (data) => this.onReward(data));
+            this.items[i].node.on("reward", (data, pos) => this.onReward(data, pos));
         }
 
         this.collectionInfoPopup.node.on("send", (player, card) => this.sendCard(player, card));
@@ -192,8 +192,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     }
 
 
-    onReward(collection: CollectionData) {
-        this.eventController.takeCollectionReward(collection.id);
+    onReward(collection: CollectionData, pos: Vec3) {
+        this.eventController.takeCollectionReward(collection.id, pos);
     }
 
 

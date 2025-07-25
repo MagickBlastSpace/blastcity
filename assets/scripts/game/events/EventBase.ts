@@ -379,7 +379,7 @@ export class EventBase extends Component {
 
             this.scheduleOnce(() => {
                 this.node.emit("reward", liteReward);
-            }, 0.5);
+            }, 1);
         }
 
         this.node.emit("reward_lite", reward, pos);

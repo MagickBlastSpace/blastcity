@@ -187,7 +187,9 @@ export class UICollectionItem extends Component {
     }
 
     onTakeRewardBtnClick() {
-        this.node.emit("reward", this.data);
+        const btnWorldPos = this.takeRewardBtn.node.getWorldPosition();
+
+        this.node.emit("reward", this.data, btnWorldPos);
     }
 }
 
