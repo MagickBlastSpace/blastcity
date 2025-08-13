@@ -52,6 +52,9 @@ export class UIMainMenuFrameAdaptivity extends UIAdaptivityBase {
             
             const btnsFrameScale = 0.1607 * w * 1.2316 / this.basic_ButtonsFrameSize;
             this.buttonsFrame.setScale(new Vec3(btnsFrameScale, btnsFrameScale, 1));
+
+            this.buttonsFrame_widget.bottom = 0;
+            this.buttonsFrame_widget.updateAlignment();
         }
 
         this.updateButtonsAdaptivity();
