@@ -5,6 +5,7 @@ import { ShopItemData } from '../data/GameData';
 import { UserData } from '../data/UserData';
 import { ChestRewardData } from '../data/ChestData';
 import { Localization } from '../utils/Localization';
+import { UICollectionCard } from './collection/UICollectionCard';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIPopupReward')
@@ -14,6 +15,11 @@ export class UIPopupReward extends UIPopupFrameBase {
     rewardIcons: Sprite[] = [];
     @property([Node])
     rewardNodes: Node[] = [];
+
+    @property([UICollectionCard])
+    cards: UICollectionCard[] = [];
+    @property([Node])
+    cardNodes: Node[] = [];
 
     @property(SpriteFrame)
     gold: SpriteFrame = null;
@@ -309,6 +315,9 @@ export class UIPopupReward extends UIPopupFrameBase {
         for(let i = 0; i < this.rewardNodes.length; i++) {
             this.rewardNodes[i].active = false;
         }
+        for(let i = 0; i < this.cardNodes.length; i++) {
+            this.cardNodes[i].active = false;
+        }
 
         let data = this.rewardsPool[this.rewardIndex];
 
@@ -494,38 +503,20 @@ export class UIPopupReward extends UIPopupFrameBase {
             if(data.cards && data.cards !== undefined) {
                 if(data.cards.length) {
                     for(let i = 0; i < data.cards.length; i++) {
-                        if(this.itemIndex >= this.rewardNodes.length || this.itemIndex >= this.rewardLabels.length || this.itemIndex >= this.rewardIcons.length) {
+                        if(this.itemIndex >= this.cardNodes.length) {
                             return;
                         }
     
                         let collectionId = UserData.instance.getCollectionIdByCard(data.cards[i]);
                         let prefix = UserData.instance.getCollectionSeasonPrefix();
-    
-                        assetManager.loadBundle(prefix + collectionId, (err, bundle) => {
-                            if (err) {
-                                console.error(`Failed to load bundle: ` + collectionId, err);
-                                return;
-                            }
-                
-                            console.log(`Successfully loaded bundle: ` + collectionId);
-                
-                            bundle.load(data.cards[i] + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
-                                if (err) {
-                                    console.error(`Failed to load prefab: ` + data.cards[i], err);
-                                    return;
-                                }
-                
-                                console.log(`Successfully loaded prefab: ` + data.cards[i]);
-    
-                                this.rewardNodes[this.itemIndex].active = true;
+
+                        let card = UserData.instance.findCardDataByCard(data.cards[i]);
+
+                        this.cardNodes[this.itemIndex].active = true;
                         
-                                this.rewardLabels[this.itemIndex].string = "";
-                
-                                this.rewardIcons[this.itemIndex].spriteFrame = spriteFrame;
+                        this.cards[this.itemIndex].init(prefix + collectionId, card, true, 0);
     
-                                this.itemIndex = this.itemIndex + 1;
-                            });
-                        });
+                        this.itemIndex = this.itemIndex + 1;
                     }
                 }
             }

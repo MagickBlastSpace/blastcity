@@ -8,7 +8,7 @@ import { PlayerEventData } from './EventData';
 import { Net } from '../net/Net';
 import { Localization } from '../utils/Localization';
 import { Clans } from '../game/Clans';
-import { CollectionCardSenderData } from './CollectionData';
+import { CollectionCardData, CollectionCardSenderData } from './CollectionData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserData')
@@ -868,6 +868,10 @@ export class UserData extends Component {
 
     getCollectionSeasonPrefix(): string {
         return this.collections.getSeasonPrefix();
+    }
+
+    findCardDataByCard(id: string): CollectionCardData {
+        return this.collections.findCardDataByCard(id);
     }
 
 
