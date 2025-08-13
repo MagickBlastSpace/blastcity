@@ -109,6 +109,7 @@ export class CollectionEvent extends SpecialEventBase {
 
         this.collectedCards = [];
         this.duplicates = [];
+        this.uncheckedCards = [];
 
         this.currentStage = 0;
         this.isTotalRewardTaken = false;
@@ -401,6 +402,7 @@ export class CollectionEvent extends SpecialEventBase {
 
             this.collectedCards = [];
             this.duplicates = [];
+            this.uncheckedCards = [];
 
             this.isTotalRewardTaken = false;
         }
@@ -655,6 +657,8 @@ export class CollectionEvent extends SpecialEventBase {
     checkCard(id: string) {
         this.uncheckedCards = this.uncheckedCards.filter(item => item !== id);
 
+        SaveData.instance.saveEvent(this.eventId);
+
         this.node.emit("refresh");
     }
 
@@ -672,6 +676,20 @@ export class CollectionEvent extends SpecialEventBase {
 
     isCardUnchecked(id: string): boolean {
         return this.uncheckedCards.includes(id);
+    }
+
+    checkCollection(id: string) {
+        for(let i = 0; i < this.eventData.length; i++) {
+            if(this.eventData[i].id === id) {
+                for(let j = 0; j < this.eventData[i].cards.length; j++) {
+                    this.checkCard(this.eventData[i].cards[j].id);
+                }
+            }
+        }
+
+        SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("refresh");
     }
 
 

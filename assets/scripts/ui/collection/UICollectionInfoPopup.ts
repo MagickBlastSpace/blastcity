@@ -78,6 +78,8 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
     private eventController: EventBase;
 
+    private collectionId: string = "";
+
 
     start() {
         this.closeBtn.node.on(Button.EventType.CLICK, this.onCloseBtnClick, this);
@@ -93,6 +95,7 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
     }
 
     init(data: CollectionData, controller: EventBase, pageNumber: number) {
+        this.collectionId = data.id;
         this.name_.string = data.name_;
 
         this.eventController = controller;
@@ -193,6 +196,8 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
         const parts = data.id.split("_");
         const colNum = parts[parts.length - 1];
+
+        this.eventController.checkCollection(this.collectionId);
 
         assetManager.loadBundle("collection_bg", (err, bundle) => {
             if (err) {
