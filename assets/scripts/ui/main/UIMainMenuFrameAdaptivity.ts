@@ -20,6 +20,11 @@ export class UIMainMenuFrameAdaptivity extends UIAdaptivityBase {
     @property(Widget)
     buttonsFrame_widget: Widget = null;
 
+    @property(Widget)
+    left_widget: Widget = null;
+    @property(Widget)
+    right_widget: Widget = null;
+
     private basic_ButtonsFrameSize: number = 300;
 
     
@@ -45,6 +50,12 @@ export class UIMainMenuFrameAdaptivity extends UIAdaptivityBase {
 
             this.sidePanel_right.getComponent(UITransform).setContentSize(new Size(sidePanelSize, h));
             this.sidePanel_right.setPosition(w / 2 - sidePanelSize / 2, 0);
+
+            this.left_widget.left = 0;
+            this.left_widget.updateAlignment();
+
+            this.right_widget.right = 0;
+            this.right_widget.updateAlignment();
 
         } else {
             const y = 0.078 * h;
