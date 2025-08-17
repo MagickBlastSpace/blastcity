@@ -10,6 +10,15 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
     @property([Node])
     items: Node[] = [];
 
+    @property(Node)
+    number: Node = null;
+    @property(Node)
+    player: Node = null;
+    @property(Node)
+    avatar: Node = null;
+    @property(Node)
+    progress: Node = null;
+
     @property(Widget)
     number_Widget: Widget = null;
     @property(Widget)
@@ -20,6 +29,11 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
     progress_Widget: Widget = null;
 
     private basic_H: number = 470;
+
+    private number_W: number = 178;
+    private player_H: number = 300;
+    private avatar_H: number = 250;
+    private progress_W: number = 250;
 
     private mobileScaleMul: number = 0.5;
 
@@ -51,15 +65,24 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
         const container_W = 7.32 * x;
         this.container.getComponent(UITransform).setContentSize(new Size(container_W, container_H));
 
-        const itemScale = container_H / this.basic_H;
+        /*const itemScale = container_H / this.basic_H;
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].setScale(new Vec3(itemScale, itemScale, 1));
-        }
+        }*/
+
+        const numberScale = 0.5882 * x / this.number_W;
+        this.number.setScale(new Vec3(numberScale, numberScale, 1));
+        const playerScale = 0.8 * x / this.player_H;
+        this.player.setScale(new Vec3(playerScale, playerScale, 1));
+        const avatarScale = 0.7353 * x / this.avatar_H;
+        this.avatar.setScale(new Vec3(avatarScale, avatarScale, 1));
+        const progressScale = 0.8824 * x / this.progress_W;
+        this.progress.setScale(new Vec3(progressScale, progressScale, 1));
 
         const sidePadding = 0.2 * x;
         this.number_Widget.left = sidePadding;
         this.avatar_Widget.left = sidePadding + 0.4 * x;
-        this.player_Widget.left = sidePadding + 0.9 * x;
+        this.player_Widget.left = sidePadding + x;
         this.progress_Widget.right = sidePadding;
     }
 

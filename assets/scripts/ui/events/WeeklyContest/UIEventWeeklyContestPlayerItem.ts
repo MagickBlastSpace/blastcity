@@ -11,11 +11,6 @@ export class UIEventWeeklyContestPlayerItem extends UIEventKingsCupPlayerItem {
     @property(Label)
     clanLabel: Label = null;
 
-    @property(Sprite)
-    avatar: Sprite = null;
-    @property(Sprite)
-    frame: Sprite = null;
-
     @property(Node)
     rewardInfoLayout: Node = null;
     @property(Node)
@@ -46,7 +41,7 @@ export class UIEventWeeklyContestPlayerItem extends UIEventKingsCupPlayerItem {
     }
     
     async refresh(data: PlayerEventData) {
-        super.refresh(data);
+        super.refresh(data, false);
 
         this.clanLabel.string = "";
         this.playerId = data.playerId;
