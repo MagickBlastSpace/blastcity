@@ -81,8 +81,8 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
 
         const sidePadding = 0.2 * x;
         this.number_Widget.left = sidePadding;
-        this.avatar_Widget.left = sidePadding + 0.4 * x;
-        this.player_Widget.left = sidePadding + x;
+        this.avatar_Widget.left = sidePadding + 0.5 * x;
+        this.player_Widget.left = sidePadding + 1.2 * x;
         this.progress_Widget.right = sidePadding;
     }
 
@@ -93,10 +93,18 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
         const container_W = 4.88 * x;
         this.container.getComponent(UITransform).setContentSize(new Size(container_W, container_H));
 
-        const itemScale = container_H / this.basic_H;
+        /*const itemScale = container_H / this.basic_H;
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].setScale(new Vec3(itemScale, itemScale, 1));
-        }
+        }*/
+        const numberScale = 0.3 * x / this.number_W;
+        this.number.setScale(new Vec3(numberScale, numberScale, 1));
+        const playerScale = 0.65 * x / this.player_H;
+        this.player.setScale(new Vec3(playerScale, playerScale, 1));
+        const avatarScale = 0.4333 * x / this.avatar_H;
+        this.avatar.setScale(new Vec3(avatarScale, avatarScale, 1));
+        const progressScale = 0.4 * x / this.progress_W;
+        this.progress.setScale(new Vec3(progressScale, progressScale, 1));
 
         const sidePadding = 0.133 * x;
         this.number_Widget.left = sidePadding;
@@ -112,10 +120,18 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
         const container_W = 3.436 * x;
         this.container.getComponent(UITransform).setContentSize(new Size(container_W, container_H));
 
-        const itemScale = container_H / this.basic_H;
+        /*const itemScale = container_H / this.basic_H;
         for(let i = 0; i < this.items.length; i++) {
             this.items[i].setScale(new Vec3(itemScale, itemScale, 1));
-        }
+        }*/
+        const numberScale = 0.25 * x / this.number_W;
+        this.number.setScale(new Vec3(numberScale, numberScale, 1));
+        const playerScale = 0.6 * x / this.player_H;
+        this.player.setScale(new Vec3(playerScale, playerScale, 1));
+        const avatarScale = 0.3 * x / this.avatar_H;
+        this.avatar.setScale(new Vec3(avatarScale, avatarScale, 1));
+        const progressScale = 0.3 * x / this.progress_W;
+        this.progress.setScale(new Vec3(progressScale, progressScale, 1));
 
         const sidePadding = 0.141 * x;
         this.number_Widget.left = sidePadding;

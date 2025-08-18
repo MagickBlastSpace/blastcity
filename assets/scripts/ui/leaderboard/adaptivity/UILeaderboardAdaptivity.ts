@@ -45,12 +45,10 @@ export class UILeaderboardAdaptivity extends UIAdaptivityBase {
     makeDesktopVariation(w: number, h: number) {
         const x = 0.125 * h;
 
-        const header_W = w - 2 * x;
         const header_H = 2 * x;
-        const header_Scale_X = header_W / this.basic_header_Size_X;
         const header_Scale_Y = header_H / this.basic_header_Size_Y;
 
-        this.header.setScale(new Vec3(header_Scale_X, header_Scale_Y, 1));
+        this.header.setScale(new Vec3(header_Scale_Y, header_Scale_Y, 1));
 
         const tabsFrame_W = 7.52 * x;
         const tabsFrame_H = 0.75 * x;
@@ -67,12 +65,10 @@ export class UILeaderboardAdaptivity extends UIAdaptivityBase {
     makeTabletVariation(w: number, h: number) {
         const x = 0.140 * w;
 
-        const header_W = w - 2 * x;
         const header_H = 1.127 * x;
-        const header_Scale_X = header_W / this.basic_header_Size_X;
         const header_Scale_Y = header_H / this.basic_header_Size_Y;
 
-        this.header.setScale(new Vec3(header_Scale_X, header_Scale_Y, 1));
+        this.header.setScale(new Vec3(header_Scale_Y, header_Scale_Y, 1));
 
         const tabsFrame_W = 5.0133 * x;
         const tabsFrame_H = 0.5 * x;
@@ -89,12 +85,10 @@ export class UILeaderboardAdaptivity extends UIAdaptivityBase {
     makeMobileVariation(w: number, h: number) {
         const x = 0.262 * w * this.mobileScaleMul;
 
-        const header_W = w;
         const header_H = 1.468 * x;
-        const header_Scale_X = header_W / this.basic_header_Size_X;
         const header_Scale_Y = header_H / this.basic_header_Size_Y;
 
-        this.header.setScale(new Vec3(header_Scale_X, header_Scale_Y, 1));
+        this.header.setScale(new Vec3(header_Scale_Y, header_Scale_Y, 1));
 
         const tabsFrame_W = 3.564 * x;
         const tabsFrame_H = 0.4808 * x;
