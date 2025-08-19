@@ -33,6 +33,9 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
     @property(Layout)
     prizeLayout: Layout = null;
 
+    @property([Node])
+    popups: Node[] = [];
+
     private items: UILeaderboardItemAdaptivity[] = [];
 
     private basic_prize_layout_size: number = 1452;
@@ -41,6 +44,8 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
     private basic_info_size: number = 107;
 
     private mobileScaleMul: number = 0.5;
+
+    private basic_popup_Size: number = 1452;
 
 
     refresh() {
@@ -93,8 +98,9 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         const bannerPaddingTop = (1.468 + 0.16) * x;
         this.banner_Widget.top = bannerPaddingTop;
 
-        const scroll_H = h - (1.468 + 0.16 + 2.276 + 0.064 + 0.8526) * x;
-        //const scroll_H = h - (1.468 + 2.276) * x;
+        //const scroll_H = h - (1.468 + 0.16 + 2.276 + 0.064 + 0.8526) * x;
+        const scroll_H = h - (1.468 + 0.16 + 2.276 + 0.064 + 0.8526 + 0.5769) * x;
+        //const scroll_H = h - (1.468 + 0.16 + 2.276 + 0.064 + 0.8526 + 8.2) * x;
         const scroll_W = 3.436 * x;
         this.scroll.getComponent(UITransform).setContentSize(new Size(scroll_W, scroll_H));
 
@@ -117,6 +123,11 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         const prizeLayoutSpacing = 0.0962 * x;
         this.prizeLayout.spacingX = prizeLayoutSpacing;
         this.prizeLayout.updateLayout();
+
+        const popupScale = 0.8 * w / this.basic_popup_Size;
+        for(let i = 0; i < this.popups.length; i++) {
+            this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+        }
     }
 
     makeDesktopVariation(w: number, h: number) {
@@ -162,6 +173,11 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         const prizeLayoutSpacing = 0.5883 * x;
         this.prizeLayout.spacingX = prizeLayoutSpacing;
         this.prizeLayout.updateLayout();
+
+        const popupScale = w / 4.5 / this.basic_popup_Size;
+        for(let i = 0; i < this.popups.length; i++) {
+            this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+        }
     }
 
     makeTabletVariation(w: number, h: number) {
@@ -174,11 +190,12 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         const bannerPaddingTop = 1.427 * x;
         this.banner_Widget.top = bannerPaddingTop;
 
-        const scroll_H = h - (1.427 + 0.033 + 1.867 + 0.3 + 0.7867) * x;
+        //const scroll_H = h - (1.427 + 0.033 + 1.867 + 0.3 + 0.7867) * x;
+        const scroll_H = h - (1.427 + 0.033 + 1.867 + 0.3) * x;
         const scroll_W = 5.0133 * x;
         this.scroll.getComponent(UITransform).setContentSize(new Size(scroll_W, scroll_H));
 
-        const scrollPaddingTop = (1.427 + 0.033 + 1.867) * x;
+        const scrollPaddingTop = (1.427 + 1.867) * x;
         this.scroll_Widget.top = scrollPaddingTop;
 
         const layoutSize = 1.3 * x;
@@ -207,6 +224,11 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         const prizeLayoutSpacing = 0.3133 * x;
         this.prizeLayout.spacingX = prizeLayoutSpacing;
         this.prizeLayout.updateLayout();
+
+        const popupScale = w / 4.5 / this.basic_popup_Size;
+        for(let i = 0; i < this.popups.length; i++) {
+            this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+        }
     }
 }
 
