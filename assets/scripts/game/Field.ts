@@ -959,6 +959,27 @@ export class Field extends Component {
         return tiles;
     }
 
+    getAllCommonTilesPositionsIgnoreStatus(): Vec2[] {
+        let tiles = [];
+
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                let tile = this.tileArray[row][col];
+                if(tile === null) {
+                    tiles.push(new Vec2(row, col));
+                }
+                else {
+                    const tileComp = tile.getComponent("TileBase");
+                    if(tileComp.isCommonTile()) {
+                        tiles.push(new Vec2(row, col));
+                    }
+                }
+            }
+        }
+
+        return tiles;
+    }
+
     getAllBonusTilesPositions(): Vec2[] {
         let tiles = [];
 
@@ -2301,7 +2322,7 @@ export class Field extends Component {
     shuffleTiles(): boolean {
         this.isClickAvailable = false;
 
-        let tilesPositions = this.shuffleArray(this.getAllCommonTilesPositions().concat(this.getAllBonusTilesPositions()));
+        let tilesPositions = this.shuffleArray(this.getAllCommonTilesPositionsIgnoreStatus().concat(this.getAllBonusTilesPositions()));
         let swappedTiles = [];
 
         let swapsCount = 0;
