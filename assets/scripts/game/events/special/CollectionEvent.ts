@@ -110,11 +110,24 @@ export class CollectionEvent extends SpecialEventBase {
         this.collectedCards = [];
         this.duplicates = [];
         this.uncheckedCards = [];
+        this.completedCollections = [];
 
         this.currentStage = 0;
         this.isTotalRewardTaken = false;
 
         SaveData.instance.saveEvent(this.eventId);
+
+        const collectedString = JSON.stringify(this.collectedCards);
+        const duplicatesString = JSON.stringify(this.duplicates);
+        const uncheckedString = JSON.stringify(this.uncheckedCards);
+        const completedString = JSON.stringify(this.completedCollections);
+
+        gamepush.player.set('collections_inventory', collectedString);
+        gamepush.player.set('duplicates_inventory', duplicatesString);
+        gamepush.player.set('unchecked_inventory', uncheckedString);
+        gamepush.player.set('completed_collections', completedString);
+
+        gamepush.player.sync();
     }
 
 
@@ -176,9 +189,11 @@ export class CollectionEvent extends SpecialEventBase {
 
         const collectedString = JSON.stringify(this.collectedCards);
         const duplicatesString = JSON.stringify(this.duplicates);
+        const uncheckedString = JSON.stringify(this.uncheckedCards);
 
         gamepush.player.set('collections_inventory', collectedString);
         gamepush.player.set('duplicates_inventory', duplicatesString);
+        gamepush.player.set('unchecked_inventory', uncheckedString);
 
         if(this.lastAttemptTimestamp === 0) {
             this.lastAttemptTimestamp = Date.now();
@@ -405,13 +420,20 @@ export class CollectionEvent extends SpecialEventBase {
             this.uncheckedCards = [];
 
             this.isTotalRewardTaken = false;
+
+            const collectedString = JSON.stringify(this.collectedCards);
+            const duplicatesString = JSON.stringify(this.duplicates);
+            const uncheckedString = JSON.stringify(this.uncheckedCards);
+
+            gamepush.player.set('collections_inventory', collectedString);
+            gamepush.player.set('duplicates_inventory', duplicatesString);
+            gamepush.player.set('unchecked_inventory', uncheckedString);
         }
         
         SaveData.instance.saveEvent(this.eventId);
 
         this.node.emit("refresh");
 
-        gamepush.player.add('stat_collections_finished', 1);
         gamepush.player.sync();
     }
 
@@ -435,6 +457,10 @@ export class CollectionEvent extends SpecialEventBase {
         }
 
         this.completedCollections.push(id);
+
+        const completedString = JSON.stringify(this.completedCollections);
+        gamepush.player.set('completed_collections', completedString);
+        gamepush.player.sync();
 
         SaveData.instance.saveEvent(this.eventId);
 
@@ -689,6 +715,11 @@ export class CollectionEvent extends SpecialEventBase {
 
         SaveData.instance.saveEvent(this.eventId);
 
+        const uncheckedString = JSON.stringify(this.uncheckedCards);
+
+        gamepush.player.set('unchecked_inventory', uncheckedString);
+        gamepush.player.sync();
+
         this.node.emit("refresh");
     }
 
@@ -723,11 +754,11 @@ export class CollectionEvent extends SpecialEventBase {
     }
 
     setSpecialHints(pool: string[]) {
-        if(!pool) {
+        /*if(!pool) {
             return;
         }
 
-        this.uncheckedCards = pool;
+        this.uncheckedCards = pool;*/
     }
 
     getCompletedCollections(): string[] {
@@ -735,11 +766,15 @@ export class CollectionEvent extends SpecialEventBase {
     }
 
     setCompletedCollections(collections: string[]) {
-        if(!collections) {
+        /*if(!collections) {
             return;
         }
 
-        this.completedCollections = collections;
+        this.completedCollections = [];
+
+        for(let i = 0; i < collections.length; i++) {
+            this.completedCollections.push(collections[i]);
+        }*/
     }
 
     setIsTotalRewardTaken(isTaken: boolean) {
@@ -757,15 +792,22 @@ export class CollectionEvent extends SpecialEventBase {
         try {
             const collectedString = gamepush.player.get('collections_inventory');
             const duplicatesString = gamepush.player.get('duplicates_inventory');
+            const uncheckedString = gamepush.player.get('unchecked_inventory');
+            const completedString = gamepush.player.get('completed_collections');
+
 
             this.collectedCards = collectedString ? JSON.parse(collectedString) : [];
             this.duplicates = duplicatesString ? JSON.parse(duplicatesString) : [];
+            this.uncheckedCards = uncheckedString ? JSON.parse(uncheckedString) : [];
+            this.completedCollections = completedString ? JSON.parse(completedString) : [];
 
             console.log('Инвентарь успешно загружен из GamePush');
         } catch (error) {
             console.error('Ошибка при загрузке инвентаря из GamePush:', error);
             this.collectedCards = [];
             this.duplicates = [];
+            this.uncheckedCards = [];
+            this.completedCollections = [];
         }
     }
 }
