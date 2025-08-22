@@ -44,15 +44,6 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     superHard: SpriteFrame = null;
 
     @property(Sprite)
-    header: Sprite = null;
-    @property(SpriteFrame)
-    header_common: SpriteFrame = null;
-    @property(SpriteFrame)
-    header_hard: SpriteFrame = null;
-    @property(SpriteFrame)
-    header_superHard: SpriteFrame = null;
-
-    @property(Sprite)
     picture: Sprite = null;
 
     @property(Sprite)
@@ -183,21 +174,18 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
             if(levelData.difficulty === "hard") {
                 this.frame.spriteFrame = this.hard;
-                this.header.spriteFrame = this.header_hard;
 
                 //this.showAdBtn.node.active = true;
                 //this.adLabel.string = "x3";
             }
             else if(levelData.difficulty === "superhard") {
                 this.frame.spriteFrame = this.superHard;
-                this.header.spriteFrame = this.header_superHard;
 
                 //this.showAdBtn.node.active = true;
                 //this.adLabel.string = "x5";
             }
             else {
                 this.frame.spriteFrame = this.common;
-                this.header.spriteFrame = this.header_common;
             }
         } catch (error) {
             console.error('Error setting level result:', error);
