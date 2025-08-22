@@ -9,6 +9,9 @@ const { ccclass, property } = _decorator;
 @ccclass('WeeklyContestEvent')
 export class WeeklyContestEvent extends SkyRaceEvent {
 
+    @property([PlayerEventData])
+    bots: PlayerEventData[] = [];
+
     private playerPlace: number = -1;
 
 
@@ -124,11 +127,19 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
             //TEMP
             if(this.players.length < 10) {
-                let bots = UserData.instance.getRandomPlayers(10 - this.players.length);
+                let botsRequired = 10 - this.players.length;
+                if(this.bots.length < botsRequired) {
+                    this.bots = UserData.instance.getRandomPlayers(10 - this.players.length);
 
-                for(let i = 0; i < bots.length; i++) {
-                    bots[i].progressValue = Math.floor(Math.random() * 11) + 10;
-                    this.players.push(bots[i]);
+                    for(let i = 0; i < this.bots.length; i++) {
+                        this.bots[i].progressValue = Math.floor(Math.random() * 30) + 10;
+                    }
+
+                    SaveData.instance.saveEvent(this.eventId);
+                }
+                
+                for(let i = 0; i < botsRequired; i++) {
+                    this.players.push(this.bots[i]);
                 }
             }
             //TEMP
@@ -145,10 +156,16 @@ export class WeeklyContestEvent extends SkyRaceEvent {
     }
 
     getBots(): PlayerEventData[] {
-        return [];
+        return this.bots;
     }
 
-    setBots(bots: PlayerEventData[]) {}
+    setBots(bots: PlayerEventData[]) {
+        this.bots = [];
+
+        for(let i = 0; i < bots.length; i++) {
+            this.bots.push(bots[i]);
+        }
+    }
 }
 
 
