@@ -37,6 +37,8 @@ export class UIEventSkyRacePlayerItem extends Component {
     @property(Sprite)
     avatar: Sprite = null;
     @property(Sprite)
+    frame: Sprite = null;
+    @property(Sprite)
     badge: Sprite = null;
 
     @property(Button)
@@ -205,6 +207,10 @@ export class UIEventSkyRacePlayerItem extends Component {
 
         if(this.clanName) {
             this.clanName.string = player.state["clanname"];
+        }
+
+        if(this.frame && this.frame !== undefined) {
+            this.frame.spriteFrame = Profile.instance.getFrameById(player.state["frame_id"]);
         }
 
         /*if(this.playerName) {
