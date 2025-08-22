@@ -3,6 +3,7 @@ import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UILeaderboardPlayerItem } from './UILeaderboardPlayerItem';
 import { PlayerEventData } from '../../data/EventData';
 import { Net } from '../../net/Net';
+import { UILeaderboardPlayersAdaptivity } from './adaptivity/UILeaderboardPlayersAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardPlayersFrame')
@@ -25,6 +26,9 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
     searchBtn: Button = null;
     @property(Button)
     cancelSearchBtn: Button = null;
+
+    @property(UILeaderboardPlayersAdaptivity)
+    adaptivity: UILeaderboardPlayersAdaptivity;
 
 
     start() {
@@ -58,6 +62,10 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
             
                     this.items.push(item);
 
+                    if(this.adaptivity) {
+                        this.adaptivity.addItem(item.getComponent("UILeaderboardItemAdaptivity"));
+                    }
+                    
                     itemNode.on("profile", (data) => this.showProfile(data));
                 }
     
@@ -65,6 +73,10 @@ export class UILeaderboardPlayersFrame extends UIPopupFrameBase {
                 
                 this.items[i].init(i + 1);
                 this.items[i].refresh(members[i]);
+            }
+
+            if(this.adaptivity) {
+                this.adaptivity.refresh();
             }
 
             this.loadPlayersInfo(members);

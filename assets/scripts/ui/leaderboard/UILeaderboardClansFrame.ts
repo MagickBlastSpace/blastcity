@@ -5,6 +5,7 @@ import { Net } from '../../net/Net';
 import { UILeaderboardClanItem } from './UILeaderboardClanItem';
 import { Clans } from '../../game/Clans';
 import { ClanData, ClanLeaderboardData } from '../../data/ClanData';
+import { UILeaderboardPlayersAdaptivity } from './adaptivity/UILeaderboardPlayersAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardClansFrame')
@@ -25,6 +26,9 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
 
     @property(ScrollView)
     scroll: ScrollView = null;
+
+    @property(UILeaderboardPlayersAdaptivity)
+    adaptivity: UILeaderboardPlayersAdaptivity;
 
 
     start() {}
@@ -74,6 +78,7 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
                 let item = itemNode.getComponent("UILeaderboardClanItem");
         
                 this.items.push(item);
+                this.adaptivity.addItem(item.getComponent("UILeaderboardItemAdaptivity"));
 
                 itemNode.on("show_info", (data) => this.showClan(data));
             }
@@ -83,6 +88,8 @@ export class UILeaderboardClansFrame extends UIPopupFrameBase {
 
             this.items[i].init(this.teams[i].clanData);
         }
+
+        this.adaptivity.refresh();
     }
 
 

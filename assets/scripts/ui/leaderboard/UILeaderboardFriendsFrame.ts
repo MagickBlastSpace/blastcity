@@ -5,6 +5,8 @@ import { Net } from '../../net/Net';
 import { UserData } from '../../data/UserData';
 import { PlayerEventData } from '../../data/EventData';
 import { UIFriendsRequestsFrame } from '../friends/UIFriendsRequestsFrame';
+import { UITab } from '../main/UITab';
+import { UIFrameBase } from '../UIFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardFriendsFrame')
@@ -17,18 +19,20 @@ export class UILeaderboardFriendsFrame extends UIPopupFrameBase {
     @property(Node)
     itemsLayout: Node = null;
 
-    @property(Button)
-    requestsBtn: Button = null;
-
     @property(ScrollView)
     scroll: ScrollView = null;
 
-    @property(UIFriendsRequestsFrame)
-    requestsFrame: UIFriendsRequestsFrame;
+    @property([UITab])
+    tabs: UITab = [];
+    
+    @property([UIFrameBase])
+    frames: UIFrameBase = [];
 
 
     start() {
-        this.requestsBtn.node.on(Button.EventType.CLICK, this.onRequestsBtnClick, this);
+        for(let i = 0; i < this.tabs.length; i++) {
+            this.tabs[i].node.on("tab", (index) => this.showFrame(index));
+        }
     }
 
     
@@ -120,8 +124,26 @@ export class UILeaderboardFriendsFrame extends UIPopupFrameBase {
     }
 
 
-    onRequestsBtnClick() {
-        this.requestsFrame.show();
+    showFrame(index: number) {
+        this.setAllBtnsPassive();
+        this.hideAllFrames();
+
+        this.tabs[index].setActiveIcon(true);
+
+        this.frames[index].show();
+    }
+
+
+    setAllBtnsPassive() {
+        for(let i = 0; i < this.tabs.length; i++) {
+            this.tabs[i].setActiveIcon(false);
+        }
+    }
+
+    hideAllFrames() {
+        for(let i = 0; i < this.frames.length; i++) {
+            this.frames[i].hideClean();
+        }
     }
 }
 

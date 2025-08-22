@@ -4,6 +4,7 @@ import { _decorator, Component, Node, Button, instantiate, Prefab } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIFriendsRequestItem } from './UIFriendsRequestItem';
 import { UserData } from '../../data/UserData';
+import { UILeaderboardPlayersFrame } from '../leaderboard/UILeaderboardPlayersFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIFriendsRequestsFrame')
@@ -19,6 +20,9 @@ export class UIFriendsRequestsFrame extends UIPopupFrameBase {
     requestPrefab: Prefab = null;
     @property([UIFriendsRequestItem])
     requests: UIFriendsRequestItem[] = [];
+
+    @property(UILeaderboardPlayersFrame)
+    playersLeaderboard: UILeaderboardPlayersFrame;
 
 
     start() {
@@ -36,6 +40,8 @@ export class UIFriendsRequestsFrame extends UIPopupFrameBase {
         super.show();
 
         this.refresh();
+
+        this.playersLeaderboard.show();
     }
 
     hide() {
