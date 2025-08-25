@@ -267,33 +267,10 @@ export class Discoball extends BonusTileBase {
     }
 
     getSuperDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        console.log("super disco activation start");
         let matches = [];
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        /*for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
-                if(i === this.getRow() && j === this.getCol()) {
-                    continue;
-                }
-
-                this.node.emit("extra_hit", i, j, true, 0);
-
-                this.node.emit("goal", "discoball");
-            }
-        }
-
-        this.clearTiles();
-
-        this.setRespawnEvent(this.respawnDelay * 2);
-
-        this.scheduleOnce(() => {
-            this.getDiscoballComboMatches(field, statuses);
-        }, this.respawnDelay);
-
-        this.playDoubleDiscoballSound();*/
 
         this.activateDiscoballComboAnimation(field);
         this.playAnimation("discoball_discoball", false, 1);
@@ -304,14 +281,13 @@ export class Discoball extends BonusTileBase {
             for(let i = 0; i < numRows; i++) {
                 for(let j = 0; j < numCols; j++) {
                     if(i === this.getRow() && j === this.getCol()) {
-                        //
+                        continue;
                     }
-                    else {
-                        let isBonusChain = this.isChain(i, j);
-                        this.node.emit("extra_hit", i, j, isBonusChain, 0);
-        
-                        this.node.emit("goal", "discoball");
-                    }
+
+                    let isBonusChain = this.isChain(i, j);
+                    this.node.emit("extra_hit", i, j, isBonusChain, 0);
+    
+                    this.node.emit("goal", "discoball");
                 }
             }
 
@@ -325,8 +301,6 @@ export class Discoball extends BonusTileBase {
         this.scheduleOnce(() => {
             this.getDiscoballComboMatches(field, statuses);
         }, this.disco_disco_time);
-
-        console.log("super disco activation end");
 
         return matches;
     }

@@ -42,6 +42,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
     hard: SpriteFrame = null;
     @property(SpriteFrame)
     superHard: SpriteFrame = null;
+    @property(SpriteFrame)
+    kingLeague_frame: SpriteFrame = null;
 
     @property(Sprite)
     picture: Sprite = null;
@@ -187,6 +189,13 @@ export class UILevelResultFrame extends UIPopupFrameBase {
             else {
                 this.frame.spriteFrame = this.common;
             }
+
+            let isKingLeague = UserData.instance.getProgress() >= GameData.instance.getMaxProgress();
+
+            if(isKingLeague) {
+                this.frame.spriteFrame = this.kingLeague_frame;
+            }
+
         } catch (error) {
             console.error('Error setting level result:', error);
         }
