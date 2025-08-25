@@ -2593,7 +2593,7 @@ export class Field extends Component {
                 const tile = this.tileArray[i][j];
                 if(tile !== null && tile !== undefined) {
                     const tileComp = tile.getComponent("TileBase");
-                    if(tileComp.getTileType() === "multi") {
+                    if(tileComp.getTileType() === "multi" || tileComp.getTileType() === "super") {
                         tileComp.setColor(this.primaryColor, this.secondaryColor);
                     }
                 }

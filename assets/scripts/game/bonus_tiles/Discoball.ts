@@ -49,41 +49,6 @@ export class Discoball extends BonusTileBase {
 
 
     getMatchesClear(field: Node[][], statuses: Node[][]): Node[] {
-        /*if(this.isActivated) {
-            return;
-        }
-
-        this.activateFastAnimation();
-
-        let matches = [];
-        
-        let tiles = [];
-        tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
-
-        this.isActivated = true;
-
-        for(let i = 0; i < tiles.length; i++) {
-            this.node.emit("goal", "discoball");
-        }
-
-        tiles.push(this);
-
-        for(let i = 0; i < tiles.length; i++) {
-            try {
-                this.renderLine(new Vec2(this.row, this.col), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
-            }
-            catch (error) {
-                console.log("Render Line Error: " + error);
-            }
-
-            this.node.emit("extra_hit_with_damage", tiles[i].getRow(), tiles[i].getCol());
-        }
-
-        this.scheduleOnce(() => {
-            this.node.emit("clear_lines");
-        }, 0.2);
-
-        this.setRespawnEvent(0.2);*/
         let matches = this.getMatchesByType(field, statuses);
 
         return matches;
@@ -291,6 +256,9 @@ export class Discoball extends BonusTileBase {
                     this.node.emit("goal", "discoball");
                 }
             }
+
+            this.clearTiles();
+            
         }, this.disco_disco_time);
 
         this.setRespawnEvent(this.disco_disco_time);
@@ -299,12 +267,13 @@ export class Discoball extends BonusTileBase {
     }
 
     getSuperDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
+        console.log("super disco activation start");
         let matches = [];
 
         const numRows: number = field.length;
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
-        for(let i = 0; i < numRows; i++) {
+        /*for(let i = 0; i < numRows; i++) {
             for(let j = 0; j < numCols; j++) {
                 if(i === this.getRow() && j === this.getCol()) {
                     continue;
@@ -324,7 +293,40 @@ export class Discoball extends BonusTileBase {
             this.getDiscoballComboMatches(field, statuses);
         }, this.respawnDelay);
 
+        this.playDoubleDiscoballSound();*/
+
+        this.activateDiscoballComboAnimation(field);
+        this.playAnimation("discoball_discoball", false, 1);
         this.playDoubleDiscoballSound();
+        this.playHideAnimation(this.icon.node);
+
+        this.scheduleOnce(() => {
+            for(let i = 0; i < numRows; i++) {
+                for(let j = 0; j < numCols; j++) {
+                    if(i === this.getRow() && j === this.getCol()) {
+                        //
+                    }
+                    else {
+                        let isBonusChain = this.isChain(i, j);
+                        this.node.emit("extra_hit", i, j, isBonusChain, 0);
+        
+                        this.node.emit("goal", "discoball");
+                    }
+                }
+            }
+
+            this.clearTiles();
+            
+        }, this.disco_disco_time);
+
+        this.setRespawnEvent(this.disco_disco_time);
+        this.setRespawnEvent(this.disco_disco_time * 2);
+
+        this.scheduleOnce(() => {
+            this.getDiscoballComboMatches(field, statuses);
+        }, this.disco_disco_time);
+
+        console.log("super disco activation end");
 
         return matches;
     }
@@ -383,63 +385,105 @@ export class Discoball extends BonusTileBase {
     }
 
     activateIsolatedDiscoballAnimation(timeScale: number) {
-        if(this.tileType === "multi") {
-            let colorString = "0";
-            switch(this.primaryColor) {
+        let colorString = "0";
+
+        switch(this.primaryColor) {
+            case "yellow":
+                colorString = "1";
+                break;
+            case "red":
+                colorString = "2";
+                break;
+            case "blue":
+                colorString = "3";
+                break;
+            case "green":
+                colorString = "4";
+                break;
+            case "purple":
+                colorString = "5";
+                break;
+            case "orange":
+                colorString = "6";
+                break;
+        }
+
+        if(this.tileType === "super") {
+            switch(this.secondaryColor) {
                 case "yellow":
-                    colorString = "1";
+                    colorString += "_1";
                     break;
                 case "red":
-                    colorString = "2";
+                    colorString += "_2";
                     break;
                 case "blue":
-                    colorString = "3";
+                    colorString += "_3";
                     break;
                 case "green":
-                    colorString = "4";
+                    colorString += "_4";
                     break;
                 case "purple":
-                    colorString = "5";
+                    colorString += "_5";
                     break;
                 case "orange":
-                    colorString = "6";
+                    colorString += "_6";
                     break;
             }
-
-            let time = timeScale < 1 ? timeScale : 1;
-
-            this.playAnimation("discoball_color" + colorString, false, time);
-
-            //this.playHideAnimation(this);
         }
+
+        let time = timeScale < 1 ? timeScale : 1;
+
+        this.playAnimation("discoball_color" + colorString, false, time);
     }
 
     activateFastAnimation() {
-        if(this.tileType === "multi") {
-            let colorString = "0";
-            switch(this.primaryColor) {
+        let colorString = "0";
+
+        switch(this.primaryColor) {
+            case "yellow":
+                colorString = "1";
+                break;
+            case "red":
+                colorString = "2";
+                break;
+            case "blue":
+                colorString = "3";
+                break;
+            case "green":
+                colorString = "4";
+                break;
+            case "purple":
+                colorString = "5";
+                break;
+            case "orange":
+                colorString = "6";
+                break;
+        }
+
+        if(this.tileType === "super") {
+            switch(this.secondaryColor) {
                 case "yellow":
-                    colorString = "1";
+                    colorString += "_1";
                     break;
                 case "red":
-                    colorString = "2";
+                    colorString += "_2";
                     break;
                 case "blue":
-                    colorString = "3";
+                    colorString += "_3";
                     break;
                 case "green":
-                    colorString = "4";
+                    colorString += "_4";
                     break;
                 case "purple":
-                    colorString = "5";
+                    colorString += "_5";
                     break;
                 case "orange":
-                    colorString = "6";
+                    colorString += "_6";
                     break;
             }
-
-            this.playAnimation("discoball_color" + colorString, false, 10);
         }
+
+        this.playAnimation("discoball_color" + colorString, false, 10);
     }
 
 
@@ -450,7 +494,9 @@ export class Discoball extends BonusTileBase {
         if(this.tileType === "multi") {
             this.icon.spriteFrame = this.multiIcons.find(i => i.id === primaryColor)?.icon;
         }
-        
+        else {
+            this.icon.spriteFrame = this.superIcons.find(i => i.id === (primaryColor + "_" + secondaryColor))?.icon;
+        }
     }
 }
 
