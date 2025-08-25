@@ -143,7 +143,7 @@ export class UICollectionInfoPopup extends UIPopupFrameBase {
 
             if(data.rewards[0].startBonus_Bomb > 0) {
                 this.rewardIcon.spriteFrame = this.bomb;
-                this.rewardLabel.string = data.rewards[0].gold;
+                this.rewardLabel.string = data.rewards[0].startBonus_Bomb;
             }
             if(data.rewards[0].startBonus_Rocket > 0) {
                 this.rewardIcon.spriteFrame = this.rocket;
