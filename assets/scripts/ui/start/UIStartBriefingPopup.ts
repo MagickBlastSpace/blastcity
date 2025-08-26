@@ -31,8 +31,6 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     hard: SpriteFrame = null;
     @property(SpriteFrame)
     superHard: SpriteFrame = null;
-    @property(SpriteFrame)
-    kingLeague_frame: SpriteFrame = null;
 
     @property(Button)
     playBtn: Button = null;
@@ -118,10 +116,6 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
             this.frame.spriteFrame = this.common;
 
             this.difficultyLabel.string = this.l10n.getLabelByKey("StartFrame.Difficulty_Common") + " " + this.l10n.getLabelByKey("StartFrame.Difficulty");
-        }
-
-        if(isKingLeague) {
-            this.frame.spriteFrame = this.kingLeague_frame;
         }
 
         for(let i = 0; i < this.minifiedEvents.length; i++) {
