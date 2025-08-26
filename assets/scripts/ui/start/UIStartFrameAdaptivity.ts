@@ -14,6 +14,11 @@ export class UIStartFrameAdaptivity extends UIAdaptivityBase {
     @property([Node])
     eventProgressBtns: Node[] = [];
 
+    @property(Widget)
+    eventBtnsWidget_Left: Widget;
+    @property(Widget)
+    eventBtnsWidget_Right: Widget;
+
     @property([Node])
     playBtns: Node[] = [];
     @property([Widget])
@@ -60,6 +65,10 @@ export class UIStartFrameAdaptivity extends UIAdaptivityBase {
                 this.eventBtnsWidgets[i].top = 37.5;
                 this.eventBtnsWidgets[i].bottom = 37.5;
             }
+
+            let eventBtnSidePadding = (x - y) / 2;
+            this.eventBtnsWidget_Left.left = eventBtnSidePadding;
+            this.eventBtnsWidget_Right.right = eventBtnSidePadding;
 
             const playBtn_W = 2.54 * x;
             const playBtn_H = 0.56 * x;
