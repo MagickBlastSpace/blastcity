@@ -11,6 +11,7 @@ import { UIEventMinified } from '../events/UIEventMinified';
 import { Localization } from '../../utils/Localization';
 import { UIStartBonusItem } from './UIStartBonusItem';
 import { UIBriefingGoalItem } from './UIBriefingGoalItem';
+import { UIStartSuperDiscoballItem } from './UIStartSuperDiscoballItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartBriefingPopup')
@@ -64,6 +65,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
     @property(Localization)
     l10n: Localization;
+
+    @property(UIStartSuperDiscoballItem)
+    superdisco: UIStartSuperDiscoballItem;
 
     private isFail: boolean = false;
 
@@ -130,6 +134,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
         //this.x2.active = UserData.instance.isModifierX2();
         this.x2.active = false;
+
+        this.superdisco.node.active = UserData.instance.isSuperdiscoballAvailable();
+        this.superdisco.refresh();
     }
 
     show() {

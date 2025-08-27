@@ -216,6 +216,8 @@ export class Field extends Component {
             return;
         }
 
+        this.setSuperDiscoballMode(UserData.instance.getIsSuperDiscoballActive());
+
         this.isLevelComplete = false;
         
         if(level.startPool !== null && level.startPool !== undefined) {

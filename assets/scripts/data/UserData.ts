@@ -9,6 +9,7 @@ import { Net } from '../net/Net';
 import { Localization } from '../utils/Localization';
 import { Clans } from '../game/Clans';
 import { CollectionCardData, CollectionCardSenderData } from './CollectionData';
+import { Field } from '../game/Field';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserData')
@@ -72,10 +73,18 @@ export class UserData extends Component {
 
     private currentLevelFails: number = 0;
 
+    private superDiscoballProgress: number = 0;
+    private superDiscoballProgress_Max: number = 10;
+    private superDiscoballLevel_Threshold: number = 273;
+    private isSuperDiscoballActive: boolean = false;
+
     @property(CollectionEvent)
     collections: CollectionEvent;
     @property(Clans)
     clans: Clans;
+
+    @property(Field)
+    game: Field;
 
     @property([PlayerEventData])
     players: PlayerEventData[] = [];
@@ -235,9 +244,21 @@ export class UserData extends Component {
         if(this.currentProgress < GameData.instance.getMaxProgress()) {
             this.currentProgress++;
 
+            if(this.isSuperdiscoballAvailable() && !this.isSuperDiscoballActive) {
+                this.superDiscoballProgress++;
+
+                if(this.superDiscoballProgress >= this.superDiscoballProgress_Max) {
+                    this.isSuperDiscoballActive = true;
+
+                    this.superDiscoballProgress = 0;
+                }
+            }
+
             SaveData.instance.saveUserData();
 
             gamepush.player.set('score', this.currentProgress);
+            gamepush.player.set('superdisco_progress', this.superDiscoballProgress);
+            gamepush.player.set('is_superdisco_active', this.isSuperDiscoballActive);
             gamepush.player.sync();
 
             GameData.instance.updateLevelStage();
@@ -246,7 +267,19 @@ export class UserData extends Component {
         else {
             this.kingLeagueProgress++;
 
+            if(this.isSuperdiscoballAvailable() && !this.isSuperDiscoballActive) {
+                this.superDiscoballProgress++;
+
+                if(this.superDiscoballProgress >= this.superDiscoballProgress_Max) {
+                    this.isSuperDiscoballActive = true;
+
+                    this.superDiscoballProgress = 0;
+                }
+            }
+
             gamepush.player.set('score_king_league', this.kingLeagueProgress);
+            gamepush.player.set('superdisco_progress', this.superDiscoballProgress);
+            gamepush.player.set('is_superdisco_active', this.isSuperDiscoballActive);
             gamepush.player.sync();
         }
     }
@@ -1057,6 +1090,11 @@ export class UserData extends Component {
     addLevelFail() {
         this.currentLevelFails = this.currentLevelFails + 1;
 
+        this.isSuperDiscoballActive = false;
+
+        gamepush.player.set('is_superdisco_active', this.isSuperDiscoballActive);
+        gamepush.player.sync();
+
         SaveData.instance.saveUserData();
     }
 
@@ -1108,6 +1146,28 @@ export class UserData extends Component {
         recieveData.playerId = playerId;
 
         this.recievedCards.push(recieveData);
+    }
+
+
+    /*super disco*/
+    isSuperdiscoballAvailable(): boolean {
+        return this.getProgress() >= this.superDiscoballLevel_Threshold;
+    }
+
+    getIsSuperDiscoballActive(): boolean {
+        return this.isSuperDiscoballActive;
+    }
+
+    getSuperDiscoballProgress(): number {
+        return this.superDiscoballProgress / this.superDiscoballProgress_Max;
+    }
+
+    getSuperDiscoballProgress_Max(): number {
+        return this.superDiscoballProgress_Max;
+    }
+
+    getSuperDiscoballProgress_Value(): number {
+        return this.superDiscoballProgress;
     }
 }
 
