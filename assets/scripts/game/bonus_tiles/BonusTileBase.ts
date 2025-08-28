@@ -299,53 +299,49 @@ export class BonusTileBase extends TileBase {
 
 
     getTwoBiggestCommonTilesGroups(field: Node[][], statuses: Node[][]): TileBase[] {
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        let biggestGroup = [];
-        let secondBiggestGroup = [];
-
+        const numRows = field.length;
+        const numCols = numRows > 0 ? field[0].length : 0;
+        
+        let biggestGroup: TileBase[] = [];
+        let secondBiggestGroup: TileBase[] = [];
+        
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
         
-        for(let color = 0; color < this.availableColors.length; color++) {
-            let tiles = [];
-
-            for(let i = numRows - 1; i >= 0; i--) {
-                for(let j = 0; j < numCols; j++) {
+        for (const color of this.availableColors) {
+            const tiles: TileBase[] = [];
+        
+            for (let i = numRows - 1; i >= 0; i--) {
+                for (let j = 0; j < numCols; j++) {
                     const tile = field[i][j];
                     const status = statuses[i][j];
-
-                    if(status !== null && status !== undefined) {
+                
+                    if (status) {
                         const statusComp = status.getComponent("StatusBase");
-                        if(statusComp.isBlockingInteraction()) {
+                        if (statusComp && statusComp.isBlockingInteraction()) {
                             continue;
                         }
                     }
-                    if(tile !== null && tile !== this.node) {
+                
+                    if (tile && tile !== this.node) {
                         const tileComp = tile.getComponent("TileBase");
-                        if(tileComp.getTileType() === this.availableColors[color]) {
+                        if (tileComp && tileComp.getTileType() === color) {
                             tiles.push(tileComp);
                         }
                     }
                 }
             }
-
-            if(tiles.length > biggestGroup.length) {
-                biggestGroup = [];
-                for(let i = 0; i < tiles.length; i++) {
-                    biggestGroup.push(tiles[i]);
-                }
-            }
-            else if(tiles.length > secondBiggestGroup.length) {
-                secondBiggestGroup = [];
-                for(let i = 0; i < tiles.length; i++) {
-                    secondBiggestGroup.push(tiles[i]);
-                }
+        
+            if (tiles.length > biggestGroup.length) {
+                secondBiggestGroup = biggestGroup;
+                biggestGroup = tiles.slice();
+            } else if (tiles.length > secondBiggestGroup.length) {
+                secondBiggestGroup = tiles.slice();
             }
         }
         
         return biggestGroup.concat(secondBiggestGroup);
     }
+
 
     isTileActivated(): boolean {
         return this.isActivated;

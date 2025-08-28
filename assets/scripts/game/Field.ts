@@ -2543,51 +2543,39 @@ export class Field extends Component {
 
 
     setPrimaryColors() {
-        let lastPrimaryCount = 0;
-        let lastSecondaryCount = 0;
-
-        let currentCount = 0;
-
-        for(let color = 0; color < this.availableColors.length; color++) {
-
-            currentCount = 0;
-
-            for(let i = 0; i < this.numRows; i++) {
-                for(let j = 0; j < this.numCols; j++) {
+        const counts = [];
+        
+        for (let color of this.availableColors) {
+            let count = 0;
+        
+            for (let i = 0; i < this.numRows; i++) {
+                for (let j = 0; j < this.numCols; j++) {
                     const tile = this.tileArray[i][j];
                     const status = this.statusArray[i][j];
-
-                    if(status !== null && status !== undefined) {
+                
+                    if (status) {
                         const statusComp = status.getComponent("StatusBase");
-                        if(statusComp.isBlockingInteraction()) {
-                            continue;
-                        }
+                        if (statusComp.isBlockingInteraction()) continue;
                     }
-                    if(tile !== null && tile !== undefined) {
+                
+                    if (tile) {
                         const tileComp = tile.getComponent("TileBase");
-                        if(tileComp.getTileType() === this.availableColors[color]) {
-                            currentCount = currentCount + 1;
-                        }
+                        if (tileComp.getTileType() === color) count++;
                     }
                 }
             }
-
-            if(currentCount > lastPrimaryCount) {
-                lastSecondaryCount = lastPrimaryCount;
-                lastPrimaryCount = currentCount;
-
-                this.secondaryColor = this.primaryColor;
-                this.primaryColor = this.availableColors[color];
-            }
-            else if(currentCount > lastSecondaryCount) {
-                lastSecondaryCount = currentCount;
-
-                this.secondaryColor = this.availableColors[color];
-            }
+        
+            counts.push({ color, count });
         }
-
+    
+        counts.sort((a, b) => b.count - a.count);
+    
+        this.primaryColor = counts[0]?.color ?? null;
+        this.secondaryColor = counts[1]?.color ?? null;
+    
         this.setDiscoballsColors();
     }
+
 
     setDiscoballsColors() {
         for(let i = 0; i < this.numRows; i++) {
