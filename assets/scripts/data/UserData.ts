@@ -75,7 +75,7 @@ export class UserData extends Component {
 
     private superDiscoballProgress: number = 0;
     private superDiscoballProgress_Max: number = 10;
-    private superDiscoballLevel_Threshold: number = 273;
+    private superDiscoballLevel_Threshold: number = 293;
     private isSuperDiscoballActive: boolean = false;
 
     @property(CollectionEvent)
@@ -1168,6 +1168,14 @@ export class UserData extends Component {
 
     getSuperDiscoballProgress_Value(): number {
         return this.superDiscoballProgress;
+    }
+
+    setSuperDiscoballProgress(p: number) {
+        this.superDiscoballProgress = p;
+    }
+
+    setIsSuperDiscoballActive(isAct: boolean) {
+        this.isSuperDiscoballActive = isAct;
     }
 }
 

@@ -76,6 +76,8 @@ export class SaveData extends Component {
         UserData.instance.setProgress(gamepush.player.get('score'));
         UserData.instance.setIsPremium(gamepush.player.get('ispremium'));
         UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
+        UserData.instance.setSuperDiscoballProgress(gamepush.player.get('superdisco_progress'));
+        UserData.instance.setIsSuperDiscoballActive(gamepush.player.get('is_superdisco_active'));
 
         UserData.instance.setResource("gold", gamepush.player.get('gold'));
 
