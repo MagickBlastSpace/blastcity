@@ -327,29 +327,35 @@ export class Discoball extends BonusTileBase {
 
 
     activateDiscoballComboAnimation(field: Node[][]) {
-        let tile = field[this.comboPosition.x][this.comboPosition.y];
-        let tileComp = tile.getComponent("BonusTileBase");
+        try {
+            let tile = field[this.comboPosition.x][this.comboPosition.y];
+            let tileComp = tile.getComponent("BonusTileBase");
 
-        if(tileComp) {
-            let tileType = tileComp.getTileType();
-            let anim = "";
-            switch(tileType) {
-                case "bomb":
-                    anim = "bomb_discoball";
-                    break;
-                case "rocket_vertical":
-                    anim = "rocket_discoball_vert";
-                    break;
-                case "rocket_horizontal":
-                    anim = "rocket_discoball_hor";
-                    break;
-                case "multi":
-                    anim = "destroy";
-                    this.playHideAnimation(tile);
-                    break;
+            if(tileComp) {
+                let tileType = tileComp.getTileType();
+                let anim = "";
+                switch(tileType) {
+                    case "bomb":
+                        anim = "bomb_discoball";
+                        break;
+                    case "rocket_vertical":
+                        anim = "rocket_discoball_vert";
+                        break;
+                    case "rocket_horizontal":
+                        anim = "rocket_discoball_hor";
+                        break;
+                    case "multi":
+                        anim = "destroy";
+                        this.playHideAnimation(tile);
+                        break;
+                }
+                tileComp.playAnimation(anim, true, 1);
             }
-            tileComp.playAnimation(anim, true, 1);
         }
+        catch (error) {
+            console.log("Activate disco animation error: " + error);
+        }
+        
     }
 
     playHideAnimation(nodeToHide: Node) {
