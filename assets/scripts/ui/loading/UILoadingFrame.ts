@@ -1,59 +1,53 @@
-declare const gamepush: any;
+import { _decorator, Component, ProgressBar, director } from 'cc';
 
-import { _decorator, Component, Node, ProgressBar, director, SceneAsset } from 'cc';
+import { GamePushLoader } from '../../utils/GamePushLoader';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('UILoadingFrame')
 export class UILoadingFrame extends Component {
+	@property(ProgressBar)
+	loadingBar: ProgressBar = null;
 
-    @property(ProgressBar)
-    loadingBar: ProgressBar = null;
+	async start() {
+		try {
+			console.log('[UILoadingFrame] Initializing GamePush...');
 
-    private timeCooldown: number = 1.5;
+			const gamepush = await GamePushLoader.load();
 
+			console.log('[UILoadingFrame] GamePush loaded');
 
-    start() {
-        this.initializeGamePush();
-    }
+			await this.waitForPlayerReady(gamepush);
 
+			console.log('[UILoadingFrame] GamePush player ready');
 
-    initializeGamePush() {
-        try {
-            if(gamepush.player.ready) {
-                console.log("GamePush module is ready!");
+			gamepush.ads.showPreloader();
 
-                gamepush.ads.showPreloader();
+			this.loadScene();
+		} catch (error) {
+			console.error('[UILoadingFrame] GamePush initialization failed:', error);
+		}
+	}
 
-                this.loadScene();
+	private async waitForPlayerReady(gamepush: any): Promise<void> {
+		while (!gamepush.player?.ready) {
+			await new Promise((resolve) => setTimeout(resolve, 250));
+		}
+	}
 
-                /*gamepush.ads.on('preloader:close', (success) => {
-                    this.loadScene();
-                });*/
+	private loadScene() {
+		director.preloadScene('scene', this.onProgressLoadScene, () => {
+			director.loadScene('scene');
+		});
+	}
 
-            }
-            else {
-                this.scheduleNewTry();
-            }
-        } catch (error) {
-            //console.error("Error initializing GamePush:", error);
-
-            this.scheduleNewTry();
-        }
-    }
-
-    loadScene() {
-        director.preloadScene("scene", this.onProgressLoadScene, () => {
-            director.loadScene("scene");
-        })
-    }
-
-    private onProgressLoadScene = (completedCount: number, totalCount: number, item: any) => {
-        this.loadingBar.progress = completedCount / totalCount;
-    }
-
-    scheduleNewTry() {
-        this.scheduleOnce(() => {
-            this.initializeGamePush();
-        }, this.timeCooldown);
-    }
+	private onProgressLoadScene = (
+		completedCount: number,
+		totalCount: number,
+		item: any,
+	) => {
+		if (this.loadingBar) {
+			this.loadingBar.progress = completedCount / totalCount;
+		}
+	};
 }
