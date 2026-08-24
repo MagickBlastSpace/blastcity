@@ -1,4 +1,15 @@
-import { _decorator, Component, Node, ProgressBar, Label, Button, Vec3, tween, Vec2 } from 'cc';
+import {
+	_decorator,
+	Component,
+	Node,
+	ProgressBar,
+	Label,
+	Button,
+	Vec3,
+	tween,
+	Vec2,
+	Tween,
+} from 'cc';
 import { Chest } from '../../game/Chest';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { GameData } from '../../data/GameData';
@@ -8,142 +19,170 @@ const { ccclass, property } = _decorator;
 
 @ccclass('UIChest')
 export class UIChest extends Component {
+	@property(Chest)
+	chest: Chest = null;
 
-    @property(Chest)
-    chest: Chest = null;
+	@property(Label)
+	progressLabel: Label = null;
 
-    @property(Label)
-    progressLabel: Label = null;
+	@property(ProgressBar)
+	progressBar: ProgressBar = null;
 
-    @property(ProgressBar)
-    progressBar: ProgressBar = null;
+	@property(Button)
+	rewardBtn: Button = null;
 
-    @property(Button)
-    rewardBtn: Button = null;
-    @property(Button)
-    showRewardInfoBtn: Button = null;
+	@property(Button)
+	showRewardInfoBtn: Button = null;
 
-    @property(Node)
-    rewardInfo: Node = null;
-    @property(UIRewardInfoMinified)
-    rewardInfoComp: UIRewardInfoMinified;
+	@property(Node)
+	rewardInfo: Node = null;
 
-    @property(Node)
-    content: Node = null;
+	@property(UIRewardInfoMinified)
+	rewardInfoComp: UIRewardInfoMinified;
 
-    private originalContentPos: Vec2;
-    private shakeTween: any = null;
+	@property(Node)
+	content: Node = null;
 
+	private originalContentPos: Vec2;
+	private shakeTween: Tween<Node> | null = null;
 
-    onLoad() {
-        //window.addEventListener('resize', this.refreshScale.bind(this));
-    }
-    
-    start() {
-        this.chest.node.on("refresh", this.refresh);
+	onLoad() {
+		if (this.content) {
+			const pos = this.content.position;
+			this.originalContentPos = new Vec2(pos.x, pos.y);
+		}
+	}
 
-        this.rewardBtn.node.on(Button.EventType.CLICK, this.onRewardBtnClick, this);
-        this.showRewardInfoBtn.node.on(Button.EventType.CLICK, this.onShowRewardInfoBtnClick, this);
+	start() {
+		this.chest.node.on('refresh', this.refresh, this);
 
-        this.refresh();
+		this.rewardBtn.node.on(Button.EventType.CLICK, this.onRewardBtnClick, this);
 
-        GameData.instance.node.on("levels_loaded", () => this.refresh());
-    }
+		this.showRewardInfoBtn.node.on(
+			Button.EventType.CLICK,
+			this.onShowRewardInfoBtnClick,
+			this,
+		);
 
-    private shakeTween: Tween<Node> | null = null;
+		this.refresh();
 
-    refresh() {
-        if (!this.chest) return;
+		GameData.instance.node.on('levels_loaded', () => this.refresh());
+	}
 
-        // Stop shake tween only if it's running
-        if (this.shakeTween) {
-            this.shakeTween.stop();
-            this.shakeTween = null;
-        }
+	onDestroy() {
+		if (this.chest) {
+			this.chest.node.off('refresh', this.refresh, this);
+		}
+	}
 
-        if (this.progressBar) {
-            this.progressBar.node.active = !this.chest.isStageComplete();
-        }
+	refresh() {
+		if (!this.chest) return;
 
-        if (this.progressLabel) {
-            this.progressLabel.node.active = !this.chest.isStageComplete();
-        }
+		// Stop shake tween only if it's running
+		if (this.shakeTween) {
+			this.shakeTween.stop();
+			this.shakeTween = null;
+		}
 
-        if (this.rewardBtn) {
-            this.rewardBtn.node.active = this.chest.isStageComplete();
-        }
+		if (this.progressBar) {
+			this.progressBar.node.active = !this.chest.isStageComplete();
+		}
 
-        if (this.chest.isStageComplete()) {
-            let scale = ResolutionManager.instance.isPortraitOrientation() ? 2 : 1.1;
-            this.node.setScale(new Vec3(scale, scale, 1));
+		if (this.progressLabel) {
+			this.progressLabel.node.active = !this.chest.isStageComplete();
+		}
 
-            console.log("endless shaking");
+		if (this.rewardBtn) {
+			this.rewardBtn.node.active = this.chest.isStageComplete();
+		}
 
-            this.startShake();
-        } else {
-            let scale = ResolutionManager.instance.isPortraitOrientation() ? 1.8 : 0.9;
-            this.node.setScale(new Vec3(scale, scale, 1));
+		if (this.chest.isStageComplete()) {
+			let scale = ResolutionManager.instance.isPortraitOrientation() ? 2 : 1.1;
+			this.node.setScale(new Vec3(scale, scale, 1));
 
-            if (this.progressBar) {
-                let newProgress = this.chest.getCollectables() / this.chest.getStageStep();
+			console.log('endless shaking');
 
-                if (newProgress > this.progressBar.progress) {
-                    tween(this.node)
-                        .to(0.05, { scale: new Vec3(scale - 0.08, scale + 0.08, 1) }, { easing: 'linear' })
-                        .to(0.07, { scale: new Vec3(scale + 0.03, scale - 0.03, 1) }, { easing: 'elasticInOut' })
-                        .to(0.07, { scale: new Vec3(scale - 0.03, scale + 0.03, 1) }, { easing: 'elasticInOut' })
-                        .to(0.07, { scale: new Vec3(scale, scale, scale) }, { easing: 'elasticInOut' })
-                        .start();
+			this.startShake();
+		} else {
+			let scale = ResolutionManager.instance.isPortraitOrientation()
+				? 1.8
+				: 0.9;
+			this.node.setScale(new Vec3(scale, scale, 1));
 
-                    tween(this.progressBar)
-                        .to(0.8, { progress: newProgress })
-                        .start();
-                } else {
-                    this.progressBar.progress = newProgress;
-                }
-            }
+			if (this.progressBar) {
+				let newProgress =
+					this.chest.getCollectables() / this.chest.getStageStep();
 
-            if (this.progressLabel) {
-                this.progressLabel.string = `${this.chest.getCollectables()}/${this.chest.getStageStep()}`;
-            }
-        }
-    }
+				if (newProgress > this.progressBar.progress) {
+					tween(this.node)
+						.to(
+							0.05,
+							{ scale: new Vec3(scale - 0.08, scale + 0.08, 1) },
+							{ easing: 'linear' },
+						)
+						.to(
+							0.07,
+							{ scale: new Vec3(scale + 0.03, scale - 0.03, 1) },
+							{ easing: 'elasticInOut' },
+						)
+						.to(
+							0.07,
+							{ scale: new Vec3(scale - 0.03, scale + 0.03, 1) },
+							{ easing: 'elasticInOut' },
+						)
+						.to(
+							0.07,
+							{ scale: new Vec3(scale, scale, scale) },
+							{ easing: 'elasticInOut' },
+						)
+						.start();
 
+					tween(this.progressBar).to(0.8, { progress: newProgress }).start();
+				} else {
+					this.progressBar.progress = newProgress;
+				}
+			}
 
-    startShake() {
-        const shakeAmount = 5;
-        const shakeDuration = 0.1;
-    
-        if (this.content && !this.shakeTween) {
-            this.shakeTween = tween(this.content)
-                .repeatForever(
-                    tween()
-                        .by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
-                        .by(shakeDuration, { position: new Vec3(-shakeAmount * 2, 0, 0) })
-                        .by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
-                        .by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) })
-                        .by(shakeDuration, { position: new Vec3(0, -shakeAmount * 2, 0) })
-                        .by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) })
-                )
-                .start();
-        }
-    }
+			if (this.progressLabel) {
+				this.progressLabel.string = `${this.chest.getCollectables()}/${this.chest.getStageStep()}`;
+			}
+		}
+	}
 
-    stopShake() {
-        if (this.content && this.shakeTween) {
-            this.shakeTween.stop();
-    
-            this.shakeTween = null;
+	startShake() {
+		const shakeAmount = 5;
+		const shakeDuration = 0.1;
 
-            if(this.originalContentPos && !this.originalContentPos === undefined) {
-                this.content.setPosition(new Vec3(this.originalContentPos.x, this.originalContentPos.y, 0));
-            }
-        }
-    }
+		if (this.content && !this.shakeTween) {
+			this.shakeTween = tween(this.content)
+				.repeatForever(
+					tween()
+						.by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
+						.by(shakeDuration, { position: new Vec3(-shakeAmount * 2, 0, 0) })
+						.by(shakeDuration, { position: new Vec3(shakeAmount, 0, 0) })
+						.by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) })
+						.by(shakeDuration, { position: new Vec3(0, -shakeAmount * 2, 0) })
+						.by(shakeDuration, { position: new Vec3(0, shakeAmount, 0) }),
+				)
+				.start();
+		}
+	}
 
+	stopShake() {
+		if (this.content && this.shakeTween) {
+			this.shakeTween.stop();
+			this.shakeTween = null;
 
-    refreshScale(isPortrait: boolean) {
-        /*if(this.chest.isStageComplete()) {
+			if (this.originalContentPos) {
+				this.content.setPosition(
+					new Vec3(this.originalContentPos.x, this.originalContentPos.y, 0),
+				);
+			}
+		}
+	}
+
+	refreshScale(isPortrait: boolean) {
+		/*if(this.chest.isStageComplete()) {
             let scale = isPortrait ? 1.1 : 2;
             this.node.setScale(new Vec3(scale, scale, 1));
         }
@@ -151,21 +190,17 @@ export class UIChest extends Component {
             let scale = isPortrait ? 0.9 : 1.8;
             this.node.setScale(new Vec3(scale, scale, 1));
         }*/
-    }
+	}
 
+	onRewardBtnClick() {
+		this.chest.completeStage();
 
-    onRewardBtnClick() {
-        this.chest.completeStage();
+		this.refresh();
+	}
 
-        this.refresh();
-    }
+	onShowRewardInfoBtnClick() {
+		this.rewardInfo.active = true;
 
-
-    onShowRewardInfoBtnClick() {
-        this.rewardInfo.active = true;
-
-        this.rewardInfoComp.initReward_Chest(this.chest.getCurrentReward());
-    }
+		this.rewardInfoComp.initReward_Chest(this.chest.getCurrentReward());
+	}
 }
-
-
