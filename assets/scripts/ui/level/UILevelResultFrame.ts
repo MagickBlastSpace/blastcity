@@ -1,6 +1,17 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame, assetManager, sp, Texture2D } from 'cc';
+import {
+	_decorator,
+	Component,
+	Node,
+	Label,
+	Button,
+	Sprite,
+	SpriteFrame,
+	assetManager,
+	sp,
+	Texture2D,
+} from 'cc';
 import { UILevelMovesShop } from './UILevelMovesShop';
 import { SaveData } from '../../data/SaveData';
 import { ButlersGift } from '../../game/boosters/ButlersGift';
@@ -10,7 +21,6 @@ import { GameData } from '../../data/GameData';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIMainMenu } from '../main/UIMainMenu';
 import { Field } from '../../game/Field';
-import { ResolutionManager } from '../../utils/ResolutionManager';
 import { Localization } from '../../utils/Localization';
 import { EventBase } from '../../game/events/EventBase';
 import { UIStartBriefingPopup } from '../start/UIStartBriefingPopup';
@@ -18,315 +28,297 @@ const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
 export class UILevelResultFrame extends UIPopupFrameBase {
+	@property(Label)
+	buttonLabel: Label = null;
+	@property(Label)
+	goldLabel: Label = null;
+	@property(Label)
+	levelLabel: Label = null;
+	@property(Label)
+	adLabel: Label = null;
+	@property(Label)
+	progressLoseLabel: Label = null;
+	@property(Label)
+	rocketsCount: Label = null;
+	@property(Label)
+	redTilesCount: Label = null;
+
+	@property(Sprite)
+	frame: Sprite = null;
+	@property(SpriteFrame)
+	common: SpriteFrame = null;
+	@property(SpriteFrame)
+	hard: SpriteFrame = null;
+	@property(SpriteFrame)
+	superHard: SpriteFrame = null;
+
+	@property(Sprite)
+	picture: Sprite = null;
+	@property(SpriteFrame)
+	leaguePicture: SpriteFrame = null;
+	@property(SpriteFrame)
+	commonPicture: SpriteFrame = null;
+
+	@property(Sprite)
+	bgStageLose: Sprite = null;
+	@property(SpriteFrame)
+	bgStageLose_0: SpriteFrame = null;
+	@property(SpriteFrame)
+	bgStageLose_1: SpriteFrame = null;
+	@property(SpriteFrame)
+	bgStageLose_2: SpriteFrame = null;
+	@property(SpriteFrame)
+	bgStageLose_3: SpriteFrame = null;
+
+	@property(Button)
+	playBtn: Button = null;
+	@property(Button)
+	showAdBtn: Button = null;
+	@property(Button)
+	closeBtn: Button = null;
+
+	@property(Node)
+	progressLose: Node = null;
+	@property(Node)
+	commonMovesShopPanel: Node = null;
+	@property(Node)
+	winPanel: Node = null;
+	@property(Node)
+	giftPanel: Node = null;
+	@property(Node)
+	rocketsCountNode: Node = null;
+	@property(Node)
+	redTilesCountNode: Node = null;
+
+	@property(UIMainMenu)
+	mainFrame: UIMainMenu;
+
+	@property(UIStartBriefingPopup)
+	briefing: UIStartBriefingPopup;
+
+	@property(UILevelMovesShop)
+	movesShop: UILevelMovesShop;
+
+	@property(ButlersGift)
+	butlersGift: ButlersGift;
+
+	@property(Level)
+	level: Level = null;
+	@property(Field)
+	field: Field = null;
+
+	@property(EventBase)
+	eventRocketFever: EventBase;
+	@property(EventBase)
+	eventAphrodite: EventBase;
+
+	@property(sp.Skeleton)
+	animationEffect: sp.Skeleton = null;
+
+	private isSuccess: boolean = false;
+
+	private difficulty: string = '';
+	private goldEarned: number = 0;
+
+	start() {
+		this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+		this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
+		this.closeBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+
+		this.movesShop.node.on('buy', () => this.hide());
+		this.movesShop.node.on('close', () => this.onPlayBtnClick());
+		this.movesShop.node.on('show_panel_lose_progress', () =>
+			this.showPanelLoseProgress(),
+		);
+
+		this.briefing.node.on('fail', () => this.fail());
+	}
+
+	refresh(isSuccess: boolean, goldEarned: number) {
+		this.isSuccess = isSuccess;
+
+		let isKingLeague = this.isKingLeagueMode();
+
+		let currentLevelNumber = isKingLeague
+			? UserData.instance.getKingLeagueProgress()
+			: UserData.instance.getProgress();
+
+		let lvlString = isKingLeague
+			? Localization.instance.getLabelByKey('StartFrame.Stage') +
+				' ' +
+				currentLevelNumber
+			: Localization.instance.getLabelByKey('StartFrame.Level') +
+				' ' +
+				currentLevelNumber;
+
+		this.levelLabel.string = isSuccess
+			? lvlString
+			: Localization.instance.getLabelByKey('combat.continue');
+
+		this.buttonLabel.string = isSuccess
+			? Localization.instance.getLabelByKey('combat.continue')
+			: Localization.instance.getLabelByKey('combat.replay');
+		this.goldLabel.string = 'x' + goldEarned;
+
+		this.movesShop.node.active = !isSuccess;
+
+		this.commonMovesShopPanel.active = true;
+		this.progressLose.active = false;
+		this.movesShop.setBasicState();
+		this.winPanel.active = isSuccess;
+
+		this.movesShop.refresh();
+
+		this.goldEarned = goldEarned;
+
+		this.showAdBtn.node.active = false;
 
-    @property(Label)
-    buttonLabel: Label = null;
-    @property(Label)
-    goldLabel: Label = null;
-    @property(Label)
-    levelLabel: Label = null;
-    @property(Label)
-    adLabel: Label = null;
-    @property(Label)
-    progressLoseLabel: Label = null;
-    @property(Label)
-    rocketsCount: Label = null;
-    @property(Label)
-    redTilesCount: Label = null;
-
-    @property(Sprite)
-    frame: Sprite = null;
-    @property(SpriteFrame)
-    common: SpriteFrame = null;
-    @property(SpriteFrame)
-    hard: SpriteFrame = null;
-    @property(SpriteFrame)
-    superHard: SpriteFrame = null;
-
-    @property(Sprite)
-    picture: Sprite = null;
-    @property(SpriteFrame)
-    leaguePicture: SpriteFrame = null;
-    @property(SpriteFrame)
-    commonPicture: SpriteFrame = null;
-
-    @property(Sprite)
-    bgStageLose: Sprite = null;
-    @property(SpriteFrame)
-    bgStageLose_0: SpriteFrame = null;
-    @property(SpriteFrame)
-    bgStageLose_1: SpriteFrame = null;
-    @property(SpriteFrame)
-    bgStageLose_2: SpriteFrame = null;
-    @property(SpriteFrame)
-    bgStageLose_3: SpriteFrame = null;
-
-    @property(Button)
-    playBtn: Button = null;
-    @property(Button)
-    showAdBtn: Button = null;
-    @property(Button)
-    closeBtn: Button = null;
-
-    @property(Node)
-    progressLose: Node = null;
-    @property(Node)
-    commonMovesShopPanel: Node = null;
-    @property(Node)
-    winPanel: Node = null;
-    @property(Node)
-    giftPanel: Node = null;
-    @property(Node)
-    rocketsCountNode: Node = null;
-    @property(Node)
-    redTilesCountNode: Node = null;
-
-    @property(UIMainMenu)
-    mainFrame: UIMainMenu ;
-
-    @property(UIStartBriefingPopup)
-    briefing: UIStartBriefingPopup;
-
-    @property(UILevelMovesShop)
-    movesShop: UILevelMovesShop;
-
-    @property(ButlersGift)
-    butlersGift: ButlersGift;
-
-    @property(Level)
-    level: Level = null;
-    @property(Field)
-    field: Field = null;
-
-    @property(EventBase)
-    eventRocketFever: EventBase;
-    @property(EventBase)
-    eventAphrodite: EventBase;
-
-    @property(sp.Skeleton)
-    animationEffect: sp.Skeleton = null;
-
-    private isSuccess: boolean = false;
-
-    private difficulty: string = "";
-    private goldEarned: number = 0;
-
-
-    onLoad() {
-        this.loadAssets();
-    }
-    
-    start() {
-        this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
-        this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
-        this.closeBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+		this.giftPanel.active = this.butlersGift.isAvailable();
 
-        this.movesShop.node.on("buy", () => this.hide());
-        this.movesShop.node.on("close", () => this.onPlayBtnClick());
-        this.movesShop.node.on("show_panel_lose_progress", () => this.showPanelLoseProgress());
+		if (isSuccess) {
+			if (this.animationEffect.skeletonData) {
+				this.animationEffect.setAnimation(0, 'animation', true);
+			}
 
-        this.briefing.node.on("fail", () => this.fail());
-    }
-    
-    refresh(isSuccess: boolean, goldEarned: number) {
-        this.isSuccess = isSuccess;
+			this.setPicture();
+		}
 
-        let isKingLeague = this.isKingLeagueMode();
+		try {
+			let levelData = GameData.instance.getLastLevel();
 
-        let currentLevelNumber = isKingLeague ? UserData.instance.getKingLeagueProgress(): UserData.instance.getProgress();
+			this.difficulty = levelData.difficulty;
 
-        let lvlString = isKingLeague ? Localization.instance.getLabelByKey("StartFrame.Stage") + " " + currentLevelNumber : Localization.instance.getLabelByKey("StartFrame.Level") + " " + currentLevelNumber;
+			if (levelData.difficulty === 'hard') {
+				this.frame.spriteFrame = this.hard;
+			} else if (levelData.difficulty === 'superhard') {
+				this.frame.spriteFrame = this.superHard;
+			} else {
+				this.frame.spriteFrame = this.common;
+			}
+		} catch (error) {
+			console.error('Error setting level result:', error);
+		}
+	}
 
-        this.levelLabel.string = isSuccess ? lvlString : Localization.instance.getLabelByKey("combat.continue");
+	showPanelLoseProgress() {
+		this.commonMovesShopPanel.active = false;
+		this.rocketsCountNode.active = false;
+		this.redTilesCountNode.active = false;
 
-        this.buttonLabel.string = isSuccess ? Localization.instance.getLabelByKey("combat.continue") : Localization.instance.getLabelByKey("combat.replay");
-        this.goldLabel.string = "x" + goldEarned;
+		if (this.butlersGift.getStreak() === 2) {
+			this.bgStageLose.spriteFrame = this.bgStageLose_2;
+		} else if (this.butlersGift.getStreak() === 3) {
+			this.bgStageLose.spriteFrame = this.bgStageLose_3;
+		} else if (this.butlersGift.getStreak() === 1) {
+			this.bgStageLose.spriteFrame = this.bgStageLose_1;
+		} else {
+			this.bgStageLose.spriteFrame = this.bgStageLose_0;
+		}
 
-        this.movesShop.node.active = !isSuccess;
- 
-        this.commonMovesShopPanel.active = true;
-        this.progressLose.active = false;
-        this.movesShop.setBasicState();
-        this.winPanel.active = isSuccess;
+		if (
+			!this.isSuccess &&
+			this.eventRocketFever.isInteractable() &&
+			this.level.getRocketsStat() > 0
+		) {
+			this.progressLose.active = true;
+			this.rocketsCountNode.active = true;
 
-        this.movesShop.refresh();
+			this.progressLoseLabel.string =
+				Localization.instance.getLabelByKey('combat.failatrp');
 
-        this.goldEarned = goldEarned;
+			this.rocketsCount.string = String(this.level.getRocketsStat());
+		} else if (
+			!this.isSuccess &&
+			this.eventAphrodite.isInteractable() &&
+			this.level.getRedTilesStat() > 0
+		) {
+			this.progressLose.active = true;
+			this.redTilesCountNode.active = true;
 
-        this.showAdBtn.node.active = false;
+			this.progressLoseLabel.string =
+				Localization.instance.getLabelByKey('combat.failataf');
 
-        this.giftPanel.active = this.butlersGift.isAvailable();
+			this.redTilesCount.string = String(this.level.getRedTilesStat());
+		} else if (!this.isSuccess && this.butlersGift.getStreak() > 0) {
+			this.progressLose.active = true;
 
-        if(isSuccess) {
-            if(this.animationEffect.skeletonData) {
-                this.animationEffect.setAnimation(0, 'animation', true);
-            }
+			this.progressLoseLabel.string =
+				Localization.instance.getLabelByKey('combat.failat');
+		} else {
+			this.onPlayBtnClick();
+		}
+	}
 
-            this.setPicture();
-        }
+	onPlayBtnClick() {
+		SaveData.instance.clearLevelProgress();
 
-        try {
-            let levelData = GameData.instance.getLastLevel();
+		if (!this.isSuccess) {
+			this.butlersGift.clearStreak();
 
-            this.difficulty = levelData.difficulty;
+			this.briefing.show();
+			this.briefing.init_Fail(this.level.getGoals());
 
-            if(levelData.difficulty === "hard") {
-                this.frame.spriteFrame = this.hard;
-            }
-            else if(levelData.difficulty === "superhard") {
-                this.frame.spriteFrame = this.superHard;
-            }
-            else {
-                this.frame.spriteFrame = this.common;
-            }
+			this.level.fail();
 
-        } catch (error) {
-            console.error('Error setting level result:', error);
-        }
-    }
+			this.hide();
 
+			return;
+		}
 
-    showPanelLoseProgress() {
-        this.commonMovesShopPanel.active = false;
-        this.rocketsCountNode.active = false;
-        this.redTilesCountNode.active = false;
+		this.mainFrame.show();
 
-        if(this.butlersGift.getStreak() === 2) {
-            this.bgStageLose.spriteFrame = this.bgStageLose_2;
-        }
-        else if(this.butlersGift.getStreak() === 3) {
-            this.bgStageLose.spriteFrame = this.bgStageLose_3;
-        }
-        else if(this.butlersGift.getStreak() === 1) {
-            this.bgStageLose.spriteFrame = this.bgStageLose_1;
-        }
-        else {
-            this.bgStageLose.spriteFrame = this.bgStageLose_0;
-        }
+		this.hide();
 
-        if(!this.isSuccess && this.eventRocketFever.isInteractable() && this.level.getRocketsStat() > 0) {
-            this.progressLose.active = true;
-            this.rocketsCountNode.active = true;
+		this.node.emit('level_close');
 
-            this.progressLoseLabel.string = Localization.instance.getLabelByKey("combat.failatrp");
+		this.field.unloadAssets();
 
-            this.rocketsCount.string = this.level.getRocketsStat();
-        }
-        else if(!this.isSuccess && this.eventAphrodite.isInteractable() && this.level.getRedTilesStat() > 0) {
-            this.progressLose.active = true;
-            this.redTilesCountNode.active = true;
+		UserData.instance.resetLevelFails();
+	}
 
-            this.progressLoseLabel.string = Localization.instance.getLabelByKey("combat.failataf");
+	fail() {
+		SaveData.instance.clearLevelProgress();
 
-            this.redTilesCount.string = this.level.getRedTilesStat();
-        }
-        else if(!this.isSuccess && this.butlersGift.getStreak() > 0) {
-            this.progressLose.active = true;
+		this.butlersGift.clearStreak();
+		this.level.fail();
 
-            this.progressLoseLabel.string = Localization.instance.getLabelByKey("combat.failat");
-        }
-        else {
-            this.onPlayBtnClick();
-        }
-    }
+		this.mainFrame.show();
 
+		this.hide();
 
-    onPlayBtnClick() {
-        SaveData.instance.clearLevelProgress();
+		this.node.emit('level_close');
 
-        if(!this.isSuccess) {
-            this.butlersGift.clearStreak();
+		this.field.unloadAssets();
 
-            this.briefing.show();
-            this.briefing.init_Fail(this.level.getGoals());
+		UserData.instance.addLevelFail();
+	}
 
-            this.level.fail();
+	async onShowAdBtnClick() {
+		const success = await gamepush.ads.showRewardedVideo();
+		if (success) {
+			this.getAdReward();
 
-            this.hide();
+			this.onPlayBtnClick();
+		}
+	}
 
-            return;
-        }
+	getAdReward() {
+		if (this.difficulty === 'hard') {
+			UserData.instance.addResource('gold', this.goldEarned * 2);
+		} else if (this.difficulty === 'superhard') {
+			UserData.instance.addResource('gold', this.goldEarned * 4);
+		}
+	}
 
-        this.mainFrame.show();
+	isKingLeagueMode(): boolean {
+		return (
+			UserData.instance.getProgress() >= GameData.instance.getMaxProgress()
+		);
+	}
 
-        this.hide();
-
-        this.node.emit("level_close");
-
-        this.field.unloadAssets();
-
-        UserData.instance.resetLevelFails();
-    }
-
-    fail() {
-        SaveData.instance.clearLevelProgress();
-
-        this.butlersGift.clearStreak();
-        this.level.fail();
-
-        this.mainFrame.show();
-
-        this.hide();
-
-        this.node.emit("level_close");
-
-        this.field.unloadAssets();
-
-        UserData.instance.addLevelFail();
-    }
-
-    async onShowAdBtnClick() {
-        const success = await gamepush.ads.showRewardedVideo();
-        if (success) {
-            this.getAdReward();
-
-            this.onPlayBtnClick();
-        }
-    }
-
-    getAdReward() {
-        if(this.difficulty === "hard") {
-            UserData.instance.addResource("gold", this.goldEarned * 2);
-        }
-        else if(this.difficulty === "superhard") {
-            UserData.instance.addResource("gold", this.goldEarned * 4);
-        }
-    }
-
-
-    isKingLeagueMode(): boolean {
-        return UserData.instance.getProgress() >= GameData.instance.getMaxProgress();
-    }
-
-
-    /*loadAssets() {
-        let assetName = this.isKingLeagueMode() ? "" : "win/spriteFrame";
-
-        assetManager.loadBundle("game", (err, bundle) => {
-            if (err) {
-                console.error(`Failed to load bundle: game`, err);
-                return;
-            }
-
-            console.log(`Successfully loaded bundle: game"`);
-
-
-            bundle.load(assetName, SpriteFrame, (err, spriteFrame) => {
-                if (err) {
-                    console.error(`Failed to load prefab: win`, err);
-                    return;
-                }
-
-                console.log(`Successfully loaded prefab: win`);
-
-                this.picture.spriteFrame = spriteFrame;
-            });
-        });
-    }*/
-
-    setPicture() {
-        this.picture.spriteFrame = this.isKingLeagueMode() ? this.leaguePicture : this.commonPicture;
-    }
+	setPicture() {
+		this.picture.spriteFrame = this.isKingLeagueMode()
+			? this.leaguePicture
+			: this.commonPicture;
+	}
 }
-
-
