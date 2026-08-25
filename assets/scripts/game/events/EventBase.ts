@@ -8,431 +8,439 @@ const { ccclass, property } = _decorator;
 
 @ccclass('EventBase')
 export class EventBase extends Component {
+	private startTime: Date;
+	private endTime: Date;
 
-    private startTime: Date;
-    private endTime: Date;
+	private isStarted: boolean = false;
 
-    private isStarted: boolean = false;
+	private eventId: string = 'base';
 
-    private eventId: string = "base";
+	private lastAttemptTimestamp: number = 0;
 
-    private lastAttemptTimestamp: number = 0;
+	private unpickedRewards: EventRewardData[] = [];
 
-    private unpickedRewards: EventRewardData[] = [];
+	private isPositionUpdated: boolean = false;
 
-    private isPositionUpdated: boolean = false;
+	private isChecked: boolean = false;
 
-    private isChecked: boolean = false;
+	private padTime(value: number): string {
+		return value < 10 ? `0${value}` : String(value);
+	}
 
-    @property
-    MIN_LEVEL_REQUIRED = 0;
-    @property
-    END_TIME_OFFSET = 0;
+	@property
+	MIN_LEVEL_REQUIRED = 0;
+	@property
+	END_TIME_OFFSET = 0;
 
-    @property
-    isTutorialComplete: boolean = false;
+	@property
+	isTutorialComplete: boolean = false;
 
+	init(startHourUTC: number, durationHours: number) {
+		const now = new Date();
+		this.startTime = new Date(now);
+		this.startTime.setUTCHours(startHourUTC, 0, 0, 0);
 
-    init(startHourUTC: number, durationHours: number) {
-        const now = new Date();
-        this.startTime = new Date(now);
-        this.startTime.setUTCHours(startHourUTC, 0, 0, 0);
+		this.endTime = new Date(
+			this.startTime.getTime() + durationHours * 60 * 60 * 1000,
+		);
 
-        this.endTime = new Date(this.startTime.getTime() + durationHours * 60 * 60 * 1000);
+		let timeDiff = this.startTime.getTime() - now.getTime();
 
-        let timeDiff = this.startTime.getTime() - now.getTime();
+		while (timeDiff > 0) {
+			this.startTime.setUTCDate(this.startTime.getUTCDate() - 1);
+			this.endTime = new Date(
+				this.startTime.getTime() + durationHours * 60 * 60 * 1000,
+			);
 
-        while(timeDiff > 0) {
-            this.startTime.setUTCDate(this.startTime.getUTCDate() - 1);
-            this.endTime = new Date(this.startTime.getTime() + durationHours * 60 * 60 * 1000);
+			timeDiff = this.startTime.getTime() - now.getTime();
+		}
 
-            timeDiff = this.startTime.getTime() - now.getTime();
-        }
+		this.isStarted = false;
 
-        this.isStarted = false;
-
-        /*console.log("Start time: " + this.startTime);
+		/*console.log("Start time: " + this.startTime);
         console.log("End time: " + this.endTime);*/
 
-        this.node.emit("init");
-    }
+		this.node.emit('init');
+	}
 
-    isEventAvailable(): boolean {
-        const now = new Date();
-        return now > this.startTime && now < this.endTime;
-    }
+	isEventAvailable(): boolean {
+		const now = new Date();
+		return now > this.startTime && now < this.endTime;
+	}
 
-    restartEvent(): void {
-        this.init(this.startTime.getUTCHours(), this.getEventDuration());
+	restartEvent(): void {
+		this.init(this.startTime.getUTCHours(), this.getEventDuration());
 
-        SaveData.instance.saveEvent(this.eventId);
-    }
+		SaveData.instance.saveEvent(this.eventId);
+	}
 
-    getRemainingTimeString(): string {
-        if(!this.endTime) {
-            return "";
-        }
-        
-        const now = new Date();
-        const timeDiff = this.endTime.getTime() - now.getTime();
+	getRemainingTimeString(): string {
+		if (!this.endTime) {
+			return '';
+		}
 
-        if (timeDiff < 0) {
-            if(this.lastAttemptTimestamp !== 0) {
-                this.lastAttemptTimestamp = Date.now();
-            }
+		const now = new Date();
+		const timeDiff = this.endTime.getTime() - now.getTime();
 
-            this.restartEvent();
+		if (timeDiff < 0) {
+			if (this.lastAttemptTimestamp !== 0) {
+				this.lastAttemptTimestamp = Date.now();
+			}
 
-            return "Event ended. Restarting...";
-        }
+			this.restartEvent();
 
-        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+			return 'Event ended. Restarting...';
+		}
 
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
+		const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+		const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+		const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-    getRemainingCooldownString(): string {
-        return "";
-    }
+		return `${this.padTime(hours)}:${this.padTime(minutes)}:${this.padTime(seconds)}`;
+	}
 
-    getEventDuration(): number {
-        return (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60 * 60);
-    }
+	getRemainingCooldownString(): string {
+		return '';
+	}
 
-    getTimeProgress(): number {
-        let duration = this.getEventDuration();
+	getEventDuration(): number {
+		return (
+			(this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60 * 60)
+		);
+	}
 
-        const now = new Date();
-        let timePassed = (now.getTime() - this.startTime.getTime()) / (1000 * 60 * 60);
+	getTimeProgress(): number {
+		let duration = this.getEventDuration();
 
-        let timeProgress = timePassed / duration;
+		const now = new Date();
+		let timePassed =
+			(now.getTime() - this.startTime.getTime()) / (1000 * 60 * 60);
 
-        return timeProgress;
-    }
+		let timeProgress = timePassed / duration;
 
-    activateEvent() {
-        if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
-            this.isStarted = true;
+		return timeProgress;
+	}
 
-            this.lastAttemptTimestamp = Date.now();
-        }
-    }
+	activateEvent() {
+		if (this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
+			this.isStarted = true;
 
+			this.lastAttemptTimestamp = Date.now();
+		}
+	}
 
-    refresh() {
-        const now = new Date();
-        const timeDiff = this.endTime.getTime() - now.getTime();
+	refresh() {
+		const now = new Date();
+		const timeDiff = this.endTime.getTime() - now.getTime();
 
-        if (timeDiff < 0) {
-            this.restartEvent();
-        }
-    }
+		if (timeDiff < 0) {
+			this.restartEvent();
+		}
+	}
 
+	canParticipate(): boolean {
+		return this.isRequiredLevelReached();
+	}
 
-    canParticipate(): boolean {
-        return this.isRequiredLevelReached();
-    }
+	getIsStarted(): boolean {
+		return this.isStarted;
+	}
 
+	setIsStarted(isStarted: boolean) {
+		this.isStarted = isStarted;
+	}
 
+	getCurrentStage(): number {
+		return 0;
+	}
 
-    getIsStarted(): boolean {
-        return this.isStarted;
-    }
+	getCurrentStageStep(): number {
+		return 0;
+	}
 
-    setIsStarted(isStarted: boolean) {
-        this.isStarted = isStarted;
-    }
+	setCurrentStage(stage: number) {}
 
+	getIsComplete(): boolean {
+		return true;
+	}
 
-    getCurrentStage(): number {
-        return 0;
-    }
+	setIsComplete(isComplete: boolean) {}
 
-    setCurrentStage(stage: number) {}
+	getCollectable(): number {
+		return 0;
+	}
 
+	setCollectable(value: number) {}
 
-    getIsComplete(): boolean {
-        return true;
-    }
+	getEventId(): string {
+		return this.eventId;
+	}
 
-    setIsComplete(isComplete: boolean) {}
+	isWeekly(): boolean {
+		return false;
+	}
 
+	isGamePushBased(): boolean {
+		return false;
+	}
 
-    getCollectable(): number {
-        return 0;
-    }
+	getLevelRequired(): number {
+		return this.MIN_LEVEL_REQUIRED;
+	}
 
-    setCollectable(value: number) {}
+	isRequiredLevelReached(): boolean {
+		return UserData.instance.getProgress() + 1 >= this.MIN_LEVEL_REQUIRED;
+	}
 
+	getCurrentLevel(): number {
+		return 0;
+	}
 
-    getEventId(): string {
-        return this.eventId;
-    }
+	setCurrentLevel(level: number) {}
 
+	getHp(): number {
+		return 0;
+	}
 
-    isWeekly(): boolean {
-        return false;
-    }
+	setHp(newHp: number) {}
 
-    isGamePushBased(): boolean {
-        return false;
-    }
+	getSpecialPool(): string[] {
+		let pool = [];
+		return pool;
+	}
 
+	setSpecialPool(pool: string[]) {}
 
-    getLevelRequired(): number {
-        return this.MIN_LEVEL_REQUIRED;
-    }
+	getSpecialPredictions(): string[] {
+		let predictions = [];
+		return predictions;
+	}
 
-    isRequiredLevelReached(): boolean {
-        return (UserData.instance.getProgress() + 1) >= this.MIN_LEVEL_REQUIRED;
-    }
+	setSpecialPredictions(predictions: string[]) {}
 
+	getSpecialHints(): string[] {
+		let pool = [];
+		return pool;
+	}
 
-    getCurrentLevel(): number {
-        return 0;
-    }
+	setSpecialHints(pool: string[]) {}
 
-    setCurrentLevel(level: number) {}
+	getLastTimestamp(): number {
+		return this.lastAttemptTimestamp;
+	}
 
-    getHp(): number {
-        return 0;
-    }
+	setLastTimestamp(stamp: number) {
+		this.lastAttemptTimestamp = stamp;
 
-    setHp(newHp: number) {}
+		if (this.startTime.getTime() > this.lastAttemptTimestamp) {
+			this.restartEvent();
+		}
+	}
 
+	getMultiplayerChannel(): number {
+		return 0;
+	}
 
-    getSpecialPool(): string[] {
-        let pool = [];
-        return pool;
-    }
+	setMultiplayerChannel(id: number) {}
 
-    setSpecialPool(pool: string[]) {}
+	getLastMultiplayerChannel(): number {
+		return 0;
+	}
 
-    getSpecialPredictions(): string[] {
-        let predictions = [];
-        return predictions;
-    }
+	setLastMultiplayerChannel(id: number) {}
 
-    setSpecialPredictions(predictions: string[]) {}
+	getIsTutorialComplete(): boolean {
+		return this.isTutorialComplete;
+	}
 
-    getSpecialHints(): string[] {
-        let pool = [];
-        return pool;
-    }
+	setIsTutorialComplete(isTutorialComplete: boolean) {
+		this.isTutorialComplete = isTutorialComplete;
+	}
 
-    setSpecialHints(pool: string[]) {}
+	getPlayerPlace(): number {
+		return 0;
+	}
 
+	setPlayerPlace(place: number) {}
 
-    getLastTimestamp(): number {
-        return this.lastAttemptTimestamp;
-    }
+	getCompletedCollections(): string[] {
+		return [];
+	}
 
-    setLastTimestamp(stamp: number) {
-        this.lastAttemptTimestamp = stamp;
+	setCompletedCollections(collections: string[]) {}
 
-        if(this.startTime > this.lastAttemptTimestamp) {
-            this.restartEvent();
-        }
-    }
+	getIsTotalRewardTaken() {
+		return false;
+	}
 
-    getMultiplayerChannel(): number {
-        return 0;
-    }
+	setIsTotalRewardTaken(isTaken: boolean) {}
 
-    setMultiplayerChannel(id: number) {}
+	getTakenRewards(): number[] {
+		return [];
+	}
 
-    getLastMultiplayerChannel(): number {
-        return 0;
-    }
+	setTakenRewards(rewards: number[]) {}
 
-    setLastMultiplayerChannel(id: number) {}
+	getTakenRewards_Premium(): number[] {
+		return [];
+	}
 
-    getIsTutorialComplete(): boolean {
-        return this.isTutorialComplete;
-    }
+	setTakenRewards_Premium(rewards: number[]) {}
 
-    setIsTutorialComplete(isTutorialComplete: boolean) {
-        this.isTutorialComplete = isTutorialComplete;
-    }
+	getIsRewardPicked(): boolean[] {
+		return [];
+	}
 
-    getPlayerPlace(): number {
-        return 0;
-    }
+	setIsRewardPicked(isPicked: boolean[]) {}
 
-    setPlayerPlace(place: number) {}
+	getUnpickedRewards(): EventRewardData[] {
+		return this.unpickedRewards;
+	}
 
-    getCompletedCollections(): string[] {
-        return [];
-    }
+	setUnpickedRewards(rewards: EventRewardData[]) {
+		this.unpickedRewards = rewards;
+	}
 
-    setCompletedCollections(collections: string[]) {}
+	getBonusBank(): number {
+		return 0;
+	}
 
-    getIsTotalRewardTaken() {
-        return false;
-    }
+	setBonusBank(value: number) {}
 
-    setIsTotalRewardTaken(isTaken: boolean) {}
+	applyRewards(rewards: EventRewardData[]) {
+		for (let i = 0; i < rewards.length; i++) {
+			this.applyReward(rewards[i]);
+		}
+	}
 
-    getTakenRewards(): number[] {
-        return [];
-    }
+	applyReward(reward: EventRewardData) {
+		UserData.instance.addResource('gold', reward.gold);
 
-    setTakenRewards(rewards: number[]) {}
+		UserData.instance.addResource('bomb', reward.startBonus_Bomb);
+		UserData.instance.addResource('rocket', reward.startBonus_Rocket);
+		UserData.instance.addResource('discoball', reward.startBonus_Discoball);
 
-    getTakenRewards_Premium(): number[] {
-        return [];
-    }
+		UserData.instance.addResource('hammer', reward.booster_Hammer);
+		UserData.instance.addResource('bow', reward.booster_Bow);
+		UserData.instance.addResource('cannon', reward.booster_Cannon);
+		UserData.instance.addResource('jester', reward.booster_Jester);
 
-    setTakenRewards_Premium(rewards: number[]) {}
+		UserData.instance.addResource('bomb_minutes', reward.bomb_Minutes);
+		UserData.instance.addResource('rocket_minutes', reward.rocket_Minutes);
+		UserData.instance.addResource(
+			'discoball_minutes',
+			reward.discoball_Minutes,
+		);
+		UserData.instance.addResource(
+			'endless_lives_minutes',
+			reward.endlessLives_Minutes,
+		);
+		UserData.instance.addResource(
+			'modifier_x2_minutes',
+			reward.modifierX2_Minutes,
+		);
 
-    getIsRewardPicked(): boolean[] {
-        return [];
-    }
+		let cards = UserData.instance.openCardsPack(reward.cardsPack);
+		//reward.cards = [];
+		for (let i = 0; i < cards.length; i++) {
+			reward.cards.push(cards[i]);
+		}
 
-    setIsRewardPicked(isPicked: boolean[]) {}
+		if (reward.isChest) {
+			gamepush.player.add('stat_chests_open', 1);
+		}
 
-    getUnpickedRewards(): EventRewardData[] {
-        return this.unpickedRewards;
-    }
+		this.node.emit('reward', reward);
+	}
 
-    setUnpickedRewards(rewards: EventRewardData[]) {
-        this.unpickedRewards = rewards;
-    }
+	applyReward_Lite(reward: EventRewardData, pos: Vec3) {
+		UserData.instance.addResource('gold', reward.gold);
 
-    getBonusBank(): number {
-        return 0;
-    }
+		UserData.instance.addResource('bomb', reward.startBonus_Bomb);
+		UserData.instance.addResource('rocket', reward.startBonus_Rocket);
+		UserData.instance.addResource('discoball', reward.startBonus_Discoball);
 
-    setBonusBank(value: number) {}
+		UserData.instance.addResource('hammer', reward.booster_Hammer);
+		UserData.instance.addResource('bow', reward.booster_Bow);
+		UserData.instance.addResource('cannon', reward.booster_Cannon);
+		UserData.instance.addResource('jester', reward.booster_Jester);
 
+		UserData.instance.addResource('bomb_minutes', reward.bomb_Minutes);
+		UserData.instance.addResource('rocket_minutes', reward.rocket_Minutes);
+		UserData.instance.addResource(
+			'discoball_minutes',
+			reward.discoball_Minutes,
+		);
+		UserData.instance.addResource(
+			'endless_lives_minutes',
+			reward.endlessLives_Minutes,
+		);
+		UserData.instance.addResource(
+			'modifier_x2_minutes',
+			reward.modifierX2_Minutes,
+		);
 
-    applyRewards(rewards: EventRewardData[]) {
-        for(let i = 0; i < rewards.length; i++) {
-            this.applyReward(rewards[i]);
-        }
-    }
+		let cards = UserData.instance.openCardsPack(reward.cardsPack);
+		//reward.cards = [];
+		for (let i = 0; i < cards.length; i++) {
+			reward.cards.push(cards[i]);
+		}
 
-    applyReward(reward: EventRewardData) {
-        UserData.instance.addResource("gold", reward.gold);
+		if (reward.isChest) {
+			gamepush.player.add('stat_chests_open', 1);
+		}
 
-        UserData.instance.addResource("bomb", reward.startBonus_Bomb);
-        UserData.instance.addResource("rocket", reward.startBonus_Rocket);
-        UserData.instance.addResource("discoball", reward.startBonus_Discoball);
+		if (reward.cards.length > 0) {
+			let liteReward = new EventRewardData();
+			liteReward.cards = reward.cards;
 
-        UserData.instance.addResource("hammer", reward.booster_Hammer);
-        UserData.instance.addResource("bow", reward.booster_Bow);
-        UserData.instance.addResource("cannon", reward.booster_Cannon);
-        UserData.instance.addResource("jester", reward.booster_Jester);
+			this.scheduleOnce(() => {
+				this.node.emit('reward', liteReward);
+			}, 1);
+		}
 
-        UserData.instance.addResource("bomb_minutes", reward.bomb_Minutes);
-        UserData.instance.addResource("rocket_minutes", reward.rocket_Minutes);
-        UserData.instance.addResource("discoball_minutes", reward.discoball_Minutes);
-        UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
-        UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
+		this.node.emit('reward_lite', reward, pos);
+	}
 
-        let cards = UserData.instance.openCardsPack(reward.cardsPack);
-        //reward.cards = [];
-        for(let i = 0; i < cards.length; i++) {
-            reward.cards.push(cards[i]);
-        }
+	completeTutorial() {
+		this.isTutorialComplete = true;
 
-        if(reward.isChest) {
-            gamepush.player.add('stat_chests_open', 1);
-        }
+		SaveData.instance.saveEvent(this.eventId);
+	}
 
-        this.node.emit("reward", reward);
-    }
+	isRewardAvailable(): boolean {
+		return false;
+	}
 
-    applyReward_Lite(reward: EventRewardData, pos: Vec3) {
-        UserData.instance.addResource("gold", reward.gold);
+	isInteractable(): boolean {
+		return this.isEventAvailable();
+	}
 
-        UserData.instance.addResource("bomb", reward.startBonus_Bomb);
-        UserData.instance.addResource("rocket", reward.startBonus_Rocket);
-        UserData.instance.addResource("discoball", reward.startBonus_Discoball);
+	getBots(): PlayerEventData[] {
+		return [];
+	}
 
-        UserData.instance.addResource("hammer", reward.booster_Hammer);
-        UserData.instance.addResource("bow", reward.booster_Bow);
-        UserData.instance.addResource("cannon", reward.booster_Cannon);
-        UserData.instance.addResource("jester", reward.booster_Jester);
+	setBots(bots: PlayerEventData[]) {}
 
-        UserData.instance.addResource("bomb_minutes", reward.bomb_Minutes);
-        UserData.instance.addResource("rocket_minutes", reward.rocket_Minutes);
-        UserData.instance.addResource("discoball_minutes", reward.discoball_Minutes);
-        UserData.instance.addResource("endless_lives_minutes", reward.endlessLives_Minutes);
-        UserData.instance.addResource("modifier_x2_minutes", reward.modifierX2_Minutes);
+	getIsPositionUpdated(): boolean {
+		return false;
+	}
 
-        let cards = UserData.instance.openCardsPack(reward.cardsPack);
-        //reward.cards = [];
-        for(let i = 0; i < cards.length; i++) {
-            reward.cards.push(cards[i]);
-        }
+	resetPositionUpdated() {
+		this.isPositionUpdated = false;
+	}
 
-        if(reward.isChest) {
-            gamepush.player.add('stat_chests_open', 1);
-        }
+	setChecked() {
+		this.isChecked = true;
+	}
 
-        if(reward.cards.length > 0) {
-            let liteReward = new EventRewardData();
-            liteReward.cards = reward.cards;
+	getIsChecked(): boolean {
+		return this.isChecked;
+	}
 
-            this.scheduleOnce(() => {
-                this.node.emit("reward", liteReward);
-            }, 1);
-        }
+	getRewardsCount(): number {
+		return 0;
+	}
 
-        this.node.emit("reward_lite", reward, pos);
-    }
-
-
-    completeTutorial() {
-        this.isTutorialComplete = true;
-
-        SaveData.instance.saveEvent(this.eventId);
-    }
-
-
-    isRewardAvailable(): boolean {
-        return false;
-    }
-
-
-    isInteractable(): boolean {
-        return this.isEventAvailable();
-    }
-
-
-    getBots(): PlayerEventData[] {
-        return [];
-    }
-
-    setBots(bots: PlayerEventData[]) {}
-
-
-    getIsPositionUpdated(): boolean {
-        return false;
-    }
-
-    resetPositionUpdated() {
-        this.isPositionUpdated = false;
-    }
-
-
-    setChecked() {
-        this.isChecked = true;
-    }
-
-    getIsChecked(): boolean {
-        return this.isChecked;
-    }
-
-    getRewardsCount(): number {
-        return 0;
-    }
-
-
-    loadInventoryFromGP() {}
+	loadInventoryFromGP() {}
 }
-
-
