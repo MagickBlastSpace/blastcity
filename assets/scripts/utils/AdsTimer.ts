@@ -1,168 +1,155 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, EventTouch, EventKeyboard, input, Input, game } from 'cc';
+import { _decorator, Component, Node, input, Input, game, Game } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('AdsTimer')
 export class AdsTimer extends Component {
+	@property(Node)
+	level: Node = null;
 
-    @property(Node)
-    level: Node = null;
+	private gameplayTime: number = 0;
+	private menuTime: number = 0;
 
-    private gameplayTime: number = 0;
-    private menuTime: number = 0;
+	private isGameplay: boolean = false;
+	private isMenu: boolean = false;
 
-    private isGameplay: boolean = false;
-    private isMenu: boolean = false;
+	private adsType: string = '';
 
-    private adsType: string = "";
+	private levelsCounter: number = 0;
 
-    private levelsCounter: number = 0;
+	private MENU_TRESHOLD = 30; //25 sec
+	private GAMEPLAY_TRESHOLD = 1200; //20 minutes
 
-    private MENU_TRESHOLD = 30; //25 sec
-    private GAMEPLAY_TRESHOLD = 1200; //20 minutes
+	start() {
+		this.level.on('level_close', () => this.handleLevelCompletion());
 
+		this.adsType = '1';
+		if (gamepush.experiments.has('ADS', '2')) {
+			this.adsType = '2';
+		} else if (gamepush.experiments.has('ADS', '3')) {
+			this.adsType = '3';
+		} else if (gamepush.experiments.has('ADS', '4')) {
+			this.adsType = '4';
+		}
 
-    start() {
-        this.level.on("level_close", () => this.handleLevelCompletion());
+		console.log('Advertsment type: ' + this.adsType);
 
-        this.adsType = "1";
-        if(gamepush.experiments.has('ADS', '2')) {
-            this.adsType = "2";
-        }
-        else if(gamepush.experiments.has('ADS', '3')) {
-            this.adsType = "3";
-        }
-        else if(gamepush.experiments.has('ADS', '4')) {
-            this.adsType = "4";
-        }
+		this.startMenuTimer();
 
-        console.log("Advertsment type: " + this.adsType);
+		this.registerUserActivity();
+	}
 
-        this.startMenuTimer();
+	update(dt: number) {
+		if (this.adsType === '3') {
+			this.gameplayTime += dt;
+		}
 
-        this.registerUserActivity();
-    }
+		if (this.isMenu) {
+			this.menuTime += dt;
+			if (this.hasExceededMenuTime(this.menuTime)) {
+				console.log('Menu time has exceeded!');
 
-    update(dt: number) {
-        if(this.adsType === "3") {
-            this.gameplayTime += dt;
-        }
+				this.resetMenuTimer();
 
-        if(this.isMenu) {
-            this.menuTime += dt;
-            if (this.hasExceededMenuTime(this.menuTime)) {
-                console.log("Menu time has exceeded!");
+				gamepush.ads.showFullscreen({ showCountdownOverlay: true });
+			}
+		}
+	}
 
-                this.resetMenuTimer();
-    
-                gamepush.ads.showFullscreen({ showCountdownOverlay: true });
-            }
-        }
-    }
+	registerUserActivity() {
+		const resetTimer = () => {
+			if (this.menuTime > 0) {
+				console.log('User input detected, resetting timer.');
+			}
+			this.menuTime = 0;
+		};
 
+		input.on(Input.EventType.TOUCH_START, resetTimer, this);
+		input.on(Input.EventType.TOUCH_END, resetTimer, this);
+		input.on(Input.EventType.KEY_DOWN, resetTimer, this);
+		input.on(Input.EventType.KEY_UP, resetTimer, this);
 
-    registerUserActivity() {
-        const resetTimer = () => {
-            if (this.menuTime > 0) {
-                console.log("User input detected, resetting timer.");
-            }
-            this.menuTime = 0;
-        };
+		game.on(Game.EVENT_SHOW, resetTimer, this);
+	}
 
-        input.on(Input.EventType.TOUCH_START, resetTimer, this);
-        input.on(Input.EventType.TOUCH_END, resetTimer, this);
-        input.on(Input.EventType.KEY_DOWN, resetTimer, this);
-        input.on(Input.EventType.KEY_UP, resetTimer, this);
+	startGameplayTimer() {
+		console.log('Started Gameplay Timer');
 
-        game.on(Game.EVENT_SHOW, resetTimer, this);
-    }
+		this.isGameplay = true;
+		this.isMenu = false;
+	}
 
+	startMenuTimer() {
+		console.log('Started Menu Timer');
 
-    startGameplayTimer() {
-        console.log("Started Gameplay Timer");
+		this.isGameplay = false;
+		this.isMenu = true;
+	}
 
-        this.isGameplay = true;
-        this.isMenu = false;
-    }
+	stopAllTimers() {
+		this.isGameplay = false;
+		this.isMenu = false;
+	}
 
-    startMenuTimer() {
-        console.log("Started Menu Timer");
+	resetTimers() {
+		this.resetGameplayTimer();
+		this.resetMenuTimer();
+	}
 
-        this.isGameplay = false;
-        this.isMenu = true;
-    }
+	resetGameplayTimer() {
+		this.gameplayTime = 0;
+	}
 
-    stopAllTimers() {
-        this.isGameplay = false;
-        this.isMenu = false;
-    }
+	resetMenuTimer() {
+		this.menuTime = 0;
+	}
 
-    resetTimers() {
-        this.resetGameplayTimer();
-        this.resetMenuTimer();
-    }
+	hasExceededMenuTime(time: number): boolean {
+		return time > this.MENU_TRESHOLD; // 300 seconds = 5 minutes
+	}
 
-    resetGameplayTimer() {
-        this.gameplayTime = 0;
-    }
+	isGameplayAdReady(): boolean {
+		switch (this.adsType) {
+			case '1':
+				return this.levelsCounter >= 3;
+			case '2':
+				return this.levelsCounter >= 5;
+			case '3':
+				return this.gameplayTime > this.GAMEPLAY_TRESHOLD;
+			case '4':
+				let accountAge = gamepush.player.get('accountage');
+				let levelsThreshold = 8;
 
-    resetMenuTimer() {
-        this.menuTime = 0;
-    }
+				if (accountAge === 0) {
+					this.levelsCounter = 0;
+					return false;
+				} else if (accountAge === 1) {
+					levelsThreshold = 8;
+				} else if (accountAge === 2) {
+					levelsThreshold = 5;
+				} else if (accountAge >= 3) {
+					levelsThreshold = 3;
+				}
 
+				return this.levelsCounter >= levelsThreshold;
+		}
 
-    hasExceededMenuTime(time: number): boolean {
-        return time > this.MENU_TRESHOLD; // 300 seconds = 5 minutes
-    }
+		return false;
+	}
 
-    isGameplayAdReady(): boolean {
-        switch(this.adsType) {
-            case "1":
-                return this.levelsCounter >= 3;
-            case "2":
-                return this.levelsCounter >= 5;
-            case "3":
-                return this.gameplayTime > this.GAMEPLAY_TRESHOLD;
-            case "4":
-                let accountAge = gamepush.player.get('accountage');
-                let levelsThreshold = 8;
+	private handleLevelCompletion() {
+		this.levelsCounter = this.levelsCounter + 1;
 
-                if(accountAge === 0) {
-                    this.levelsCounter = 0;
-                    return false;
-                }
-                else if(accountAge === 1) {
-                    levelsThreshold = 8;
-                }
-                else if(accountAge === 2) {
-                    levelsThreshold = 5;
-                }
-                else if(accountAge >= 3) {
-                    levelsThreshold = 3;
-                }
+		if (this.isGameplayAdReady()) {
+			this.resetGameplayTimer();
+			this.levelsCounter = 0;
 
-                return this.levelsCounter >= levelsThreshold;
-        }
+			gamepush.ads.showFullscreen();
+		}
+	}
 
-        return false;
-    }
-
-    private handleLevelCompletion() {
-        this.levelsCounter = this.levelsCounter + 1;
-
-        if(this.isGameplayAdReady()) {
-            this.resetGameplayTimer();
-            this.levelsCounter = 0;
-
-            gamepush.ads.showFullscreen();
-        }
-    }
-
-
-    isGameplayActive(): boolean {
-        return this.isGameplay;
-    }
+	isGameplayActive(): boolean {
+		return this.isGameplay;
+	}
 }
-
-
