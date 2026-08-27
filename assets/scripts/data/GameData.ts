@@ -1,753 +1,748 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Vec2, Prefab, Color  } from 'cc';
+import { _decorator, Component, Node, Vec2, Prefab, Color } from 'cc';
 import { UserData } from './UserData';
 import { Statistics } from './Statistics';
 import { SaveData } from './SaveData';
 const { ccclass, property } = _decorator;
 
-
 @ccclass('SpecialTileData')
 export class SpecialTileData {
-    @property
-    id = '';
-    @property
-    row = 0;
-    @property
-    col = 0;
+	@property
+	id = '';
+	@property
+	row = 0;
+	@property
+	col = 0;
 }
 
 @ccclass('SpecialTileStateData')
 export class SpecialTileStateData {
-    @property
-    row = 0;
-    @property
-    col = 0;
-    @property
-    strength = 0;
+	@property
+	row = 0;
+	@property
+	col = 0;
+	@property
+	strength = 0;
 
-    @property
-    strengthRed = 0;
-    @property
-    strengthBlue = 0;
-    @property
-    strengthGreen = 0;
-    @property
-    strengthYellow = 0;
-    @property
-    strengthPurple = 0;
+	@property
+	strengthRed = 0;
+	@property
+	strengthBlue = 0;
+	@property
+	strengthGreen = 0;
+	@property
+	strengthYellow = 0;
+	@property
+	strengthPurple = 0;
 
-    @property
-    customParameter = 0;
+	@property
+	customParameter = 0;
 }
-
 
 @ccclass('SpecialPrefabData')
 export class SpecialPrefabData {
-    @property
-    id = '';
-    @property(Prefab)
-    prefab: Prefab = null;
+	@property
+	id = '';
+	@property(Prefab)
+	prefab: Prefab = null;
 }
-
 
 @ccclass('GoalData')
 export class GoalData {
-    @property
-    id = '';
-    @property
-    count = 0;
+	@property
+	id = '';
+	@property
+	count = 0;
 }
-
 
 @ccclass('MovesShopStageData')
 export class MovesShopStageData {
-    @property
-    moves = 0;
+	@property
+	moves = 0;
 
-    @property
-    rockets = 0;
-    @property
-    bombs = 0;
-    @property
-    discoballs = 0;
+	@property
+	rockets = 0;
+	@property
+	bombs = 0;
+	@property
+	discoballs = 0;
 
-    @property
-    price = 0;
+	@property
+	price = 0;
 }
-
-
 
 @ccclass('ShopItemData')
 export class ShopItemData {
-    @property
-    tag = "";
-    
-    @property
-    gold = 0;
+	@property
+	tag = '';
 
-    @property
-    startBonus_Bomb = 0;
-    @property
-    startBonus_Rocket = 0;
-    @property
-    startBonus_Discoball = 0;
+	@property
+	gold = 0;
 
-    @property
-    booster_Hammer = 0;
-    @property
-    booster_Bow = 0;
-    @property
-    booster_Cannon = 0;
-    @property
-    booster_Jester = 0;
+	@property
+	startBonus_Bomb = 0;
+	@property
+	startBonus_Rocket = 0;
+	@property
+	startBonus_Discoball = 0;
 
-    @property
-    endlessLives_Minutes = 0;
-    @property
-    bonuses_Minutes = 0;
+	@property
+	booster_Hammer = 0;
+	@property
+	booster_Bow = 0;
+	@property
+	booster_Cannon = 0;
+	@property
+	booster_Jester = 0;
 
-    @property
-    price = 0;
+	@property
+	endlessLives_Minutes = 0;
+	@property
+	bonuses_Minutes = 0;
 
-    @property
-    cardsPack = 0;
-    @property
-    cards = [];
+	@property
+	price = 0;
 
-    @property
-    clanGift_endlessLives_Minutes = 0;
+	@property
+	cardsPack = 0;
+	@property
+	cards = [];
+
+	@property
+	clanGift_endlessLives_Minutes = 0;
 }
-
 
 @ccclass('SpriteColorData')
 export class SpriteColorData {
-    @property
-    cid = '';
+	@property
+	cid = '';
 
-    @property
-    r = 0;
-    @property
-    g = 0;
-    @property
-    b = 0;
-    @property
-    a = 0;
+	@property
+	r = 0;
+	@property
+	g = 0;
+	@property
+	b = 0;
+	@property
+	a = 0;
 }
-
-
 
 @ccclass('LevelData')
 export class LevelData {
-    @property
-    id = '';
-    @property([Vec2])
-    emptyTiles: Vec2[] = [];
-    @property([SpecialTileData])
-    specialTiles: SpecialTileData[] = [];
-    @property([SpecialTileData])
-    statuses: SpecialTileData[] = [];
-    @property([SpecialTileData])
-    tutorialTiles: SpecialTileData[] = [];
-    @property([Vec2])
-    destroyedOnStart: Vec2[] = [];
-    @property([cc.String])
-    startPool: string[] = [];
+	@property
+	id = '';
+	@property([Vec2])
+	emptyTiles: Vec2[] = [];
+	@property([SpecialTileData])
+	specialTiles: SpecialTileData[] = [];
+	@property([SpecialTileData])
+	statuses: SpecialTileData[] = [];
+	@property([SpecialTileData])
+	tutorialTiles: SpecialTileData[] = [];
+	@property([Vec2])
+	destroyedOnStart: Vec2[] = [];
+	@property([cc.String])
+	startPool: string[] = [];
 
-    spawnPools: string[][] = [];
+	spawnPools: string[][] = [];
 
-    @property([GoalData])
-    goals: GoalData[] = [];
-    @property
-    movesCount = 0;
-    @property
-    rocketPreset = '';
+	@property([GoalData])
+	goals: GoalData[] = [];
+	@property
+	movesCount = 0;
+	@property
+	rocketPreset = '';
 
-    @property([GoalData])
-    dynamiteGoals: GoalData[] = [];
-    @property([GoalData])
-    cosmorocketGoals: GoalData[] = [];
+	@property([GoalData])
+	dynamiteGoals: GoalData[] = [];
+	@property([GoalData])
+	cosmorocketGoals: GoalData[] = [];
 
-    @property
-    difficulty = '';
+	@property
+	difficulty = '';
 
-    @property
-    movesShopStage = 0;
-    @property([SpecialTileStateData])
-    specsState: SpecialTileStateData[] = [];
-    @property([SpecialTileStateData])
-    statusesState: SpecialTileStateData[] = [];
+	@property
+	movesShopStage = 0;
+	@property([SpecialTileStateData])
+	specsState: SpecialTileStateData[] = [];
+	@property([SpecialTileStateData])
+	statusesState: SpecialTileStateData[] = [];
 
-    @property
-    tutorial = '';
+	@property
+	tutorial = '';
 
+	static fromJSON(jsonString: string): LevelData {
+		const jsonData = JSON.parse(jsonString);
+		const levelData = new LevelData();
+		levelData.id = (jsonData.id || '').toLowerCase();
 
+		if (jsonData.emptyTiles) {
+			levelData.emptyTiles = jsonData.emptyTiles.map((coord: any) => {
+				const vec2 = new Vec2();
+				vec2.x = coord.x;
+				vec2.y = coord.y;
+				return vec2;
+			});
+		}
 
-    static fromJSON(jsonString: string): LevelData {
-        const jsonData = JSON.parse(jsonString);
-        const levelData = new LevelData();
-        levelData.id = (jsonData.id || '').toLowerCase();
-    
-        if (jsonData.emptyTiles) {
-            levelData.emptyTiles = jsonData.emptyTiles.map((coord: any) => {
-                const vec2 = new Vec2();
-                vec2.x = coord.x;
-                vec2.y = coord.y;
-                return vec2;
-            });
-        }
-    
-        if (jsonData.specialTiles) {
-            levelData.specialTiles = jsonData.specialTiles.map((specialTile: any) => {
-                const tileData = new SpecialTileData();
-                tileData.id = (specialTile.id || '').toLowerCase();
-                tileData.row = specialTile.row;
-                tileData.col = specialTile.col;
-                return tileData;
-            });
-        }
-    
-        if (jsonData.statuses) {
-            levelData.statuses = jsonData.statuses.map((specialTile: any) => {
-                const tileData = new SpecialTileData();
-                tileData.id = (specialTile.id || '').toLowerCase();
-                tileData.row = specialTile.row;
-                tileData.col = specialTile.col;
-                return tileData;
-            });
-        }
+		if (jsonData.specialTiles) {
+			levelData.specialTiles = jsonData.specialTiles.map((specialTile: any) => {
+				const tileData = new SpecialTileData();
+				tileData.id = (specialTile.id || '').toLowerCase();
+				tileData.row = specialTile.row;
+				tileData.col = specialTile.col;
+				return tileData;
+			});
+		}
 
-        if (jsonData.tutorialTiles) {
-            levelData.tutorialTiles = jsonData.tutorialTiles.map((specialTile: any) => {
-                const tileData = new SpecialTileData();
-                tileData.id = (specialTile.id || '').toLowerCase();
-                tileData.row = specialTile.row;
-                tileData.col = specialTile.col;
-                return tileData;
-            });
-        }
-    
-        if (jsonData.destroyedOnStart) {
-            levelData.destroyedOnStart = jsonData.destroyedOnStart.map((coord: any) => {
-                const vec2 = new Vec2();
-                vec2.x = coord.x;
-                vec2.y = coord.y;
-                return vec2;
-            });
-        }
-    
-        if (jsonData.startPool) {
-            levelData.startPool = jsonData.startPool.map((startItem: any) => {
-                return (startItem || '').toLowerCase();
-            });
-        }
-    
-        if (jsonData.spawnPools) {
-            levelData.spawnPools = jsonData.spawnPools.map((spawnItem: any) => {
-                return spawnItem.map((color: string) => (color || '').toLowerCase()) || [];
-            });
-        }
-    
-        if (jsonData.goals) {
-            levelData.goals = jsonData.goals.map((goal: any) => {
-                const goalData = new GoalData();
-                goalData.id = (goal.id || '').toLowerCase();
-                goalData.count = goal.count;
-                return goalData;
-            });
-        }
-    
-        if (jsonData.movesCount !== cc.undefined && jsonData.movesCount !== null) {
-            levelData.movesCount = Number(jsonData.movesCount);
-        } else {
-            levelData.movesCount = 0;
-        }
+		if (jsonData.statuses) {
+			levelData.statuses = jsonData.statuses.map((specialTile: any) => {
+				const tileData = new SpecialTileData();
+				tileData.id = (specialTile.id || '').toLowerCase();
+				tileData.row = specialTile.row;
+				tileData.col = specialTile.col;
+				return tileData;
+			});
+		}
 
-        if (jsonData.rocketPreset !== cc.undefined && jsonData.rocketPreset !== null) {
-            levelData.rocketPreset = jsonData.rocketPreset.toLowerCase();
-        } else {
-            levelData.rocketPreset = "random";
-        }
+		if (jsonData.tutorialTiles) {
+			levelData.tutorialTiles = jsonData.tutorialTiles.map(
+				(specialTile: any) => {
+					const tileData = new SpecialTileData();
+					tileData.id = (specialTile.id || '').toLowerCase();
+					tileData.row = specialTile.row;
+					tileData.col = specialTile.col;
+					return tileData;
+				},
+			);
+		}
 
-        if (jsonData.dynamiteGoals) {
-            levelData.dynamiteGoals = jsonData.dynamiteGoals.map((goal: any) => {
-                const goalData = new GoalData();
-                goalData.id = (goal.id || '').toLowerCase();
-                goalData.count = goal.count;
-                return goalData;
-            });
-        }
-        else {
-            levelData.dynamiteGoals = [];
-        }
+		if (jsonData.destroyedOnStart) {
+			levelData.destroyedOnStart = jsonData.destroyedOnStart.map(
+				(coord: any) => {
+					const vec2 = new Vec2();
+					vec2.x = coord.x;
+					vec2.y = coord.y;
+					return vec2;
+				},
+			);
+		}
 
-        if (jsonData.cosmorocketGoals) {
-            levelData.cosmorocketGoals = jsonData.cosmorocketGoals.map((goal: any) => {
-                const goalData = new GoalData();
-                goalData.id = (goal.id || '').toLowerCase();
-                goalData.count = goal.count;
-                return goalData;
-            });
-        }
-        else {
-            levelData.cosmorocketGoals = [];
-        }
+		if (jsonData.startPool) {
+			levelData.startPool = jsonData.startPool.map((startItem: any) => {
+				return (startItem || '').toLowerCase();
+			});
+		}
 
-        if (jsonData.difficulty !== cc.undefined && jsonData.difficulty !== null) {
-            levelData.difficulty = jsonData.difficulty.toLowerCase();
-        } else {
-            levelData.difficulty = "common";
-        }
+		if (jsonData.spawnPools) {
+			levelData.spawnPools = jsonData.spawnPools.map((spawnItem: any) => {
+				return (
+					spawnItem.map((color: string) => (color || '').toLowerCase()) || []
+				);
+			});
+		}
 
-        if (jsonData.movesShopStage !== cc.undefined && jsonData.movesShopStage !== null) {
-            levelData.movesShopStage = Number(jsonData.movesShopStage);
-        } else {
-            levelData.movesShopStage = 0;
-        }
+		if (jsonData.goals) {
+			levelData.goals = jsonData.goals.map((goal: any) => {
+				const goalData = new GoalData();
+				goalData.id = (goal.id || '').toLowerCase();
+				goalData.count = goal.count;
+				return goalData;
+			});
+		}
 
-        if (jsonData.specsState) {
-            levelData.specsState = jsonData.specsState.map((specialTile: any) => {
-                const tileData = new SpecialTileStateData();
-                tileData.strength = specialTile.strength;
-                tileData.row = specialTile.row;
-                tileData.col = specialTile.col;
-                tileData.strengthRed = specialTile.strengthRed;
-                tileData.strengthBlue = specialTile.strengthBlue;
-                tileData.strengthGreen = specialTile.strengthGreen;
-                tileData.strengthYellow = specialTile.strengthYellow;
-                tileData.strengthPurple = specialTile.strengthPurple;
-                tileData.customParameter = specialTile.customParameter;
-                return tileData;
-            });
-        }
-        else {
-            levelData.specsState = [];
-        }
+		if (jsonData.movesCount !== cc.undefined && jsonData.movesCount !== null) {
+			levelData.movesCount = Number(jsonData.movesCount);
+		} else {
+			levelData.movesCount = 0;
+		}
 
-        if (jsonData.statusesState) {
-            levelData.statusesState = jsonData.statusesState.map((specialTile: any) => {
-                const tileData = new SpecialTileStateData();
-                tileData.row = specialTile.row;
-                tileData.col = specialTile.col;
-                tileData.customParameter = specialTile.customParameter;
-                return tileData;
-            });
-        }
-        else {
-            levelData.statusesState = [];
-        }
+		if (
+			jsonData.rocketPreset !== cc.undefined &&
+			jsonData.rocketPreset !== null
+		) {
+			levelData.rocketPreset = jsonData.rocketPreset.toLowerCase();
+		} else {
+			levelData.rocketPreset = 'random';
+		}
 
-        if (jsonData.tutorial !== cc.undefined && jsonData.tutorial !== null) {
-            levelData.tutorial = jsonData.tutorial.toLowerCase();
-        } else {
-            levelData.tutorial = "";
-        }
-    
-        return levelData;
-    }
+		if (jsonData.dynamiteGoals) {
+			levelData.dynamiteGoals = jsonData.dynamiteGoals.map((goal: any) => {
+				const goalData = new GoalData();
+				goalData.id = (goal.id || '').toLowerCase();
+				goalData.count = goal.count;
+				return goalData;
+			});
+		} else {
+			levelData.dynamiteGoals = [];
+		}
 
+		if (jsonData.cosmorocketGoals) {
+			levelData.cosmorocketGoals = jsonData.cosmorocketGoals.map(
+				(goal: any) => {
+					const goalData = new GoalData();
+					goalData.id = (goal.id || '').toLowerCase();
+					goalData.count = goal.count;
+					return goalData;
+				},
+			);
+		} else {
+			levelData.cosmorocketGoals = [];
+		}
 
-    toJSON(): string {
-        const json = {
-            id: this.id,
-            emptyTiles: this.emptyTiles.map(coord => ({ x: coord.x, y: coord.y })),
-            specialTiles: this.specialTiles.map(tile => ({
-                id: tile.id,
-                row: tile.row,
-                col: tile.col
-            })),
-            statuses: this.statuses.map(tile => ({
-                id: tile.id,
-                row: tile.row,
-                col: tile.col
-            })),
-            destroyedOnStart: this.destroyedOnStart.map(coord => ({ x: coord.x, y: coord.y })),
-            startPool: this.startPool.map(item => item.toLowerCase()),
-            spawnPools: this.spawnPools.map(pool => pool.map(color => color.toLowerCase())),
-            goals: this.goals.map(goal => ({
-                id: goal.id,
-                count: goal.count
-            })),
-            movesCount: this.movesCount,
-            rocketPreset: this.rocketPreset.toLowerCase(),
-            dynamiteGoals: this.dynamiteGoals.map(goal => ({
-                id: goal.id,
-                count: goal.count
-            })),
-            cosmorocketGoals: this.cosmorocketGoals.map(goal => ({
-                id: goal.id,
-                count: goal.count
-            })),
-            difficulty: this.difficulty.toLowerCase(),
-            movesShopStage: this.movesShopStage,
-            specsState: this.specsState.map(tile => ({
-                strength: tile.strength,
-                row: tile.row,
-                col: tile.col,
-                strengthRed: tile.strengthRed,
-                strengthBlue: tile.strengthBlue,
-                strengthGreen: tile.strengthGreen,
-                strengthYellow: tile.strengthYellow,
-                strengthPurple: tile.strengthPurple,
-                customParameter: tile.customParameter
-            })),
-            statusesState: this.statusesState.map(tile => ({
-                row: tile.row,
-                col: tile.col,
-                customParameter: tile.customParameter
-            })),
-            tutorial: this.tutorial
-        };
+		if (jsonData.difficulty !== cc.undefined && jsonData.difficulty !== null) {
+			levelData.difficulty = jsonData.difficulty.toLowerCase();
+		} else {
+			levelData.difficulty = 'common';
+		}
 
-        return JSON.stringify(json);
-    }
+		if (
+			jsonData.movesShopStage !== cc.undefined &&
+			jsonData.movesShopStage !== null
+		) {
+			levelData.movesShopStage = Number(jsonData.movesShopStage);
+		} else {
+			levelData.movesShopStage = 0;
+		}
+
+		if (jsonData.specsState) {
+			levelData.specsState = jsonData.specsState.map((specialTile: any) => {
+				const tileData = new SpecialTileStateData();
+				tileData.strength = specialTile.strength;
+				tileData.row = specialTile.row;
+				tileData.col = specialTile.col;
+				tileData.strengthRed = specialTile.strengthRed;
+				tileData.strengthBlue = specialTile.strengthBlue;
+				tileData.strengthGreen = specialTile.strengthGreen;
+				tileData.strengthYellow = specialTile.strengthYellow;
+				tileData.strengthPurple = specialTile.strengthPurple;
+				tileData.customParameter = specialTile.customParameter;
+				return tileData;
+			});
+		} else {
+			levelData.specsState = [];
+		}
+
+		if (jsonData.statusesState) {
+			levelData.statusesState = jsonData.statusesState.map(
+				(specialTile: any) => {
+					const tileData = new SpecialTileStateData();
+					tileData.row = specialTile.row;
+					tileData.col = specialTile.col;
+					tileData.customParameter = specialTile.customParameter;
+					return tileData;
+				},
+			);
+		} else {
+			levelData.statusesState = [];
+		}
+
+		if (jsonData.tutorial !== cc.undefined && jsonData.tutorial !== null) {
+			levelData.tutorial = jsonData.tutorial.toLowerCase();
+		} else {
+			levelData.tutorial = '';
+		}
+
+		return levelData;
+	}
+
+	toJSON(): string {
+		const json = {
+			id: this.id,
+			emptyTiles: this.emptyTiles.map((coord) => ({ x: coord.x, y: coord.y })),
+			specialTiles: this.specialTiles.map((tile) => ({
+				id: tile.id,
+				row: tile.row,
+				col: tile.col,
+			})),
+			statuses: this.statuses.map((tile) => ({
+				id: tile.id,
+				row: tile.row,
+				col: tile.col,
+			})),
+			destroyedOnStart: this.destroyedOnStart.map((coord) => ({
+				x: coord.x,
+				y: coord.y,
+			})),
+			startPool: this.startPool.map((item) => item.toLowerCase()),
+			spawnPools: this.spawnPools.map((pool) =>
+				pool.map((color) => color.toLowerCase()),
+			),
+			goals: this.goals.map((goal) => ({
+				id: goal.id,
+				count: goal.count,
+			})),
+			movesCount: this.movesCount,
+			rocketPreset: this.rocketPreset.toLowerCase(),
+			dynamiteGoals: this.dynamiteGoals.map((goal) => ({
+				id: goal.id,
+				count: goal.count,
+			})),
+			cosmorocketGoals: this.cosmorocketGoals.map((goal) => ({
+				id: goal.id,
+				count: goal.count,
+			})),
+			difficulty: this.difficulty.toLowerCase(),
+			movesShopStage: this.movesShopStage,
+			specsState: this.specsState.map((tile) => ({
+				strength: tile.strength,
+				row: tile.row,
+				col: tile.col,
+				strengthRed: tile.strengthRed,
+				strengthBlue: tile.strengthBlue,
+				strengthGreen: tile.strengthGreen,
+				strengthYellow: tile.strengthYellow,
+				strengthPurple: tile.strengthPurple,
+				customParameter: tile.customParameter,
+			})),
+			statusesState: this.statusesState.map((tile) => ({
+				row: tile.row,
+				col: tile.col,
+				customParameter: tile.customParameter,
+			})),
+			tutorial: this.tutorial,
+		};
+
+		return JSON.stringify(json);
+	}
 }
-
 
 @ccclass('LevelProgressData')
 export class LevelProgressData {
-    @property
-    levelStateJson = '';
+	@property
+	levelState = '';
 }
-
 
 @ccclass()
 export class GameData extends Component {
+	@property([LevelData])
+	levels: LevelData[] = [];
 
-    @property([LevelData])
-    levels: LevelData[] = [];
+	@property([ShopItemData])
+	shopItems: ShopItemData[] = [];
+	@property([ShopItemData])
+	shopBundles: ShopItemData[] = [];
+	@property([ShopItemData])
+	clanGiftBundles: ShopItemData[] = [];
 
-    @property([ShopItemData])
-    shopItems: ShopItemData[] = [];
-    @property([ShopItemData])
-    shopBundles: ShopItemData[] = [];
-    @property([ShopItemData])
-    clanGiftBundles: ShopItemData[] = [];
+	private levelStage: number = -1;
+	private maxProgress: number = 0;
 
-    private levelStage: number = -1;
-    private maxProgress: number = 0;
+	private lastLevel: LevelData;
 
-    private lastLevel: LevelData;
+	public static instance: GameData = null;
 
-    public static instance: GameData = null;
+	onLoad() {
+		GameData.instance = this;
 
-    onLoad() {
-        GameData.instance = this;
+		this.levelStage = -1;
+	}
 
-        this.levelStage = -1;
-    }
+	start() {
+		this.tryFetchVariables();
 
-    start() {
-        this.tryFetchVariables();
+		gamepush.variables.on('fetch', () => this.updateLevelStage());
+		gamepush.variables.on('error:fetch', (error) => console.error(error));
+	}
 
-        gamepush.variables.on('fetch', () => this.updateLevelStage());
-        gamepush.variables.on('error:fetch', (error) => console.error(error));
-    }
+	updateLevelStage() {
+		let progress = gamepush.player.get('score');
+		let maxStages = gamepush.variables.get('max_stage');
 
+		let stagesAmount = 0;
+		let newStage = 0;
 
-    updateLevelStage() {
-        let progress = gamepush.player.get('score');
-        let maxStages = gamepush.variables.get('max_stage');
+		//console.log("Max Stages: " + maxStages);
 
-        let stagesAmount = 0;
-        let newStage = 0;
+		for (let i = 0; i <= maxStages; i++) {
+			let currentStageAmount = gamepush.variables.get('stage_count_' + i);
 
-        //console.log("Max Stages: " + maxStages);
+			//console.log("Stage Amount: " + i + " " + currentStageAmount);
 
-        for(let i = 0; i <= maxStages; i++) {
-            let currentStageAmount = gamepush.variables.get('stage_count_' + i);
+			stagesAmount += currentStageAmount;
 
-            //console.log("Stage Amount: " + i + " " + currentStageAmount);
+			if (stagesAmount <= progress) {
+				newStage = i + 1;
+			}
+		}
 
-            stagesAmount += currentStageAmount;
+		//console.log("Current Stage: " + newStage);
 
-            if(stagesAmount <= progress) {
-                newStage = i + 1;
-            }
-        }
+		this.maxProgress = stagesAmount;
 
-        //console.log("Current Stage: " + newStage);
+		//console.log("Maximal Progress Value: " + this.maxProgress);
 
-        this.maxProgress = stagesAmount;
+		if (newStage > this.levelStage) {
+			this.node.emit('level_stage_update');
 
-        //console.log("Maximal Progress Value: " + this.maxProgress);
+			this.levelStage = newStage;
 
-        if(newStage > this.levelStage) {
-            this.node.emit("level_stage_update");
+			this.tryLoadLevels();
+		}
+	}
 
-            this.levelStage = newStage;
+	getCurrentLevel(): LevelData {
+		let progress = gamepush.player.get('score');
 
-            this.tryLoadLevels();
-        }
-    }
+		return this.getLevelDataByNumber(progress);
+	}
 
+	getLevelDataByNumber(progress: number): LevelData {
+		if (progress >= this.maxProgress) {
+			progress = gamepush.player.get('score_king_league');
 
-    getCurrentLevel(): LevelData {
-        let progress = gamepush.player.get('score');
+			let maxKingLeagueCount = gamepush.variables.get(
+				'stage_count_king_league',
+			);
+			progress = progress % maxKingLeagueCount;
+		} else {
+			if (this.levelStage > 0) {
+				for (let i = this.levelStage - 1; i >= 0; i--) {
+					let stageAmount = gamepush.variables.get('stage_count_' + i);
 
-        return this.getLevelDataByNumber(progress);
-    }
+					progress = progress - stageAmount;
+				}
+			}
+		}
 
-    getLevelDataByNumber(progress: number): LevelData {
-        if(progress >= this.maxProgress) {
-            progress = gamepush.player.get('score_king_league');
+		let levelsCount = this.levels.length;
+		if (progress > levelsCount - 1) {
+			console.log('Progress Count Error: ' + progress + ' ' + levelsCount);
 
-            let maxKingLeagueCount = gamepush.variables.get('stage_count_king_league');
-            progress = progress % maxKingLeagueCount;
-        }
-        else {
-            if(this.levelStage > 0) {
-                for(let i = this.levelStage - 1; i >= 0; i--) {
-                    let stageAmount = gamepush.variables.get('stage_count_' + i);
-    
-                    progress = progress - stageAmount;
-                }
-            }
-        }
-
-        let levelsCount = this.levels.length;
-        if(progress > levelsCount - 1) {
-            console.log("Progress Count Error: " + progress + " " + levelsCount);
-
-            progress = levelsCount - 1;
-        }
-
-        this.lastLevel = this.levels[progress];
-
-        return this.levels[progress];
-    }
-
-    getLastLevel(): LevelData {
-        if(this.lastLevel) {
-            return this.lastLevel;
-        }
-
-        return this.getCurrentLevel();
-    }
-
-    getLevels() {
-        return this.levels;
-    }
-
-
-    tryFetchVariables() {
-        try {
-            gamepush.variables.fetch();
-        }
-        catch(error) {
-            console.error('Error Game Push fetch variables:', error);
-
-            gamepush.variables.fetch();
-        }
-    }
-    
-    tryLoadLevels() {
-        console.log("Gamepush variables fetched. Loading levels...");
-        try {
-            this.loadLevelsFromGamePush();
-        }
-        catch(error) {
-            console.error('Error Game Push:', error);
-
-            this.tryLoadLevels();
-        }
-    }
-
-
-    loadLevelsFromGamePush() {
-        this.levels = [];
-
-        let difficulty = "A";
-        if (gamepush.experiments.has('LDT', 'B')) {
-            difficulty = 'B';
-        }
-
-        let maxStages = gamepush.variables.get('max_stage');
-        let levelVariableName = this.levelStage > maxStages ? "levels_king_league" : "levels_" + difficulty + "_" + this.levelStage;
-
-        console.log("Loading Level Stage: " + levelVariableName);
-        
-        this.loadLevelsFromURL(gamepush.variables.get(levelVariableName));
-
-        this.node.emit("experiment", difficulty);
-    }
-
-
-    loadLevelsFromURL(url: string): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
-                if (err) {
-                    console.error('Error loading file:', url, err);
-                    reject(err);
-                    return;
-                }
-    
-                // Parse JSON string to extract LevelData objects
-                try {
-                    const jsonData = JSON.parse(file);
-                    const levelDataArray: LevelData[] = [];
-    
-                    // Iterate over each LevelData object in the JSON data
-                    for (const levelJson of jsonData.levels) {
-                        const levelData = GameData.parseLevelData(JSON.stringify(levelJson));
-                        levelDataArray.push(levelData);
-                    }
-    
-                    // Set loaded levels
-                    this.levels = levelDataArray;
-    
-                    // Emit events for each loaded level data
-                    levelDataArray.forEach(levelData => {
-                        this.node.emit("level_data", levelData);
-                    });
-    
-                    // Set levels count and initialize statistics
-                    UserData.instance.setLevelsCount(this.levels.length);
-                    Statistics.instance.init(this.levels);
-    
-                    // Emit event indicating levels are loaded
-                    this.node.emit("levels_loaded");
-
-                    SaveData.instance.loadLevelProgressData();
-    
-                    resolve();
-                } catch (error) {
-                    console.error('Error parsing JSON:', error);
-                    reject(error);
-                }
-            });
-        });
-    }
-    
-    
-    loadLevelsFromURLs(urls: string[]): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            let loadedLevels: LevelData[] = [];
-            let currentIndex = 0;
-    
-            const loadNextFile = () => {
-                if (currentIndex >= urls.length) {
-                    this.levels = loadedLevels;
-
-                    UserData.instance.setLevelsCount(this.levels.length);
-                    Statistics.instance.init(this.levels);
-
-                    this.node.emit("levels_loaded");
-
-                    resolve();
-                    return;
-                }
-    
-                const url = urls[currentIndex];
-                cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
-                    if (err) {
-                        console.error('Error loading file:', url, err);
-                        reject(err);
-                        return;
-                    }
-    
-                    let levelData = GameData.parseLevelData(file);
-                    loadedLevels.push(levelData);
-    
-                    this.node.emit("level_data", levelData);
-    
-                    currentIndex++; // Move to the next URL
-                    loadNextFile(); // Load the next file
-                });
-            };
-    
-            // Start loading the first file
-            loadNextFile();
-        });
-    }
-    
-
-
-    loadLevelsFromDirectory(directoryPath: string) {
-        this.levels = [];
-
-        cc.loader.loadResDir(directoryPath, cc.TextAsset, (err, assets) => {
-            if (err) {
-                console.error('Error loading directory:', err);
-                return;
-            }
-
-            assets.sort((a: cc.TextAsset, b: cc.TextAsset) => {
-                const aName = a.name.toLowerCase();
-                const bName = b.name.toLowerCase();
-    
-                const extractNumbers = (fileName: string): number[] => {
-                    const numbers: number[] = [];
-                    const regex = /\d+/g;
-                    let match = regex.exec(fileName);
-                    while (match) {
-                        numbers.push(parseInt(match[0], 10));
-                        match = regex.exec(fileName);
-                    }
-                    return numbers;
-                };
-    
-                const aNumbers = extractNumbers(aName);
-                const bNumbers = extractNumbers(bName);
-    
-                for (let i = 0; i < Math.min(aNumbers.length, bNumbers.length); i++) {
-                    if (aNumbers[i] !== bNumbers[i]) {
-                        return aNumbers[i] - bNumbers[i];
-                    }
-                }
-    
-                return aName.localeCompare(bName);
-            });
-
-            //console.log(assets.length);
-    
-            assets.forEach((asset: cc.TextAsset) => {
-                const fileData = asset.text;
-                const fileName = asset.name;
-
-                //console.log(fileData);
-    
-                const levelData = GameData.parseLevelData(fileData);
-                this.levels.push(levelData);
-                //console.log('Level data loaded:', fileName);
-
-                UserData.instance.setLevelsCount(this.levels.length);
-                console.log('Levels count:', this.levels.length);
-                Statistics.instance.init(this.levels);
-
-                this.node.emit("level_data", levelData);
-            });
-
-            this.node.emit("levels_loaded");
-        });
-    }
-
-
-    static parseLevelData(jsonString: string): LevelData {
-        const jsonData = JSON.parse(jsonString);
-        return LevelData.fromJSON(JSON.stringify(jsonData));
-    }
-
-
-    static parseLevelsData(jsonString: string): LevelData[] {
-        try {
-            const jsonData = JSON.parse(jsonString);
-            if (Array.isArray(jsonData.levels)) {
-                return jsonData.levels.map((levelObj: any) => LevelData.fromJSON(JSON.stringify(levelObj)));
-            } else {
-                console.error('Invalid JSON format: levels property is not an array');
-                return [];
-            }
-        } catch (error) {
-            console.error('Error parsing JSON:', error);
-            return [];
-        }
-    }
-
-
-    getMaxProgress(): number {
-        return this.maxProgress;
-    }
+			progress = levelsCount - 1;
+		}
+
+		this.lastLevel = this.levels[progress];
+
+		return this.levels[progress];
+	}
+
+	getLastLevel(): LevelData {
+		if (this.lastLevel) {
+			return this.lastLevel;
+		}
+
+		return this.getCurrentLevel();
+	}
+
+	getLevels() {
+		return this.levels;
+	}
+
+	tryFetchVariables() {
+		try {
+			gamepush.variables.fetch();
+		} catch (error) {
+			console.error('Error Game Push fetch variables:', error);
+
+			gamepush.variables.fetch();
+		}
+	}
+
+	tryLoadLevels() {
+		console.log('Gamepush variables fetched. Loading levels...');
+		try {
+			this.loadLevelsFromGamePush();
+		} catch (error) {
+			console.error('Error Game Push:', error);
+
+			this.tryLoadLevels();
+		}
+	}
+
+	loadLevelsFromGamePush() {
+		this.levels = [];
+
+		let difficulty = 'A';
+		if (gamepush.experiments.has('LDT', 'B')) {
+			difficulty = 'B';
+		}
+
+		let maxStages = gamepush.variables.get('max_stage');
+		let levelVariableName =
+			this.levelStage > maxStages
+				? 'levels_king_league'
+				: 'levels_' + difficulty + '_' + this.levelStage;
+
+		console.log('Loading Level Stage: ' + levelVariableName);
+
+		this.loadLevelsFromURL(gamepush.variables.get(levelVariableName));
+
+		this.node.emit('experiment', difficulty);
+	}
+
+	loadLevelsFromURL(url: string): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
+				if (err) {
+					console.error('Error loading file:', url, err);
+					reject(err);
+					return;
+				}
+
+				// Parse JSON string to extract LevelData objects
+				try {
+					const jsonData = JSON.parse(file);
+					const levelDataArray: LevelData[] = [];
+
+					// Iterate over each LevelData object in the JSON data
+					for (const levelJson of jsonData.levels) {
+						const levelData = GameData.parseLevelData(
+							JSON.stringify(levelJson),
+						);
+						levelDataArray.push(levelData);
+					}
+
+					// Set loaded levels
+					this.levels = levelDataArray;
+
+					// Emit events for each loaded level data
+					levelDataArray.forEach((levelData) => {
+						this.node.emit('level_data', levelData);
+					});
+
+					// Set levels count and initialize statistics
+					UserData.instance.setLevelsCount(this.levels.length);
+					Statistics.instance.init(this.levels);
+
+					// Emit event indicating levels are loaded
+					this.node.emit('levels_loaded');
+
+					SaveData.instance.loadLevelProgressData();
+
+					resolve();
+				} catch (error) {
+					console.error('Error parsing JSON:', error);
+					reject(error);
+				}
+			});
+		});
+	}
+
+	loadLevelsFromURLs(urls: string[]): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			let loadedLevels: LevelData[] = [];
+			let currentIndex = 0;
+
+			const loadNextFile = () => {
+				if (currentIndex >= urls.length) {
+					this.levels = loadedLevels;
+
+					UserData.instance.setLevelsCount(this.levels.length);
+					Statistics.instance.init(this.levels);
+
+					this.node.emit('levels_loaded');
+
+					resolve();
+					return;
+				}
+
+				const url = urls[currentIndex];
+				cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
+					if (err) {
+						console.error('Error loading file:', url, err);
+						reject(err);
+						return;
+					}
+
+					let levelData = GameData.parseLevelData(file);
+					loadedLevels.push(levelData);
+
+					this.node.emit('level_data', levelData);
+
+					currentIndex++; // Move to the next URL
+					loadNextFile(); // Load the next file
+				});
+			};
+
+			// Start loading the first file
+			loadNextFile();
+		});
+	}
+
+	loadLevelsFromDirectory(directoryPath: string) {
+		this.levels = [];
+
+		cc.loader.loadResDir(directoryPath, cc.TextAsset, (err, assets) => {
+			if (err) {
+				console.error('Error loading directory:', err);
+				return;
+			}
+
+			assets.sort((a: cc.TextAsset, b: cc.TextAsset) => {
+				const aName = a.name.toLowerCase();
+				const bName = b.name.toLowerCase();
+
+				const extractNumbers = (fileName: string): number[] => {
+					const numbers: number[] = [];
+					const regex = /\d+/g;
+					let match = regex.exec(fileName);
+					while (match) {
+						numbers.push(parseInt(match[0], 10));
+						match = regex.exec(fileName);
+					}
+					return numbers;
+				};
+
+				const aNumbers = extractNumbers(aName);
+				const bNumbers = extractNumbers(bName);
+
+				for (let i = 0; i < Math.min(aNumbers.length, bNumbers.length); i++) {
+					if (aNumbers[i] !== bNumbers[i]) {
+						return aNumbers[i] - bNumbers[i];
+					}
+				}
+
+				return aName.localeCompare(bName);
+			});
+
+			//console.log(assets.length);
+
+			assets.forEach((asset: cc.TextAsset) => {
+				const fileData = asset.text;
+				const fileName = asset.name;
+
+				//console.log(fileData);
+
+				const levelData = GameData.parseLevelData(fileData);
+				this.levels.push(levelData);
+				//console.log('Level data loaded:', fileName);
+
+				UserData.instance.setLevelsCount(this.levels.length);
+				console.log('Levels count:', this.levels.length);
+				Statistics.instance.init(this.levels);
+
+				this.node.emit('level_data', levelData);
+			});
+
+			this.node.emit('levels_loaded');
+		});
+	}
+
+	static parseLevelData(jsonString: string): LevelData {
+		const jsonData = JSON.parse(jsonString);
+		return LevelData.fromJSON(JSON.stringify(jsonData));
+	}
+
+	static parseLevelsData(jsonString: string): LevelData[] {
+		try {
+			const jsonData = JSON.parse(jsonString);
+			if (Array.isArray(jsonData.levels)) {
+				return jsonData.levels.map((levelObj: any) =>
+					LevelData.fromJSON(JSON.stringify(levelObj)),
+				);
+			} else {
+				console.error('Invalid JSON format: levels property is not an array');
+				return [];
+			}
+		} catch (error) {
+			console.error('Error parsing JSON:', error);
+			return [];
+		}
+	}
+
+	getMaxProgress(): number {
+		return this.maxProgress;
+	}
 }
-
-

@@ -6,195 +6,235 @@ import { SaveData } from '../../data/SaveData';
 import { Statistics } from '../../data/Statistics';
 import { UserData } from '../../data/UserData';
 import { EventsController } from '../../game/events/EventsController';
+import { TileBase } from '../../game/TileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelConstructor')
 export class UILevelConstructor extends Component {
-    @property(EditBox)
-    inputField: EditBox = null;
+	@property(EditBox)
+	inputField: EditBox = null;
 
-    @property(Button)
-    pasteBtn: Button = null;
-    @property(Button)
-    playBtn: Button = null;
+	@property(Button)
+	pasteBtn: Button = null;
+	@property(Button)
+	playBtn: Button = null;
 
-    @property(Button)
-    superDiscoOnBtn: Button = null;
-    @property(Button)
-    superDiscoOffBtn: Button = null;
+	@property(Button)
+	superDiscoOnBtn: Button = null;
+	@property(Button)
+	superDiscoOffBtn: Button = null;
 
-    @property(Button)
-    clearLevelSaveBtn: Button = null;
-    @property(Button)
-    clearGlobalSaveBtn: Button = null;
-    @property(Button)
-    cheatToLastLevelBtn: Button = null;
-    @property(Button)
-    showLevelStatsBtn: Button = null;
-    @property(Button)
-    switchEventsBtn: Button = null;
+	@property(Button)
+	clearLevelSaveBtn: Button = null;
+	@property(Button)
+	clearGlobalSaveBtn: Button = null;
+	@property(Button)
+	cheatToLastLevelBtn: Button = null;
+	@property(Button)
+	showLevelStatsBtn: Button = null;
+	@property(Button)
+	switchEventsBtn: Button = null;
 
-    @property(Button)
-    showMatrixBtn: Button = null;
+	@property(Button)
+	showMatrixBtn: Button = null;
 
-    @property(Field)
-    field: Field = null;
+	@property(Field)
+	field: Field = null;
 
-    @property(UIStartFrame)
-    startFrame: UIStartFrame = null;
+	@property(UIStartFrame)
+	startFrame: UIStartFrame = null;
 
-    @property(EventsController)
-    eventsController: EventsController;
+	@property(EventsController)
+	eventsController: EventsController;
 
-    @property([Node])
-    uiNodes: Node[] = [];
+	@property([Node])
+	uiNodes: Node[] = [];
 
+	start() {
+		this.pasteBtn.node.on(Button.EventType.CLICK, this.onPasteBtnClick, this);
+		this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 
-    start() {
-        this.pasteBtn.node.on(Button.EventType.CLICK, this.onPasteBtnClick, this);
-        this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
+		this.superDiscoOnBtn.node.on(
+			Button.EventType.CLICK,
+			this.onSuperDiscoOnBtnClick,
+			this,
+		);
+		this.superDiscoOffBtn.node.on(
+			Button.EventType.CLICK,
+			this.onSuperDiscoOffBtnClick,
+			this,
+		);
 
-        this.superDiscoOnBtn.node.on(Button.EventType.CLICK, this.onSuperDiscoOnBtnClick, this);
-        this.superDiscoOffBtn.node.on(Button.EventType.CLICK, this.onSuperDiscoOffBtnClick, this);
+		this.clearLevelSaveBtn.node.on(
+			Button.EventType.CLICK,
+			this.clearLevelSave,
+			this,
+		);
+		this.clearGlobalSaveBtn.node.on(
+			Button.EventType.CLICK,
+			this.clearGlobalSave,
+			this,
+		);
+		this.showLevelStatsBtn.node.on(
+			Button.EventType.CLICK,
+			this.showLevelStats,
+			this,
+		);
+		this.cheatToLastLevelBtn.node.on(
+			Button.EventType.CLICK,
+			this.cheatToLastLevel,
+			this,
+		);
+		this.switchEventsBtn.node.on(
+			Button.EventType.CLICK,
+			this.switchEvents,
+			this,
+		);
 
-        this.clearLevelSaveBtn.node.on(Button.EventType.CLICK, this.clearLevelSave, this);
-        this.clearGlobalSaveBtn.node.on(Button.EventType.CLICK, this.clearGlobalSave, this);
-        this.showLevelStatsBtn.node.on(Button.EventType.CLICK, this.showLevelStats, this);
-        this.cheatToLastLevelBtn.node.on(Button.EventType.CLICK, this.cheatToLastLevel, this);
-        this.switchEventsBtn.node.on(Button.EventType.CLICK, this.switchEvents, this);
+		this.showMatrixBtn.node.on(
+			Button.EventType.CLICK,
+			this.onShowMatrixBtnClick,
+			this,
+		);
+	}
 
-        this.showMatrixBtn.node.on(Button.EventType.CLICK, this.onShowMatrixBtnClick, this);
-    }
+	async onPasteBtnClick() {
+		try {
+			const clipboardContent = await navigator.clipboard.readText();
 
+			if (this.inputField) {
+				this.inputField.string = clipboardContent;
+			}
 
-    onPasteBtnClick() {
-        cc.systemEvent.emit(cc.SystemEvent.EventType.CLIPBOARD_PASTE);
-        const clipboardContent = cc.Clipboard.getString();
-        
-        if (this.inputField) {
-            this.inputField.string = clipboardContent;
-        }
+			console.log('Pasted from clipboard:', clipboardContent);
+		} catch (error) {
+			console.error('Failed to read clipboard:', error);
+		}
+	}
 
-        console.log('Pasted from clipboard:', clipboardContent)
-    }
+	onPlayBtnClick() {
+		try {
+			this.field.unloadAssets();
 
-    onPlayBtnClick() {
-        try {
-            this.field.unloadAssets();
-            
-            const levelData = LevelData.fromJSON(this.inputField.string);
-            
-            this.field.spawnInitialBoard(levelData);
+			const levelData = LevelData.fromJSON(this.inputField.string);
 
-            this.startFrame.hide();
-        }
-        catch (error) {
-            this.inputField.string = error;
+			this.field.spawnInitialBoard(levelData);
 
-            let levelsCount = GameData.instance.levels.length;
+			this.startFrame.hide();
+		} catch (error) {
+			this.inputField.string = error;
 
-            this.scheduleOnce(() => {
-                this.field.spawnInitialBoard(GameData.instance.levels[UserData.instance.getProgress() % levelsCount]);
-            }, 0.5);
-        }
-    }
+			let levelsCount = GameData.instance.levels.length;
 
-    onSuperDiscoOnBtnClick() {
-        this.field.setSuperDiscoballMode(true);
-    }
+			this.scheduleOnce(() => {
+				this.field.spawnInitialBoard(
+					GameData.instance.levels[
+						UserData.instance.getProgress() % levelsCount
+					],
+				);
+			}, 0.5);
+		}
+	}
 
-    onSuperDiscoOffBtnClick() {
-        this.field.setSuperDiscoballMode(false);
-    }
+	onSuperDiscoOnBtnClick() {
+		this.field.setSuperDiscoballMode(true);
+	}
 
-    onShowMatrixBtnClick() {
-        this.inputField.string = this.readMatrix(this.field.getTilesArray());
-    }
+	onSuperDiscoOffBtnClick() {
+		this.field.setSuperDiscoballMode(false);
+	}
 
-    clearLevelSave() {
-        SaveData.instance.clearLevelProgress();
+	onShowMatrixBtnClick() {
+		this.inputField.string = this.readMatrix(this.field.getTilesArray());
+	}
 
-        SaveData.instance.clearUserData(); //to rm
-    }
+	clearLevelSave() {
+		SaveData.instance.clearLevelProgress();
 
-    clearGlobalSave() {
-        SaveData.instance.clearUserData();
+		SaveData.instance.clearUserData(); //to rm
+	}
 
-        SaveData.instance.clearLevelProgress(); //to rm
-    }
+	clearGlobalSave() {
+		SaveData.instance.clearUserData();
 
-    showLevelStats() {
-        let stats = Statistics.instance.loadLevelStat(UserData.instance.getProgress());
+		SaveData.instance.clearLevelProgress(); //to rm
+	}
 
-        if(!stats) {
-            this.inputField.string = "No stats found";
-            return;
-        }
+	showLevelStats() {
+		let stats = Statistics.instance.loadLevelStat(
+			UserData.instance.getProgress(),
+		);
 
-        this.inputField.string = "Level " + stats.levelId + " Statistics: \n";
-        this.inputField.string += "Red tiles destroyed: " + stats.redDestroyed + "\n";
-        this.inputField.string += "Rockets destroyed: " + stats.rocketsDestroyed + "\n";
-        this.inputField.string += "Destroyed by discoball: " + stats.destroyedByDiscoball + "\n";
-        this.inputField.string += "Fails: " + stats.fails + "\n";
-    }
+		if (!stats) {
+			this.inputField.string = 'No stats found';
+			return;
+		}
 
+		this.inputField.string = 'Level ' + stats.levelId + ' Statistics: \n';
+		this.inputField.string +=
+			'Red tiles destroyed: ' + stats.redDestroyed + '\n';
+		this.inputField.string +=
+			'Rockets destroyed: ' + stats.rocketsDestroyed + '\n';
+		this.inputField.string +=
+			'Destroyed by discoball: ' + stats.destroyedByDiscoball + '\n';
+		this.inputField.string += 'Fails: ' + stats.fails + '\n';
+	}
 
-    readMatrix(tiles: Node[][]): string {
-        const numRows: number = tiles.length;
-        const numCols: number = tiles.length > 0 ? tiles[0].length : 0;
+	readMatrix(tiles: Node[][]): string {
+		const numRows: number = tiles.length;
+		const numCols: number = tiles.length > 0 ? tiles[0].length : 0;
 
-        let matrixString = "";
+		let matrixString = '';
 
-        for(let i = 0; i < numRows; i++) {
-            for(let j = 0; j < numCols; j++) {
+		for (let i = 0; i < numRows; i++) {
+			for (let j = 0; j < numCols; j++) {
+				if (tiles[i][j] === undefined) {
+					matrixString += 'undefined --- ';
+					continue;
+				}
 
-                if(tiles[i][j] === undefined) {
-                    matrixString += "undefined --- ";
-                    continue;
-                }
+				if (tiles[i][j] === null) {
+					matrixString += 'null --- ';
+					continue;
+				}
 
-                if(tiles[i][j] === null) {
-                    matrixString += "null --- ";
-                    continue;
-                }
+				const tile = tiles[i][j];
+				const tileComponent = tile.getComponent(TileBase);
 
-                const tile = tiles[i][j];
-                let tileComponent = tile.getComponent("TileBase");
+				if (!tileComponent) {
+					matrixString += 'no TileBase --- ';
+					continue;
+				}
 
-                if(tileComponent.isEmptyTile()) {
-                    matrixString += "empty --- ";
-                    continue;
-                }
+				if (tileComponent.isEmptyTile()) {
+					matrixString += 'empty --- ';
+					continue;
+				}
 
-                matrixString += tileComponent.getTileType() + " --- ";
-            }
+				matrixString += tileComponent.getTileType() + ' --- ';
+			}
 
-            matrixString += "\n";
-        }
+			matrixString += '\n';
+		}
 
-        return matrixString;
-    }
+		return matrixString;
+	}
 
+	cheatToLastLevel() {
+		SaveData.instance.cheatToLastLevel();
+	}
 
-    cheatToLastLevel() {
-        SaveData.instance.cheatToLastLevel();
-    }
+	switchEvents() {
+		this.eventsController.debug_SwitchEvents();
 
+		this.scheduleOnce(() => {
+			this.startFrame.show();
+		}, 0.5);
+	}
 
-    switchEvents() {
-        this.eventsController.debug_SwitchEvents();
-
-        this.scheduleOnce(() => {
-            this.startFrame.show();
-        }, 0.5);
-    }
-
-
-    setDebugMode(isDebug: boolean) {
-        for(let i = 0; i < this.uiNodes.length; i++) {
-            this.uiNodes[i].active = isDebug;
-        }
-    }
+	setDebugMode(isDebug: boolean) {
+		for (let i = 0; i < this.uiNodes.length; i++) {
+			this.uiNodes[i].active = isDebug;
+		}
+	}
 }
-
-
