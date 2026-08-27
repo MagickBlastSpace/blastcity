@@ -1,279 +1,268 @@
-import { _decorator, Component, view, ResolutionPolicy, Canvas, find, Node, Vec3, Widget, Layout, director } from 'cc';
+import { _decorator, Component, Canvas, find, Node, Vec3, Widget } from 'cc';
 import { UIFrameBase } from '../ui/UIFrameBase';
-import { UIChest } from '../ui/chest/UIChest';
 import { UIEventButton } from '../ui/start/UIEventButton';
 import { UIAdaptivityBase } from '../ui/UIAdaptivityBase';
+import { Field } from '../game/Field';
 const { ccclass, property } = _decorator;
 
 @ccclass('ResolutionManager')
 export class ResolutionManager extends Component {
+	@property
+	width_landscape = 3654;
+	@property
+	height_landscape = 2008;
 
-    @property
-    width_landscape = 3654;
-    @property
-    height_landscape = 2008;
+	@property
+	width_portrait = 2300;
+	@property
+	height_portrait = 5000;
 
-    @property
-    width_portrait = 2300;
-    @property
-    height_portrait = 5000;
+	@property([Node])
+	landscapeNodes: Node[] = [];
+	@property([Node])
+	portraitNodes: Node[] = [];
 
-    @property([Node])
-    landscapeNodes: Node[] = [];
-    @property([Node])
-    portraitNodes: Node[] = [];
+	@property(Node)
+	field: Node = null;
 
-    @property(Node)
-    field: Node = null;
+	@property(Node)
+	boostersPortrait: Node = null;
+	@property(Node)
+	goalsPortrait: Node = null;
 
-    @property(Node)
-    boostersPortrait: Node = null;
-    @property(Node)
-    goalsPortrait: Node = null;
+	@property([Node])
+	mainMenuScalableItems: Node[] = [];
+	@property([Node])
+	clansScalableItems: Node[] = [];
 
-    @property([Node])
-    mainMenuScalableItems: Node[] = [];
-    @property([Node])
-    clansScalableItems: Node[] = [];
+	@property([Node])
+	popups: Node[] = [];
+	@property([Node])
+	popups_v2: Node[] = [];
+	@property([UIFrameBase])
+	popupComponents: UIFrameBase[] = [];
 
-    @property([Node])
-    popups: Node[] = [];
-    @property([Node])
-    popups_v2: Node[] = [];
-    @property([UIFrameBase])
-    popupComponents: UIFrameBase[] = [];
+	@property([UIEventButton])
+	eventBtnsComp: UIEventButton[] = [];
 
-    @property([UIEventButton])
-    eventBtnsComp: UIEventButton[] = [];
+	@property(Widget)
+	kingLeagueBtn: Widget = null;
+	@property([Widget])
+	resources: Widget[] = [];
+	@property(Widget)
+	tutorialPopup: Widget = null;
+	@property(Widget)
+	friendsSearch: Widget = null;
 
-    @property(Widget)
-    kingLeagueBtn: Widget = null;
-    @property([Widget])
-    resources: Widget[] = [];
-    @property(Widget)
-    tutorialPopup: Widget = null;
-    @property(Widget)
-    friendsSearch: Widget = null;
+	@property([UIAdaptivityBase])
+	adaptiveFrames: UIAdaptivityBase[] = [];
 
-    @property([UIAdaptivityBase])
-    adaptiveFrames: UIAdaptivityBase[] = [];
+	public static instance: ResolutionManager = null;
 
-    public static instance: ResolutionManager = null;
+	private orientation: string = '';
 
-    private orientation: string = "";
+	private boundOnWindowResize: () => void;
 
-    private boundOnWindowResize: () => void;
+	onLoad() {
+		ResolutionManager.instance = this;
 
+		this.boundOnWindowResize = this.onWindowResize.bind(this);
+		window.addEventListener('resize', this.boundOnWindowResize);
 
-    onLoad() {
-        ResolutionManager.instance = this;
+		//this.adjustResolution();
+		this.scheduleOnce(() => this.adjustResolution(), 0.1);
+	}
 
-        this.boundOnWindowResize = this.onWindowResize.bind(this);
-        window.addEventListener('resize', this.boundOnWindowResize);
+	onDestroy() {
+		window.removeEventListener('resize', this.boundOnWindowResize);
+	}
 
-        //this.adjustResolution();
-        this.scheduleOnce(() => this.adjustResolution(), 0.1);
-    }
+	onWindowResize() {
+		console.log('Window resize called');
 
-    onDestroy() {
-        window.removeEventListener('resize', this.boundOnWindowResize);
-    }
+		this.adjustResolution();
+	}
 
-    onWindowResize() {
-        console.log("Window resize called");
+	adjustResolution() {
+		const canvas = find('Canvas').getComponent(Canvas);
 
-        this.adjustResolution();
-    }
+		let ratio = window.innerWidth / window.innerHeight;
 
-    adjustResolution() {
-        const canvas = find('Canvas').getComponent(Canvas);
+		console.log('Ratio: ' + ratio);
 
-        let ratio = window.innerWidth / window.innerHeight;
+		if (window.innerWidth > window.innerHeight) {
+			console.log('Landscape mode');
+			this.setLandscapeMode();
+		} else {
+			console.log('Portrait mode');
+			this.setPortraitMode();
+		}
 
-        console.log("Ratio: " + ratio);
+		//director.once(director.EVENT_AFTER_DRAW, this.updateAdaptiveFrames, this);
+		this.updateAdaptiveFrames();
 
-        if (window.innerWidth > window.innerHeight) {
-            console.log("Landscape mode");
-            this.setLandscapeMode();
+		this.scaleItemsByScreenRatio(ratio);
+	}
 
-        } else {
-            console.log("Portrait mode");
-            this.setPortraitMode();
-        }
+	updateAdaptiveFrames() {
+		for (let i = 0; i < this.adaptiveFrames.length; i++) {
+			const frame = this.adaptiveFrames[i];
+			if (frame.node && frame.node.activeInHierarchy) {
+				frame.refresh();
+			}
+		}
+	}
 
-        //director.once(director.EVENT_AFTER_DRAW, this.updateAdaptiveFrames, this);
-        this.updateAdaptiveFrames();
+	setLandscapeMode() {
+		this.orientation = 'landscape';
 
-        this.scaleItemsByScreenRatio(ratio);
-    }
+		this.enableLandscapeNodes(true);
+		this.enablePortraitNodes(false);
 
+		for (let i = 0; i < this.mainMenuScalableItems.length; i++) {
+			this.mainMenuScalableItems[i].setScale(new Vec3(1, 1, 1));
+		}
+		for (let i = 0; i < this.clansScalableItems.length; i++) {
+			this.clansScalableItems[i].setScale(new Vec3(1, 1, 1));
+		}
+		for (let i = 0; i < this.popups.length; i++) {
+			this.popups[i].setScale(new Vec3(1, 1, 1));
+		}
+		for (let i = 0; i < this.popups_v2.length; i++) {
+			this.popups_v2[i].setScale(new Vec3(0.6, 0.6, 1));
+		}
+		for (let i = 0; i < this.popupComponents.length; i++) {
+			this.popupComponents[i].updateWidgetAlignment(
+				this.isPortraitOrientation(),
+			);
+		}
 
-    updateAdaptiveFrames() {
-        for (let i = 0; i < this.adaptiveFrames.length; i++) {
-            const frame = this.adaptiveFrames[i];
-            if (frame.node && frame.node.activeInHierarchy) {
-                frame.refresh();
-            }
-        }
-    }
+		for (let i = 0; i < this.eventBtnsComp.length; i++) {
+			this.eventBtnsComp[i].updateAdaptivity();
+		}
 
+		this.kingLeagueBtn.bottom = 970;
+		this.kingLeagueBtn.horizontalCenter = 0;
 
+		for (let i = 0; i < this.resources.length; i++) {
+			this.resources[i].top = 250;
+		}
 
-    setLandscapeMode() {
-        this.orientation = "landscape";
+		this.tutorialPopup.top = 120;
+	}
 
-        this.enableLandscapeNodes(true);
-        this.enablePortraitNodes(false);
+	setPortraitMode() {
+		this.orientation = 'portrait';
 
-        for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
-            this.mainMenuScalableItems[i].setScale(new Vec3(1, 1, 1));
-        }
-        for(let i = 0; i < this.clansScalableItems.length; i++) {
-            this.clansScalableItems[i].setScale(new Vec3(1, 1, 1));
-        }
-        for(let i = 0; i < this.popups.length; i++) {
-            this.popups[i].setScale(new Vec3(1, 1, 1));
-        }
-        for(let i = 0; i < this.popups_v2.length; i++) {
-            this.popups_v2[i].setScale(new Vec3(0.6, 0.6, 1));
-        }
-        for(let i = 0; i < this.popupComponents.length; i++) {
-            this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
-        }
+		this.enableLandscapeNodes(false);
+		this.enablePortraitNodes(true);
 
-        for(let i = 0; i < this.eventBtnsComp.length; i++) {
-            this.eventBtnsComp[i].updateAdaptivity();
-        }
+		for (let i = 0; i < this.mainMenuScalableItems.length; i++) {
+			this.mainMenuScalableItems[i].setScale(new Vec3(2, 2, 1));
+		}
+		for (let i = 0; i < this.clansScalableItems.length; i++) {
+			this.clansScalableItems[i].setScale(new Vec3(1.5, 1.5, 1));
+		}
+		for (let i = 0; i < this.popups.length; i++) {
+			this.popups[i].setScale(new Vec3(2, 2, 1));
+		}
+		for (let i = 0; i < this.popups_v2.length; i++) {
+			this.popups_v2[i].setScale(new Vec3(1.8, 1.8, 1));
+		}
+		for (let i = 0; i < this.popupComponents.length; i++) {
+			this.popupComponents[i].updateWidgetAlignment(
+				this.isPortraitOrientation(),
+			);
+		}
 
-        this.kingLeagueBtn.bottom = 970;
-        this.kingLeagueBtn.center = 0;
+		for (let i = 0; i < this.eventBtnsComp.length; i++) {
+			this.eventBtnsComp[i].updateAdaptivity();
+		}
 
-        for(let i = 0; i < this.resources.length; i++) {
-            this.resources[i].top = 250;
-        }
+		this.kingLeagueBtn.bottom = 2400;
+		this.kingLeagueBtn.horizontalCenter = 0;
 
-        this.tutorialPopup.top = 120;
-    }
+		for (let i = 0; i < this.resources.length; i++) {
+			this.resources[i].top = 400;
+		}
 
-    setPortraitMode() {
-        this.orientation = "portrait";
+		this.tutorialPopup.top = 1000;
+	}
 
-        this.enableLandscapeNodes(false);
-        this.enablePortraitNodes(true);
+	enableLandscapeNodes(isActive: boolean) {
+		for (let i = 0; i < this.landscapeNodes.length; i++) {
+			this.landscapeNodes[i].active = isActive;
+		}
+	}
 
-        for(let i = 0; i < this.mainMenuScalableItems.length; i++) {
-            this.mainMenuScalableItems[i].setScale(new Vec3(2, 2, 1));
-        }
-        for(let i = 0; i < this.clansScalableItems.length; i++) {
-            this.clansScalableItems[i].setScale(new Vec3(1.5, 1.5, 1));
-        }
-        for(let i = 0; i < this.popups.length; i++) {
-            this.popups[i].setScale(new Vec3(2, 2, 1));
-        }
-        for(let i = 0; i < this.popups_v2.length; i++) {
-            this.popups_v2[i].setScale(new Vec3(1.8, 1.8, 1));
-        }
-        for(let i = 0; i < this.popupComponents.length; i++) {
-            this.popupComponents[i].updateWidgetAlignment(this.isPortraitOrientation());
-        }
+	enablePortraitNodes(isActive: boolean) {
+		for (let i = 0; i < this.portraitNodes.length; i++) {
+			this.portraitNodes[i].active = isActive;
+		}
+	}
 
-        for(let i = 0; i < this.eventBtnsComp.length; i++) {
-            this.eventBtnsComp[i].updateAdaptivity();
-        }
+	scaleItemsByScreenRatio(ratio: number) {
+		if (ratio > 1.4) {
+			this.friendsSearch.bottom = 850;
+		} else if (ratio > 1) {
+			this.friendsSearch.bottom = 600;
+		} else if (ratio > 0.8) {
+			this.friendsSearch.bottom = 600;
+		} else if (ratio > 0.72) {
+			this.friendsSearch.bottom = 350;
+		} else if (ratio > 0.6) {
+			this.friendsSearch.bottom = 250;
+		} else if (ratio > 0.5) {
+			this.friendsSearch.bottom = 250;
+		} else {
+			this.friendsSearch.bottom = 250;
+		}
 
-        this.kingLeagueBtn.bottom = 2400;
-        this.kingLeagueBtn.center = 0;
+		const fieldComp = this.field.getComponent(Field);
 
-        for(let i = 0; i < this.resources.length; i++) {
-            this.resources[i].top = 400;
-        }
+		if (fieldComp) {
+			fieldComp.centrate();
+		}
+	}
 
-        this.tutorialPopup.top = 1000;
-    }
+	isPortraitOrientation(): boolean {
+		return this.orientation === 'portrait';
+	}
 
+	addPopup(popup: Node) {
+		const adaptivityComp = popup.getComponent(UIAdaptivityBase);
+		if (adaptivityComp) {
+			return;
+		}
 
-    enableLandscapeNodes(isActive: boolean) {
-        for(let i = 0; i < this.landscapeNodes.length; i++) {
-            this.landscapeNodes[i].active = isActive;
-        }
-    }
+		this.popups.push(popup);
 
-    enablePortraitNodes(isActive: boolean) {
-        for(let i = 0; i < this.portraitNodes.length; i++) {
-            this.portraitNodes[i].active = isActive;
-        }
-    }
+		const popupComponent = popup.getComponent(UIFrameBase);
 
+		if (popupComponent) {
+			this.popupComponents.push(popupComponent);
+		}
+	}
 
-    scaleItemsByScreenRatio(ratio: number) {
-        if(ratio > 1.4) {
-            this.friendsSearch.bottom = 850;
-        }
-        else if(ratio > 1) {
-            this.friendsSearch.bottom = 600;
-        }
-        else if(ratio > 0.8) {
-            this.friendsSearch.bottom = 600;
-        }
-        else if(ratio > 0.72) {
-            this.friendsSearch.bottom = 350;
-        }
-        else if(ratio > 0.6) {
-            this.friendsSearch.bottom = 250;
-        }
-        else if(ratio > 0.5) {
-            this.friendsSearch.bottom = 250;
-        }
-        else {
-            this.friendsSearch.bottom = 250;
-        }
+	addPopup_v2(popup: Node) {
+		const adaptivityComp = popup.getComponent(UIAdaptivityBase);
+		if (adaptivityComp) {
+			return;
+		}
 
-        let fieldComp = this.field.getComponent("Field");
-        fieldComp.centrate();
-    }
+		this.popups_v2.push(popup);
 
+		const popupComponent = popup.getComponent(UIFrameBase);
 
-    isPortraitOrientation(): boolean {
-        return this.orientation === "portrait";
-    }
+		if (popupComponent) {
+			this.popupComponents.push(popupComponent);
+		}
+	}
 
-
-    addPopup(popup: Node) {
-        const adaptivityComp = popup.getComponent("UIAdaptivityBase");
-        if (adaptivityComp) {
-            return;
-        }
-
-        this.popups.push(popup);
-
-        let popupComponent = popup.getComponent("UIFrameBase");
-
-        if(popupComponent) {
-            this.popupComponents.push(popupComponent);
-        }
-    }
-
-    addPopup_v2(popup: Node) {
-        const adaptivityComp = popup.getComponent("UIAdaptivityBase");
-        if (adaptivityComp) {
-            return;
-        }
-        
-        this.popups_v2.push(popup);
-
-        let popupComponent = popup.getComponent("UIFrameBase");
-
-        if(popupComponent) {
-            this.popupComponents.push(popupComponent);
-        }
-    }
-
-    addAdaptiveFrame(frame: Node) {
-        const adaptivityComp = frame.getComponent("UIAdaptivityBase");
-        if (adaptivityComp) {
-            this.adaptiveFrames.push(adaptivityComp);
-        }
-    }
+	addAdaptiveFrame(frame: Node) {
+		const adaptivityComp = frame.getComponent(UIAdaptivityBase);
+		if (adaptivityComp) {
+			this.adaptiveFrames.push(adaptivityComp);
+		}
+	}
 }
-
-
