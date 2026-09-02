@@ -1,6 +1,14 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Vec2, Prefab, Color } from 'cc';
+import {
+	_decorator,
+	Component,
+	Vec2,
+	Prefab,
+	TextAsset,
+	assetManager,
+	resources,
+} from 'cc';
 import { UserData } from './UserData';
 import { Statistics } from './Statistics';
 import { SaveData } from './SaveData';
@@ -142,7 +150,7 @@ export class LevelData {
 	tutorialTiles: SpecialTileData[] = [];
 	@property([Vec2])
 	destroyedOnStart: Vec2[] = [];
-	@property([cc.String])
+	@property([String])
 	startPool: string[] = [];
 
 	spawnPools: string[][] = [];
@@ -252,16 +260,13 @@ export class LevelData {
 			});
 		}
 
-		if (jsonData.movesCount !== cc.undefined && jsonData.movesCount !== null) {
+		if (jsonData.movesCount !== undefined && jsonData.movesCount !== null) {
 			levelData.movesCount = Number(jsonData.movesCount);
 		} else {
 			levelData.movesCount = 0;
 		}
 
-		if (
-			jsonData.rocketPreset !== cc.undefined &&
-			jsonData.rocketPreset !== null
-		) {
+		if (jsonData.rocketPreset !== undefined && jsonData.rocketPreset !== null) {
 			levelData.rocketPreset = jsonData.rocketPreset.toLowerCase();
 		} else {
 			levelData.rocketPreset = 'random';
@@ -291,14 +296,14 @@ export class LevelData {
 			levelData.cosmorocketGoals = [];
 		}
 
-		if (jsonData.difficulty !== cc.undefined && jsonData.difficulty !== null) {
+		if (jsonData.difficulty !== undefined && jsonData.difficulty !== null) {
 			levelData.difficulty = jsonData.difficulty.toLowerCase();
 		} else {
 			levelData.difficulty = 'common';
 		}
 
 		if (
-			jsonData.movesShopStage !== cc.undefined &&
+			jsonData.movesShopStage !== undefined &&
 			jsonData.movesShopStage !== null
 		) {
 			levelData.movesShopStage = Number(jsonData.movesShopStage);
@@ -338,7 +343,7 @@ export class LevelData {
 			levelData.statusesState = [];
 		}
 
-		if (jsonData.tutorial !== cc.undefined && jsonData.tutorial !== null) {
+		if (jsonData.tutorial !== undefined && jsonData.tutorial !== null) {
 			levelData.tutorial = jsonData.tutorial.toLowerCase();
 		} else {
 			levelData.tutorial = '';
@@ -440,13 +445,26 @@ export class GameData extends Component {
 	}
 
 	start() {
+		console.log(`[STARTUP +${performance.now().toFixed(0)}ms] GameData start`);
+
 		this.tryFetchVariables();
 
-		gamepush.variables.on('fetch', () => this.updateLevelStage());
+		gamepush.variables.on('fetch', () => {
+			console.log(
+				`[STARTUP +${performance.now().toFixed(0)}ms] GamePush variables fetched`,
+			);
+
+			this.updateLevelStage();
+		});
+
 		gamepush.variables.on('error:fetch', (error) => console.error(error));
 	}
 
 	updateLevelStage() {
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Level stage calculation started`,
+		);
+
 		let progress = gamepush.player.get('score');
 		let maxStages = gamepush.variables.get('max_stage');
 
@@ -477,6 +495,10 @@ export class GameData extends Component {
 			this.node.emit('level_stage_update');
 
 			this.levelStage = newStage;
+
+			console.log(
+				`[STARTUP +${performance.now().toFixed(0)}ms] Level stage resolved: ${newStage}`,
+			);
 
 			this.tryLoadLevels();
 		}
@@ -531,6 +553,10 @@ export class GameData extends Component {
 	}
 
 	tryFetchVariables() {
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] GamePush variables fetch started`,
+		);
+
 		try {
 			gamepush.variables.fetch();
 		} catch (error) {
@@ -541,6 +567,10 @@ export class GameData extends Component {
 	}
 
 	tryLoadLevels() {
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Levels loading pipeline started`,
+		);
+
 		console.log('Gamepush variables fetched. Loading levels...');
 		try {
 			this.loadLevelsFromGamePush();
@@ -567,22 +597,44 @@ export class GameData extends Component {
 
 		console.log('Loading Level Stage: ' + levelVariableName);
 
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Level file selected: ${levelVariableName}`,
+		);
+
 		this.loadLevelsFromURL(gamepush.variables.get(levelVariableName));
 
 		this.node.emit('experiment', difficulty);
 	}
 
 	loadLevelsFromURL(url: string): Promise<void> {
+		console.log(
+			`[ASSET +${performance.now().toFixed(0)}ms] Level file request START: ${url}`,
+		);
+
+		const requestStartedAt = performance.now();
+
 		return new Promise<void>((resolve, reject) => {
-			cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
+			assetManager.loadRemote<TextAsset>(url, { ext: '.txt' }, (err, asset) => {
 				if (err) {
 					console.error('Error loading file:', url, err);
 					reject(err);
 					return;
 				}
 
-				// Parse JSON string to extract LevelData objects
+				console.log(
+					`[ASSET +${performance.now().toFixed(0)}ms] Level file request DONE (${(
+						performance.now() - requestStartedAt
+					).toFixed(0)}ms)`,
+				);
+
+				const parseStartedAt = performance.now();
+
+				console.log(
+					`[STARTUP +${performance.now().toFixed(0)}ms] Levels JSON parse started`,
+				);
+
 				try {
+					const file = asset.text;
 					const jsonData = JSON.parse(file);
 					const levelDataArray: LevelData[] = [];
 
@@ -594,20 +646,49 @@ export class GameData extends Component {
 						levelDataArray.push(levelData);
 					}
 
+					console.log(
+						`[STARTUP +${performance.now().toFixed(0)}ms] Levels parsed: ${
+							levelDataArray.length
+						} (${(performance.now() - parseStartedAt).toFixed(0)}ms)`,
+					);
+
 					// Set loaded levels
 					this.levels = levelDataArray;
 
 					// Emit events for each loaded level data
+
 					levelDataArray.forEach((levelData) => {
 						this.node.emit('level_data', levelData);
 					});
 
 					// Set levels count and initialize statistics
 					UserData.instance.setLevelsCount(this.levels.length);
+
+					const statisticsStartedAt = performance.now();
+
+					console.log(
+						`[STARTUP +${performance.now().toFixed(0)}ms] Statistics init started`,
+					);
+
 					Statistics.instance.init(this.levels);
 
 					// Emit event indicating levels are loaded
+
+					console.log(
+						`[STARTUP +${performance.now().toFixed(0)}ms] Statistics init finished (${(
+							performance.now() - statisticsStartedAt
+						).toFixed(0)}ms)`,
+					);
+
+					console.log(
+						`[STARTUP +${performance.now().toFixed(0)}ms] Levels ready`,
+					);
+
 					this.node.emit('levels_loaded');
+
+					console.log(
+						`[STARTUP +${performance.now().toFixed(0)}ms] Level progress loading delegated to SaveData`,
+					);
 
 					SaveData.instance.loadLevelProgressData();
 
@@ -639,21 +720,25 @@ export class GameData extends Component {
 				}
 
 				const url = urls[currentIndex];
-				cc.loader.load({ url: url, type: 'txt' }, (err, file) => {
-					if (err) {
-						console.error('Error loading file:', url, err);
-						reject(err);
-						return;
-					}
+				assetManager.loadRemote<TextAsset>(
+					url,
+					{ ext: '.txt' },
+					(err, asset) => {
+						if (err) {
+							console.error('Error loading file:', url, err);
+							reject(err);
+							return;
+						}
 
-					let levelData = GameData.parseLevelData(file);
-					loadedLevels.push(levelData);
+						const levelData = GameData.parseLevelData(asset.text);
+						loadedLevels.push(levelData);
 
-					this.node.emit('level_data', levelData);
+						this.node.emit('level_data', levelData);
 
-					currentIndex++; // Move to the next URL
-					loadNextFile(); // Load the next file
-				});
+						currentIndex++; // Move to the next URL
+						loadNextFile(); // Load the next file
+					},
+				);
 			};
 
 			// Start loading the first file
@@ -664,13 +749,13 @@ export class GameData extends Component {
 	loadLevelsFromDirectory(directoryPath: string) {
 		this.levels = [];
 
-		cc.loader.loadResDir(directoryPath, cc.TextAsset, (err, assets) => {
+		resources.loadDir(directoryPath, TextAsset, (err, assets) => {
 			if (err) {
 				console.error('Error loading directory:', err);
 				return;
 			}
 
-			assets.sort((a: cc.TextAsset, b: cc.TextAsset) => {
+			assets.sort((a: TextAsset, b: TextAsset) => {
 				const aName = a.name.toLowerCase();
 				const bName = b.name.toLowerCase();
 
@@ -699,7 +784,7 @@ export class GameData extends Component {
 
 			//console.log(assets.length);
 
-			assets.forEach((asset: cc.TextAsset) => {
+			assets.forEach((asset: TextAsset) => {
 				const fileData = asset.text;
 				const fileName = asset.name;
 

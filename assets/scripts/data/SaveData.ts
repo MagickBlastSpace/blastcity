@@ -51,6 +51,7 @@ export class SaveData extends Component {
 
 	onLoad() {
 		SaveData.instance = this;
+		console.log(`[STARTUP +${performance.now().toFixed(0)}ms] SaveData onLoad`);
 	}
 
 	//UserData
@@ -90,7 +91,21 @@ export class SaveData extends Component {
 	}
 
 	async loadUserData() {
+		const loadStartedAt = performance.now();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] User data load started`,
+		);
+
+		const localStartedAt = performance.now();
 		var userData = JSON.parse(sys.localStorage.getItem('userData'));
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Local user data read finished (${(performance.now() - localStartedAt).toFixed(0)}ms), found: ${Boolean(userData)}`,
+		);
+
+		const gpStartedAt = performance.now();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] GamePush player data apply started`,
+		);
 
 		UserData.instance.setProgress(gamepush.player.get('score'));
 		UserData.instance.setIsPremium(gamepush.player.get('ispremium'));
@@ -118,7 +133,14 @@ export class SaveData extends Component {
 		UserData.instance.setResource('cannon', gamepush.player.get('cannon'));
 		UserData.instance.setResource('jester', gamepush.player.get('jester'));
 
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] GamePush player data apply finished (${(performance.now() - gpStartedAt).toFixed(0)}ms), progress: ${UserData.instance.getProgress()}`,
+		);
+
 		if (userData) {
+			console.log(
+				`[STARTUP +${performance.now().toFixed(0)}ms] Local user data apply started`,
+			);
 			//UserData.instance.setProgress(gamepush.player.get('score'));
 			//UserData.instance.setResource("gold", userData.gold);
 			if (userData.stars) {
@@ -166,14 +188,30 @@ export class SaveData extends Component {
 				UserData.instance.getMusicVolume(),
 			);
 			AudioController.instance.setSfxVolume(UserData.instance.getSfxVolume());
+			console.log(
+				`[STARTUP +${performance.now().toFixed(0)}ms] Local user data apply finished`,
+			);
 		}
 		/*else {
             UserData.instance.setProgress(gamepush.player.get('score'));
             UserData.instance.setKingLeagueProgress(gamepush.player.get('score_king_league'));
         }*/
 
+		const debugGoldStartedAt = performance.now();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] DebugGold restore check started`,
+		);
 		await DebugGold.restoreIfInterrupted();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] DebugGold restore check finished (${(performance.now() - debugGoldStartedAt).toFixed(0)}ms)`,
+		);
 
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] User data loaded (${(performance.now() - loadStartedAt).toFixed(0)}ms total)`,
+		);
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Emitting user_data`,
+		);
 		this.node.emit('user_data');
 	}
 
@@ -256,22 +294,56 @@ export class SaveData extends Component {
 	}
 
 	loadLevelProgressData() {
-		var levelProgressData = JSON.parse(
-			sys.localStorage.getItem('levelProgress'),
+		const loadStartedAt = performance.now();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Level progress load started`,
+		);
+
+		const storageStartedAt = performance.now();
+		const rawLevelProgressData = sys.localStorage.getItem('levelProgress');
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Level progress localStorage read finished (${(performance.now() - storageStartedAt).toFixed(0)}ms), found: ${Boolean(rawLevelProgressData)}`,
+		);
+
+		const parseStartedAt = performance.now();
+		var levelProgressData = JSON.parse(rawLevelProgressData);
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Level progress JSON parse finished (${(performance.now() - parseStartedAt).toFixed(0)}ms)`,
 		);
 
 		if (levelProgressData) {
 			if (levelProgressData.levelState) {
-				this.node.emit(
-					'level_progress_loaded',
-					LevelData.fromJSON(levelProgressData.levelState),
+				console.log(
+					`[STARTUP +${performance.now().toFixed(0)}ms] Saved gameplay session found`,
 				);
+
+				const levelStateStartedAt = performance.now();
+				const levelState = LevelData.fromJSON(levelProgressData.levelState);
+				console.log(
+					`[STARTUP +${performance.now().toFixed(0)}ms] Saved level state parsed (${(performance.now() - levelStateStartedAt).toFixed(0)}ms)`,
+				);
+
+				console.log(
+					`[STARTUP +${performance.now().toFixed(0)}ms] Emitting level_progress_loaded (${(performance.now() - loadStartedAt).toFixed(0)}ms after level progress load start)`,
+				);
+				this.node.emit('level_progress_loaded', levelState);
 			} else {
+				console.log(
+					`[STARTUP +${performance.now().toFixed(0)}ms] Level progress exists without saved level state`,
+				);
+				console.log(
+					`[STARTUP +${performance.now().toFixed(0)}ms] Emitting level_progress_checked`,
+				);
 				this.node.emit('level_progress_checked');
 			}
 		} else {
 			console.log('No saved level progress data found');
-
+			console.log(
+				`[STARTUP +${performance.now().toFixed(0)}ms] No saved gameplay session`,
+			);
+			console.log(
+				`[STARTUP +${performance.now().toFixed(0)}ms] Emitting level_progress_checked`,
+			);
 			this.node.emit('level_progress_checked');
 		}
 	}
@@ -451,6 +523,10 @@ export class SaveData extends Component {
 	}
 
 	loadStartBonusesData() {
+		const startedAt = performance.now();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Start bonuses load started`,
+		);
 		var startBonusesData = JSON.parse(sys.localStorage.getItem('startBonuses'));
 
 		if (startBonusesData) {
@@ -459,6 +535,9 @@ export class SaveData extends Component {
 		} else {
 			//console.log("No saved start bonuses data found");
 		}
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Start bonuses load finished (${(performance.now() - startedAt).toFixed(0)}ms), found: ${Boolean(startBonusesData)}`,
+		);
 	}
 
 	//Butler's Gift
@@ -474,6 +553,10 @@ export class SaveData extends Component {
 	}
 
 	loadButlersGiftData() {
+		const startedAt = performance.now();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Butler's Gift load started`,
+		);
 		var butlersGiftData = JSON.parse(sys.localStorage.getItem('butlersGift'));
 
 		if (butlersGiftData) {
@@ -483,6 +566,9 @@ export class SaveData extends Component {
 		} else {
 			//console.log("No saved butlers gift data found");
 		}
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Butler's Gift load finished (${(performance.now() - startedAt).toFixed(0)}ms), found: ${Boolean(butlersGiftData)}`,
+		);
 	}
 
 	//Chest
@@ -499,6 +585,10 @@ export class SaveData extends Component {
 	}
 
 	loadChest() {
+		const startedAt = performance.now();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Chest data load started`,
+		);
 		var chestData = JSON.parse(sys.localStorage.getItem('chest'));
 
 		if (chestData) {
@@ -509,6 +599,9 @@ export class SaveData extends Component {
 		} else {
 			//console.log("No saved start bonuses data found");
 		}
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Chest data load finished (${(performance.now() - startedAt).toFixed(0)}ms), found: ${Boolean(chestData)}`,
+		);
 	}
 
 	//Statistics Data
@@ -527,6 +620,10 @@ export class SaveData extends Component {
 	}
 
 	loadStatistics() {
+		const startedAt = performance.now();
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Saved statistics load started`,
+		);
 		try {
 			var statistics = JSON.parse(sys.localStorage.getItem('statistics'));
 
@@ -542,6 +639,9 @@ export class SaveData extends Component {
 		} catch (error) {
 			console.error('Error loading statistics:', error);
 		}
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] Saved statistics load finished (${(performance.now() - startedAt).toFixed(0)}ms)`,
+		);
 	}
 
 	//Events
@@ -594,6 +694,10 @@ export class SaveData extends Component {
 	}
 
 	loadEvent(eventId: string) {
+		const startedAt = performance.now();
+		console.log(
+			`[PRELOAD +${performance.now().toFixed(0)}ms] Event data load started: ${eventId}`,
+		);
 		console.log('Loading Event Data: ' + eventId);
 
 		for (let i = 0; i < this.events.length; i++) {
@@ -679,5 +783,8 @@ export class SaveData extends Component {
 				}
 			}
 		}
+		console.log(
+			`[PRELOAD +${performance.now().toFixed(0)}ms] Event data load finished: ${eventId} (${(performance.now() - startedAt).toFixed(0)}ms)`,
+		);
 	}
 }
