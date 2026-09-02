@@ -188,6 +188,8 @@ export class UIStartFrame extends UIFrameBase {
 
 
     onPlay() {
+        console.log(`[STARTUP +${performance.now().toFixed(0)}ms] Gameplay start requested`);
+
         try {
             this.field.spawnInitialBoard(GameData.instance.getCurrentLevel());
 
@@ -285,5 +287,3 @@ export class UIStartFrame extends UIFrameBase {
         }
     }
 }
-
-

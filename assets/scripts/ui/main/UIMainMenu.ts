@@ -88,6 +88,7 @@ export class UIMainMenu extends UIFrameBase {
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
         UserData.instance.node.on("premium_purchase", () => this.showPremiumPurchase());
         SaveData.instance.node.on("level_progress_checked", () => {
+            console.log(`[STARTUP +${performance.now().toFixed(0)}ms] Level progress checked`);
             if(UserData.instance.getProgress() > 0) {
                 this.assetsLoadingFrame.hide();
 
@@ -288,5 +289,6 @@ export class UIMainMenu extends UIFrameBase {
         }
     }
 }
+
 
 

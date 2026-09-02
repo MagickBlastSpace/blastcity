@@ -10,18 +10,22 @@ export class UILoadingFrame extends Component {
 	loadingBar: ProgressBar = null;
 
 	async start() {
+		this.logStartup('UILoadingFrame started');
+
 		try {
-			console.log('[UILoadingFrame] Initializing GamePush...');
+			this.logStartup('GamePush load started');
 
 			const gamepush = await GamePushLoader.load();
 
-			console.log('[UILoadingFrame] GamePush loaded');
+			this.logStartup('GamePush loaded');
 
 			await this.waitForPlayerReady(gamepush);
 
-			console.log('[UILoadingFrame] GamePush player ready');
+			this.logStartup('GamePush player ready');
 
 			gamepush.ads.showPreloader();
+
+			this.logStartup('Main scene preload started');
 
 			this.loadScene();
 		} catch (error) {
@@ -37,7 +41,11 @@ export class UILoadingFrame extends Component {
 
 	private loadScene() {
 		director.preloadScene('scene', this.onProgressLoadScene, () => {
+			this.logStartup('Main scene preload finished');
+
 			director.loadScene('scene');
+
+			this.logStartup('director.loadScene called');
 		});
 	}
 
@@ -50,4 +58,8 @@ export class UILoadingFrame extends Component {
 			this.loadingBar.progress = completedCount / totalCount;
 		}
 	};
+
+	private logStartup(message: string) {
+		console.log(`[STARTUP +${performance.now().toFixed(0)}ms] ${message}`);
+	}
 }
