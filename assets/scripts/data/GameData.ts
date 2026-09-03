@@ -439,6 +439,10 @@ export class GameData extends Component {
 	public static instance: GameData = null;
 
 	onLoad() {
+		console.log(
+			`[LIFECYCLE +${performance.now().toFixed(0)}ms] GameData onLoad`,
+		);
+
 		GameData.instance = this;
 
 		this.levelStage = -1;
