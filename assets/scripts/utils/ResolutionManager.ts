@@ -107,7 +107,7 @@ export class ResolutionManager extends Component {
 	updateAdaptiveFrames() {
 		for (let i = 0; i < this.adaptiveFrames.length; i++) {
 			const frame = this.adaptiveFrames[i];
-			if (frame.node && frame.node.activeInHierarchy) {
+			if (frame && frame.node && frame.node.activeInHierarchy) {
 				frame.refresh();
 			}
 		}
@@ -126,8 +126,10 @@ export class ResolutionManager extends Component {
 			this.clansScalableItems[i].setScale(new Vec3(1, 1, 1));
 		}
 		for (let i = 0; i < this.popups.length; i++) {
-			this.popups[i].setScale(new Vec3(1, 1, 1));
-		}
+            if (this.popups[i]) {
+                this.popups[i].setScale(new Vec3(1, 1, 1));
+            }
+        }
 		for (let i = 0; i < this.popups_v2.length; i++) {
 			this.popups_v2[i].setScale(new Vec3(0.6, 0.6, 1));
 		}
@@ -164,7 +166,9 @@ export class ResolutionManager extends Component {
 			this.clansScalableItems[i].setScale(new Vec3(1.5, 1.5, 1));
 		}
 		for (let i = 0; i < this.popups.length; i++) {
-			this.popups[i].setScale(new Vec3(2, 2, 1));
+             if (this.popups[i]) {
+			    this.popups[i].setScale(new Vec3(2, 2, 1));
+             }
 		}
 		for (let i = 0; i < this.popups_v2.length; i++) {
 			this.popups_v2[i].setScale(new Vec3(1.8, 1.8, 1));

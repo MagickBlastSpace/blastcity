@@ -1,6 +1,8 @@
-import { _decorator, Component, Node, Button, assetManager, Sprite, SpriteFrame, macro } from 'cc';
+import { _decorator,  Node, Button, assetManager, Sprite, SpriteFrame, macro, Prefab, instantiate, Widget} from 'cc';
 import { UIMainMenuButton } from './UIMainMenuButton';
 import { UIMainMenuFrame } from './UIMainMenuFrame';
+import { UICollectionFrame } from '../collection/UICollectionFrame';
+import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UIFrameBase } from '../UIFrameBase';
 import { AdsTimer } from '../../utils/AdsTimer';
 import { SaveData } from '../../data/SaveData';
@@ -15,6 +17,11 @@ import { ChestRewardData } from '../../data/ChestData';
 import { UICollectionCardRecievePopup } from '../collection/UICollectionCardRecievePopup';
 import { Net } from '../../net/Net';
 import { Clans } from '../../game/Clans';
+import { UICollectionFrameAdaptivity } from '../collection/adaptivity/UICollectionFrameAdaptivity';
+import { UICollectionDuplicateExchange } from '../collection/UICollectionDuplicateExchange';
+import { UIEventTutorialPopup } from '../tutorial/UIEventTutorialPopup';
+import { UICollectionInfoPopup } from '../collection/UICollectionInfoPopup';
+import { UICollectionCard } from '../collection/UICollectionCard';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -77,11 +84,378 @@ export class UIMainMenu extends UIFrameBase {
     @property(Clans)
     clans: Clans = null;
 
+    private collectionFramePromise: Promise<UIMainMenuFrame> = null;
+
+    private connectCollectionPopups(collectionNode: Node, popupsNode: Node) {
+        const collectionUi = collectionNode.getComponent(UICollectionFrame);
+        const adaptivity = collectionNode.getComponent(UICollectionFrameAdaptivity);
+
+        if (!collectionUi) {
+            throw new Error("UICollectionFrame component not found on CollectionFrame");
+        }
+
+        if (!adaptivity) {
+            throw new Error("UICollectionFrameAdaptivity component not found on CollectionFrame");
+        }
+
+        const collectionPopup = popupsNode.getChildByName("CollectionPopup");
+        const sendCard = popupsNode.getChildByName("SendCard");
+        const duplicateExchangePopup = popupsNode.getChildByName("DuplicateExchangePopup");
+        const info = popupsNode.getChildByName("Info");
+        const info2 = popupsNode.getChildByName("Info2");
+        const badgeInfo1 = popupsNode.getChildByName("BadgeInfo1");
+        const badgeInfo2 = popupsNode.getChildByName("BadgeInfo2");
+
+        if (
+            !collectionPopup ||
+            !sendCard ||
+            !duplicateExchangePopup ||
+            !info ||
+            !info2 ||
+            !badgeInfo1 ||
+            !badgeInfo2
+        ) {
+            throw new Error("CollectionFramePopups structure is incomplete");
+        }
+
+        adaptivity.popups = [
+            collectionPopup,
+            sendCard,
+            duplicateExchangePopup,
+            info,
+            info2,
+            badgeInfo1,
+            badgeInfo2,
+        ];
+
+        const collectionInfoPopup = collectionPopup.getComponent(UICollectionInfoPopup);
+        const duplicateExchange = duplicateExchangePopup.getComponent(UICollectionDuplicateExchange);
+
+        const infoPopup1 = info.getComponent(UIEventTutorialPopup);
+        const infoPopup2 = info2.getComponent(UIEventTutorialPopup);
+
+        const badgeInfoPopup1 = badgeInfo1.getComponent(UIEventTutorialPopup);
+        const badgeInfoPopup2 = badgeInfo2.getComponent(UIEventTutorialPopup);
+
+        if (!collectionInfoPopup) {
+            throw new Error("UICollectionInfoPopup component not found on CollectionPopup");
+        }
+
+        if (!duplicateExchange) {
+            throw new Error("UICollectionDuplicateExchange component not found on DuplicateExchangePopup");
+        }
+
+        if (!infoPopup1 || !infoPopup2) {
+            throw new Error("UIEventTutorialPopup component not found on Collection info popups");
+        }
+
+        if (!badgeInfoPopup1 || !badgeInfoPopup2) {
+            throw new Error("UIEventTutorialPopup component not found on Collection badge info popups");
+        }
+
+        const collectionCards = collectionPopup.getComponentsInChildren(UICollectionCard);
+
+        if (collectionCards.length !== 9) {
+            throw new Error(
+                `Expected 9 UICollectionCard components in CollectionPopup, found ${collectionCards.length}`
+            );
+        }
+
+        collectionInfoPopup.cards = collectionCards;
+
+        collectionUi.collectionInfoPopup = collectionInfoPopup;
+        collectionUi.duplicateExchange = duplicateExchange;
+
+        collectionUi.infoPopups = [
+            infoPopup1,
+            infoPopup2,
+        ];
+
+        collectionUi.badgeInfoPopups = [
+            badgeInfoPopup1,
+            badgeInfoPopup2,
+        ];
+    }
+
+    private preloadCollectionCovers(): Promise<void> {
+        return new Promise((resolve) => {
+            const controller = UserData.instance?.collections;
+
+            if(!controller) {
+                console.error(
+                    "[COLLECTION] Cannot preload covers: controller is not ready"
+                );
+                resolve();
+                return;
+            }
+
+            const collections = controller.getCollections();
+            const seasonPrefix = controller.getSeasonPrefix();
+
+            if(!collections || collections.length === 0) {
+                resolve();
+                return;
+            }
+
+            const paths = collections.map(
+                collection =>
+                    seasonPrefix + collection.id + "/spriteFrame"
+            );
+
+            assetManager.loadBundle("covers", (bundleErr, bundle) => {
+                if(bundleErr) {
+                    console.error(
+                        "Failed to preload bundle: covers",
+                        bundleErr
+                    );
+                    resolve();
+                    return;
+                }
+
+                bundle.load(
+                    paths,
+                    SpriteFrame,
+                    (loadErr) => {
+                        if(loadErr) {
+                            console.error(
+                                "Failed to preload collection covers",
+                                loadErr
+                            );
+                        }
+
+                        resolve();
+                    }
+                );
+            });
+        });
+    }
+
+   private ensureCollectionFrame(): Promise<UIMainMenuFrame> {
+        if(this.framesUi[4]) {
+            return Promise.resolve(this.framesUi[4]);
+        }
+
+        if(this.collectionFramePromise) {
+            return this.collectionFramePromise;
+        }
+
+        console.log(
+            `[PRELOAD +${performance.now().toFixed(0)}ms] Collection preload started`
+        );
+
+        this.collectionFramePromise = new Promise((resolve, reject) => {
+            const popupsNode = this.node.getChildByName("CollectionFramePopups");
+
+            if(!popupsNode) {
+                this.collectionFramePromise = null;
+                reject(
+                    new Error(
+                        "Existing CollectionFramePopups node not found in MainFrame"
+                    )
+                );
+                return;
+            }
+
+            assetManager.loadBundle("collection_ui", (bundleErr, bundle) => {
+                if(bundleErr) {
+                    console.error(
+                        "Failed to load bundle: collection_ui",
+                        bundleErr
+                    );
+                    this.collectionFramePromise = null;
+                    reject(bundleErr);
+                    return;
+                }
+
+                bundle.load(
+                    "CollectionFrame",
+                    Prefab,
+                    (collectionErr, collectionPrefab) => {
+                        if(collectionErr) {
+                            console.error(
+                                "Failed to load CollectionFrame",
+                                collectionErr
+                            );
+                            this.collectionFramePromise = null;
+                            reject(collectionErr);
+                            return;
+                        }
+
+                        const collectionNode = instantiate(collectionPrefab);
+
+                        collectionNode.active = false;
+
+                        this.node.addChild(collectionNode);
+
+                        /*
+                        * Collection должна находиться под элементами,
+                        * которые рисуются поверх основного контента.
+                        */
+                        const landscapeItems =
+                            this.node.getChildByName("LandscapeItems");
+
+                        if(landscapeItems) {
+                            collectionNode.setSiblingIndex(
+                                landscapeItems.getSiblingIndex()
+                            );
+                        }
+
+                        /*
+                        * Фон панели навигации
+                        */
+
+                        const mainBtnsFrame =
+                           this.node.getChildByName("MainBtnsFrame");
+
+                        if(mainBtnsFrame) {
+                            mainBtnsFrame.setSiblingIndex(
+                                collectionNode.getSiblingIndex() + 1
+                            );
+                        }
+
+                        /*
+                        * Нижняя навигация должна всегда рисоваться
+                        * поверх динамически добавленной Collection.
+                        */
+                        const mainMenuButtonsPanel =
+                            this.node.getChildByName("MainMenuButtonsPanel");
+
+                        if(mainMenuButtonsPanel) {
+                            const navbarIndex = mainBtnsFrame
+                                ? mainBtnsFrame.getSiblingIndex() + 1
+                                : collectionNode.getSiblingIndex() + 1;
+
+                            mainMenuButtonsPanel.setSiblingIndex(navbarIndex);
+
+                            popupsNode.setSiblingIndex(
+                                mainMenuButtonsPanel.getSiblingIndex() + 1
+                            );
+                        }
+                        else {
+                            console.error(
+                                "[COLLECTION] MainMenuButtonsPanel not found"
+                            );
+                        }
+
+                        /*
+                        * Collection занимает весь MainFrame.
+                        * В том числе пространство под navbar:
+                        * сам navbar рисуется поверх Collection.
+                        */
+                        const collectionWidget =
+                            collectionNode.getComponent(Widget);
+
+                        if(collectionWidget) {
+                            collectionWidget.target = this.node;
+
+                            collectionWidget.isAlignLeft = true;
+                            collectionWidget.isAlignRight = true;
+                            collectionWidget.isAlignTop = true;
+                            collectionWidget.isAlignBottom = true;
+                            collectionWidget.isAlignVerticalCenter = false;
+
+                            collectionWidget.left = 0;
+                            collectionWidget.right = 0;
+                            collectionWidget.top = 0;
+                            collectionWidget.bottom = 0;
+
+                            collectionWidget.updateAlignment();
+                        }
+
+                        const fail = (error: Error) => {
+                            console.error(error);
+
+                            collectionNode.destroy();
+
+                            this.collectionFramePromise = null;
+
+                            reject(error);
+                        };
+
+                        const collectionUi =
+                            collectionNode.getComponent(UICollectionFrame);
+
+                        if(!collectionUi) {
+                            fail(
+                                new Error(
+                                    "UICollectionFrame component not found on CollectionFrame"
+                                )
+                            );
+                            return;
+                        }
+
+                        if(
+                            !UserData.instance ||
+                            !UserData.instance.collections
+                        ) {
+                            fail(
+                                new Error(
+                                    "CollectionEvent controller is not ready"
+                                )
+                            );
+                            return;
+                        }
+
+                        const collectionFrame =
+                            collectionNode.getComponent(UIMainMenuFrame);
+
+                        if(!collectionFrame) {
+                            fail(
+                                new Error(
+                                    "UIMainMenuFrame component not found on CollectionFrame"
+                                )
+                            );
+                            return;
+                        }
+
+                        try {
+                            this.connectCollectionPopups(
+                                collectionNode,
+                                popupsNode
+                            );
+                        }
+                        catch(error) {
+                            fail(
+                                error instanceof Error
+                                    ? error
+                                    : new Error(
+                                        "Failed to connect CollectionFramePopups"
+                                    )
+                            );
+                            return;
+                        }
+
+                        collectionUi.eventController =
+                            UserData.instance.collections;
+
+                        if(ResolutionManager.instance) {
+                            ResolutionManager.instance.addAdaptiveFrame(
+                                collectionNode
+                            );
+                        }
+
+                        this.preloadCollectionCovers()
+                            .then(() => {
+                                this.framesUi[4] = collectionFrame;
+
+                                console.log(
+                                    `[PRELOAD +${performance.now().toFixed(0)}ms] Collection preload finished`
+                                );
+
+                                resolve(collectionFrame);
+                            });
+                    }
+                );
+            });
+        });
+
+        return this.collectionFramePromise;
+    }
 
     onLoad() {
         macro.ENABLE_MULTI_TOUCH = false;
     }
-    
+
     start() {
         this.assetsLoadingFrame.show();
 
@@ -101,10 +475,10 @@ export class UIMainMenu extends UIFrameBase {
         this.startFrame.on("play", () => this.play());
         this.startFrame.on("assets_ready", () => {
             this.updateBackgroundGraphics();
-            
+
             AudioController.instance.loadSoundsAssets();
         });
-        
+
         this.chest.node.on("complete", () => this.updateBackgroundGraphics());
         this.chest.node.on("reward", (data) => this.showChestReward(data));
 
@@ -132,7 +506,7 @@ export class UIMainMenu extends UIFrameBase {
 
         this.updateButtonsAdaptivity();
 
-        
+
         this.scheduleOnce(() => {
             Net.instance.fetchMembersOfChannel(this.clans.getClanId());
         }, 5);
@@ -161,7 +535,7 @@ export class UIMainMenu extends UIFrameBase {
     onBtnShopClick() {
         this.onMainMenuBtnClick(0);
     }
-    
+
     onBtnClanClick() {
         this.onMainMenuBtnClick(1);
     }
@@ -174,11 +548,17 @@ export class UIMainMenu extends UIFrameBase {
         this.onMainMenuBtnClick(3);
     }
 
-    onBtnTbd2Click() {
-        this.onMainMenuBtnClick(4);
+   async onBtnTbd2Click() {
+        try {
+            await this.ensureCollectionFrame();
+            this.onMainMenuBtnClick(4);
+        }
+        catch(error) {
+            console.error("Failed to open CollectionFrame", error);
+        }
     }
 
-    
+
     onMainMenuBtnClick(index: number) {
         this.setAllBtnsPassive();
         this.hideAllFrames();
@@ -198,7 +578,7 @@ export class UIMainMenu extends UIFrameBase {
 
     onProfileBtnClick() {
         this.profilePopup.init(UserData.instance.getPlayerId());
-        
+
         this.profilePopup.show();
     }
 
@@ -211,7 +591,9 @@ export class UIMainMenu extends UIFrameBase {
 
     hideAllFrames() {
         for(let i = 0; i < this.framesUi.length; i++) {
-            this.framesUi[i].hide();
+            if(this.framesUi[i]) {
+                this.framesUi[i].hide();
+            }
         }
     }
 

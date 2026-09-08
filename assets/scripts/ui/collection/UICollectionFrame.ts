@@ -186,7 +186,12 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
 
 
     showCollection(collection: CollectionData, pageNumber: number) {
-        this.collectionInfoPopup.init(collection, this.eventController, pageNumber);
+
+        this.collectionInfoPopup.init(
+            collection,
+            this.eventController,
+            pageNumber
+        );
 
         this.collectionInfoPopup.show();
     }

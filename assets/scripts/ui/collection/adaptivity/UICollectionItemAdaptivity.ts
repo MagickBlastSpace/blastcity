@@ -15,19 +15,28 @@ export class UICollectionItemAdaptivity extends UIAdaptivityBase {
 
     refresh() {
         const visibleSize = view.getVisibleSize();
-    
+
+        const beforeScale = this.container?.scale.clone();
+
         let w = visibleSize.width;
         let h = visibleSize.height;
 
+        let mode = "";
+
         if (w > h) {
             const ratio = w / h;
+
             if(ratio > 1.5) {
+                mode = "desktop";
                 this.makeDesktopVariation(w, h);
             }
             else {
+                mode = "tablet";
                 this.makeTabletVariation(w, h);
             }
-        } else {
+        }
+        else {
+            mode = "mobile";
             this.makeMobileVariation(w, h);
         }
     }
@@ -46,7 +55,7 @@ export class UICollectionItemAdaptivity extends UIAdaptivityBase {
     }
 
     makeMobileVariation(w: number, h: number) {
-        const x = 0.30626 * w * this.mobileScaleMul;
+        const x = 0.30626 * w ;
 
         const container_Size = x;
         const container_Scale = container_Size / this.basic_container_size;

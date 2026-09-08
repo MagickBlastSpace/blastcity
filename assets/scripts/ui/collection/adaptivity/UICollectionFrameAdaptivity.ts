@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Layout, Widget, view, UITransform, Vec3, Size, Mask, Sprite, SpriteFrame } from 'cc';
+import { _decorator,  Node, Layout, Widget, view, Vec3, Sprite, SpriteFrame } from 'cc';
 import { UIAdaptivityBase } from '../../UIAdaptivityBase';
 import { UICollectionItemAdaptivity } from './UICollectionItemAdaptivity';
 const { ccclass, property } = _decorator;
@@ -66,9 +66,6 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
 
     private basic_popup_Size: number = 1452;
 
-    private mobileScaleMul: number = 0.5;
-
-
     refresh() {
         const visibleSize = view.getVisibleSize();
     
@@ -93,6 +90,15 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
     }
 
     makeDesktopVariation(w: number, h: number) {
+
+        const rootWidget = this.node.getComponent(Widget);
+
+        if(rootWidget) {
+            rootWidget.left = 0;
+            rootWidget.right = 0;
+            rootWidget.updateAlignment();
+        }
+
         this.bannerImg.spriteFrame = this.bannerLandscape;
 
         for(let i = 0; i < this.landscapeNodes.length; i++) {
@@ -193,8 +199,10 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
 
         const popupScale = w / 4.5 / this.basic_popup_Size;
         //const popupScale = w / this.basic_popup_Size;
-        for(let i = 0; i < this.popups.length; i++) {
-            this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+            for(let i = 0; i < this.popups.length; i++) {
+            if(this.popups[i]) {
+                this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+            }
         }
     }
 
@@ -203,13 +211,21 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
     }
 
     makeMobileVariation(w: number, h: number) {
+        const rootWidget = this.node.getComponent(Widget);
+
+        if(rootWidget) {
+            rootWidget.left = 0;
+            rootWidget.right = 0;
+            rootWidget.updateAlignment();
+        }
+
         this.bannerImg.spriteFrame = this.bannerPortrait;
 
         for(let i = 0; i < this.landscapeNodes.length; i++) {
             this.landscapeNodes[i].active = false;
         }
 
-        const x = 0.30626 * w * this.mobileScaleMul;
+        const x = 0.30626 * w;
 
         const banner_H = 1.3425 * x;
         const banner_Scale = banner_H / this.basic_banner_H;
@@ -261,7 +277,7 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         const layoutSpacingY = 0.3 * x;
         const scrollSidePadding = 0.04 * x;
 
-        const containerWidth = w * this.mobileScaleMul;
+        const containerWidth = w;
         const columns = 3;
         const itemWidth = x;
 
@@ -294,7 +310,9 @@ export class UICollectionFrameAdaptivity extends UIAdaptivityBase {
         //const popupScale = 0.8 * w / this.basic_popup_Size * this.mobileScaleMul;
         const popupScale = 0.8 * w / this.basic_popup_Size;
         for(let i = 0; i < this.popups.length; i++) {
-            this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+             if(this.popups[i]) {
+                this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
+             }
         }
     }
 

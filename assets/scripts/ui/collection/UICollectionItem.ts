@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, Button, assetManager, SpriteFrame, Sprite, ProgressBar, tween } from 'cc';
+import { _decorator, Component, Node, Label, Button, assetManager, SpriteFrame, Sprite, ProgressBar, tween, UITransform } from 'cc';
 import { CollectionData } from '../../data/CollectionData';
 import { EventBase } from '../../game/events/EventBase';
 import { Localization } from '../../utils/Localization';
