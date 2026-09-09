@@ -86,6 +86,44 @@ export class UIMainMenu extends UIFrameBase {
 
     private collectionFramePromise: Promise<UIMainMenuFrame> = null;
 
+    private chestGraphicsPromise: Promise<void> = null;
+
+    private preloadChestGraphics(): Promise<void> {
+        if (this.chestGraphicsPromise) {
+            return this.chestGraphicsPromise;
+        }
+
+        this.chestGraphicsPromise = new Promise((resolve) => {
+            assetManager.loadBundle("big_graphics", (err, bundle) => {
+                if (err) {
+                    console.error("Failed to preload bundle: big_graphics", err);
+                    this.chestGraphicsPromise = null;
+                    resolve();
+                    return;
+                }
+
+                bundle.load("chest/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                    if (err) {
+                        console.error("Failed to preload chest graphics", err);
+                        this.chestGraphicsPromise = null;
+                        resolve();
+                        return;
+                    }
+
+                    this.chestPicture.spriteFrame = spriteFrame;
+
+                    console.log(
+                        `[STARTUP +${performance.now().toFixed(0)}ms] Chest graphics ready`,
+                    );
+
+                    resolve();
+                });
+            });
+        });
+
+        return this.chestGraphicsPromise;
+    }
+
     private connectCollectionPopups(collectionNode: Node, popupsNode: Node) {
         const collectionUi = collectionNode.getComponent(UICollectionFrame);
         const adaptivity = collectionNode.getComponent(UICollectionFrameAdaptivity);
@@ -458,6 +496,8 @@ export class UIMainMenu extends UIFrameBase {
 
     start() {
         this.assetsLoadingFrame.show();
+
+        void this.preloadChestGraphics();
 
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
         UserData.instance.node.on("premium_purchase", () => this.showPremiumPurchase());
