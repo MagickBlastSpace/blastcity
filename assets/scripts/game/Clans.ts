@@ -28,16 +28,20 @@ export class Clans extends Component {
 
     private isItemsFromTeamChecked: boolean = false;
 
+    private isLoaded: boolean = false;
+    private isLoading: boolean = false;
+
 
     onLoad() {
         this.clans = [];
-        this.isMemberFetchAvailable = false;
     
         gamepush.channels.on('fetchChannels', (result) => {
             this.fetchChannelsResult(result);
         });
     
         gamepush.channels.on('error:fetchChannels', (err) => {
+            this.isLoading = false;
+
             console.log("Error fetch multiplayer channel for clans: " + err);
         });
     
@@ -133,7 +137,13 @@ export class Clans extends Component {
 
     
     refresh() {
+        if (this.isLoading) {
+            return;
+        }
+
+        this.isLoading = true;
         this.clansUpdate = [];
+
         Net.instance.requestClansChannels();
     }
 
@@ -143,7 +153,7 @@ export class Clans extends Component {
             let channel = result.items[i];
 
             if(!channel.tags.includes("clan")) {
-                return;
+               continue;
             }
 
             let clanData = new ClanData();
@@ -177,14 +187,22 @@ export class Clans extends Component {
         }
 
         this.clans = [];
-            for(let i = 0; i < this.clansUpdate.length; i++) {
-                this.clans.push(this.clansUpdate[i]);
-            }
+
+        for(let i = 0; i < this.clansUpdate.length; i++) {
+            this.clans.push(this.clansUpdate[i]);
+        }
+
         this.clansUpdate = [];
+
+        this.isLoaded = true;
+        this.isLoading = false;
 
         this.node.emit("refresh", this.clans);
     }
 
+    isDataLoaded(): boolean {
+         return this.isLoaded;
+    }
 
     joinClan(clanId: number) {
         if(this.isJoinRequested() || this.isJoined()) {

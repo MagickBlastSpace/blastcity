@@ -1,9 +1,9 @@
-import { _decorator, Component, Node, Button, EditBox, Label } from 'cc';
-import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { _decorator, Button, EditBox, Label } from 'cc';
+import { UIFrameBase } from '../UIFrameBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClansCreateFrame')
-export class UIClansCreateFrame extends UIPopupFrameBase {
+export class UIClansCreateFrame extends UIFrameBase {
 
     /*landscape*/
     @property(Button)

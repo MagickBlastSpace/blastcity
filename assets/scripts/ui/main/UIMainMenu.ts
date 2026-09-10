@@ -499,6 +499,10 @@ export class UIMainMenu extends UIFrameBase {
 
         void this.preloadChestGraphics();
 
+        if (!this.clans.isDataLoaded()) {
+            this.clans.refresh();
+        }
+
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
         UserData.instance.node.on("premium_purchase", () => this.showPremiumPurchase());
         SaveData.instance.node.on("level_progress_checked", () => {
@@ -548,7 +552,11 @@ export class UIMainMenu extends UIFrameBase {
 
 
         this.scheduleOnce(() => {
-            Net.instance.fetchMembersOfChannel(this.clans.getClanId());
+            const clanId = this.clans.getClanId();
+
+            if (clanId > 0) {
+                Net.instance.fetchMembersOfChannel(clanId);
+            }
         }, 5);
     }
 

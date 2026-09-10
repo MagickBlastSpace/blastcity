@@ -1,11 +1,11 @@
-import { _decorator, Component, Node, Button, Prefab, instantiate, EditBox } from 'cc';
-import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { _decorator, Node, Button, Prefab, instantiate, EditBox, Label  } from 'cc';
+import { UIFrameBase } from '../UIFrameBase';
 import { UIClanItem } from './UIClanItem';
 import { ClanData } from '../../data/ClanData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIClansSearchFrame')
-export class UIClansSearchFrame extends UIPopupFrameBase {
+export class UIClansSearchFrame extends UIFrameBase {
 
     @property(Prefab)
     itemPrefab: Prefab = null;
@@ -20,11 +20,50 @@ export class UIClansSearchFrame extends UIPopupFrameBase {
     @property(EditBox)
     searchInput: EditBox = null;
 
-    private data: ClanData[] = [];
+    @property(Node)
+    suitableClansBlock: Node = null;
 
+    @property(Node)
+    suitableClansHint: Node = null;
+
+    private data: ClanData[] = [];
+    
+    private onSearchTextChanged() {
+        const hasText = this.searchInput.string.trim().length > 0;
+
+        this.suitableClansBlock.active = !hasText;
+
+        if (hasText) {
+            this.suitableClansHint.active = false;
+        } else {
+            this.clearSearchResults();
+
+            const hintLabel = this.suitableClansHint.getComponent(Label);
+
+            if (hintLabel) {
+                hintLabel.string = "Подобрать подходящие для вас кланы";
+            }
+
+            this.suitableClansHint.active = true;
+        }
+    }
+
+    private clearSearchResults() {
+        for (let i = 0; i < this.items.length; i++) {
+            this.items[i].node.active = false;
+        }
+    }
 
     start() {
         this.searchBtn.node.on(Button.EventType.CLICK, this.searchClans, this);
+
+        this.searchInput.node.on(
+            EditBox.EventType.TEXT_CHANGED,
+            this.onSearchTextChanged,
+            this
+        );
+
+        this.onSearchTextChanged();
     }
 
     refresh(data: ClanData[]) {
@@ -32,14 +71,30 @@ export class UIClansSearchFrame extends UIPopupFrameBase {
     }
 
     searchClans() {
-        const matchingClans = this.searchInput.string !== "" ? this.findClansBySubstring(this.searchInput.string) : this.findSuitableClans();
+        const searchText = this.searchInput.string.trim();
 
-        for(let i = 0; i < this.items.length; i++) {
-            this.items[i].node.active = false;
+        const matchingClans = searchText !== ""
+            ? this.findClansBySubstring(searchText)
+            : this.findSuitableClans();
+
+        this.clearSearchResults();
+
+        if (searchText !== "" && matchingClans.length === 0) {
+            const hintLabel = this.suitableClansHint.getComponent(Label);
+
+            if (hintLabel) {
+                hintLabel.string = `Клан с названием "${searchText}" не найден`;
+            }
+
+            this.suitableClansHint.active = true;
+
+            return;
         }
 
-        for(let i = 0; i < matchingClans.length; i++) {
-            if(i >= this.items.length) {
+        this.suitableClansHint.active = false;
+
+        for (let i = 0; i < matchingClans.length; i++) {
+            if (i >= this.items.length) {
                 this.spawnItem();
             }
 
@@ -56,7 +111,7 @@ export class UIClansSearchFrame extends UIPopupFrameBase {
 
         this.itemsLayout.addChild(itemNode);
 
-        let item = itemNode.getComponent("UIClanItem");
+        let item = itemNode.getComponent(UIClanItem);
 
         this.items.push(item);
     }

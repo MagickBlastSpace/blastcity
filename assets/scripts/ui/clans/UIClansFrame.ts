@@ -39,6 +39,10 @@ export class UIClansFrame extends UIFrameBase {
     @property(Clans)
     clans: Clans = null;
 
+    
+    private applyCurrentData() {
+        this.refresh(this.clans.getAllClans());
+    }
 
     start() {
         this.clans.node.on("refresh", (clansData) => this.refresh(clansData));
@@ -80,12 +84,13 @@ export class UIClansFrame extends UIFrameBase {
     show() {
         super.show();
 
-        this.joinedState.active = false;
-        this.notJoinedState.active = false;
-
-        this.clans.refresh();
-
         this.showFrame(0);
+
+        if (this.clans.isDataLoaded()) {
+            this.applyCurrentData();
+        } else {
+            this.clans.refresh();
+        }
     }
 
     hide() {
@@ -112,7 +117,6 @@ export class UIClansFrame extends UIFrameBase {
     cancelJoin(id: number) {
         this.clans.cancelJoinClan(id);
     }
-
 
     onCreateBtnClick(data: string, isPrivate: boolean) {
         this.clans.createClan(data, isPrivate);
