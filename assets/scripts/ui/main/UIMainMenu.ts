@@ -86,44 +86,6 @@ export class UIMainMenu extends UIFrameBase {
 
     private collectionFramePromise: Promise<UIMainMenuFrame> = null;
 
-    private chestGraphicsPromise: Promise<void> = null;
-
-    private preloadChestGraphics(): Promise<void> {
-        if (this.chestGraphicsPromise) {
-            return this.chestGraphicsPromise;
-        }
-
-        this.chestGraphicsPromise = new Promise((resolve) => {
-            assetManager.loadBundle("big_graphics", (err, bundle) => {
-                if (err) {
-                    console.error("Failed to preload bundle: big_graphics", err);
-                    this.chestGraphicsPromise = null;
-                    resolve();
-                    return;
-                }
-
-                bundle.load("chest/spriteFrame", SpriteFrame, (err, spriteFrame) => {
-                    if (err) {
-                        console.error("Failed to preload chest graphics", err);
-                        this.chestGraphicsPromise = null;
-                        resolve();
-                        return;
-                    }
-
-                    this.chestPicture.spriteFrame = spriteFrame;
-
-                    console.log(
-                        `[STARTUP +${performance.now().toFixed(0)}ms] Chest graphics ready`,
-                    );
-
-                    resolve();
-                });
-            });
-        });
-
-        return this.chestGraphicsPromise;
-    }
-
     private connectCollectionPopups(collectionNode: Node, popupsNode: Node) {
         const collectionUi = collectionNode.getComponent(UICollectionFrame);
         const adaptivity = collectionNode.getComponent(UICollectionFrameAdaptivity);
@@ -497,29 +459,35 @@ export class UIMainMenu extends UIFrameBase {
     start() {
         this.assetsLoadingFrame.show();
 
-        void this.preloadChestGraphics();
-
-        if (!this.clans.isDataLoaded()) {
-            this.clans.refresh();
-        }
-
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
-        UserData.instance.node.on("premium_purchase", () => this.showPremiumPurchase());
-        SaveData.instance.node.on("level_progress_checked", async () => {
-            console.log(`[STARTUP +${performance.now().toFixed(0)}ms] Level progress checked`);
 
-            if(UserData.instance.getProgress() > 0) {
-                await this.preloadChestGraphics();
+        UserData.instance.node.on(
+            "premium_purchase",
+            () => this.showPremiumPurchase()
+        );
 
+        SaveData.instance.node.on("level_progress_checked", () => {
+            console.log(
+                `[STARTUP +${performance.now().toFixed(0)}ms] Level progress checked`
+            );
+
+            if (UserData.instance.getProgress() > 0) {
                 this.assetsLoadingFrame.hide();
 
                 AudioController.instance.playMainMenuSoundtrack();
-
                 AudioController.instance.loadSoundsAssets();
+
+                this.scheduleOnce(() => {
+                    if (!this.clans.isDataLoaded()) {
+                        console.log("[CLANS] Background preload started");
+                        this.clans.refresh();
+                    }
+                }, 0.5);
             }
         });
 
         this.startFrame.on("play", () => this.play());
+
         this.startFrame.on("assets_ready", () => {
             this.updateBackgroundGraphics();
 
@@ -553,7 +521,6 @@ export class UIMainMenu extends UIFrameBase {
 
         this.updateButtonsAdaptivity();
 
-
         this.scheduleOnce(() => {
             const clanId = this.clans.getClanId();
 
@@ -562,7 +529,6 @@ export class UIMainMenu extends UIFrameBase {
             }
         }, 5);
     }
-
 
     show() {
         super.show();

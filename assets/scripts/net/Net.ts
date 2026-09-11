@@ -201,25 +201,33 @@ export class Net extends Component {
     /*
     Clans
     */
-    async requestClansChannels() {
+    async requestClansChannels(): Promise<any | null> {
         try {
             const response = await gamepush.channels.fetchChannels({
                 tags: ["clan"],
                 limit: 100
             });
+
+            return response;
         } catch (error) {
-            console.log('Error request clans channels:', error);
+            console.error("Error request clans channels:", error);
+
+            return null;
         }
     }
 
-    async requestMoreClansChannels() {
+    async requestMoreClansChannels(): Promise<any | null> {
         try {
             const response = await gamepush.channels.fetchMoreChannels({
                 tags: ["clan"],
                 limit: 100
             });
+
+            return response;
         } catch (error) {
-            console.log('Error requestMoreClanChannels:', error);
+            console.error("Error requestMoreClanChannels:", error);
+
+            return null;
         }
     }
 

@@ -31,24 +31,14 @@ export class Clans extends Component {
     private isLoaded: boolean = false;
     private isLoading: boolean = false;
 
+    private refreshRetryCount: number = 0;
+    private refreshRetryScheduled: boolean = false;
+
+    private readonly maxRefreshRetries: number = 2;
+
 
     onLoad() {
         this.clans = [];
-    
-        gamepush.channels.on('fetchChannels', (result) => {
-            this.fetchChannelsResult(result);
-        });
-    
-        gamepush.channels.on('error:fetchChannels', (err) => {
-            this.isLoading = false;
-
-            console.log("Error fetch multiplayer channel for clans: " + err);
-        });
-    
-    
-        gamepush.channels.on('fetchMoreChannels', (result) => {
-            this.fetchChannelsResult(result);
-        });
     
         gamepush.channels.on('fetchMembers', (result) => {
 
@@ -135,8 +125,38 @@ export class Clans extends Component {
         Net.instance.publishScore("clan", "clan_" + this.playerClanId, UserData.instance.getProgress());
     }
 
+    private scheduleRefreshRetry() {
+        if (this.isLoaded) {
+            return;
+        }
+
+        if (this.refreshRetryScheduled) {
+            return;
+        }
+
+        if (this.refreshRetryCount >= this.maxRefreshRetries) {
+            console.warn("[CLANS] Retry limit reached");
+            return;
+        }
+
+        this.refreshRetryCount++;
+
+        console.log(
+            `[CLANS] Scheduling retry ${this.refreshRetryCount}/${this.maxRefreshRetries}`
+        );
+
+        this.refreshRetryScheduled = true;
+
+        this.scheduleOnce(() => {
+            this.refreshRetryScheduled = false;
+
+            if (!this.isLoaded && !this.isLoading) {
+                void this.refresh();
+            }
+        }, 1);
+    }
     
-    refresh() {
+    async refresh() {
         if (this.isLoading) {
             return;
         }
@@ -144,19 +164,78 @@ export class Clans extends Component {
         this.isLoading = true;
         this.clansUpdate = [];
 
-        Net.instance.requestClansChannels();
-    }
+        console.log("[CLANS] Fetch started");
 
-    
-    private fetchChannelsResult(result: any) {
-        for(let i = 0; i < result.items.length; i++) {
-            let channel = result.items[i];
+        try {
+            let result = await Net.instance.requestClansChannels();
 
-            if(!channel.tags.includes("clan")) {
-               continue;
+            if (!result) {
+                console.warn("[CLANS] Initial fetch failed");
+
+                this.isLoading = false;
+                this.scheduleRefreshRetry();
+
+                return;
             }
 
-            let clanData = new ClanData();
+            while (result) {
+                this.appendChannelsResult(result);
+
+                if (!result.canLoadMore) {
+                    break;
+                }
+
+                result = await Net.instance.requestMoreClansChannels();
+
+                if (!result) {
+                    console.warn("[CLANS] Fetch more failed");
+
+                    this.isLoading = false;
+                    this.scheduleRefreshRetry();
+
+                    return;
+                }
+            }
+
+            this.clans = [...this.clansUpdate];
+            this.clansUpdate = [];
+
+            this.isLoaded = true;
+            this.isLoading = false;
+
+            this.refreshRetryCount = 0;
+            this.refreshRetryScheduled = false;
+
+            console.log(
+                `[CLANS] Loaded successfully. Count: ${this.clans.length}`
+            );
+
+            this.node.emit("refresh", this.clans);
+
+        } catch (error) {
+            console.error("[CLANS] Unexpected refresh error:", error);
+
+            this.isLoading = false;
+
+            this.scheduleRefreshRetry();
+        }
+    }
+
+
+    private appendChannelsResult(result: any) {
+        if (!result || !result.items) {
+            return;
+        }
+
+        for(let i = 0; i < result.items.length; i++) {
+            const channel = result.items[i];
+
+            if(!channel.tags || !channel.tags.includes("clan")) {
+                continue;
+            }
+
+            const clanData = new ClanData();
+
             clanData.clanName = channel.name;
             clanData.clanId = channel.id;
             clanData.capacity = channel.capacity;
@@ -173,31 +252,17 @@ export class Clans extends Component {
 
                 this.joinRequestId = 0;
 
-                Net.instance.publishScore("clan", "clan_" + this.playerClanId, UserData.instance.getProgress());
+                Net.instance.publishScore(
+                    "clan",
+                    "clan_" + this.playerClanId,
+                    UserData.instance.getProgress()
+                );
 
                 UserData.instance.setClanName(this.playerClanName);
 
                 this.myClan = clanData;
             }
         }
-
-        if(result.canLoadMore) {
-            Net.instance.requestMoreClansChannels();
-            return;
-        }
-
-        this.clans = [];
-
-        for(let i = 0; i < this.clansUpdate.length; i++) {
-            this.clans.push(this.clansUpdate[i]);
-        }
-
-        this.clansUpdate = [];
-
-        this.isLoaded = true;
-        this.isLoading = false;
-
-        this.node.emit("refresh", this.clans);
     }
 
     isDataLoaded(): boolean {

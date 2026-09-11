@@ -55,7 +55,6 @@ export class EventsController extends Component {
         this.chest.on("progress", (count) => this.handleEventProgress("chest", count));
 
         Net.instance.requestEventsChannels();
-        Net.instance.requestClansChannels();
     }
 
 
