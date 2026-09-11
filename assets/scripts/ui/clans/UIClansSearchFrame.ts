@@ -1,4 +1,4 @@
-import { _decorator, Node, Button, Prefab, instantiate, EditBox, Label  } from 'cc';
+import { _decorator, Node, Button, Prefab, instantiate, EditBox, Label, Layout, UITransform  } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
 import { UIClanItem } from './UIClanItem';
 import { ClanData } from '../../data/ClanData';
@@ -101,6 +101,12 @@ export class UIClansSearchFrame extends UIFrameBase {
             this.items[i].node.active = true;
             this.items[i].init(matchingClans[i]);
         }
+
+        const layout = this.itemsLayout.getComponent(Layout);
+
+        if (layout) {
+            layout.updateLayout();
+        }
     }
 
 
@@ -111,7 +117,19 @@ export class UIClansSearchFrame extends UIFrameBase {
 
         this.itemsLayout.addChild(itemNode);
 
-        let item = itemNode.getComponent(UIClanItem);
+        const contentTransform = this.itemsLayout.getComponent(UITransform);
+        const itemTransform = itemNode.getComponent(UITransform);
+
+        if (contentTransform && itemTransform) {
+            itemTransform.width = contentTransform.width;
+        }
+
+        const layout = this.itemsLayout.getComponent(Layout);
+        if (layout) {
+            layout.updateLayout();
+        }
+
+        const item = itemNode.getComponent(UIClanItem);
 
         this.items.push(item);
     }

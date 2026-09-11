@@ -505,9 +505,12 @@ export class UIMainMenu extends UIFrameBase {
 
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
         UserData.instance.node.on("premium_purchase", () => this.showPremiumPurchase());
-        SaveData.instance.node.on("level_progress_checked", () => {
+        SaveData.instance.node.on("level_progress_checked", async () => {
             console.log(`[STARTUP +${performance.now().toFixed(0)}ms] Level progress checked`);
+
             if(UserData.instance.getProgress() > 0) {
+                await this.preloadChestGraphics();
+
                 this.assetsLoadingFrame.hide();
 
                 AudioController.instance.playMainMenuSoundtrack();
@@ -668,20 +671,8 @@ export class UIMainMenu extends UIFrameBase {
                 this.background.spriteFrame = spriteFrame;
                 this.background_1.spriteFrame = spriteFrame;
             });
-
-            bundle.load("chest/spriteFrame", SpriteFrame, (err, spriteFrame) => {
-                if (err) {
-                    console.error(`Failed to load prefab: chest`, err);
-                    return;
-                }
-
-                console.log(`Successfully loaded prefab: chest`);
-
-                this.chestPicture.spriteFrame = spriteFrame;
-            });
         });
     }
-
 
     showPremiumPurchase() {
         this.rewardPopup.show();

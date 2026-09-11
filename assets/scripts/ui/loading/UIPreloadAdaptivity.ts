@@ -54,26 +54,33 @@ export class UIPreloadAdaptivity extends Component {
         }
 
         // PHONE
-
         if (isPhonePortrait) {
             if (this.mobileBackground) {
                 backgroundSprite.spriteFrame = this.mobileBackground;
             }
 
             if (backgroundWidget) {
-                backgroundWidget.enabled = true;
+                backgroundWidget.enabled = false;
+            }
 
-                backgroundWidget.isAlignLeft = true;
-                backgroundWidget.isAlignRight = true;
-                backgroundWidget.isAlignTop = true;
-                backgroundWidget.isAlignBottom = true;
+            const spriteFrame = backgroundSprite.spriteFrame;
 
-                backgroundWidget.left = 0;
-                backgroundWidget.right = 0;
-                backgroundWidget.top = 0;
-                backgroundWidget.bottom = 0;
+            if (spriteFrame) {
+                const rect = spriteFrame.rect;
 
-                backgroundWidget.updateAlignment();
+                const imageWidth = rect.width;
+                const imageHeight = rect.height;
+
+                const imageAspect = imageWidth / imageHeight;
+                const screenAspect = width / height;
+
+                if (screenAspect > imageAspect) {
+                    backgroundTransform.width = width;
+                    backgroundTransform.height = width / imageAspect;
+                } else {
+                    backgroundTransform.height = height;
+                    backgroundTransform.width = height * imageAspect;
+                }
             }
 
             this.back.setPosition(Vec3.ZERO);
