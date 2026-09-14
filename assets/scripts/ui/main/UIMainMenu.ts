@@ -22,6 +22,7 @@ import { UICollectionDuplicateExchange } from '../collection/UICollectionDuplica
 import { UIEventTutorialPopup } from '../tutorial/UIEventTutorialPopup';
 import { UICollectionInfoPopup } from '../collection/UICollectionInfoPopup';
 import { UICollectionCard } from '../collection/UICollectionCard';
+import { UILeaderboardFrame } from '../leaderboard/UILeaderboardFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -83,6 +84,9 @@ export class UIMainMenu extends UIFrameBase {
 
     @property(Clans)
     clans: Clans = null;
+
+    @property(UILeaderboardFrame)
+    leaderboardFrame: UILeaderboardFrame = null;
 
     private collectionFramePromise: Promise<UIMainMenuFrame> = null;
 
@@ -472,17 +476,27 @@ export class UIMainMenu extends UIFrameBase {
             );
 
             if (UserData.instance.getProgress() > 0) {
+
                 this.assetsLoadingFrame.hide();
 
                 AudioController.instance.playMainMenuSoundtrack();
                 AudioController.instance.loadSoundsAssets();
 
+                this.preloadLeaderboardInBackground();
+
+
                 this.scheduleOnce(() => {
+
                     if (!this.clans.isDataLoaded()) {
-                        console.log("[CLANS] Background preload started");
+
+                        console.log(
+                            "[CLANS] Background preload started"
+                        );
+
                         this.clans.refresh();
                     }
-                }, 0.5);
+
+                }, 1.0);
             }
         });
 
@@ -548,6 +562,46 @@ export class UIMainMenu extends UIFrameBase {
         this.adsTimer.startGameplayTimer();
     }
 
+    private preloadLeaderboardInBackground() {
+
+        if (!this.leaderboardFrame) {
+            console.error(
+                "[LEADERBOARD PRELOAD] leaderboardFrame is not assigned"
+            );
+
+            return;
+        }
+
+        console.log(
+            "[LEADERBOARD PRELOAD] scheduled"
+        );
+
+        this.scheduleOnce(() => {
+
+            console.log(
+                "[LEADERBOARD PRELOAD] starting"
+            );
+
+            void this.leaderboardFrame
+                .preloadPlayers()
+                .then(() => {
+
+                    console.log(
+                        "[LEADERBOARD PRELOAD] fully ready"
+                    );
+
+                })
+                .catch((error) => {
+
+                    console.error(
+                        "[LEADERBOARD PRELOAD] failed",
+                        error
+                    );
+
+                });
+
+        }, 0.5);
+    }
 
     onBtnShopClick() {
         this.onMainMenuBtnClick(0);

@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label } from 'cc';
+import { _decorator, Label } from 'cc';
 import { UIEventWeeklyContest } from '../events/WeeklyContest/UIEventWeeklyContest';
 import { UIFrameBase } from '../UIFrameBase';
 import { UITab } from '../main/UITab';
@@ -6,6 +6,7 @@ import { UIProfilePopup } from '../profile/UIProfilePopup';
 import { ClanData } from '../../data/ClanData';
 import { UIClanInfoPopup } from '../clans/UIClanInfoPopup';
 import { UILeaderboardAdaptivity } from './adaptivity/UILeaderboardAdaptivity';
+import { UILeaderboardPlayersFrame } from './UILeaderboardPlayersFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardFrame')
@@ -31,6 +32,9 @@ export class UILeaderboardFrame extends UIFrameBase {
 
     @property(UILeaderboardAdaptivity)
     adaptivity: UILeaderboardAdaptivity;
+
+    @property(UILeaderboardPlayersFrame)
+    playersFrame: UILeaderboardPlayersFrame = null;
 
 
     start() {
@@ -101,6 +105,15 @@ export class UILeaderboardFrame extends UIFrameBase {
         this.clanPopup.init(clanData);
 
         this.clanPopup.show();
+    }
+
+    public async preloadPlayers(): Promise<void> {
+        if (!this.playersFrame) {
+            console.warn("[LEADERBOARD] Players frame is not assigned");
+            return;
+        }
+
+        await this.playersFrame.preload();
     }
 }
 
