@@ -372,6 +372,7 @@ export class UILeaderboardPlayersFrame extends UIFrameBase {
                 i < data.length;
         }
 
+
         const layout =
             this.itemsLayout.getComponent(Layout);
 
@@ -380,12 +381,12 @@ export class UILeaderboardPlayersFrame extends UIFrameBase {
             layout.updateLayout();
         }
 
-
         this.scheduleOnce(() => {
 
             if (!this.node.activeInHierarchy) {
                 return;
             }
+
 
             if (layout) {
                 layout.updateLayout();
@@ -397,47 +398,6 @@ export class UILeaderboardPlayersFrame extends UIFrameBase {
             }
 
         }, 0);
-
-        this.scheduleOnce(() => {
-
-            if (!this.node.activeInHierarchy) {
-                return;
-            }
-
-
-            this.adaptivity?.debugGeometry(
-                "FRAME +1"
-            );
-
-        }, 0);
-
-
-        this.scheduleOnce(() => {
-
-            if (!this.node.activeInHierarchy) {
-                return;
-            }
-
-
-            this.adaptivity?.debugGeometry(
-                "FRAME +0.2 SEC"
-            );
-
-        }, 0.2);
-
-
-        this.scheduleOnce(() => {
-
-            if (!this.node.activeInHierarchy) {
-                return;
-            }
-
-
-            this.adaptivity?.debugGeometry(
-                "FRAME +0.5 SEC"
-            );
-
-        }, 0.5);
     }
 
     show() {
