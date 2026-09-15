@@ -12,7 +12,7 @@ export class WeeklyContestEvent extends SkyRaceEvent {
     @property([PlayerEventData])
     bots: PlayerEventData[] = [];
 
-    private playerPlace: number = -1;
+    private weeklyPlayerPlace: number = -1;
 
 
     onLoad() {
@@ -46,7 +46,7 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
         this.isComplete = true;
 
-        this.playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
+        this.weeklyPlayerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
 
         this.takeReward();
 
@@ -72,13 +72,13 @@ export class WeeklyContestEvent extends SkyRaceEvent {
             return;
         }
 
-        this.applyReward(this.rewards[this.playerPlace]);
+        this.applyReward(this.rewards[this.weeklyPlayerPlace]);
 
         this.isComplete = false;
     }
 
     isRewardAvailable(): boolean {
-        return this.isComplete && this.playerPlace > -1 && this.playerPlace < this.rewards.length;
+        return this.isComplete && this.weeklyPlayerPlace > -1 && this.weeklyPlayerPlace < this.rewards.length;
     }
 
 
@@ -118,7 +118,7 @@ export class WeeklyContestEvent extends SkyRaceEvent {
 
                 let id = players[i].id;
 
-                if(!ids.includes(id)) {
+                if(ids.indexOf(id) === -1) {
                     ids.push(id);
 
                     this.players.push(player);

@@ -563,43 +563,28 @@ export class UIMainMenu extends UIFrameBase {
     }
 
     private preloadLeaderboardInBackground() {
-
-        if (!this.leaderboardFrame) {
-            console.error(
-                "[LEADERBOARD PRELOAD] leaderboardFrame is not assigned"
-            );
-
+        if(!this.leaderboardFrame) {
+            console.error("[LEADERBOARD PRELOAD] leaderboardFrame is not assigned");
             return;
         }
 
-        console.log(
-            "[LEADERBOARD PRELOAD] scheduled"
-        );
+        console.log("[LEADERBOARD PRELOAD] scheduled");
 
         this.scheduleOnce(() => {
+            console.log("[LEADERBOARD PRELOAD] starting");
 
-            console.log(
-                "[LEADERBOARD PRELOAD] starting"
-            );
+            void (async () => {
+                try {
+                    await this.leaderboardFrame.preloadWeekly();
+                    console.log("[LEADERBOARD PRELOAD] weekly ready");
 
-            void this.leaderboardFrame
-                .preloadPlayers()
-                .then(() => {
-
-                    console.log(
-                        "[LEADERBOARD PRELOAD] fully ready"
-                    );
-
-                })
-                .catch((error) => {
-
-                    console.error(
-                        "[LEADERBOARD PRELOAD] failed",
-                        error
-                    );
-
-                });
-
+                    await this.leaderboardFrame.preloadPlayers();
+                    console.log("[LEADERBOARD PRELOAD] fully ready");
+                }
+                catch(error) {
+                    console.error("[LEADERBOARD PRELOAD] failed", error);
+                }
+            })();
         }, 0.5);
     }
 

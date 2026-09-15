@@ -19,10 +19,10 @@ export class UILeaderboardFrame extends UIFrameBase {
     weeklyContest: UIEventWeeklyContest = null;
 
     @property([UITab])
-    tabs: UITab = [];
+    tabs: UITab[] = [];
 
     @property([UIFrameBase])
-    frames: UIFrameBase = [];
+    frames: UIFrameBase[] = [];
 
     @property(UIProfilePopup)
     profilePopup: UIProfilePopup = null;
@@ -108,12 +108,21 @@ export class UILeaderboardFrame extends UIFrameBase {
     }
 
     public async preloadPlayers(): Promise<void> {
-        if (!this.playersFrame) {
-            console.warn("[LEADERBOARD] Players frame is not assigned");
+            if (!this.playersFrame) {
+                console.warn("[LEADERBOARD] Players frame is not assigned");
+                return;
+            }
+
+            await this.playersFrame.preload();
+        }
+
+        public async preloadWeekly(): Promise<void> {
+        if(!this.weeklyContest) {
+            console.warn("[LEADERBOARD] Weekly frame is not assigned");
             return;
         }
 
-        await this.playersFrame.preload();
+        await this.weeklyContest.preload();
     }
 }
 
