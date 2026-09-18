@@ -49,13 +49,23 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
     private postLayoutScheduled: boolean = false;
 
     private basic_prize_layout_size: number = 1452;
-    private basic_prize_layout_size_H: number = 700;
     private basic_header_size: number = 1224;
     private basic_info_size: number = 107;
     private basic_popup_Size: number = 1452;
 
+    private basicPrizeLayoutBottom: number = 10;
+
     private mobileScaleMul: number = 0.5;
     private tabletScaleMul: number = 0.71;
+
+    private basic_prize_layout_width: number = 1452;
+    private basic_prize_layout_height: number = 700;
+
+    private basic_gold_size: Size = new Size(474, 664);
+    private basic_silver_size: Size = new Size(474, 598);
+    private basic_bronze_size: Size = new Size(474, 554);
+
+    private basic_prize_spacing: number = 15;
 
 
     refresh() {
@@ -158,6 +168,44 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         return null;
     }
 
+    private restoreBasePodiumGeometry() {
+        const prizeLayoutTransform = this.prizeLayout.node.getComponent(UITransform);
+
+        if (prizeLayoutTransform) {
+            prizeLayoutTransform.setContentSize(
+                new Size(this.basic_prize_layout_width, this.basic_prize_layout_height)
+            );
+        }
+
+        this.back_gold.getComponent(UITransform).setContentSize(this.basic_gold_size);
+        this.back_silver.getComponent(UITransform).setContentSize(this.basic_silver_size);
+        this.back_bronze.getComponent(UITransform).setContentSize(this.basic_bronze_size);
+
+        this.prizeLayout.spacingX = this.basic_prize_spacing;
+        this.prizeLayout.updateLayout();
+    }
+
+    private applyUnifiedPodium(
+        targetWidth: number,
+        bottom: number,
+        visualSpacing: number = 15
+    ) {
+        this.restoreBasePodiumGeometry();
+
+        const prizeLayoutWidget = this.prizeLayout.node.getComponent(Widget);
+
+        const layoutScale = targetWidth / this.basic_prize_layout_width;
+        this.prizeLayout.node.setScale(new Vec3(layoutScale, layoutScale, 1));
+
+        this.prizeLayout.spacingX = visualSpacing / layoutScale;
+        this.prizeLayout.updateLayout();
+
+        if (prizeLayoutWidget) {
+            prizeLayoutWidget.bottom = bottom;
+            prizeLayoutWidget.updateAlignment();
+        }
+    }
+
 
     private fitScrollToBottomNavigation() {
         const bottomNavigation = this.getBottomNavigation();
@@ -231,34 +279,21 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
     makeMobileVariation(w: number, h: number) {
         const x = 0.262 * w * this.mobileScaleMul;
 
-        const banner_H = 2.276 * x;
-        const banner_W = 3.596 * x;
-        this.banner.getComponent(UITransform).setContentSize(new Size(banner_W, banner_H));
-
-        const back_prize_W = 1.0256 * x;
-
-        const back_gold_H = 1.481 * x;
-        this.back_gold.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_gold_H));
-
-        const back_silver_H = 1.327 * x;
-        this.back_silver.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_silver_H));
-
-        const back_bronze_H = 1.212 * x;
-        this.back_bronze.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_bronze_H));
+        const bannerH = 2.276 * x;
+        const bannerW = 3.596 * x;
+        this.banner.getComponent(UITransform).setContentSize(new Size(bannerW, bannerH));
 
         const bannerPaddingTop = (1.468 + 0.16) * x;
         this.banner_Widget.top = bannerPaddingTop;
 
-        const scroll_H = h - (1.468 + 0.16 + 2.276 + 0.064 + 0.8526 + 0.5769) * x;
-        const scroll_W = 3.436 * x;
-        this.scroll.getComponent(UITransform).setContentSize(new Size(scroll_W, scroll_H));
+        const scrollH = h - (1.468 + 0.16 + 2.276 + 0.064 + 0.8526 + 0.5769) * x;
+        const scrollW = 3.436 * x;
+        this.scroll.getComponent(UITransform).setContentSize(new Size(scrollW, scrollH));
 
         const scrollPaddingTop = (1.468 + 0.16 + 2.276) * x;
         this.scroll_Widget.top = scrollPaddingTop;
 
-        const layoutSize = 3.244 * x;
-        const layoutScale = layoutSize / this.basic_prize_layout_size;
-        this.prizeLayout.node.setScale(new Vec3(layoutScale, layoutScale, 1));
+        this.applyUnifiedPodium(bannerW * 0.92, this.basicPrizeLayoutBottom);
 
         const headerSize = 2.1667 * x;
         const headerScale = headerSize / this.basic_header_size;
@@ -268,13 +303,9 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         const infoScale = infoSize / this.basic_info_size;
         this.btnInfo.setScale(new Vec3(infoScale, infoScale, 1));
 
-        const prizeLayoutSpacing = 0.0962 * x;
-        this.prizeLayout.spacingX = prizeLayoutSpacing;
-        this.prizeLayout.updateLayout();
-
         const popupScale = 0.8 * w / this.basic_popup_Size;
 
-        for(let i = 0; i < this.popups.length; i++) {
+        for (let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
         }
     }
@@ -283,25 +314,23 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
     makeDesktopVariation(w: number, h: number) {
         const x = 0.125 * h;
 
-        const banner_H = h - (1.92 + 1.15 + 2 + 0.62) * x;
-        const banner_W = 7.52 * x;
-        this.banner.getComponent(UITransform).setContentSize(new Size(banner_W, banner_H));
+        const bannerH = h - (1.92 + 1.15 + 2 + 0.62) * x;
+        const bannerW = 7.52 * x;
+        this.banner.getComponent(UITransform).setContentSize(new Size(bannerW, bannerH));
 
         const bannerPaddingTop = (2 + 0.62) * x;
         this.banner_Widget.top = bannerPaddingTop;
 
-        const scroll_H = 2.42 * x;
-        const scroll_W = 7.52 * x;
-        this.scroll.getComponent(UITransform).setContentSize(new Size(scroll_W, scroll_H));
+        const scrollH = 2.42 * x;
+        const scrollW = 7.52 * x;
+        this.scroll.getComponent(UITransform).setContentSize(new Size(scrollW, scrollH));
 
-        const scrollPaddingTop = bannerPaddingTop + banner_H;
+        const scrollPaddingTop = bannerPaddingTop + bannerH;
         this.scroll_Widget.top = scrollPaddingTop;
 
-        const layoutSize = 1.4 * x;
-        const layoutScale = layoutSize / this.basic_prize_layout_size_H;
-        this.prizeLayout.node.setScale(new Vec3(layoutScale, layoutScale, 1));
+        this.applyUnifiedPodium(bannerW * 0.5, -0.11 * x, 43);
 
-        const headerSize = 2.8 * x;
+        const headerSize = 2.15 * x;
         const headerScale = headerSize / this.basic_header_size;
         this.header.setScale(new Vec3(headerScale, headerScale, 1));
 
@@ -309,24 +338,9 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         const infoScale = infoSize / this.basic_info_size;
         this.btnInfo.setScale(new Vec3(infoScale, infoScale, 1));
 
-        const back_prize_W = 2.5588 * x;
-
-        const back_gold_H = 2.6176 * x;
-        this.back_gold.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_gold_H));
-
-        const back_silver_H = 2.3382 * x;
-        this.back_silver.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_silver_H));
-
-        const back_bronze_H = 2.1324 * x;
-        this.back_bronze.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_bronze_H));
-
-        const prizeLayoutSpacing = 0.5883 * x;
-        this.prizeLayout.spacingX = prizeLayoutSpacing;
-        this.prizeLayout.updateLayout();
-
         const popupScale = w / 4.5 / this.basic_popup_Size;
 
-        for(let i = 0; i < this.popups.length; i++) {
+        for (let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
         }
     }
@@ -335,25 +349,23 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
     makeTabletVariation(w: number, h: number) {
         const x = 0.140 * w * this.tabletScaleMul;
 
-        const banner_H = 1.867 * x;
-        const banner_W = 5.0133 * x;
-        this.banner.getComponent(UITransform).setContentSize(new Size(banner_W, banner_H));
+        const tabletBannerHeight = 1.60 * x;
+        const bannerW = 5.0133 * x;
+        this.banner.getComponent(UITransform).setContentSize(new Size(bannerW, tabletBannerHeight));
 
         const bannerPaddingTop = 1.427 * x;
         this.banner_Widget.top = bannerPaddingTop;
 
-        const scroll_H = h - (1.427 + 0.033 + 1.867 + 0.3) * x;
-        const scroll_W = 5.0133 * x;
-        this.scroll.getComponent(UITransform).setContentSize(new Size(scroll_W, scroll_H));
+        const scrollH = h - (1.427 + 0.033 + 1.60 + 0.3) * x;
+        const scrollW = 5.0133 * x;
+        this.scroll.getComponent(UITransform).setContentSize(new Size(scrollW, scrollH));
 
-        const scrollPaddingTop = (1.427 + 1.867) * x;
+        const scrollPaddingTop = (1.427 + 1.60) * x;
         this.scroll_Widget.top = scrollPaddingTop;
 
-        const layoutSize = 1.3 * x;
-        const layoutScale = layoutSize / this.basic_prize_layout_size_H;
-        this.prizeLayout.node.setScale(new Vec3(layoutScale, layoutScale, 1));
+        this.applyUnifiedPodium(bannerW * 0.5, -0.11 * x, 28);
 
-        const headerSize = 2.3733 * x;
+        const headerSize = 2.20 * x;
         const headerScale = headerSize / this.basic_header_size;
         this.header.setScale(new Vec3(headerScale, headerScale, 1));
 
@@ -361,24 +373,9 @@ export class UIEventWeeklyContestAdaptivity extends UIAdaptivityBase {
         const infoScale = infoSize / this.basic_info_size;
         this.btnInfo.setScale(new Vec3(infoScale, infoScale, 1));
 
-        const back_prize_W = 1.16 * x;
-
-        const back_gold_H = 1.1867 * x;
-        this.back_gold.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_gold_H));
-
-        const back_silver_H = 1.06 * x;
-        this.back_silver.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_silver_H));
-
-        const back_bronze_H = 0.966 * x;
-        this.back_bronze.getComponent(UITransform).setContentSize(new Size(back_prize_W, back_bronze_H));
-
-        const prizeLayoutSpacing = 0.3133 * x;
-        this.prizeLayout.spacingX = prizeLayoutSpacing;
-        this.prizeLayout.updateLayout();
-
         const popupScale = w / 4.5 / this.basic_popup_Size;
 
-        for(let i = 0; i < this.popups.length; i++) {
+        for (let i = 0; i < this.popups.length; i++) {
             this.popups[i].setScale(new Vec3(popupScale, popupScale, 1));
         }
     }
