@@ -486,16 +486,32 @@ export class UIMainMenu extends UIFrameBase {
 
 
                 this.scheduleOnce(() => {
+                    void (async () => {
+                        try {
+                            if(!this.clans.isDataLoaded()) {
+                                console.log("[CLANS] Background preload started");
 
-                    if (!this.clans.isDataLoaded()) {
+                                await this.clans.refresh();
+                            }
 
-                        console.log(
-                            "[CLANS] Background preload started"
-                        );
+                            if(!this.clans.isDataLoaded()) {
+                                console.warn("[LEADERBOARD CLANS] Clan data is still not ready");
+                                return;
+                            }
 
-                        this.clans.refresh();
-                    }
+                            if(!this.leaderboardFrame) {
+                                console.warn("[LEADERBOARD CLANS] leaderboardFrame is not assigned");
+                                return;
+                            }
 
+                            await this.leaderboardFrame.preloadClans();
+
+                            console.log("[LEADERBOARD CLANS] fully ready");
+                        }
+                        catch(error) {
+                            console.error("[LEADERBOARD CLANS] preload failed", error);
+                        }
+                    })();
                 }, 1.0);
             }
         });
