@@ -39,6 +39,9 @@ export class UIShopFrame extends UIFrameBase {
 
     private isHiddenState: boolean = true;
 
+    private assetsLoaded: boolean = false;
+    private assetsLoadPromise: Promise<void> = null;
+
 
     start() {
         for(let i = 0; i < this.items.length && i < GameData.instance.shopItems.length; i++) {
@@ -58,7 +61,7 @@ export class UIShopFrame extends UIFrameBase {
         this.bpActivateBtn.node.on(Button.EventType.CLICK, this.onBpActivateClick, this);
         this.showHiddenBtn.node.on(Button.EventType.CLICK, this.onShowHiddenClick, this);
 
-        this.loadAsstets();
+        void this.preloadAssets();
     }
 
 
@@ -107,27 +110,58 @@ export class UIShopFrame extends UIFrameBase {
     }
 
 
-    loadAsstets() {
-        assetManager.loadBundle("shop", (err, bundle) => {
-            if (err) {
-                console.error(`Failed to load bundle: shop`, err);
+    public async preloadAssets(): Promise<void> {
+        if(this.assetsLoaded) {
+            return;
+        }
+
+        if(this.assetsLoadPromise) {
+            await this.assetsLoadPromise;
+            return;
+        }
+
+        this.assetsLoadPromise = new Promise<void>((resolve) => {
+            const loadBanner = (bundle: any) => {
+                bundle.load("banner_battlepass/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                    if(err) {
+                        console.error("[SHOP] Failed to load battlepass banner", err);
+                        this.assetsLoadPromise = null;
+                        resolve();
+                        return;
+                    }
+
+                    if(this.picture_bp) {
+                        this.picture_bp.spriteFrame = spriteFrame;
+                    }
+
+                    this.assetsLoaded = true;
+                    this.assetsLoadPromise = null;
+
+                    console.log("[SHOP] Battlepass banner preloaded");
+                    resolve();
+                });
+            };
+
+            const loadedBundle = assetManager.getBundle("shop");
+
+            if(loadedBundle) {
+                loadBanner(loadedBundle);
                 return;
             }
 
-            console.log(`Successfully loaded bundle: shop"`);
-
-
-            bundle.load("banner_battlepass/spriteFrame", SpriteFrame, (err, spriteFrame) => {
-                if (err) {
-                    console.error(`Failed to load prefab: banner_battlepass`, err);
+            assetManager.loadBundle("shop", (err, bundle) => {
+                if(err) {
+                    console.error("[SHOP] Failed to load bundle", err);
+                    this.assetsLoadPromise = null;
+                    resolve();
                     return;
                 }
 
-                console.log(`Successfully loaded prefab: banner_battlepass`);
-
-                this.picture_bp.spriteFrame = spriteFrame;
+                loadBanner(bundle);
             });
         });
+
+        await this.assetsLoadPromise;
     }
 }
 

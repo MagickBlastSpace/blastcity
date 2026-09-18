@@ -23,6 +23,7 @@ import { UIEventTutorialPopup } from '../tutorial/UIEventTutorialPopup';
 import { UICollectionInfoPopup } from '../collection/UICollectionInfoPopup';
 import { UICollectionCard } from '../collection/UICollectionCard';
 import { UILeaderboardFrame } from '../leaderboard/UILeaderboardFrame';
+import { UIShopFrame } from '../shop/UIShopFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -483,6 +484,7 @@ export class UIMainMenu extends UIFrameBase {
                 AudioController.instance.loadSoundsAssets();
 
                 this.preloadLeaderboardInBackground();
+                this.preloadShopInBackground();
 
 
                 this.scheduleOnce(() => {
@@ -602,6 +604,29 @@ export class UIMainMenu extends UIFrameBase {
                 }
             })();
         }, 0.5);
+    }
+
+
+    private preloadShopInBackground() {
+        this.scheduleOnce(() => {
+            const frame = this.framesUi[0];
+
+            if(!frame) {
+                console.warn("[SHOP PRELOAD] Shop frame is not assigned");
+                return;
+            }
+
+            const shopFrame = frame.node.getComponent(UIShopFrame) ?? frame.node.getComponentInChildren(UIShopFrame);
+
+            if(!shopFrame) {
+                console.warn("[SHOP PRELOAD] UIShopFrame component not found");
+                return;
+            }
+
+            console.log("[SHOP PRELOAD] starting");
+
+            void shopFrame.preloadAssets();
+        }, 0);
     }
 
     onBtnShopClick() {
