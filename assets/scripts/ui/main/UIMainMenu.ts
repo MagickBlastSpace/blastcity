@@ -90,6 +90,7 @@ export class UIMainMenu extends UIFrameBase {
     leaderboardFrame: UILeaderboardFrame = null;
 
     private collectionFramePromise: Promise<UIMainMenuFrame> = null;
+    private collectionOpenRequestId: number = 0;
 
     private connectCollectionPopups(collectionNode: Node, popupsNode: Node) {
         const collectionUi = collectionNode.getComponent(UICollectionFrame);
@@ -483,8 +484,9 @@ export class UIMainMenu extends UIFrameBase {
                 AudioController.instance.playMainMenuSoundtrack();
                 AudioController.instance.loadSoundsAssets();
 
-                this.preloadLeaderboardInBackground();
                 this.preloadShopInBackground();
+                this.preloadCollectionInBackground();
+                this.preloadLeaderboardInBackground();
 
 
                 this.scheduleOnce(() => {
@@ -629,6 +631,20 @@ export class UIMainMenu extends UIFrameBase {
         }, 0);
     }
 
+    private preloadCollectionInBackground() {
+        this.scheduleOnce(() => {
+            console.log("[COLLECTION PRELOAD] starting");
+
+            void this.ensureCollectionFrame()
+                .then(() => {
+                    console.log("[COLLECTION PRELOAD] fully ready");
+                })
+                .catch((error) => {
+                    console.error("[COLLECTION PRELOAD] failed", error);
+                });
+        }, 0.1);
+    }
+
     onBtnShopClick() {
         this.onMainMenuBtnClick(0);
     }
@@ -645,9 +661,16 @@ export class UIMainMenu extends UIFrameBase {
         this.onMainMenuBtnClick(3);
     }
 
-   async onBtnTbd2Click() {
+    async onBtnTbd2Click() {
+        const requestId = ++this.collectionOpenRequestId;
+
         try {
             await this.ensureCollectionFrame();
+
+            if(requestId !== this.collectionOpenRequestId) {
+                return;
+            }
+
             this.onMainMenuBtnClick(4);
         }
         catch(error) {
@@ -657,6 +680,10 @@ export class UIMainMenu extends UIFrameBase {
 
 
     onMainMenuBtnClick(index: number) {
+        if(index !== 4) {
+            this.collectionOpenRequestId++;
+        }
+
         this.setAllBtnsPassive();
         this.hideAllFrames();
 
