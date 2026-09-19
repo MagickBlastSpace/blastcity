@@ -56,26 +56,29 @@ export class UIClanItemAdaptivity extends Component {
         const h = visibleSize.height;
         const ratio = w / h;
 
-        let widthRatio = 0.88;
+        let targetWidth: number;
 
-        if (ratio < 0.7) {
+        if(ratio < 0.7) {
             // mobile portrait
-            widthRatio = 0.94;
-        } else if (ratio < 1.05) {
+            targetWidth = availableWidth * 0.94;
+        } else if(ratio < 1.05) {
             // tablet / near-square
-            widthRatio = 0.88;
-        } else if (w <= 1100) {
-            // small laptop, 1024 and similar
-            widthRatio = 0.74;
-        } else if (w <= 1500) {
-            // normal laptop / desktop
-            widthRatio = 0.62;
+            targetWidth = availableWidth * 0.88;
+        } else if(w <= 1100) {
+            // small laptop / compact landscape
+            targetWidth = availableWidth * 0.74;
         } else {
-            // large desktop
-            widthRatio = 0.60;
+            // desktop — use the same HEIGHT principle as leaderboard rows
+            const x = 0.125 * h;
+            const targetHeight = 0.85 * x;
+            const desktopScale = targetHeight / this.baseHeight;
+
+            targetWidth = Math.min(
+                this.baseWidth * desktopScale,
+                availableWidth * 0.94
+            );
         }
 
-        const targetWidth = availableWidth * widthRatio;
         const scale = targetWidth / this.baseWidth;
 
         const transform = this.node.getComponent(UITransform);
