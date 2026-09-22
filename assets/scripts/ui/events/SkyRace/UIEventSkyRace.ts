@@ -9,6 +9,7 @@ import { ResolutionManager } from '../../../utils/ResolutionManager';
 import { Localization } from '../../../utils/Localization';
 import { Net } from '../../../net/Net';
 import { PlayerEventData } from '../../../data/EventData';
+import { UIEventLiveopsCardAdaptivity } from '../UIEventLiveopsCardAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventSkyRace')
@@ -92,6 +93,18 @@ export class UIEventSkyRace extends UIEventPopupFrameBase {
         this.updateWidgetAlignment(ResolutionManager.instance.isPortraitOrientation());
 
         this.loadPlayersInfo(data);
+        this.updateStartCardAdaptivity();
+    }
+
+    private updateStartCardAdaptivity() {
+        let adaptivity = this.node.getComponent(UIEventLiveopsCardAdaptivity);
+
+        if (!this.isEventStarted && !adaptivity) {
+            adaptivity = this.node.addComponent(UIEventLiveopsCardAdaptivity);
+            ResolutionManager.instance.addAdaptiveFrame(this.node);
+        }
+
+        adaptivity?.setSkyRaceStartLayout(!this.isEventStarted);
     }
 
 

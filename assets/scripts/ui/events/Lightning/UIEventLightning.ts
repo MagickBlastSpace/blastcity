@@ -7,6 +7,7 @@ import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
 import { Localization } from '../../../utils/Localization';
 import { PlayerEventData } from '../../../data/EventData';
 import { Net } from '../../../net/Net';
+import { UIEventLiveopsCardAdaptivity } from '../UIEventLiveopsCardAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventLightning')
@@ -113,6 +114,7 @@ export class UIEventLightning extends UIEventPopupFrameBase {
         this.loadPlayersInfo(data);
 
         this.levelRequired.string = this.eventController.isRequiredLevelReached() ? "" : Localization.instance.getLabelByKey("events.levelreq") + " " + this.eventController.getLevelRequired();
+        this.node.getComponent(UIEventLiveopsCardAdaptivity)?.refresh();
     }
 
 

@@ -4,6 +4,7 @@ import { SpecialEventBase } from '../../../game/events/special/SpecialEventBase'
 import { UIEventHiddenTempleItem } from './UIEventHiddenTempleItem';
 import { UIEventHiddenTempleTile } from './UIEventHiddenTempleTile';
 import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
+import { UIEventLiveopsCardAdaptivity } from '../UIEventLiveopsCardAdaptivity';
 const { ccclass, property } = _decorator;
 
 
@@ -113,6 +114,8 @@ export class UIEventHiddenTemple extends UIEventPopupFrameBase {
                 this.data[stage].items[i].refresh(predictions);
             }
         }
+
+        this.node.getComponent(UIEventLiveopsCardAdaptivity)?.refresh();
     }
 
 

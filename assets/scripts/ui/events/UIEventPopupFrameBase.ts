@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Widget, find, Canvas, Button } from 'cc';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { EventBase } from '../../game/events/EventBase';
+import { UIEventLiveopsCardAdaptivity } from './UIEventLiveopsCardAdaptivity';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventPopupFrameBase')
@@ -25,6 +26,7 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
 
     onLoad() {
         this.isInited = false;
+        this.addLiveopsCardAdaptivity();
     }
 
     
@@ -38,6 +40,7 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
         this.isInited = true;
 
         this.refresh();
+        this.node.getComponent(UIEventLiveopsCardAdaptivity)?.refresh();
 
         for(let i = 0; i < this.infoPopups.length; i++) {
             this.infoPopups[i].node.on("hide", () => this.showNextTutorialPage());
@@ -73,8 +76,10 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
         }
 
         for(let i = 0; i < this.widgets.length; i++) {
-            this.widgets[i].target = canvasNode;
-            this.widgets[i].updateAlignment();
+            if(this.widgets[i] && this.widgets[i].enabled) {
+                this.widgets[i].target = canvasNode;
+                this.widgets[i].updateAlignment();
+            }
         }
 
         console.log('Widget target set to main Canvas successfully');
@@ -85,7 +90,24 @@ export class UIEventPopupFrameBase extends UIPopupFrameBase {
         super.adjustResolution();
 
         for(let i = 0; i < this.widgets.length; i++) {
-            this.widgets[i].updateAlignment();
+            if(this.widgets[i] && this.widgets[i].enabled) {
+                this.widgets[i].updateAlignment();
+            }
+        }
+
+        this.node.getComponent(UIEventLiveopsCardAdaptivity)?.refresh();
+    }
+
+    private addLiveopsCardAdaptivity() {
+        if (!UIEventLiveopsCardAdaptivity.supportedCards.has(this.node.name)) return;
+
+        // The legacy TeamTreasure component performs non-uniform scaling.
+        // Disable it at runtime only, leaving the prefab serialization intact.
+        const legacy = this.node.getComponent('UIEventTeamTreasureAdaptivity');
+        if (legacy) legacy.enabled = false;
+
+        if (!this.node.getComponent(UIEventLiveopsCardAdaptivity)) {
+            this.node.addComponent(UIEventLiveopsCardAdaptivity);
         }
     }
 

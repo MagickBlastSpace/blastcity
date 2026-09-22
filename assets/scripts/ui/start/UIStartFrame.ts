@@ -129,6 +129,7 @@ export class UIStartFrame extends UIFrameBase {
     }
 
     show() {
+        this.preloadAssets();
         super.show();
 
         this.refresh();
@@ -149,7 +150,7 @@ export class UIStartFrame extends UIFrameBase {
     onEventBtnClick(index: number) {
         this.hideAllPopups();
 
-        this.eventBtns[index].showEventPrefab();
+        this.eventBtns[index].scheduleOpen();
     }
 
 
