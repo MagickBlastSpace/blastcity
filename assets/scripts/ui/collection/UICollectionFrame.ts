@@ -5,6 +5,7 @@ import { CollectionData } from '../../data/CollectionData';
 import { UIFrameBase } from '../UIFrameBase';
 import { UICollectionDuplicateExchange } from './UICollectionDuplicateExchange';
 import { UIEventButton } from '../start/UIEventButton';
+import { UICollectionInfoPopup } from './UICollectionInfoPopup';
 import { UICollectionCardRecievePopup } from './UICollectionCardRecievePopup';
 import { UserData } from '../../data/UserData';
 import { UIEventTutorialPopup } from '../tutorial/UIEventTutorialPopup';
@@ -40,8 +41,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     @property(Node)
     itemsLayout: Node = null;
 
-    @property(UIFrameBase)
-    collectionInfoPopup: UIFrameBase;
+    @property(UICollectionInfoPopup)
+    collectionInfoPopup: UICollectionInfoPopup = null;
 
     @property(ProgressBar)
     progressBar: ProgressBar = null;
@@ -185,13 +186,19 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     }
 
 
-    showCollection(collection: CollectionData, pageNumber: number) {
-
-        this.collectionInfoPopup.init(
+    async showCollection(
+        collection: CollectionData,
+        pageNumber: number
+    ) {
+        const isReady = await this.collectionInfoPopup.initCollection(
             collection,
             this.eventController,
             pageNumber
         );
+
+        if(!isReady) {
+            return;
+        }
 
         this.collectionInfoPopup.show();
     }
