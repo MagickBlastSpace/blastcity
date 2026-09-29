@@ -599,6 +599,11 @@ export class UIMainMenu extends UIFrameBase {
                     console.log("[LEADERBOARD PRELOAD] weekly ready");
 
                     await this.leaderboardFrame.preloadPlayers();
+                    console.log("[LEADERBOARD PRELOAD] players ready");
+
+                    await this.leaderboardFrame.preloadFriends();
+                    console.log("[LEADERBOARD PRELOAD] friends + requests ready");
+
                     console.log("[LEADERBOARD PRELOAD] fully ready");
                 }
                 catch(error) {

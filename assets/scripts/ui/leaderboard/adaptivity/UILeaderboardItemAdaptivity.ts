@@ -1,13 +1,12 @@
 import {
     _decorator,
-    Component,
     Node,
-    Layout,
     Widget,
     view,
     UITransform,
     Vec3,
-    Size
+    Size,
+    Label
 } from 'cc';
 
 import { UIAdaptivityBase } from '../../UIAdaptivityBase';
@@ -48,6 +47,9 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
 
     @property(Widget)
     progress_Widget: Widget = null;
+
+    @property
+    mobilePlayerFontSize: number = 70;
 
 
     private basic_H: number = 470;
@@ -152,6 +154,12 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
             )
         );
 
+        const playerLabel = this.player?.getComponent(Label);
+
+        if (playerLabel) {
+            playerLabel.fontSize = 100;
+        }
+
 
         const avatarScale =
             0.7353 *
@@ -253,6 +261,12 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
                 1
             )
         );
+
+        const playerLabel = this.player?.getComponent(Label);
+
+        if (playerLabel) {
+            playerLabel.fontSize = 100;
+        }
 
 
         const avatarScale =
@@ -357,6 +371,12 @@ export class UILeaderboardItemAdaptivity extends UIAdaptivityBase {
                 1
             )
         );
+
+        const playerLabel = this.player?.getComponent(Label);
+
+        if (playerLabel) {
+            playerLabel.fontSize = this.mobilePlayerFontSize;
+        }
 
 
         const avatarScale =

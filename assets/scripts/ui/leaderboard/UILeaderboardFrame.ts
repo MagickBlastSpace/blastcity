@@ -8,6 +8,7 @@ import { UIClanInfoPopup } from '../clans/UIClanInfoPopup';
 import { UILeaderboardAdaptivity } from './adaptivity/UILeaderboardAdaptivity';
 import { UILeaderboardPlayersFrame } from './UILeaderboardPlayersFrame';
 import { UILeaderboardClansFrame } from './UILeaderboardClansFrame';
+import { UILeaderboardFriendsFrame } from './UILeaderboardFriendsFrame';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILeaderboardFrame')
@@ -137,6 +138,24 @@ export class UILeaderboardFrame extends UIFrameBase {
         }
 
         console.warn("[LEADERBOARD] Clans frame not found");
+    }
+
+    public async preloadFriends(): Promise<void> {
+        for(let i = 0; i < this.frames.length; i++) {
+            const friendsFrame =
+                this.frames[i].node.getComponent(
+                    UILeaderboardFriendsFrame
+                );
+
+            if(friendsFrame) {
+                await friendsFrame.preload();
+                return;
+            }
+        }
+
+        console.warn(
+            "[LEADERBOARD] Friends frame not found"
+        );
     }
 }
 

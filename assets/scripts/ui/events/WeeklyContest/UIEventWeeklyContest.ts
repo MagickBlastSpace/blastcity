@@ -1,6 +1,6 @@
 import { _decorator, Node, Label, Prefab, instantiate } from 'cc';
 
-import { UIEventPopupFrameBase } from '../UIEventPopupFrameBase';
+import { UIEventFrameBase } from '../UIEventFrameBase';
 import { UIEventWeeklyContestPlayerItem } from './UIEventWeeklyContestPlayerItem';
 import { PlayerEventData } from '../../../data/EventData';
 import { Net } from '../../../net/Net';
@@ -10,7 +10,7 @@ import { UILeaderboardItemAdaptivity } from '../../leaderboard/adaptivity/UILead
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventWeeklyContest')
-export class UIEventWeeklyContest extends UIEventPopupFrameBase {
+export class UIEventWeeklyContest extends UIEventFrameBase {
 
     @property(Label)
     timeLabel: Label = null;
@@ -171,6 +171,10 @@ export class UIEventWeeklyContest extends UIEventPopupFrameBase {
 
 
     show() {
+        if(this.adaptivity) {
+            this.adaptivity.refresh();
+        }
+
         super.show();
 
         if(this.isDataLoaded) {

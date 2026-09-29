@@ -163,7 +163,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 74.00000000000011,
+      "y": 74,
       "z": 0
     },
     "_lrot": {
@@ -580,7 +580,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -63.275999999999954,
+      "y": -75,
       "z": 0
     },
     "_lrot": {
@@ -809,8 +809,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 3654,
-      "height": 858.0000000000002
+      "width": 1540,
+      "height": 850
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -956,8 +956,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 3654,
-      "height": 858.0000000000002
+      "width": 1540,
+      "height": 850
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -1060,12 +1060,12 @@
     },
     "_alignFlags": 45,
     "_target": {
-      "__id__": 1
+      "__id__": 3
     },
     "_left": 0,
     "_right": 0,
-    "_top": 564.2759999999998,
-    "_bottom": 585.7240000000002,
+    "_top": 150,
+    "_bottom": 0,
     "_horizontalCenter": 0,
     "_verticalCenter": 0,
     "_isAbsLeft": true,
@@ -1076,7 +1076,7 @@
     "_isAbsVerticalCenter": true,
     "_originalWidth": 240,
     "_originalHeight": 250,
-    "_alignMode": 2,
+    "_alignMode": 1,
     "_lockFlags": 0,
     "_id": ""
   },
@@ -1254,7 +1254,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Входящие заявки",
+    "_string": "Запрос Дружбы",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 65,
@@ -1315,7 +1315,7 @@
     "__prefab": {
       "__id__": 53
     },
-    "key": "rating.weekly",
+    "key": "rating.friendrequest",
     "_id": ""
   },
   {
@@ -1577,7 +1577,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -659.5440000000002,
+      "y": -659.5440000000003,
       "z": 0
     },
     "_lrot": {
@@ -1706,7 +1706,7 @@
       "b": 255,
       "a": 255
     },
-    "_string": "Рекомедованные друзья",
+    "_string": "Рекомендованные друзья",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 65,
@@ -1767,7 +1767,7 @@
     "__prefab": {
       "__id__": 74
     },
-    "key": "rating.weekly",
+    "key": "rating.recfriend",
     "_id": ""
   },
   {
@@ -2157,7 +2157,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -209.12699999999984,
+      "y": -209.1269999999996,
       "z": 0
     },
     "_lrot": {
@@ -2505,7 +2505,7 @@
       "b": 187,
       "a": 255
     },
-    "_string": "Enter name",
+    "_string": "Введите имя",
     "_horizontalAlign": 0,
     "_verticalAlign": 1,
     "_actualFontSize": 80,
@@ -3798,10 +3798,6 @@
     "__prefab": {
       "__id__": 167
     },
-    "contentNode": {
-      "__id__": 67
-    },
-    "disablePopupSound": false,
     "items": [],
     "itemPrefab": {
       "__uuid__": "b1da8a58-cbfa-4763-abd1-6e9de31ca3f3",
@@ -3822,6 +3818,7 @@
     "cancelSearchBtn": {
       "__id__": 146
     },
+    "adaptivity": null,
     "_id": ""
   },
   {
@@ -3856,7 +3853,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 3654,
-      "height": 2008.0000000000002
+      "height": 2008
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -3935,7 +3932,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 3654,
-      "height": 2008.0000000000002
+      "height": 2008
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -4001,17 +3998,16 @@
     },
     "disablePopupSound": false,
     "closeBtn": null,
-    "itemsLayout": {
-      "__id__": 77
+    "requestsScroll": {
+      "__id__": 41
     },
     "requestPrefab": {
       "__uuid__": "80048849-87eb-4b44-bdfc-7cf713ad50a1",
       "__expectedType__": "cc.Prefab"
     },
     "requests": [],
-    "playersLeaderboard": {
-      "__id__": 166
-    },
+    "recommendationsLabel": null,
+    "recommendationsScroll": null,
     "_id": ""
   },
   {
