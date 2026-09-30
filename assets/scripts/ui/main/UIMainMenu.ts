@@ -734,20 +734,31 @@ export class UIMainMenu extends UIFrameBase {
                 return;
             }
 
-            console.log(`Successfully loaded bundle: big_graphics"`);
+            console.log(`Successfully loaded bundle: big_graphics`);
 
             let backIndex = this.chest.getStage() + 1;
 
             bundle.load("back" + backIndex + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
                 if (err) {
-                    console.error(`Failed to load prefab: background`, err);
+                    console.error(`Failed to load menu background`, err);
                     return;
                 }
 
-                console.log(`Successfully loaded prefab: background`);
+                console.log(`Successfully loaded menu background: back${backIndex}`);
+
+                this.background_1.spriteFrame = spriteFrame;
+            });
+
+            // Новый редизайн-фон для игрового поля
+            bundle.load("redesign/background_01/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+                if (err) {
+                    console.error(`Failed to load gameplay background`, err);
+                    return;
+                }
+
+                console.log(`Successfully loaded gameplay background: background_01`);
 
                 this.background.spriteFrame = spriteFrame;
-                this.background_1.spriteFrame = spriteFrame;
             });
         });
     }
