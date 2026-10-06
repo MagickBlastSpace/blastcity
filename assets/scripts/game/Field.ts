@@ -148,7 +148,11 @@ export class Field extends Component {
 		this.isAssetsLoaded = true;
 
 		if (this.savedLevelData) {
-			this.spawnInitialBoard(this.savedLevelData);
+			const levelData = this.savedLevelData;
+
+			this.savedLevelData = null;
+
+			this.spawnInitialBoard(levelData);
 
 			return;
 		}
@@ -443,7 +447,7 @@ export class Field extends Component {
 
 		this.isCompleteScheduled = false;
 
-		this.savedLevelData = new LevelData();
+		this.savedLevelData = null;
 	}
 
 	restoreSpecTilesState(specs: SpecialTileStateData[]) {
@@ -1777,6 +1781,7 @@ export class Field extends Component {
 
 			if (this.isCompleteScheduled) {
 				this.node.emit('complete', this.countBonusGold());
+				return;
 			}
 
 			this.checkSpecTilesInActionEffect(isBlockingInactionEffect);
@@ -2913,6 +2918,7 @@ export class Field extends Component {
 
 	unloadAssets() {
 		this.isAssetsLoaded = false;
+		this.savedLevelData = null;
 
 		/*this.tilePrefab = null;
         this.emptyPrefab = null;
