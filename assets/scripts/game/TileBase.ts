@@ -28,9 +28,40 @@ export class TileBase extends Component {
 
     protected uiComponent: UITile = null;
 
+    private static debugCounter: number = 0;
+    private debugId: number = 0;
+
 
     onLoad() {
+        this.debugId = ++TileBase.debugCounter;
+
         this.node.on(
+            Node.EventType.TOUCH_START,
+            this.onTouchStart,
+            this
+        );
+
+        if ((globalThis as any).gamepush?.__artPreview === true) {
+            console.log(
+                `[AP INPUT] SUBSCRIBE #${this.debugId} node=${this.node.name}`
+            );
+        }
+    }
+
+    private disableInput(reason: string) {
+        if ((globalThis as any).gamepush?.__artPreview === true) {
+            console.log(
+                `[AP INPUT] UNSUBSCRIBE #${this.debugId}` +
+                ` reason=${reason}` +
+                ` type=${this.tileType}` +
+                ` row=${this.row}` +
+                ` col=${this.col}` +
+                ` node=${this.node.name}` +
+                ` parent=${this.node.parent?.name}`
+            );
+        }
+
+        this.node.off(
             Node.EventType.TOUCH_START,
             this.onTouchStart,
             this
@@ -38,11 +69,16 @@ export class TileBase extends Component {
     }
 
     onDestroy() {
-        this.node.off(
-            Node.EventType.TOUCH_START,
-            this.onTouchStart,
-            this
-        );
+        this.disableInput("onDestroy");
+
+        if ((globalThis as any).gamepush?.__artPreview === true) {
+            console.log(
+                `[AP INPUT] DESTROYED #${this.debugId}` +
+                ` type=${this.tileType}` +
+                ` row=${this.row}` +
+                ` col=${this.col}`
+            );
+        }
     }
 
 
@@ -116,6 +152,18 @@ export class TileBase extends Component {
 
 
     destroyTile(delay: number) {
+        this.disableInput("destroyTile");
+
+        if ((globalThis as any).gamepush?.__artPreview === true) {
+            console.log(
+                `[AP INPUT] DESTROY START #${this.debugId}` +
+                ` delay=${delay}` +
+                ` type=${this.tileType}` +
+                ` row=${this.row}` +
+                ` col=${this.col}`
+            );
+        }
+
         const uiComponent = this.node.getComponent(UITile);
 
         if (uiComponent) {

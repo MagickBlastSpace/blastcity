@@ -7,6 +7,13 @@ import { Level } from '../game/Level';
 const { ccclass, property } = _decorator;
 const { clamp } = math;
 
+@ccclass('TestOutputDataItem')
+export class TestOutputDataItem {
+    @property
+    moves = 0;
+    @property
+    score = 0;
+}
 
 @ccclass('TestOutputData')
 export class TestOutputData {
@@ -14,14 +21,6 @@ export class TestOutputData {
     id = '';
     @property([TestOutputDataItem])
     items: TestOutputDataItem[] = [];
-}
-
-@ccclass('TestOutputDataItem')
-export class TestOutputDataItem {
-    @property
-    moves = 0;
-    @property
-    score = 0;
 }
 
 

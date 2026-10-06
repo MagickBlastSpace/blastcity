@@ -32,6 +32,11 @@ export class UILevelCompletePopup extends UIPopupFrameBase {
 
         this.isSkipped = false;
 
+        console.log(
+            `[AP WIN FLOW] popup show` +
+            ` testBot=${this.testBot.isActive()}`
+        );
+
         if(this.testBot.isActive()) {
             this.field.completeLevel_Skip();
 

@@ -75,7 +75,7 @@ export class RocketFeverEventData {
 
 @ccclass('MagicCauldronEventData')
 export class MagicCauldronEventData {
-    @property([cc.String])
+    @property([String])
     pool: string[] = [];
 
     @property([EventRewardData])
@@ -84,7 +84,7 @@ export class MagicCauldronEventData {
 
 @ccclass('HiddenTempleEventData')
 export class HiddenTempleEventData {
-    @property([cc.String])
+    @property([String])
     connectedTiles: string[] = [];
 
     @property([EventRewardData])

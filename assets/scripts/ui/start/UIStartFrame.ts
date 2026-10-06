@@ -2,7 +2,7 @@ declare const gamepush: any;
 
 import { _decorator, Component, Node, Button, Label, assetManager } from 'cc';
 import { UIFrameBase } from '../UIFrameBase';
-import { GameData } from '../../data/GameData';
+import { GameData, LevelData  } from '../../data/GameData';
 import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
 import { UIEventButton } from './UIEventButton';
@@ -17,6 +17,7 @@ import { AudioController } from '../../utils/AudioController';
 import { Level } from '../../game/Level';
 import { ChestRewardData } from '../../data/ChestData';
 import { Localization } from '../../utils/Localization';
+import { NATIVE } from 'cc/env';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -59,16 +60,33 @@ export class UIStartFrame extends UIFrameBase {
 
     private isPreloaded: boolean = false;
 
+    private artPreviewLevel: LevelData | null = null;
+
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
         SaveData.instance.node.on("level_progress_checked", () => {
-            if(UserData.instance.getProgress() > 0) {
+            if(!NATIVE && UserData.instance.getProgress() > 0) {
                 this.preloadAssets();
             }
         });
 
-        this.field.node.on("level_init", () => {
+        this.field.node.on("level_init", (level: LevelData) => {
+            const isArtPreview =
+                NATIVE &&
+                (globalThis as any).gamepush?.__artPreview === true;
+
+            if (isArtPreview && level) {
+                this.artPreviewLevel = level;
+
+                console.log(
+                    "[Art Preview] Remembered level:",
+                    level.id,
+                    "moves:",
+                    level.movesCount
+                );
+            }
+
             this.playGameplaySoundtrack();
             this.preloadAssets();
         });
@@ -87,7 +105,11 @@ export class UIStartFrame extends UIFrameBase {
         GameData.instance.node.on("levels_loaded", () => this.lockPlay(false));
         GameData.instance.node.on("level_stage_update", () => this.lockPlay(true));
 
-        this.playBtn.node.active = false;
+        const isArtPreview =
+            NATIVE &&
+            (globalThis as any).gamepush?.__artPreview === true;
+
+        this.playBtn.node.active = isArtPreview;
 
         this.effectsManager.setEventBtns(this.eventBtns);
 
@@ -157,6 +179,21 @@ export class UIStartFrame extends UIFrameBase {
     lockPlay(isLock: boolean) {
         this.refresh();
 
+        const isArtPreview =
+            NATIVE &&
+            (globalThis as any).gamepush?.__artPreview === true;
+
+        if (isArtPreview) {
+            this.playBtn.node.active = true;
+            this.isLevelsLoaded = true;
+
+            console.log(
+                "[Art Preview] Play button forced enabled"
+            );
+
+            return;
+        }
+
         this.playBtn.node.active = !isLock;
 
         if(!isLock) {
@@ -171,7 +208,10 @@ export class UIStartFrame extends UIFrameBase {
             if(this.kingLeague.isKingLeagueMode()) {
                 console.log("King League Mode");
 
-                if(!this.kingLeague.getIsStarted() && this.kingLeague.canParticipate()) {
+                if(
+                    !this.kingLeague.getIsStarted() &&
+                    this.kingLeague.canParticipate()
+                ) {
                     this.scheduleOpenEventByName("KingLeague");
                 }
             }
@@ -189,10 +229,30 @@ export class UIStartFrame extends UIFrameBase {
 
 
     onPlay() {
-        console.log(`[STARTUP +${performance.now().toFixed(0)}ms] Gameplay start requested`);
+        console.log(
+            `[STARTUP +${performance.now().toFixed(0)}ms] Gameplay start requested`
+        );
 
         try {
-            this.field.spawnInitialBoard(GameData.instance.getCurrentLevel());
+            const isArtPreview =
+                NATIVE &&
+                (globalThis as any).gamepush?.__artPreview === true;
+
+            const level =
+                isArtPreview && this.artPreviewLevel
+                    ? this.artPreviewLevel
+                    : GameData.instance.getCurrentLevel();
+
+            console.log(
+                "[Gameplay] Starting level:",
+                level?.id,
+                "moves:",
+                level?.movesCount,
+                "artPreview:",
+                isArtPreview
+            );
+
+            this.field.spawnInitialBoard(level);
 
             this.node.emit("play");
 

@@ -1,3 +1,6 @@
+import { NATIVE } from 'cc/env';
+import { PreviewGamePush } from './PreviewGamePush';
+
 export class GamePushLoader {
 	private static readonly SDK_URL =
 		'https://gamepush.com/sdk/gamepush.js?projectId=13362&publicToken=AHn2fjy97FoJNFnTzqTGCKJnvyuqosyM&callback=onGPInit';
@@ -5,10 +8,17 @@ export class GamePushLoader {
 	private static loadingPromise: Promise<any> | null = null;
 
 	public static load(): Promise<any> {
+		if (NATIVE) {
+			console.log(
+				'[GamePushLoader] Native Art Preview mode',
+			);
+
+			return PreviewGamePush.load();
+		}
+
 		const existingGamePush = (globalThis as any).gamepush;
 
 		// Web Mobile build:
-		// SDK уже был подключён через index.ejs.
 		if (existingGamePush) {
 			console.log('[GamePushLoader] GamePush already exists');
 

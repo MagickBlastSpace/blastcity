@@ -1,18 +1,17 @@
-import { _decorator, Component, Node, tween, Vec3 } from 'cc';
+import { _decorator, Component, tween, Vec3 } from 'cc';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEventHiddenTempleItem')
 export class UIEventHiddenTempleItem extends Component {
 
-    @property([cc.String])
+    @property([String])
     connectedTiles: string[] = [];
 
-
     refresh(predictions: string[]) {
-        if(!this.isPredicted(predictions)) {
+        if (!this.isPredicted(predictions)) {
             this.node.active = true;
-        }
-        else {
+        } else {
             this.hideItem();
         }
     }
@@ -20,8 +19,8 @@ export class UIEventHiddenTempleItem extends Component {
     isPredicted(predictions: string[]): boolean {
         let isPredicted = true;
 
-        for(let i = 0; i < this.connectedTiles.length; i++) {
-            if(!predictions.includes(this.connectedTiles[i])) {
+        for (let i = 0; i < this.connectedTiles.length; i++) {
+            if (predictions.indexOf(this.connectedTiles[i]) === -1) {
                 isPredicted = false;
             }
         }
@@ -42,5 +41,3 @@ export class UIEventHiddenTempleItem extends Component {
         }, 0.2);
     }
 }
-
-

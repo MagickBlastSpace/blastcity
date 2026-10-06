@@ -1,5 +1,5 @@
-import { _decorator, Component, ProgressBar, director } from 'cc';
-
+import { _decorator, Component, ProgressBar, director, native  } from 'cc';
+import { NATIVE } from 'cc/env';
 import { GamePushLoader } from '../../utils/GamePushLoader';
 
 const { ccclass, property } = _decorator;
@@ -10,6 +10,9 @@ export class UILoadingFrame extends Component {
 	loadingBar: ProgressBar = null;
 
 	async start() {
+		if (NATIVE) { native.fileUtils.writeStringToFile('UILoadingFrame.start reached',
+			 'C:/Users/sgann/uiloading-debug.txt'); }
+
 		this.logStartup('UILoadingFrame started');
 
 		try {

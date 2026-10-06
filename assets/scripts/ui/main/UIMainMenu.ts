@@ -465,6 +465,15 @@ export class UIMainMenu extends UIFrameBase {
     start() {
         this.assetsLoadingFrame.show();
 
+
+        const isArtPreview =
+            (globalThis as any).gamepush?.__artPreview === true;
+
+        if (isArtPreview) {
+            console.log("[Art Preview] Hiding assets loading frame");
+            this.assetsLoadingFrame.hide();
+        }
+
         SaveData.instance.node.on("level_progress_loaded", () => this.play());
 
         UserData.instance.node.on(
@@ -475,6 +484,10 @@ export class UIMainMenu extends UIFrameBase {
         SaveData.instance.node.on("level_progress_checked", () => {
             console.log(
                 `[STARTUP +${performance.now().toFixed(0)}ms] Level progress checked`
+            );
+
+             console.log( "[ART PREVIEW DEBUG] progress:",
+                UserData.instance.getProgress()
             );
 
             if (UserData.instance.getProgress() > 0) {

@@ -1,5 +1,6 @@
 declare const gamepush: any;
 
+import { NATIVE } from 'cc/env';
 import {
 	_decorator,
 	Component,
@@ -449,22 +450,52 @@ export class GameData extends Component {
 	}
 
 	start() {
-		console.log(`[STARTUP +${performance.now().toFixed(0)}ms] GameData start`);
+		console.log(
+			`[STARTUP +${performance.now().toFixed(0)}ms] GameData start`
+		);
+
+		if (NATIVE) {
+			console.log(
+				'[Art Preview] Loading local levels from resources/levels'
+			);
+
+			this.loadLevelsFromDirectory('levels');
+
+			return;
+		}
 
 		this.tryFetchVariables();
 
 		gamepush.variables.on('fetch', () => {
 			console.log(
-				`[STARTUP +${performance.now().toFixed(0)}ms] GamePush variables fetched`,
+				`[STARTUP +${performance.now().toFixed(0)}ms] GamePush variables fetched`
 			);
 
 			this.updateLevelStage();
 		});
 
-		gamepush.variables.on('error:fetch', (error) => console.error(error));
+		gamepush.variables.on(
+			'error:fetch',
+			(error) => console.error(error)
+		);
 	}
 
 	updateLevelStage() {
+		const isArtPreview =
+			NATIVE &&
+			(globalThis as any).gamepush?.__artPreview === true;
+
+		if (isArtPreview) {
+			this.maxProgress = this.levels.length;
+
+			console.log(
+				'[Art Preview] updateLevelStage skipped;' +
+				` local maxProgress=${this.maxProgress}`
+			);
+
+			return;
+		}
+
 		console.log(
 			`[STARTUP +${performance.now().toFixed(0)}ms] Level stage calculation started`,
 		);
@@ -515,6 +546,42 @@ export class GameData extends Component {
 	}
 
 	getLevelDataByNumber(progress: number): LevelData {
+		const isArtPreview =
+			NATIVE &&
+			(globalThis as any).gamepush?.__artPreview === true;
+
+		if (isArtPreview) {
+			if (this.levels.length === 0) {
+				console.error(
+					'[Art Preview] getLevelDataByNumber: local levels are empty'
+				);
+
+				return undefined;
+			}
+
+			if (!Number.isFinite(progress)) {
+				progress = 0;
+			}
+
+			progress = Math.max(
+				0,
+				Math.min(
+					Math.floor(progress),
+					this.levels.length - 1
+				)
+			);
+
+			this.lastLevel = this.levels[progress];
+
+			console.log(
+				`[Art Preview] Local level resolved:` +
+				` index=${progress}` +
+				` id=${this.lastLevel?.id}`
+			);
+
+			return this.lastLevel;
+		}
+
 		if (progress >= this.maxProgress) {
 			progress = gamepush.player.get('score_king_league');
 
@@ -804,6 +871,11 @@ export class GameData extends Component {
 
 				this.node.emit('level_data', levelData);
 			});
+
+			this.maxProgress = this.levels.length;
+
+			console.log('[Art Preview] Local levels ready:', this.levels.length);
+			console.log('[Art Preview] maxProgress:', this.maxProgress);
 
 			this.node.emit('levels_loaded');
 		});

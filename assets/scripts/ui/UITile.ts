@@ -147,11 +147,30 @@ export class UITile extends Component {
 
 
     destroyTile(delay: number) {
+         if ((globalThis as any).gamepush?.__artPreview === true) {
+            console.log(
+                `[AP UITILE] destroyTile START` +
+                ` node=${this.node.name}` +
+                ` parent=${this.node.parent?.name}` +
+                ` delay=${delay}` +
+                ` blocked=${this.isBlocked}`
+            );
+        }
+
         if (this.isBlocked) {
             return;
         }
     
         this.isBlocked = true;
+
+        if ((globalThis as any).gamepush?.__artPreview === true) {
+            console.log(
+                `[AP UITILE] REPARENT` +
+                ` node=${this.node.name}` +
+                ` from=${this.node.parent?.name}` +
+                ` to=${this.destroyLayout?.name}`
+            );
+        }
         this.destroyLayout.addChild(this.node);
     
         const particles = [this.particles_1, this.particles_2, this.particles_3, this.particles_4, this.particles_5];
@@ -166,6 +185,13 @@ export class UITile extends Component {
         this.playDestroySound();
     
         this.scheduleOnce(() => {
+            if ((globalThis as any).gamepush?.__artPreview === true) {
+                console.log(
+                    `[AP UITILE] DESTROY CALLBACK` +
+                    ` node=${this.node.name}` +
+                    ` parent=${this.node.parent?.name}`
+                );
+            }
             if (this.isSpineDestroyScheduled && this.spine !== null) {
                 try {
                     this.spine.node.destroy();
@@ -182,6 +208,12 @@ export class UITile extends Component {
                         tween().to(this.destroyTime, { opacity: 0 }, { easing: 'linear' })
                     )
                     .call(() => {
+                       if ((globalThis as any).gamepush?.__artPreview === true) {
+                            console.log(
+                                `[AP UITILE] NODE.DESTROY node=${this.node.name}`
+                            );
+                        }
+
                         this.node.destroy();
                     })
                     .start();

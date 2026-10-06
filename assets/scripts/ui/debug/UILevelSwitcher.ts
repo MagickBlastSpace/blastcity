@@ -20,7 +20,7 @@ export class UILevelSwitcher extends Component {
     @property(Button)
     showBtn: Button = null;
 
-    private items: [UILevelSwitcherItem] = [];
+    private items: UILevelSwitcherItem[] = [];
 
     private itemsCounter: number = 0;
 

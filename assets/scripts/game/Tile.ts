@@ -1,5 +1,6 @@
 import { _decorator, Component, Node, Sprite, SpriteFrame, Vec2, Vec3, UITransform } from 'cc';
 import { TileBase } from './TileBase';
+import { ArtPreviewAssetLoader } from '../preview/ArtPreviewAssetLoader';
 const { ccclass, property } = _decorator;
 
 
@@ -34,14 +35,93 @@ export class Tile extends TileBase {
     discoballIcons: SpriteTileData[] = [];
 
     private potentialBonus: string = "";
+    private artRequestId: number = 0;
 
+   private applyCommonIcon() {
+        const fallback =
+            this.commonIcons.find(
+                i =>
+                    i.id ===
+                    this.getTileType()
+            )?.icon ?? null;
+
+        this.applyArtIcon(
+            'common',
+            fallback,
+            '',
+        );
+    }
+
+    private applyArtIcon(
+        category: string,
+        fallback: SpriteFrame | null,
+        expectedBonus: string,
+    ) {
+        const tileType =
+            this.getTileType();
+
+        this.icon.spriteFrame =
+            fallback;
+
+        const requestId =
+            ++this.artRequestId;
+
+        void ArtPreviewAssetLoader
+            .loadTile(
+                category,
+                tileType,
+            )
+            .then((spriteFrame) => {
+
+                if (!spriteFrame) {
+                    return;
+                }
+
+                if (
+                    requestId !==
+                    this.artRequestId
+                ) {
+                    return;
+                }
+
+                if (
+                    !this.node ||
+                    !this.node.isValid ||
+                    !this.icon ||
+                    !this.icon.isValid
+                ) {
+                    return;
+                }
+
+                if (
+                    this.getTileType() !==
+                    tileType
+                ) {
+                    return;
+                }
+
+                if (
+                    this.potentialBonus !==
+                    expectedBonus
+                ) {
+                    return;
+                }
+
+                this.icon.spriteFrame =
+                    spriteFrame;
+
+                console.log(
+                    `[Art Preview Art] applied: ${category}/${tileType}.png`,
+                );
+            });
+    }
 
     onLoad() {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
     }
 
     onDestroy() {
-        this.node.off(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.off(Node.EventType.TOUCH_START, this.onTouchStart, this);
     }
     
     
@@ -55,7 +135,7 @@ export class Tile extends TileBase {
         this.isShifts = true;
         this.isSpecial = false;
 
-        this.icon.spriteFrame = this.commonIcons.find(i => i.id === this.getTileType())?.icon;
+        this.applyCommonIcon();
     }
 
 
@@ -139,19 +219,76 @@ export class Tile extends TileBase {
 
     setPotentialBonus(bonus: string) {
         this.potentialBonus = bonus;
-        switch(bonus) {
-            case 'discoball':
-                this.icon.spriteFrame = this.discoballIcons.find(i => i.id === this.getTileType())?.icon;
+
+        switch (bonus) {
+
+            case 'discoball': {
+                const fallback =
+                    this.discoballIcons.find(
+                        i =>
+                            i.id ===
+                            this.getTileType()
+                    )?.icon ?? null;
+
+                this.applyArtIcon(
+                    'discoball',
+                    fallback,
+                    'discoball',
+                );
+
                 break;
-            case 'bomb':
-                this.icon.spriteFrame = this.bombIcons.find(i => i.id === this.getTileType())?.icon;
+            }
+
+            case 'bomb': {
+                const fallback =
+                    this.bombIcons.find(
+                        i =>
+                            i.id ===
+                            this.getTileType()
+                    )?.icon ?? null;
+
+                this.applyArtIcon(
+                    'bomb',
+                    fallback,
+                    'bomb',
+                );
+
                 break;
-            case 'rocket_vertical':
-                this.icon.spriteFrame = this.verticalRocketIcons.find(i => i.id === this.getTileType())?.icon;
+            }
+
+            case 'rocket_vertical': {
+                const fallback =
+                    this.verticalRocketIcons.find(
+                        i =>
+                            i.id ===
+                            this.getTileType()
+                    )?.icon ?? null;
+
+                this.applyArtIcon(
+                    'rocket_vertical',
+                    fallback,
+                    'rocket_vertical',
+                );
+
                 break;
-            case 'rocket_horizontal':
-                this.icon.spriteFrame = this.horizontalRocketIcons.find(i => i.id === this.getTileType())?.icon;
+            }
+
+            case 'rocket_horizontal': {
+                const fallback =
+                    this.horizontalRocketIcons.find(
+                        i =>
+                            i.id ===
+                            this.getTileType()
+                    )?.icon ?? null;
+
+                this.applyArtIcon(
+                    'rocket_horizontal',
+                    fallback,
+                    'rocket_horizontal',
+                );
+
                 break;
+            }
         }
     }
 
@@ -161,7 +298,8 @@ export class Tile extends TileBase {
 
     clear() {
         this.potentialBonus = "";
-        this.icon.spriteFrame = this.commonIcons.find(i => i.id === this.getTileType())?.icon;
+
+        this.applyCommonIcon();
     }
 
 

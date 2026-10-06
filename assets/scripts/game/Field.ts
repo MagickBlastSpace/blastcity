@@ -2647,6 +2647,11 @@ export class Field extends Component {
 	}
 
 	completeLevel() {
+		console.log(
+			`[AP WIN] completeLevel START` +
+			` points=${this.levelCompletePoints}`
+		);
+
 		if (this.isCompleteScheduled) {
 			return;
 		}
@@ -2669,6 +2674,13 @@ export class Field extends Component {
 				const tileType = Math.floor(Math.random() * 2);
 				let bonusId = tileType === 0 ? 'rocket_vertical' : 'rocket_horizontal';
 
+				console.log(
+					`[AP WIN] replacing tile` +
+					` index=${i}` +
+					` row=${availableTiles[i].x}` +
+					` col=${availableTiles[i].y}`
+				);
+
 				this.spawnBonusTile(
 					availableTiles[i].x,
 					availableTiles[i].y,
@@ -2682,11 +2694,21 @@ export class Field extends Component {
 		}
 
 		this.scheduleOnce(() => {
+			console.log(
+				`[AP WIN] activating bonus pool` +
+				` size=${this.bonusPool.length}`
+			);
+
 			this.activateBonusPool();
 		}, totalTime);
 	}
 
 	completeLevel_Skip() {
+		console.log(
+			`[AP WIN FLOW] completeLevel_Skip START` +
+			` points=${this.levelCompletePoints}`
+		);
+
 		if (this.isCompleteScheduled) {
 			return;
 		}
