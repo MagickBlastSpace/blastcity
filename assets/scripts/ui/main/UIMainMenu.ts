@@ -762,8 +762,8 @@ export class UIMainMenu extends UIFrameBase {
                 this.background_1.spriteFrame = spriteFrame;
             });
 
-            // Новый редизайн-фон для игрового поля
-            bundle.load("redesign/background_01/spriteFrame", SpriteFrame, (err, spriteFrame) => {
+            // Временно: новый редизайн-фон для игрового поля
+            bundle.load("redesign/background/spriteFrame", SpriteFrame, (err, spriteFrame) => {
                 if (err) {
                     console.error(`Failed to load gameplay background`, err);
                     return;
