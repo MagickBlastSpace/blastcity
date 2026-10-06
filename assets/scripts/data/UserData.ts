@@ -824,6 +824,12 @@ export class UserData extends Component {
 
 	setDevMode(isDev: boolean) {
 		this.isDev = isDev;
+
+		this.node.emit(
+			'resources_update',
+			this.Gold,
+			this.Stars,
+		);
 	}
 
 	isDevMode(): boolean {

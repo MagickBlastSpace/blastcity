@@ -28,6 +28,19 @@ export class Boosters extends Component {
     private timeHammer: number = 0.34;
     private timeCannon: number = 0.2;
 
+    private consumeBooster(
+        resource: string,
+    ) {
+        if (UserData.instance.isDevMode()) {
+            return;
+        }
+
+        UserData.instance.subResource(
+            resource,
+            1,
+        );
+    }
+
 
     start() {
         this.hammer.node.on("activate", () => this.setActiveBooster("hammer"));
@@ -59,7 +72,7 @@ export class Boosters extends Component {
 
         this.node.emit("shuffle");
 
-        UserData.instance.subResource("jester", 1);
+        this.consumeBooster("jester");
 
         this.deactivateAll();
     }
@@ -81,7 +94,7 @@ export class Boosters extends Component {
                     this.singleExtraHit(row, col);
                 }, this.timeHammer);
 
-                UserData.instance.subResource("hammer", 1);
+                this.consumeBooster("hammer");
 
                 break;
             case "arrow":
@@ -91,7 +104,7 @@ export class Boosters extends Component {
                     this.rowExtraHit(field, row, col);
                 }, this.timeArrow);
 
-                UserData.instance.subResource("bow", 1);
+                this.consumeBooster("bow");
 
                 break;
             case "cannon":
@@ -101,7 +114,7 @@ export class Boosters extends Component {
                     this.colExtraHit(field, row, col);
                 }, this.timeCannon);
 
-                UserData.instance.subResource("cannon", 1);
+                this.consumeBooster("cannon");
 
                 break;
         }

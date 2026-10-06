@@ -18,7 +18,7 @@ export class Booster extends Component {
 
 
     onLoad() {
-        this.node.on(cc.Node.EventType.TOUCH_END, this.onClick, this);
+        this.node.on(Node.EventType.TOUCH_END, this.onClick, this);
     }
 
     start() {
@@ -42,8 +42,20 @@ export class Booster extends Component {
 
 
     updateCount() {
-        this.count = UserData.instance.getResource(this.boosterName);
-        this.countLabel.string = this.count;
+    if (UserData.instance.isDevMode()) {
+        this.count = 99;
+        this.countLabel.string = '99';
+
+        return;
+    }
+
+    this.count =
+            UserData.instance.getResource(
+                this.boosterName
+            );
+
+        this.countLabel.string =
+            this.count.toString();
     }
 }
 
