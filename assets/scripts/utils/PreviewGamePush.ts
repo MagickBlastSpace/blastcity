@@ -85,7 +85,7 @@ class PreviewEventEmitter {
 
 export class PreviewGamePush {
 	private static readonly BOOTSTRAP_URL =
-		'http://127.0.0.1:3001/preview/bootstrap';
+	    'http://10.0.41.115:3001/preview/bootstrap';
 
 	public static async load(): Promise<any> {
 
