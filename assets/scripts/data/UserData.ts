@@ -825,6 +825,8 @@ export class UserData extends Component {
 	setDevMode(isDev: boolean) {
 		this.isDev = isDev;
 
+		this.node.emit('dev_mode_changed', isDev);
+
 		this.node.emit(
 			'resources_update',
 			this.Gold,

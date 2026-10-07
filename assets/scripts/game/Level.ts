@@ -282,25 +282,41 @@ export class Level extends Component {
         }
 
         if(isGoalsComplete) {
-            UserData.instance.addProgress();
+            if (!GameData.instance.advanceDevSelectedLevel()) {
+                UserData.instance.addProgress();
+            }
+
             let bonusesToSpawn = this.isBonusGoldAvailable() ? this.moves : 0;
             this.node.emit("all_goals_complete_event", bonusesToSpawn);
 
             this.isComplete = true;
 
-            this.node.emit("publish_record", 'level_' + UserData.instance.getProgress(), this.startMovesCount - this.moves, 0);
+            this.node.emit(
+                "publish_record",
+                'level_' + UserData.instance.getProgress(),
+                this.startMovesCount - this.moves,
+                0
+            );
 
             return;
         }
 
         if(!isGoalsComplete && this.moves <= 0) {
             if(this.isBonusLevel()) {
-                UserData.instance.addProgress();
+                if (!GameData.instance.advanceDevSelectedLevel()) {
+                    UserData.instance.addProgress();
+                }
+
                 this.node.emit("all_goals_complete_event", 0);
 
                 let totalReward = this.coinsCollected * this.difficultyMultiplier;
 
-                this.node.emit("publish_record", 'level_' + UserData.instance.getProgress(), this.startMovesCount - this.moves, totalReward);
+                this.node.emit(
+                    "publish_record",
+                    'level_' + UserData.instance.getProgress(),
+                    this.startMovesCount - this.moves,
+                    totalReward
+                );
             }
 
             if(!this.isMovesUnlimited) {
@@ -308,7 +324,6 @@ export class Level extends Component {
             }
         }
     }
-
 
     setLevelCompleteEvent(goldEarned: number) {
         let totalReward = this.isBonusGoldAvailable() ? (goldEarned * this.difficultyMultiplier + this.completionReward) : this.completionReward;

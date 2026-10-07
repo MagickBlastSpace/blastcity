@@ -71,10 +71,71 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
     private isFail: boolean = false;
 
+    private refreshLevelNumber() {
+        const devLevelNumber = GameData.instance.getDevSelectedLevelNumber();
+
+        if (devLevelNumber !== null) {
+            this.levelLabel.string =
+                this.l10n.getLabelByKey("StartFrame.Level") +
+                " " +
+                devLevelNumber;
+
+            return;
+        }
+
+        const isKingLeague =
+            UserData.instance.getProgress() >= GameData.instance.getMaxProgress();
+
+        if (isKingLeague) {
+            this.levelLabel.string =
+                this.l10n.getLabelByKey("StartFrame.Stage") +
+                " " +
+                (UserData.instance.getKingLeagueProgress() + 1);
+
+            return;
+        }
+
+        this.levelLabel.string =
+            this.l10n.getLabelByKey("StartFrame.Level") +
+            " " +
+            (UserData.instance.getProgress() + 1);
+    }
+
+    private refreshLevelInfo() {
+        const levelData = GameData.instance.getCurrentLevel();
+
+        this.refreshLevelNumber();
+
+        if(levelData.difficulty === "hard") {
+            this.frame.spriteFrame = this.hard;
+
+            this.difficultyLabel.string =
+                this.l10n.getLabelByKey("StartFrame.Difficulty_Hard") +
+                " " +
+                this.l10n.getLabelByKey("StartFrame.Difficulty");
+        }
+        else if(levelData.difficulty === "superhard") {
+            this.frame.spriteFrame = this.superHard;
+
+            this.difficultyLabel.string =
+                this.l10n.getLabelByKey("StartFrame.Difficulty_Superhard") +
+                " " +
+                this.l10n.getLabelByKey("StartFrame.Difficulty");
+        }
+        else {
+            this.frame.spriteFrame = this.common;
+
+            this.difficultyLabel.string =
+                this.l10n.getLabelByKey("StartFrame.Difficulty_Common") +
+                " " +
+                this.l10n.getLabelByKey("StartFrame.Difficulty");
+        }
+    }
 
     start() {
         SaveData.instance.node.on("user_data", () => this.refresh());
         SaveData.instance.node.on("level_progress_loaded", () => this.hide());
+        UserData.instance.node.on('dev_mode_changed', () => this.refreshLevelInfo());
 
         this.butlersGiftInfoPopup.node.on("play", () => this.onPlayBtnClick());
 
@@ -92,35 +153,7 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
         this.bgNode.active = true;
         this.goalsFailNode.active = false;
 
-        let levelData = GameData.instance.getCurrentLevel();
-
-        let currentLevelNumber = UserData.instance.getProgress() + 1;
-        this.levelLabel.string = this.l10n.getLabelByKey("StartFrame.Level") + " " + currentLevelNumber;
-
-        let isKingLeague = UserData.instance.getProgress() >= GameData.instance.getMaxProgress();
-        
-        if(isKingLeague) {
-            currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
-            this.levelLabel.string = this.l10n.getLabelByKey("StartFrame.Level") + " " + currentLevelNumber;
-        }
-
-        //this.difficultyLabel.string = levelData ? levelData.difficulty + " Difficulty" : "Common Difficulty";
-
-        if(levelData.difficulty === "hard") {
-            this.frame.spriteFrame = this.hard;
-
-            this.difficultyLabel.string = this.l10n.getLabelByKey("StartFrame.Difficulty_Hard") + " " + this.l10n.getLabelByKey("StartFrame.Difficulty");
-        }
-        else if(levelData.difficulty === "superhard") {
-            this.frame.spriteFrame = this.superHard;
-
-            this.difficultyLabel.string = this.l10n.getLabelByKey("StartFrame.Difficulty_Superhard") + " " + this.l10n.getLabelByKey("StartFrame.Difficulty");
-        }
-        else {
-            this.frame.spriteFrame = this.common;
-
-            this.difficultyLabel.string = this.l10n.getLabelByKey("StartFrame.Difficulty_Common") + " " + this.l10n.getLabelByKey("StartFrame.Difficulty");
-        }
+       this.refreshLevelInfo();
 
         for(let i = 0; i < this.minifiedEvents.length; i++) {
             this.minifiedEvents[i].updateData();
@@ -147,6 +180,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
 
 
     init_Fail(goals: GoalData[]) {
+        this.refreshLevelInfo();
+
         this.isFail = true;
 
         this.bgNode.active = false;

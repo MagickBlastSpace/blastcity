@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, Prefab, instantiate, Button } from 'cc';
 import { Field } from '../../game/Field';
 import { GameData, LevelData } from '../../data/GameData';
+import { UserData } from '../../data/UserData';
 import { UILevelSwitcherItem } from './UILevelSwitcherItem';
 const { ccclass, property } = _decorator;
 
@@ -45,6 +46,12 @@ export class UILevelSwitcher extends Component {
             this.items.push(level);
 
             item.on("click", (levelData) => {
+                if (!UserData.instance.isDevMode()) {
+                    return;
+                }
+                
+                GameData.instance.setDevSelectedLevel(levelData);
+
                 this.field.spawnInitialBoard(levelData);
                 this.scrollView.active = false;
             });
@@ -61,6 +68,12 @@ export class UILevelSwitcher extends Component {
         this.items.push(level);
 
         item.on("click", (levelData) => {
+            if (!UserData.instance.isDevMode()) {
+                return;
+            }
+                
+            GameData.instance.setDevSelectedLevel(levelData);
+
             this.field.unloadAssets();
             this.field.spawnInitialBoard(levelData);
             this.scrollView.active = false;
@@ -71,6 +84,10 @@ export class UILevelSwitcher extends Component {
 
 
     onShowBtnClick() {
+        if (!UserData.instance.isDevMode()) {
+            return;
+        }
+
         this.scrollView.active = !this.scrollView.active;
     }
 }

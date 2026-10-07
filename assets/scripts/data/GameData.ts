@@ -437,6 +437,9 @@ export class GameData extends Component {
 
 	private lastLevel: LevelData;
 
+	private devSelectedLevelIndex: number | null = null;
+	private lastCompletedDevLevelIndex: number | null = null;
+
 	public static instance: GameData = null;
 
 	onLoad() {
@@ -539,7 +542,84 @@ export class GameData extends Component {
 		}
 	}
 
+	setDevSelectedLevel(level: LevelData): void {
+		if (NATIVE || !UserData.instance.isDevMode()) {
+			return;
+		}
+
+		const index = this.levels.indexOf(level);
+
+		if (index < 0) {
+			console.warn('[Dev Level] Selected level not found in loaded levels');
+			return;
+		}
+
+		this.devSelectedLevelIndex = index;
+
+		console.log(
+			'[Dev Level] Selected:',
+			index + 1,
+			'id:',
+			level.id
+		);
+	}
+
+	getDevSelectedLevelNumber(): number | null {
+		if (
+			!UserData.instance.isDevMode() ||
+			this.devSelectedLevelIndex === null
+		) {
+			return null;
+		}
+
+		return this.devSelectedLevelIndex + 1;
+	}
+
+	advanceDevSelectedLevel(): boolean {
+		if (
+			NATIVE ||
+			!UserData.instance.isDevMode() ||
+			this.devSelectedLevelIndex === null
+		) {
+			return false;
+		}
+
+		this.lastCompletedDevLevelIndex = this.devSelectedLevelIndex;
+
+		if (this.devSelectedLevelIndex < this.levels.length - 1) {
+			this.devSelectedLevelIndex++;
+		}
+
+		console.log(
+			'[Dev Level] Completed:',
+			this.lastCompletedDevLevelIndex + 1,
+			'next:',
+			this.devSelectedLevelIndex + 1
+		);
+
+		return true;
+	}
+
+	getLastCompletedDevLevelNumber(): number | null {
+		if (
+			!UserData.instance.isDevMode() ||
+			this.lastCompletedDevLevelIndex === null
+		) {
+			return null;
+		}
+
+		return this.lastCompletedDevLevelIndex + 1;
+	}
+
 	getCurrentLevel(): LevelData {
+		if (
+			!NATIVE &&
+			UserData.instance.isDevMode() &&
+			this.devSelectedLevelIndex !== null
+		) {
+			return this.levels[this.devSelectedLevelIndex];
+		}
+
 		let progress = gamepush.player.get('score');
 
 		return this.getLevelDataByNumber(progress);

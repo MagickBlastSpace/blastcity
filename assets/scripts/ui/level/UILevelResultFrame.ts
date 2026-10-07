@@ -137,19 +137,32 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 	refresh(isSuccess: boolean, goldEarned: number) {
 		this.isSuccess = isSuccess;
 
-		let isKingLeague = this.isKingLeagueMode();
+		const isKingLeague = this.isKingLeagueMode();
 
-		let currentLevelNumber = isKingLeague
-			? UserData.instance.getKingLeagueProgress()
-			: UserData.instance.getProgress();
+		const completedDevLevelNumber =
+			GameData.instance.getLastCompletedDevLevelNumber();
 
-		let lvlString = isKingLeague
-			? Localization.instance.getLabelByKey('StartFrame.Stage') +
-				' ' +
-				currentLevelNumber
-			: Localization.instance.getLabelByKey('StartFrame.Level') +
-				' ' +
-				currentLevelNumber;
+		let lvlString: string;
+
+		if (completedDevLevelNumber !== null) {
+			lvlString =
+				Localization.instance.getLabelByKey("StartFrame.Level") +
+				" " +
+				completedDevLevelNumber;
+		}
+		else {
+			const currentLevelNumber = isKingLeague
+				? UserData.instance.getKingLeagueProgress()
+				: UserData.instance.getProgress();
+
+			lvlString = isKingLeague
+				? Localization.instance.getLabelByKey("StartFrame.Stage") +
+					" " +
+					currentLevelNumber
+				: Localization.instance.getLabelByKey("StartFrame.Level") +
+					" " +
+					currentLevelNumber;
+		}
 
 		this.levelLabel.string = isSuccess
 			? lvlString
@@ -158,6 +171,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 		this.buttonLabel.string = isSuccess
 			? Localization.instance.getLabelByKey('combat.continue')
 			: Localization.instance.getLabelByKey('combat.replay');
+
 		this.goldLabel.string = 'x' + goldEarned;
 
 		this.movesShop.node.active = !isSuccess;
@@ -184,18 +198,24 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 		}
 
 		try {
-			let levelData = GameData.instance.getLastLevel();
+			const levelData =
+				completedDevLevelNumber !== null
+					? GameData.instance.levels[completedDevLevelNumber - 1]
+					: GameData.instance.getLastLevel();
 
 			this.difficulty = levelData.difficulty;
 
 			if (levelData.difficulty === 'hard') {
 				this.frame.spriteFrame = this.hard;
-			} else if (levelData.difficulty === 'superhard') {
+			}
+			else if (levelData.difficulty === 'superhard') {
 				this.frame.spriteFrame = this.superHard;
-			} else {
+			}
+			else {
 				this.frame.spriteFrame = this.common;
 			}
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('Error setting level result:', error);
 		}
 	}

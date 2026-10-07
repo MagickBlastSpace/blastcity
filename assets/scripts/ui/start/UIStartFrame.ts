@@ -70,6 +70,7 @@ export class UIStartFrame extends UIFrameBase {
                 this.preloadAssets();
             }
         });
+        UserData.instance.node.on('dev_mode_changed', () => this.refresh());
 
         this.field.node.on("level_init", (level: LevelData) => {
             const isArtPreview =
@@ -144,9 +145,17 @@ export class UIStartFrame extends UIFrameBase {
             this.levelCountLabel.string = currentLevelNumber;
         }
         else {
-            let currentLevelNumber = UserData.instance.getProgress() + 1;
-            this.levelLabel.string = Localization.instance.getLabelByKey("StartFrame.Level");
-            this.levelCountLabel.string = currentLevelNumber;
+            const devLevelNumber = GameData.instance.getDevSelectedLevelNumber();
+
+            const currentLevelNumber =
+                devLevelNumber !== null
+                    ? devLevelNumber
+                    : UserData.instance.getProgress() + 1;
+
+            this.levelLabel.string =
+                Localization.instance.getLabelByKey("StartFrame.Level");
+
+            this.levelCountLabel.string = String(currentLevelNumber);
         }
     }
 
