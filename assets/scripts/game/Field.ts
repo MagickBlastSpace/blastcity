@@ -240,22 +240,27 @@ export class Field extends Component {
 	}
 
 	private getRandomAvailableLevelColor(): string {
-		const colors = this.getAvailableColors();
+        const colors = this.getAvailableColors();
+        const uniqueColors: string[] = [];
 
-		const uniqueColors = [...new Set(colors)];
+        for (let i = 0; i < colors.length; i++) {
+            if (!uniqueColors.includes(colors[i])) {
+                uniqueColors.push(colors[i]);
+            }
+        }
 
-		if (uniqueColors.length > 0) {
-			const index = Math.floor(Math.random() * uniqueColors.length);
+        if (uniqueColors.length > 0) {
+            const index = Math.floor(Math.random() * uniqueColors.length);
 
-			return uniqueColors[index];
-		}
+            return uniqueColors[index];
+        }
 
-		const fallbackColors = ['blue', 'red', 'green', 'yellow'];
+        const fallbackColors = ['blue', 'red', 'green', 'yellow'];
 
-		const index = Math.floor(Math.random() * fallbackColors.length);
+        const index = Math.floor(Math.random() * fallbackColors.length);
 
-		return fallbackColors[index];
-	}
+        return fallbackColors[index];
+    }
 
 	spawnInitialBoard(level: LevelData) {
 		if (level === null || level === undefined) {
