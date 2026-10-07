@@ -41,7 +41,7 @@ export class HintFinder extends Component {
         this.fieldComp = this.field.getComponent("Field");
         this.levelComp = this.level.getComponent("Level");
 
-        this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
+        this.availableColors = ["blue", "red", "green", "yellow", "purple"];
         this.priorityList = ["pump", "fish", "frog", "magic_hat"];
 
         this.stopTimer();

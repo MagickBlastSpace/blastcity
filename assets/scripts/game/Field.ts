@@ -176,7 +176,6 @@ export class Field extends Component {
 			'green',
 			'yellow',
 			'purple',
-			'orange',
 		];
 
 		this.level.on('goal_complete_event', (goalId) =>
@@ -232,6 +231,32 @@ export class Field extends Component {
 		});
 	}
 
+	private removeOrangeFromPool(pool: string[]): string[] {
+		if (!pool) {
+			return [];
+		}
+
+		return pool.filter((item) => item !== 'orange');
+	}
+
+	private getRandomAvailableLevelColor(): string {
+		const colors = this.getAvailableColors();
+
+		const uniqueColors = [...new Set(colors)];
+
+		if (uniqueColors.length > 0) {
+			const index = Math.floor(Math.random() * uniqueColors.length);
+
+			return uniqueColors[index];
+		}
+
+		const fallbackColors = ['blue', 'red', 'green', 'yellow'];
+
+		const index = Math.floor(Math.random() * fallbackColors.length);
+
+		return fallbackColors[index];
+	}
+
 	spawnInitialBoard(level: LevelData) {
 		if (level === null || level === undefined) {
 			return;
@@ -251,7 +276,7 @@ export class Field extends Component {
 		this.isLevelComplete = false;
 
 		if (level.startPool !== null && level.startPool !== undefined) {
-			this.startPool = level.startPool;
+			this.startPool = this.removeOrangeFromPool(level.startPool);
 		}
 
 		if (this.startPool.length === 0) {
@@ -265,7 +290,12 @@ export class Field extends Component {
 				this.resetSpawnPools();
 			} else {
 				for (let i = 0; i < level.spawnPools.length; i++) {
-					const duplicateSpawnPool = level.spawnPools[i].slice();
+					let duplicateSpawnPool =
+						this.removeOrangeFromPool(level.spawnPools[i]);
+
+					if (duplicateSpawnPool.length === 0) {
+						duplicateSpawnPool = ['blue', 'red', 'green', 'yellow'];
+					}
 
 					this.spawnPools.push(duplicateSpawnPool);
 				}
@@ -338,45 +368,59 @@ export class Field extends Component {
 
 		if (level.specialTiles) {
 			for (let i = 0; i < level.specialTiles.length; i++) {
-				if (this.availableColors.includes(level.specialTiles[i].id)) {
+				let tileId = level.specialTiles[i].id;
+
+				if (tileId === 'orange') {
+					tileId = this.getRandomAvailableLevelColor();
+				}
+
+				if (this.availableColors.includes(tileId)) {
 					this.presetedNodes.push(
 						this.spawnCommonTile(
 							level.specialTiles[i].row,
 							level.specialTiles[i].col,
-							level.specialTiles[i].id,
+							tileId,
 						),
 					);
-				} else if (
-					level.specialTiles[i].id === 'rocket_horizontal' ||
-					level.specialTiles[i].id === 'rocket_vertical'
+				}
+				else if (
+					tileId === 'rocket_horizontal' ||
+					tileId === 'rocket_vertical'
 				) {
 					this.spawnRocket(
 						level.specialTiles[i].row,
 						level.specialTiles[i].col,
-						level.specialTiles[i].id,
+						tileId,
 					);
-				} else if (level.specialTiles[i].id === 'bomb') {
-					this.spawnBomb(level.specialTiles[i].row, level.specialTiles[i].col);
-				} else if (level.specialTiles[i].id === 'rocket') {
+				}
+				else if (tileId === 'bomb') {
+					this.spawnBomb(
+						level.specialTiles[i].row,
+						level.specialTiles[i].col,
+					);
+				}
+				else if (tileId === 'rocket') {
 					this.spawnRandomRocket(
 						level.specialTiles[i].row,
 						level.specialTiles[i].col,
 					);
-				} else if (
-					level.specialTiles[i].id === 'discoball' ||
-					level.specialTiles[i].id.split('_')[0] === 'discoball' ||
-					level.specialTiles[i].id === 'super' ||
-					level.specialTiles[i].id === 'multi'
+				}
+				else if (
+					tileId === 'discoball' ||
+					tileId.split('_')[0] === 'discoball' ||
+					tileId === 'super' ||
+					tileId === 'multi'
 				) {
 					this.spawnDiscoball(
 						level.specialTiles[i].row,
 						level.specialTiles[i].col,
 					);
-				} else {
+				}
+				else {
 					this.spawnSpecialTile(
 						level.specialTiles[i].row,
 						level.specialTiles[i].col,
-						level.specialTiles[i].id,
+						tileId,
 					);
 				}
 			}
