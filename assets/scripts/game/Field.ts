@@ -1,29 +1,29 @@
 import {
-	_decorator,
-	Component,
-	Node,
-	instantiate,
-	Prefab,
-	Vec2,
-	isValid,
-	Vec3,
+    _decorator,
+    Component,
+    instantiate,
+    isValid,
+    Node,
+    Prefab,
+    Vec2
 } from 'cc';
 import {
-	GameData,
-	GoalData,
-	LevelData,
-	SpecialPrefabData,
-	SpecialTileData,
-	SpecialTileStateData,
+    GameData,
+    GoalData,
+    LevelData,
+    SpecialPrefabData,
+    SpecialTileData,
+    SpecialTileStateData,
 } from '../data/GameData';
-import { TileBase } from './TileBase';
-import { Boosters } from './boosters/Boosters';
-import { StartBonuses } from './boosters/StartBonuses';
-import { ButlersGift } from './boosters/ButlersGift';
 import { SaveData } from '../data/SaveData';
 import { UserData } from '../data/UserData';
+import { ArtPreviewAssetLoader } from '../preview/ArtPreviewAssetLoader';
 import { AssetsLoader } from '../utils/AssetsLoader';
 import { AudioController } from '../utils/AudioController';
+import { TileBase } from './TileBase';
+import { Boosters } from './boosters/Boosters';
+import { ButlersGift } from './boosters/ButlersGift';
+import { StartBonuses } from './boosters/StartBonuses';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -667,6 +667,13 @@ export class Field extends Component {
 		this.layersForCleanup[0].addChild(tileNode);
 		const tileComponent = tileNode.getComponent('Bomb');
 		let spawnedTile = this.initTile(tileComponent, row, col, 'bomb');
+
+        void ArtPreviewAssetLoader.applyPrefabArt(
+            tileNode,
+            ['bonus'],
+            'bomb',
+        );
+
 		return spawnedTile;
 	}
 
@@ -676,6 +683,13 @@ export class Field extends Component {
 		this.layersForCleanup[0].addChild(tileNode);
 		const tileComponent = tileNode.getComponent('Rocket');
 		let spawnedTile = this.initTile(tileComponent, row, col, tileType);
+
+        void ArtPreviewAssetLoader.applyPrefabArt(
+            tileNode,
+            ['bonus'],
+            tileType,
+        );
+
 		return spawnedTile;
 	}
 
@@ -699,6 +713,13 @@ export class Field extends Component {
 		const tileComponent = tileNode.getComponent('Discoball');
 		let tileType = this.isSuperDiscoballMode ? 'super' : 'multi';
 		let spawnedTile = this.initTile(tileComponent, row, col, tileType);
+
+        void ArtPreviewAssetLoader.applyPrefabArt(
+            tileNode,
+            ['bonus'],
+            tileType,
+        );
+
 		return spawnedTile;
 	}
 
@@ -732,6 +753,16 @@ export class Field extends Component {
 		this.layersForCleanup[0].addChild(tileNode);
 		const tileComponent = tileNode.getComponent('SpecTileBase');
 		let spawnedTile = this.initTile(tileComponent, row, col, tileId);
+
+        void ArtPreviewAssetLoader.applyPrefabArt(
+            tileNode,
+            [
+                'special',
+                'big_special',
+            ],
+            tileId,
+        );
+
 		return spawnedTile;
 	}
 
@@ -746,6 +777,15 @@ export class Field extends Component {
 		this.layersForCleanup[0].addChild(statusNode);
 		const statusComponent = statusNode.getComponent('StatusBase');
 		let spawnedStatus = this.initStatus(statusComponent, row, col, statusId);
+
+        void ArtPreviewAssetLoader.applyPrefabArt(
+            statusNode,
+            [
+                'statuses',
+            ],
+            statusId,
+        );
+
 		return spawnedStatus;
 	}
 
