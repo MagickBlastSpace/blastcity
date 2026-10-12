@@ -1,29 +1,30 @@
-import { _decorator,  Node, Button, assetManager, Sprite, SpriteFrame, macro, Prefab, instantiate, Widget} from 'cc';
+import { _decorator, assetManager, AssetManager, Button, instantiate, macro, Node, Prefab, Sprite, SpriteFrame, UITransform, view, Widget } from 'cc';
+import { ChestRewardData } from '../../data/ChestData';
+import { SaveData } from '../../data/SaveData';
+import { UserData } from '../../data/UserData';
+import { Chest } from '../../game/Chest';
+import { Clans } from '../../game/Clans';
+import { Net } from '../../net/Net';
+import { AdsTimer } from '../../utils/AdsTimer';
+import { AudioController } from '../../utils/AudioController';
+import { ResolutionManager } from '../../utils/ResolutionManager';
+import { UICollectionFrameAdaptivity } from '../collection/adaptivity/UICollectionFrameAdaptivity';
+import { UICollectionCard } from '../collection/UICollectionCard';
+import { UICollectionCardRecievePopup } from '../collection/UICollectionCardRecievePopup';
+import { UICollectionDuplicateExchange } from '../collection/UICollectionDuplicateExchange';
+import { UICollectionFrame } from '../collection/UICollectionFrame';
+import { UICollectionInfoPopup } from '../collection/UICollectionInfoPopup';
+import { UILeaderboardFrame } from '../leaderboard/UILeaderboardFrame';
+import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
+import { UIProfilePopup } from '../profile/UIProfilePopup';
+import { UIShopFrame } from '../shop/UIShopFrame';
+import { UISettingsFrame } from '../start/UISettingsFrame';
+import { UIEventTutorialPopup } from '../tutorial/UIEventTutorialPopup';
+import { UIFrameBase } from '../UIFrameBase';
+import { UIPopupReward } from '../UIPopupReward';
 import { UIMainMenuButton } from './UIMainMenuButton';
 import { UIMainMenuFrame } from './UIMainMenuFrame';
-import { UICollectionFrame } from '../collection/UICollectionFrame';
-import { ResolutionManager } from '../../utils/ResolutionManager';
-import { UIFrameBase } from '../UIFrameBase';
-import { AdsTimer } from '../../utils/AdsTimer';
-import { SaveData } from '../../data/SaveData';
-import { Chest } from '../../game/Chest';
-import { AudioController } from '../../utils/AudioController';
-import { UISettingsFrame } from '../start/UISettingsFrame';
-import { UserData } from '../../data/UserData';
-import { UIPopupReward } from '../UIPopupReward';
-import { UIProfilePopup } from '../profile/UIProfilePopup';
-import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
-import { ChestRewardData } from '../../data/ChestData';
-import { UICollectionCardRecievePopup } from '../collection/UICollectionCardRecievePopup';
-import { Net } from '../../net/Net';
-import { Clans } from '../../game/Clans';
-import { UICollectionFrameAdaptivity } from '../collection/adaptivity/UICollectionFrameAdaptivity';
-import { UICollectionDuplicateExchange } from '../collection/UICollectionDuplicateExchange';
-import { UIEventTutorialPopup } from '../tutorial/UIEventTutorialPopup';
-import { UICollectionInfoPopup } from '../collection/UICollectionInfoPopup';
-import { UICollectionCard } from '../collection/UICollectionCard';
-import { UILeaderboardFrame } from '../leaderboard/UILeaderboardFrame';
-import { UIShopFrame } from '../shop/UIShopFrame';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('UIMainMenu')
@@ -31,24 +32,31 @@ export class UIMainMenu extends UIFrameBase {
 
     @property(Button)
     shopBtn: Button = null;
+
     @property(Button)
     clanBtn: Button = null;
+
     @property(Button)
     playBtn: Button = null;
+
     @property(Button)
     tbdBtn: Button = null;
+
     @property(Button)
     tbd2Btn: Button = null;
 
     @property(Button)
     settingsBtn: Button = null;
+
     @property(Button)
     profileBtn: Button = null;
 
     @property(Sprite)
     background: Sprite = null;
+
     @property(Sprite)
     background_1: Sprite = null;
+
     @property(Sprite)
     chestPicture: Sprite = null;
 
@@ -60,6 +68,7 @@ export class UIMainMenu extends UIFrameBase {
 
     @property(Node)
     startFrame: Node = null;
+
     @property(Chest)
     chest: Chest = null;
 
@@ -71,6 +80,7 @@ export class UIMainMenu extends UIFrameBase {
 
     @property(UIPopupReward)
     rewardPopup: UIPopupReward;
+
     @property(UIProfilePopup)
     profilePopup: UIProfilePopup;
 
@@ -90,7 +100,87 @@ export class UIMainMenu extends UIFrameBase {
     leaderboardFrame: UILeaderboardFrame = null;
 
     private collectionFramePromise: Promise<UIMainMenuFrame> = null;
+
     private collectionOpenRequestId: number = 0;
+
+    private boundOnBackgroundResize: (() => void) | null = null;
+
+    private bigGraphicsBundlePromise: Promise<AssetManager.Bundle> | null = null;
+    private loadedBackgroundLocation: number = -1;
+
+    // Скрываем сундук чисто визуально
+    private hideChestVisual() {
+        if (this.chestPicture) {
+            this.chestPicture.enabled = false;
+        }
+    }
+
+    private getLocationNumber(index: number): string {
+        return index < 10
+            ? `0${index}`
+            : `${index}`;
+    }
+
+    private fitBackgroundCover(sprite: Sprite) {
+        if (
+            !sprite ||
+            !sprite.node ||
+            !sprite.node.isValid ||
+            !sprite.spriteFrame
+        ) {
+            return;
+        }
+
+        const transform = sprite.node.getComponent(UITransform);
+
+        if (!transform) {
+            console.warn(`[BACKGROUND] UITransform not found: ${sprite.node.name}`);
+            return;
+        }
+
+        const sourceSize = sprite.spriteFrame.originalSize;
+        const visibleSize = view.getVisibleSize();
+
+        if (
+            sourceSize.width <= 0 ||
+            sourceSize.height <= 0 ||
+            visibleSize.width <= 0 ||
+            visibleSize.height <= 0
+        ) {
+            return;
+        }
+
+        const coverScale = Math.max(visibleSize.width / sourceSize.width, visibleSize.height / sourceSize.height);
+        const resultWidth = sourceSize.width * coverScale;
+        const resultHeight = sourceSize.height * coverScale;
+
+        sprite.sizeMode = Sprite.SizeMode.CUSTOM;
+        sprite.node.setScale(1, 1, 1);
+
+        transform.setContentSize(resultWidth, resultHeight);
+        sprite.node.setPosition(0, 0, sprite.node.position.z);
+
+        console.log(
+            `[BACKGROUND COVER] ${sprite.node.name}` +
+            ` | source=${sourceSize.width}x${sourceSize.height}` +
+            ` | viewport=${visibleSize.width.toFixed(0)}x${visibleSize.height.toFixed(0)}` +
+            ` | result=${resultWidth.toFixed(0)}x${resultHeight.toFixed(0)}`
+        );
+    }
+
+    private refreshBackgroundLayout() {
+        this.fitBackgroundCover(this.background);
+        this.fitBackgroundCover(this.background_1);
+    }
+
+    private scheduleBackgroundLayoutRefresh() {
+        this.scheduleOnce(
+            () => {
+                this.refreshBackgroundLayout();
+            },
+            0
+        );
+    }
 
     private connectCollectionPopups(collectionNode: Node, popupsNode: Node) {
         const collectionUi = collectionNode.getComponent(UICollectionFrame);
@@ -99,7 +189,6 @@ export class UIMainMenu extends UIFrameBase {
         if (!collectionUi) {
             throw new Error("UICollectionFrame component not found on CollectionFrame");
         }
-
         if (!adaptivity) {
             throw new Error("UICollectionFrameAdaptivity component not found on CollectionFrame");
         }
@@ -124,73 +213,166 @@ export class UIMainMenu extends UIFrameBase {
             throw new Error("CollectionFramePopups structure is incomplete");
         }
 
-        adaptivity.popups = [
-            collectionPopup,
-            sendCard,
-            duplicateExchangePopup,
-            info,
-            info2,
-            badgeInfo1,
-            badgeInfo2,
-        ];
-
+        adaptivity.popups = [collectionPopup, sendCard, duplicateExchangePopup, info, info2, badgeInfo1, badgeInfo2,];
         const collectionInfoPopup = collectionPopup.getComponent(UICollectionInfoPopup);
         const duplicateExchange = duplicateExchangePopup.getComponent(UICollectionDuplicateExchange);
-
         const infoPopup1 = info.getComponent(UIEventTutorialPopup);
         const infoPopup2 = info2.getComponent(UIEventTutorialPopup);
-
         const badgeInfoPopup1 = badgeInfo1.getComponent(UIEventTutorialPopup);
         const badgeInfoPopup2 = badgeInfo2.getComponent(UIEventTutorialPopup);
 
         if (!collectionInfoPopup) {
             throw new Error("UICollectionInfoPopup component not found on CollectionPopup");
         }
-
         if (!duplicateExchange) {
             throw new Error("UICollectionDuplicateExchange component not found on DuplicateExchangePopup");
         }
-
         if (!infoPopup1 || !infoPopup2) {
             throw new Error("UIEventTutorialPopup component not found on Collection info popups");
         }
-
         if (!badgeInfoPopup1 || !badgeInfoPopup2) {
             throw new Error("UIEventTutorialPopup component not found on Collection badge info popups");
         }
 
         const collectionCards = collectionPopup.getComponentsInChildren(UICollectionCard);
-
         if (collectionCards.length !== 9) {
-            throw new Error(
-                `Expected 9 UICollectionCard components in CollectionPopup, found ${collectionCards.length}`
-            );
+            throw new Error(`Expected 9 UICollectionCard components in CollectionPopup, found ${collectionCards.length}`);
         }
 
         collectionInfoPopup.cards = collectionCards;
-
         collectionUi.collectionInfoPopup = collectionInfoPopup;
         collectionUi.duplicateExchange = duplicateExchange;
+        collectionUi.infoPopups = [infoPopup1, infoPopup2,];
+        collectionUi.badgeInfoPopups = [badgeInfoPopup1, badgeInfoPopup2,];
+    }
 
-        collectionUi.infoPopups = [
-            infoPopup1,
-            infoPopup2,
-        ];
+    private getBigGraphicsBundle(): Promise<AssetManager.Bundle> {
+        if (this.bigGraphicsBundlePromise) {
+            return this.bigGraphicsBundlePromise;
+        }
 
-        collectionUi.badgeInfoPopups = [
-            badgeInfoPopup1,
-            badgeInfoPopup2,
-        ];
+        this.bigGraphicsBundlePromise = new Promise((resolve, reject) => {
+            assetManager.loadBundle("big_graphics", (err, bundle) => {
+                if (err) {
+                    this.bigGraphicsBundlePromise = null;
+                    reject(err);
+                    return;
+                }
+
+                console.log("[BACKGROUND] big_graphics bundle ready");
+
+                resolve(bundle);
+            });
+        });
+
+        return this.bigGraphicsBundlePromise;
+    }
+
+
+    private loadBackgroundSprite(
+        bundle: AssetManager.Bundle,
+        path: string
+    ): Promise<SpriteFrame> {
+        return new Promise((resolve, reject) => {
+            bundle.load(
+                path,
+                SpriteFrame,
+                (err, spriteFrame) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    resolve(spriteFrame);
+                }
+            );
+        });
+    }
+
+
+    private async loadBackgroundWithFallback(
+        bundle: AssetManager.Bundle,
+        path: string,
+        legacyPath: string,
+        name: string
+    ): Promise<SpriteFrame> {
+        try {
+            return await this.loadBackgroundSprite(bundle, path);
+        }
+        catch (error) {
+            console.warn(
+                `[BACKGROUND] ${name} not found: ${path}. Using ${legacyPath}`,
+                error
+            );
+
+            return await this.loadBackgroundSprite(
+                bundle,
+                legacyPath
+            );
+        }
+    }
+
+
+    private preloadNextBackground() {
+        const nextLocationIndex = this.chest.getStage() + 2;
+
+        if (nextLocationIndex > 25) {
+            return;
+        }
+
+        void this.getBigGraphicsBundle()
+            .then((bundle) => {
+
+                let paths: string[];
+
+                if (nextLocationIndex <= 7) {
+                    const number = this.getLocationNumber(nextLocationIndex);
+
+                    paths = [
+                        `redesign/location_${number}_menu/spriteFrame`,
+                        `redesign/location_${number}_gameplay/spriteFrame`
+                    ];
+                }
+                else {
+                    paths = [
+                        `back${nextLocationIndex}/spriteFrame`
+                    ];
+                }
+
+                for (const path of paths) {
+                    bundle.preload(
+                        path,
+                        SpriteFrame,
+                        (err) => {
+                            if (err) {
+                                console.warn(
+                                    `[BACKGROUND PRELOAD] Failed: ${path}`,
+                                    err
+                                );
+
+                                return;
+                            }
+
+                            console.log(
+                                `[BACKGROUND PRELOAD] Ready: ${path}`
+                            );
+                        }
+                    );
+                }
+            })
+            .catch((error) => {
+                console.warn(
+                    "[BACKGROUND PRELOAD] big_graphics unavailable",
+                    error
+                );
+            });
     }
 
     private preloadCollectionCovers(): Promise<void> {
         return new Promise((resolve) => {
             const controller = UserData.instance?.collections;
-
             if(!controller) {
-                console.error(
-                    "[COLLECTION] Cannot preload covers: controller is not ready"
-                );
+                console.error("[COLLECTION] Cannot preload covers: controller is not ready");
                 resolve();
                 return;
             }
@@ -210,10 +392,7 @@ export class UIMainMenu extends UIFrameBase {
 
             assetManager.loadBundle("covers", (bundleErr, bundle) => {
                 if(bundleErr) {
-                    console.error(
-                        "Failed to preload bundle: covers",
-                        bundleErr
-                    );
+                    console.error("Failed to preload bundle: covers", bundleErr);
                     resolve();
                     return;
                 }
@@ -223,12 +402,8 @@ export class UIMainMenu extends UIFrameBase {
                     SpriteFrame,
                     (loadErr) => {
                         if(loadErr) {
-                            console.error(
-                                "Failed to preload collection covers",
-                                loadErr
-                            );
+                            console.error("Failed to preload collection covers", loadErr);
                         }
-
                         resolve();
                     }
                 );
@@ -236,38 +411,27 @@ export class UIMainMenu extends UIFrameBase {
         });
     }
 
-   private ensureCollectionFrame(): Promise<UIMainMenuFrame> {
+    private ensureCollectionFrame(): Promise<UIMainMenuFrame> {
         if(this.framesUi[4]) {
             return Promise.resolve(this.framesUi[4]);
         }
-
         if(this.collectionFramePromise) {
             return this.collectionFramePromise;
         }
 
-        console.log(
-            `[PRELOAD +${performance.now().toFixed(0)}ms] Collection preload started`
-        );
+        console.log(`[PRELOAD +${performance.now().toFixed(0)}ms] Collection preload started`);
 
         this.collectionFramePromise = new Promise((resolve, reject) => {
             const popupsNode = this.node.getChildByName("CollectionFramePopups");
-
             if(!popupsNode) {
                 this.collectionFramePromise = null;
-                reject(
-                    new Error(
-                        "Existing CollectionFramePopups node not found in MainFrame"
-                    )
-                );
+                reject(new Error("Existing CollectionFramePopups node not found in MainFrame"));
                 return;
             }
 
             assetManager.loadBundle("collection_ui", (bundleErr, bundle) => {
                 if(bundleErr) {
-                    console.error(
-                        "Failed to load bundle: collection_ui",
-                        bundleErr
-                    );
+                    console.error("Failed to load bundle: collection_ui", bundleErr);
                     this.collectionFramePromise = null;
                     reject(bundleErr);
                     return;
@@ -278,51 +442,28 @@ export class UIMainMenu extends UIFrameBase {
                     Prefab,
                     (collectionErr, collectionPrefab) => {
                         if(collectionErr) {
-                            console.error(
-                                "Failed to load CollectionFrame",
-                                collectionErr
-                            );
+                            console.error("Failed to load CollectionFrame", collectionErr);
                             this.collectionFramePromise = null;
                             reject(collectionErr);
                             return;
                         }
 
                         const collectionNode = instantiate(collectionPrefab);
-
                         collectionNode.active = false;
-
                         this.node.addChild(collectionNode);
 
-                        /*
-                        * Collection должна находиться под элементами,
-                        * которые рисуются поверх основного контента.
-                        */
                         const landscapeItems =
                             this.node.getChildByName("LandscapeItems");
-
                         if(landscapeItems) {
-                            collectionNode.setSiblingIndex(
-                                landscapeItems.getSiblingIndex()
-                            );
+                            collectionNode.setSiblingIndex(landscapeItems.getSiblingIndex());
                         }
-
-                        /*
-                        * Фон панели навигации
-                        */
 
                         const mainBtnsFrame =
                            this.node.getChildByName("MainBtnsFrame");
-
                         if(mainBtnsFrame) {
-                            mainBtnsFrame.setSiblingIndex(
-                                collectionNode.getSiblingIndex() + 1
-                            );
+                            mainBtnsFrame.setSiblingIndex(collectionNode.getSiblingIndex() + 1);
                         }
 
-                        /*
-                        * Нижняя навигация должна всегда рисоваться
-                        * поверх динамически добавленной Collection.
-                        */
                         const mainMenuButtonsPanel =
                             this.node.getChildByName("MainMenuButtonsPanel");
 
@@ -330,218 +471,247 @@ export class UIMainMenu extends UIFrameBase {
                             const navbarIndex = mainBtnsFrame
                                 ? mainBtnsFrame.getSiblingIndex() + 1
                                 : collectionNode.getSiblingIndex() + 1;
-
                             mainMenuButtonsPanel.setSiblingIndex(navbarIndex);
-
-                            popupsNode.setSiblingIndex(
-                                mainMenuButtonsPanel.getSiblingIndex() + 1
-                            );
+                            popupsNode.setSiblingIndex(mainMenuButtonsPanel.getSiblingIndex() + 1);
                         }
                         else {
-                            console.error(
-                                "[COLLECTION] MainMenuButtonsPanel not found"
-                            );
+                            console.error("[COLLECTION] MainMenuButtonsPanel not found");
                         }
 
-                        /*
-                        * Collection занимает весь MainFrame.
-                        * В том числе пространство под navbar:
-                        * сам navbar рисуется поверх Collection.
-                        */
                         const collectionWidget =
                             collectionNode.getComponent(Widget);
-
                         if(collectionWidget) {
                             collectionWidget.target = this.node;
-
                             collectionWidget.isAlignLeft = true;
                             collectionWidget.isAlignRight = true;
                             collectionWidget.isAlignTop = true;
                             collectionWidget.isAlignBottom = true;
                             collectionWidget.isAlignVerticalCenter = false;
-
                             collectionWidget.left = 0;
                             collectionWidget.right = 0;
                             collectionWidget.top = 0;
                             collectionWidget.bottom = 0;
-
                             collectionWidget.updateAlignment();
                         }
 
                         const fail = (error: Error) => {
                             console.error(error);
-
                             collectionNode.destroy();
-
                             this.collectionFramePromise = null;
-
                             reject(error);
                         };
 
                         const collectionUi =
                             collectionNode.getComponent(UICollectionFrame);
-
                         if(!collectionUi) {
-                            fail(
-                                new Error(
-                                    "UICollectionFrame component not found on CollectionFrame"
-                                )
-                            );
+                            fail(new Error("UICollectionFrame component not found on CollectionFrame"));
                             return;
                         }
-
                         if(
                             !UserData.instance ||
                             !UserData.instance.collections
                         ) {
-                            fail(
-                                new Error(
-                                    "CollectionEvent controller is not ready"
-                                )
-                            );
+                            fail(new Error("CollectionEvent controller is not ready"));
                             return;
                         }
 
                         const collectionFrame =
                             collectionNode.getComponent(UIMainMenuFrame);
-
                         if(!collectionFrame) {
-                            fail(
-                                new Error(
-                                    "UIMainMenuFrame component not found on CollectionFrame"
-                                )
-                            );
+                            fail(new Error("UIMainMenuFrame component not found on CollectionFrame"));
                             return;
                         }
-
                         try {
-                            this.connectCollectionPopups(
-                                collectionNode,
-                                popupsNode
-                            );
+                            this.connectCollectionPopups(collectionNode, popupsNode);
                         }
                         catch(error) {
-                            fail(
-                                error instanceof Error
-                                    ? error
-                                    : new Error(
-                                        "Failed to connect CollectionFramePopups"
-                                    )
-                            );
+                            fail(error instanceof Error ? error : new Error("Failed to connect CollectionFramePopups"));
                             return;
                         }
 
                         collectionUi.eventController =
                             UserData.instance.collections;
-
                         if(ResolutionManager.instance) {
-                            ResolutionManager.instance.addAdaptiveFrame(
-                                collectionNode
-                            );
+                            ResolutionManager.instance.addAdaptiveFrame(collectionNode);
                         }
 
                         this.preloadCollectionCovers()
                             .then(() => {
                                 this.framesUi[4] = collectionFrame;
-
-                                console.log(
-                                    `[PRELOAD +${performance.now().toFixed(0)}ms] Collection preload finished`
-                                );
-
+                                console.log(`[PRELOAD +${performance.now().toFixed(0)}ms] Collection preload finished`);
                                 resolve(collectionFrame);
                             });
                     }
                 );
             });
         });
-
         return this.collectionFramePromise;
     }
 
     onLoad() {
         macro.ENABLE_MULTI_TOUCH = false;
+
+        if(this.background) this.background.enabled = false;
+        if(this.background_1) this.background_1.enabled = false;
+
+        this.boundOnBackgroundResize = () => {
+            if(!this.node || !this.node.isValid) return;
+            this.scheduleBackgroundLayoutRefresh();
+        };
+
+        if(typeof window !== "undefined") {
+            window.addEventListener("resize", this.boundOnBackgroundResize);
+        }
+    }
+
+    onDestroy() {
+        if(this.boundOnBackgroundResize && typeof window !== "undefined") {
+            window.removeEventListener("resize", this.boundOnBackgroundResize);
+        }
+
+        this.boundOnBackgroundResize = null;
     }
 
     start() {
         this.assetsLoadingFrame.show();
+        this.hideChestVisual();
 
+        void this.getBigGraphicsBundle()
+        .catch((error) => {
+            console.error(
+                "[BACKGROUND] Failed to preload big_graphics",
+                error
+            );
+        });
 
         const isArtPreview =
             (globalThis as any).gamepush?.__artPreview === true;
-
         if (isArtPreview) {
             console.log("[Art Preview] Hiding assets loading frame");
-            this.assetsLoadingFrame.hide();
         }
 
-        SaveData.instance.node.on("level_progress_loaded", () => this.play());
-
+        SaveData.instance.node.on( "level_progress_loaded", () => { void this.playWhenBackgroundReady(); });
         UserData.instance.node.on(
             "premium_purchase",
             () => this.showPremiumPurchase()
         );
 
-        SaveData.instance.node.on("level_progress_checked", () => {
-            console.log(
-                `[STARTUP +${performance.now().toFixed(0)}ms] Level progress checked`
-            );
+        SaveData.instance.node.on(
+            "level_progress_checked",
+            () => {
+                void (async () => {
 
-             console.log( "[ART PREVIEW DEBUG] progress:",
-                UserData.instance.getProgress()
-            );
+                    console.log(
+                        `[STARTUP +${performance.now().toFixed(0)}ms] Level progress checked`
+                    );
 
-            if (UserData.instance.getProgress() > 0) {
+                   const progress = UserData.instance.getProgress();
 
-                this.assetsLoadingFrame.hide();
+                    console.log(
+                        "[ART PREVIEW DEBUG] progress:",
+                        progress
+                    );
 
-                AudioController.instance.playMainMenuSoundtrack();
-                AudioController.instance.loadSoundsAssets();
+                    try {
+                        console.log(
+                            "[BACKGROUND] Initial background loading started"
+                        );
 
-                this.preloadShopInBackground();
-                this.preloadCollectionInBackground();
-                this.preloadLeaderboardInBackground();
+                        await this.updateBackgroundGraphics();
 
+                        console.log(
+                            "[BACKGROUND] Initial background loading finished"
+                        );
+                    }
+                    catch (error) {
+                        console.error(
+                            "[BACKGROUND] Initial background loading failed",
+                            error
+                        );
 
-                this.scheduleOnce(() => {
-                    void (async () => {
-                        try {
-                            if(!this.clans.isDataLoaded()) {
-                                console.log("[CLANS] Background preload started");
+                        return;
+                    }
 
-                                await this.clans.refresh();
+                    this.preloadNextBackground();
+
+                    if (progress <= 0) {
+                        return;
+                    }
+
+                    this.assetsLoadingFrame.hide();
+
+                    AudioController.instance.playMainMenuSoundtrack();
+                    AudioController.instance.loadSoundsAssets();
+
+                    this.preloadShopInBackground();
+                    this.preloadCollectionInBackground();
+                    this.preloadLeaderboardInBackground();
+
+                    this.scheduleOnce(() => {
+                        void (async () => {
+                            try {
+                                if(!this.clans.isDataLoaded()) {
+                                    console.log(
+                                        "[CLANS] Background preload started"
+                                    );
+
+                                    await this.clans.refresh();
+                                }
+
+                                if(!this.clans.isDataLoaded()) {
+                                    console.warn(
+                                        "[LEADERBOARD CLANS] Clan data is still not ready"
+                                    );
+
+                                    return;
+                                }
+
+                                if(!this.leaderboardFrame) {
+                                    console.warn(
+                                        "[LEADERBOARD CLANS] leaderboardFrame is not assigned"
+                                    );
+
+                                    return;
+                                }
+
+                                await this.leaderboardFrame.preloadClans();
+
+                                console.log(
+                                    "[LEADERBOARD CLANS] fully ready"
+                                );
                             }
-
-                            if(!this.clans.isDataLoaded()) {
-                                console.warn("[LEADERBOARD CLANS] Clan data is still not ready");
-                                return;
+                            catch(error) {
+                                console.error(
+                                    "[LEADERBOARD CLANS] preload failed",
+                                    error
+                                );
                             }
+                        })();
 
-                            if(!this.leaderboardFrame) {
-                                console.warn("[LEADERBOARD CLANS] leaderboardFrame is not assigned");
-                                return;
-                            }
+                    }, 1.0);
 
-                            await this.leaderboardFrame.preloadClans();
-
-                            console.log("[LEADERBOARD CLANS] fully ready");
-                        }
-                        catch(error) {
-                            console.error("[LEADERBOARD CLANS] preload failed", error);
-                        }
-                    })();
-                }, 1.0);
+                })();
             }
-        });
+        );
 
-        this.startFrame.on("play", () => this.play());
+        this.startFrame.on("play", () => void this.playWhenBackgroundReady());
 
         this.startFrame.on("assets_ready", () => {
-            this.updateBackgroundGraphics();
-
             AudioController.instance.loadSoundsAssets();
         });
 
-        this.chest.node.on("complete", () => this.updateBackgroundGraphics());
+        this.chest.node.on("complete", () => {
+            void this.updateBackgroundGraphics()
+                .then(() => {
+                    this.preloadNextBackground();
+                })
+                .catch((error) => {
+                    console.error(
+                        "[BACKGROUND] Failed to change location",
+                        error
+                    );
+                });
+        });
         this.chest.node.on("reward", (data) => this.showChestReward(data));
 
         this.resourcesNode.on("shop", () => this.onBtnShopClick());
@@ -554,7 +724,6 @@ export class UIMainMenu extends UIFrameBase {
         this.playBtn.node.on(Button.EventType.CLICK, this.onBtnPlayClick, this);
         this.tbdBtn.node.on(Button.EventType.CLICK, this.onBtnTbdClick, this);
         this.tbd2Btn.node.on(Button.EventType.CLICK, this.onBtnTbd2Click, this);
-
         this.settingsBtn.node.on(Button.EventType.CLICK, this.onSettingsBtnClick, this);
         this.profileBtn.node.on(Button.EventType.CLICK, this.onProfileBtnClick, this);
 
@@ -564,13 +733,13 @@ export class UIMainMenu extends UIFrameBase {
         });
 
         this.setAllBtnsPassive();
+
         this.onBtnPlayClick();
 
         this.updateButtonsAdaptivity();
 
         this.scheduleOnce(() => {
             const clanId = this.clans.getClanId();
-
             if (clanId > 0) {
                 Net.instance.fetchMembersOfChannel(clanId);
             }
@@ -579,9 +748,9 @@ export class UIMainMenu extends UIFrameBase {
 
     show() {
         super.show();
-
+        this.hideChestVisual();
+        this.scheduleBackgroundLayoutRefresh();
         this.onBtnPlayClick();
-
         this.adsTimer.startMenuTimer();
 
         AudioController.instance.playMainMenuSoundtrack();
@@ -589,10 +758,30 @@ export class UIMainMenu extends UIFrameBase {
 
     play() {
         console.log("play event handle");
-
         this.hide();
-
         this.adsTimer.startGameplayTimer();
+    }
+
+    private async playWhenBackgroundReady() {
+        try {
+            console.log(
+                "[BACKGROUND] Waiting for background before gameplay"
+            );
+
+            await this.updateBackgroundGraphics();
+
+            console.log(
+                "[BACKGROUND] Background ready, opening gameplay"
+            );
+
+            this.play();
+        }
+        catch (error) {
+            console.error(
+                "[BACKGROUND] Cannot open gameplay: background failed to load",
+                error
+            );
+        }
     }
 
     private preloadLeaderboardInBackground() {
@@ -609,14 +798,16 @@ export class UIMainMenu extends UIFrameBase {
             void (async () => {
                 try {
                     await this.leaderboardFrame.preloadWeekly();
+
                     console.log("[LEADERBOARD PRELOAD] weekly ready");
 
                     await this.leaderboardFrame.preloadPlayers();
+
                     console.log("[LEADERBOARD PRELOAD] players ready");
 
                     await this.leaderboardFrame.preloadFriends();
-                    console.log("[LEADERBOARD PRELOAD] friends + requests ready");
 
+                    console.log("[LEADERBOARD PRELOAD] friends + requests ready");
                     console.log("[LEADERBOARD PRELOAD] fully ready");
                 }
                 catch(error) {
@@ -626,18 +817,15 @@ export class UIMainMenu extends UIFrameBase {
         }, 0.5);
     }
 
-
     private preloadShopInBackground() {
         this.scheduleOnce(() => {
             const frame = this.framesUi[0];
-
             if(!frame) {
                 console.warn("[SHOP PRELOAD] Shop frame is not assigned");
                 return;
             }
 
             const shopFrame = frame.node.getComponent(UIShopFrame) ?? frame.node.getComponentInChildren(UIShopFrame);
-
             if(!shopFrame) {
                 console.warn("[SHOP PRELOAD] UIShopFrame component not found");
                 return;
@@ -681,21 +869,18 @@ export class UIMainMenu extends UIFrameBase {
 
     async onBtnTbd2Click() {
         const requestId = ++this.collectionOpenRequestId;
-
         try {
             await this.ensureCollectionFrame();
 
             if(requestId !== this.collectionOpenRequestId) {
                 return;
             }
-
             this.onMainMenuBtnClick(4);
         }
         catch(error) {
             console.error("Failed to open CollectionFrame", error);
         }
     }
-
 
     onMainMenuBtnClick(index: number) {
         if(index !== 4) {
@@ -706,11 +891,9 @@ export class UIMainMenu extends UIFrameBase {
         this.hideAllFrames();
 
         this.buttonsUi[index].setActiveIcon(true);
-
         this.framesUi[index].show();
 
         this.updateButtonsAdaptivity();
-
         this.checkRecievedCards();
     }
 
@@ -720,10 +903,8 @@ export class UIMainMenu extends UIFrameBase {
 
     onProfileBtnClick() {
         this.profilePopup.init(UserData.instance.getPlayerId());
-
         this.profilePopup.show();
     }
-
 
     setAllBtnsPassive() {
         for(let i = 0; i < this.buttonsUi.length; i++) {
@@ -739,62 +920,102 @@ export class UIMainMenu extends UIFrameBase {
         }
     }
 
+    async updateBackgroundGraphics(): Promise<void> {
+        const locationIndex = this.chest.getStage() + 1;
 
-    updateBackgroundGraphics() {
-        assetManager.loadBundle("big_graphics", (err, bundle) => {
-            if (err) {
-                console.error(`Failed to load bundle: big_graphics`, err);
-                return;
-            }
+        if (
+            this.loadedBackgroundLocation === locationIndex &&
+            this.background_1?.spriteFrame &&
+            this.background?.spriteFrame
+        ) {
+            return;
+        }
 
-            console.log(`Successfully loaded bundle: big_graphics`);
+        const bundle = await this.getBigGraphicsBundle();
 
-            let backIndex = this.chest.getStage() + 1;
+        const legacyPath =
+            `back${locationIndex}/spriteFrame`;
 
-            bundle.load("back" + backIndex + "/spriteFrame", SpriteFrame, (err, spriteFrame) => {
-                if (err) {
-                    console.error(`Failed to load menu background`, err);
-                    return;
-                }
+        let menuSpriteFrame: SpriteFrame;
+        let gameplaySpriteFrame: SpriteFrame;
 
-                console.log(`Successfully loaded menu background: back${backIndex}`);
+        if (locationIndex <= 7) {
+            const locationNumber = this.getLocationNumber(locationIndex);
 
-                this.background_1.spriteFrame = spriteFrame;
-            });
+            const menuPath =
+                `redesign/location_${locationNumber}_menu/spriteFrame`;
 
-            // Временно: новый редизайн-фон для игрового поля
-            bundle.load("redesign/background/spriteFrame", SpriteFrame, (err, spriteFrame) => {
-                if (err) {
-                    console.error(`Failed to load gameplay background`, err);
-                    return;
-                }
+            const gameplayPath =
+                `redesign/location_${locationNumber}_gameplay/spriteFrame`;
 
-                console.log(`Successfully loaded gameplay background: background_01`);
+            [
+                menuSpriteFrame,
+                gameplaySpriteFrame
+            ] = await Promise.all([
+                this.loadBackgroundWithFallback(
+                    bundle,
+                    menuPath,
+                    legacyPath,
+                    "menu"
+                ),
 
-                this.background.spriteFrame = spriteFrame;
-            });
-        });
+                this.loadBackgroundWithFallback(
+                    bundle,
+                    gameplayPath,
+                    legacyPath,
+                    "gameplay"
+                )
+            ]);
+
+            console.log(
+                `[BACKGROUND] location_${locationNumber} loaded`
+            );
+        }
+        else {
+            const legacySpriteFrame =
+                await this.loadBackgroundSprite(
+                    bundle,
+                    legacyPath
+                );
+
+            menuSpriteFrame = legacySpriteFrame;
+            gameplaySpriteFrame = legacySpriteFrame;
+
+            console.log(
+                `[BACKGROUND] legacy back${locationIndex} loaded`
+            );
+        }
+
+        this.background_1.spriteFrame = menuSpriteFrame;
+        this.background.spriteFrame = gameplaySpriteFrame;
+
+        this.background_1.enabled = true;
+        this.background.enabled = true;
+
+        this.loadedBackgroundLocation = locationIndex;
+
+        this.refreshBackgroundLayout();
+
+        console.log(
+            `[BACKGROUND] location ${locationIndex} ready`
+        );
     }
 
     showPremiumPurchase() {
         this.rewardPopup.show();
-
         this.rewardPopup.init_Battlepass();
     }
 
     showChestReward(data: ChestRewardData) {
         this.rewardPopup.show();
-
         this.rewardPopup.init_Chest(data);
     }
-
 
     updateButtonsAdaptivity() {
         for(let i = 0; i < this.buttonsUi.length; i++) {
             this.buttonsUi[i].refreshAdaptivity();
         }
     }
-
 
     removeRecievedCard(id: string) {
         UserData.instance.removeRecievedCard(id);
@@ -805,13 +1026,8 @@ export class UIMainMenu extends UIFrameBase {
 
         if(recievedCards.length > 0) {
             this.recievePopup.hideClean();
-
             this.recievePopup.init(recievedCards[0].id, recievedCards[0].playerId);
-
             this.recievePopup.show();
         }
     }
 }
-
-
-
