@@ -175,7 +175,6 @@ export class ArtPreviewAssetLoader {
         );
     }
 
-
     static async applyPrefabArt(
         root: Node,
         categories: string[],
@@ -193,61 +192,69 @@ export class ArtPreviewAssetLoader {
         const groups =
             this.collectFrameGroups(root);
 
-        if (groups.length === 0) {
-            return;
-        }
+        if (groups.length > 0) {
 
-        const slots =
-            this.buildSlots(groups);
+            const slots =
+                this.buildSlots(groups);
 
-        this.logSlotsOnce(
-            categories,
-            id,
-            slots,
-        );
+            this.logSlotsOnce(
+                categories,
+                id,
+                slots,
+            );
 
-        const replacements =
-            new Map<SpriteFrame, SpriteFrame>();
+            const replacements =
+                new Map<SpriteFrame, SpriteFrame>();
 
-        await Promise.all(
-            slots.map(
-                async ({ group, slot }) => {
+            await Promise.all(
+                slots.map(
+                    async ({ group, slot }) => {
 
-                    const result =
-                        await this.loadPrefabSlot(
-                            categories,
-                            id,
-                            slot,
+                        const result =
+                            await this.loadPrefabSlot(
+                                categories,
+                                id,
+                                slot,
+                            );
+
+                        if (!result) {
+                            return;
+                        }
+
+                        replacements.set(
+                            group.original,
+                            result.spriteFrame,
                         );
 
-                    if (!result) {
-                        return;
-                    }
+                        console.log(
+                            `[Art Preview Art] prefab slot loaded: ${result.relativePath}`,
+                        );
+                    },
+                ),
+            );
 
-                    replacements.set(
-                        group.original,
-                        result.spriteFrame,
-                    );
-
-                    console.log(
-                        `[Art Preview Art] prefab slot loaded: ${result.relativePath}`,
-                    );
-                },
-            ),
-        );
-
-        if (
-            replacements.size === 0 ||
-            !root ||
-            !root.isValid
-        ) {
-            return;
+            if (
+                replacements.size > 0 &&
+                root &&
+                root.isValid
+            ) {
+                this.replaceFrameReferences(
+                    root,
+                    replacements,
+                );
+            }
         }
 
-        this.replaceFrameReferences(
-            root,
-            replacements,
-        );
+        if (
+            (id === 'multi' || id === 'super') &&
+            root &&
+            root.isValid
+        ) {
+            await this.applyDiscoballArt(
+                root,
+                id,
+            );
+        }
     }
 
 
@@ -719,5 +726,136 @@ export class ArtPreviewAssetLoader {
                 .map(item => item.slot)
                 .join(', '),
         );
+    }
+
+    private static async applyDiscoballArt(
+        root: Node,
+        id: string,
+    ): Promise<void> {
+
+        const isMulti =
+            id === 'multi';
+
+        const propertyName =
+            isMulti
+                ? 'multiIcons'
+                : 'superIcons';
+
+        const folderName =
+            isMulti
+                ? 'multi'
+                : 'super';
+
+        const replacements =
+            new Map<SpriteFrame, SpriteFrame>();
+
+        for (
+            const currentNode
+            of this.collectNodes(root)
+        ) {
+
+            const components: any[] =
+                (currentNode as any).components ?? [];
+
+            for (
+                const component
+                of components
+            ) {
+
+                if (!component) {
+                    continue;
+                }
+
+                const icons =
+                    component[propertyName];
+
+                if (!Array.isArray(icons)) {
+                    continue;
+                }
+
+                for (const item of icons) {
+
+                    if (
+                        !item ||
+                        typeof item.id !== 'string' ||
+                        !(item.icon instanceof SpriteFrame)
+                    ) {
+                        continue;
+                    }
+
+                    const original =
+                        item.icon;
+
+                    const itemId =
+                        item.id.toLowerCase();
+
+                    let relativePath =
+                        `art/tiles/bonus/discoball/${folderName}/${itemId}.png`;
+
+                    let spriteFrame =
+                        await this.loadRelative(
+                            relativePath,
+                        );
+
+                    if (
+                        !spriteFrame &&
+                        !isMulti
+                    ) {
+
+                        const colors =
+                            itemId.split('_');
+
+                        if (colors.length === 2) {
+
+                            const reversedId =
+                                `${colors[1]}_${colors[0]}`;
+
+                            const reversedPath =
+                                `art/tiles/bonus/discoball/super/${reversedId}.png`;
+
+                            const reversedFrame =
+                                await this.loadRelative(
+                                    reversedPath,
+                                );
+
+                            if (reversedFrame) {
+                                spriteFrame =
+                                    reversedFrame;
+
+                                relativePath =
+                                    reversedPath;
+                            }
+                        }
+                    }
+
+                    if (!spriteFrame) {
+                        continue;
+                    }
+
+                    item.icon =
+                        spriteFrame;
+
+                    replacements.set(
+                        original,
+                        spriteFrame,
+                    );
+
+                    console.log(
+                        `[Art Preview Art] discoball ${id} ${itemId}: ${relativePath}`,
+                    );
+                }
+            }
+        }
+
+        if (
+            replacements.size > 0 &&
+            root &&
+            root.isValid
+        ) {
+            this.replaceFrameReferences(
+                root,
+                replacements,
+            );
+        }
     }
 }

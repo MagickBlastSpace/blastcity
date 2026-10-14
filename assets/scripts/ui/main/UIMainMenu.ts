@@ -108,6 +108,8 @@ export class UIMainMenu extends UIFrameBase {
     private bigGraphicsBundlePromise: Promise<AssetManager.Bundle> | null = null;
     private loadedBackgroundLocation: number = -1;
 
+    private artPreviewMenuInitialized = false;
+
     // Скрываем сундук чисто визуально
     private hideChestVisual() {
         if (this.chestPicture) {
@@ -548,6 +550,62 @@ export class UIMainMenu extends UIFrameBase {
         return this.collectionFramePromise;
     }
 
+    private async initializeArtPreviewMenu(): Promise<void> {
+
+        if (this.artPreviewMenuInitialized) {
+            return;
+        }
+
+        this.artPreviewMenuInitialized = true;
+
+        try {
+            console.log(
+                "[Art Preview] Initializing menu after Chest refresh"
+            );
+
+            console.log(
+                "[Art Preview] progress:",
+                UserData.instance.getProgress()
+            );
+
+            console.log(
+                "[Art Preview] chest stage:",
+                this.chest.getStage()
+            );
+
+            await this.updateBackgroundGraphics();
+
+            console.log(
+                "[Art Preview] Initial background ready"
+            );
+
+            this.preloadNextBackground();
+
+            AudioController.instance.playMainMenuSoundtrack();
+            AudioController.instance.loadSoundsAssets();
+
+            this.preloadShopInBackground();
+            this.preloadCollectionInBackground();
+
+            console.log(
+                "[Art Preview] Menu initialization finished"
+            );
+        }
+        catch (error) {
+            console.error(
+                "[Art Preview] Menu initialization failed",
+                error
+            );
+        }
+        finally {
+            console.log(
+                "[Art Preview] Hiding assets loading frame"
+            );
+
+            this.assetsLoadingFrame.hide();
+        }
+    }
+
     onLoad() {
         macro.ENABLE_MULTI_TOUCH = false;
 
@@ -584,13 +642,55 @@ export class UIMainMenu extends UIFrameBase {
             );
         });
 
-        const isArtPreview =
-            (globalThis as any).gamepush?.__artPreview === true;
+        const isArtPreview = (globalThis as any).gamepush?.__artPreview === true;
         if (isArtPreview) {
-            console.log("[Art Preview] Hiding assets loading frame");
+            console.log(
+                "[Art Preview] Waiting for Chest data"
+            );
+
+            this.chest.node.once(
+                "refresh",
+                () => {
+                    console.log(
+                        "[Art Preview] Chest data ready"
+                    );
+
+                    void this.initializeArtPreviewMenu();
+                }
+            );
+
+            this.scheduleOnce(
+                () => {
+                    if (this.artPreviewMenuInitialized) {
+                        return;
+                    }
+
+                    console.warn(
+                        "[Art Preview] Chest refresh timeout. " +
+                        "Starting menu with current Chest state."
+                    );
+
+                    void this.initializeArtPreviewMenu();
+                },
+                8
+            );
         }
 
-        SaveData.instance.node.on( "level_progress_loaded", () => { void this.playWhenBackgroundReady(); });
+       SaveData.instance.node.on(
+            "level_progress_loaded",
+            () => {
+
+                if (isArtPreview) {
+                    console.log(
+                        "[Art Preview] level_progress_loaded ignored"
+                    );
+
+                    return;
+                }
+
+                void this.playWhenBackgroundReady();
+            }
+        );
         UserData.instance.node.on(
             "premium_purchase",
             () => this.showPremiumPurchase()
@@ -599,6 +699,11 @@ export class UIMainMenu extends UIFrameBase {
         SaveData.instance.node.on(
             "level_progress_checked",
             () => {
+
+                if (isArtPreview) {
+                    return;
+                }
+
                 void (async () => {
 
                     console.log(
