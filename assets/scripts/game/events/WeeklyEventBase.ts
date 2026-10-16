@@ -1,12 +1,12 @@
-import { _decorator, Component, Node } from 'cc';
-import { EventBase } from './EventBase';
+import { _decorator } from 'cc';
 import { Localization } from '../../utils/Localization';
+import { EventBase } from './EventBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('WeeklyEventBase')
 export class WeeklyEventBase extends EventBase {
 
-    private startDayOfWeek: number; // 0 for Sunday, 1 for Monday, and so on
+    protected startDayOfWeek: number; // 0 for Sunday, 1 for Monday, and so on
 
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
@@ -51,7 +51,9 @@ export class WeeklyEventBase extends EventBase {
     }
 
     private formatTimeUnits(value: number): string {
-        return value.toString().padStart(2, '0');
+        return value < 10
+            ? `0${value}`
+            : String(value);
     }
 
     getRemainingTimeString(): string {
@@ -86,7 +88,7 @@ export class WeeklyEventBase extends EventBase {
     }
 
 
-    private getWeekNumber(date: Date): number {
+    protected getWeekNumber(date: Date): number {
         const targetDate = new Date(date.valueOf());
         const dayNumber = (date.getUTCDay() + 6) % 7;
         targetDate.setUTCDate(targetDate.getUTCDate() - dayNumber + 3);

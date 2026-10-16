@@ -44,6 +44,13 @@ export const languages = {
     "week": "Weekly",
     "text": "Enter name"
   },
+  "main_menu": {
+    "locations": "Locations",
+    "leaderboard": "Leaderboard",
+    "play": "Play",
+    "clan": "Clan",
+    "collection": "Collection"
+  },
   "clans": {
     "clans": "Clans",
     "join": "Join",
@@ -149,6 +156,16 @@ export const languages = {
     "cbmyclan": "My clan",
     "lrnextstep": "Collect more tiles to get this reward!",
     "lrdoublereward": "The number of rewards for levels will temporarily double!"
+  },
+  "locations": {
+    "title": "Locations",
+    "chapter": "Chapter",
+    "unlocked": "Chapter unlocked!",
+    "continue": "Continue",
+    "levels": "Levels",
+    "royalLeagueUnlocked": "Royal League unlocked!",
+    "royalLeague": "Royal League",
+    "royalLeagueLevels": "Levels 1–120"
   },
   "misc": {
     "min": "Min",

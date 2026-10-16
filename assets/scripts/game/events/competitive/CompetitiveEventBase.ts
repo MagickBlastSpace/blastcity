@@ -1,11 +1,10 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node } from 'cc';
-import { WeeklyEventBase } from '../WeeklyEventBase';
-import { EventRewardData, PlayerEventData } from '../../../data/EventData';
+import { _decorator, Node } from 'cc';
+import { PlayerEventData } from '../../../data/EventData';
 import { SaveData } from '../../../data/SaveData';
 import { Net } from '../../../net/Net';
-import { UserData } from '../../../data/UserData';
+import { WeeklyEventBase } from '../WeeklyEventBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('CompetitiveEventBase')
@@ -17,14 +16,14 @@ export class CompetitiveEventBase extends WeeklyEventBase {
     @property([PlayerEventData])
     players: PlayerEventData[] = [];
 
-    private currentStep: number = 0;
+    protected currentStep: number = 0;
 
-    private isComplete: boolean = false;
+    protected isComplete: boolean = false;
 
     private multiplayerChannelId: number = 0;
     private lastMultiplayerChannelId: number = 0;
 
-    private isUpdating: boolean = false;
+    protected isUpdating: boolean = false;
 
 
     onLoad() {
@@ -151,7 +150,7 @@ export class CompetitiveEventBase extends WeeklyEventBase {
         }
     }
 
-    
+
     sortPlayersByProgress(): PlayerEventData[] {
         let sortedPlayers = [];
 

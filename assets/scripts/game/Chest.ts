@@ -1,10 +1,10 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component } from 'cc';
 import { ChestData, ChestRewardData } from '../data/ChestData';
-import { UserData } from '../data/UserData';
-import { SaveData } from '../data/SaveData';
 import { GameData } from '../data/GameData';
+import { SaveData } from '../data/SaveData';
+import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Chest')
@@ -41,41 +41,175 @@ export class Chest extends Component {
 
 
     completeStage() {
-        if(this.isComplete) {
-            this.applyRewards(this.data[this.stage].rewards);
 
-            this.pickedRewards.push(this.stage);
-
-            if(this.stage < this.data.length - 1) {
-                this.stage = this.stage + 1;
-            }
-
-            this.isComplete = false;
-
-            SaveData.instance.saveChest();
-
-            this.updateStageData(true);
-
-            this.node.emit("complete");
+        if(!this.isComplete) {
+            return;
         }
+
+        const currentStage = this.getStage();
+
+        const currentData = this.data[currentStage];
+
+        if(!currentData) {
+            return;
+        }
+
+        this.applyRewards(currentData.rewards);
+
+        if(!this.pickedRewards.includes(currentStage)) {
+            this.pickedRewards.push(currentStage);
+        }
+
+        if(currentStage < this.data.length - 1) {
+            this.stage = currentStage + 1;
+        }
+        else {
+            this.stage = currentStage;
+        }
+
+        this.isComplete = false;
+
+        SaveData.instance.saveChest();
+
+        this.updateStageData(true);
+
+        this.node.emit("complete");
     }
 
     isStageComplete(): boolean {
         return this.isComplete;
     }
 
-    
+
     getStage(): number {
-        return this.stage;
+
+        if(!this.data || this.data.length === 0) {
+            return 0;
+        }
+
+        return Math.max(
+            0,
+            Math.min(
+                this.stage,
+                this.data.length - 1
+            )
+        );
     }
 
 
     setStage(stage: number) {
-        this.stage = stage;
+
+        if(!this.data || this.data.length === 0) {
+            this.stage = 0;
+        }
+        else {
+            this.stage =
+                Math.max(
+                    0,
+                    Math.min(
+                        stage,
+                        this.data.length - 1
+                    )
+                );
+        }
 
         this.node.emit("refresh");
     }
 
+    getLocationCount(): number {
+        return this.data.length;
+    }
+
+
+    getLastLocationStage(): number {
+        return Math.max(
+            0,
+            this.data.length - 1
+        );
+    }
+
+
+    getLocationStartLevel(stage: number): number {
+
+        const safeStage =
+            Math.max(
+                0,
+                Math.min(
+                    stage,
+                    this.getLastLocationStage()
+                )
+            );
+
+        if(safeStage === 0) {
+            return 1;
+        }
+
+        return this.data[safeStage - 1].level + 1;
+    }
+
+
+    getLocationEndLevel(stage: number): number {
+
+        const safeStage =
+            Math.max(
+                0,
+                Math.min(
+                    stage,
+                    this.getLastLocationStage()
+                )
+            );
+
+        return this.data[safeStage].level;
+    }
+
+
+    getMainLocationsEndLevel(): number {
+
+        if(!this.data || this.data.length === 0) {
+            return 0;
+        }
+
+        return this.data[this.data.length - 1].level;
+    }
+
+    getCurrentLocationProgress(): number {
+
+        if(!this.data || this.data.length === 0) {
+            return 0;
+        }
+
+        const currentStage =
+            this.getStage();
+
+        const startBoundary =
+            currentStage === 0
+                ? 0
+                : this.data[currentStage - 1].level;
+
+        const endBoundary =
+            this.data[currentStage].level;
+
+        const currentProgress =
+            UserData.instance.getProgress();
+
+        const locationLength =
+            endBoundary - startBoundary;
+
+        if(locationLength <= 0) {
+            return 0;
+        }
+
+        const completedInLocation =
+            currentProgress - startBoundary;
+
+        return Math.max(
+            0,
+            Math.min(
+                1,
+                completedInLocation / locationLength
+            )
+        );
+    }
 
     getCollectables(): number {
         return this.collectables;
@@ -103,14 +237,26 @@ export class Chest extends Component {
     }
 
     setPickedRewards(rewards: number[]) {
+
         this.pickedRewards = [];
 
-        if(!rewards || rewards === undefined) {
+        if(!rewards) {
             return;
         }
 
         for(let i = 0; i < rewards.length; i++) {
-            this.pickedRewards.push(rewards[i]);
+
+            const rewardStage = rewards[i];
+
+            if(
+                rewardStage < 0 ||
+                rewardStage >= this.data.length ||
+                this.pickedRewards.includes(rewardStage)
+            ) {
+                continue;
+            }
+
+            this.pickedRewards.push(rewardStage);
         }
     }
 
@@ -153,10 +299,17 @@ export class Chest extends Component {
         let starsCounter = 0;
         let starsCollected = 0;
 
+        const lastLocationStage = this.data.length - 1;
+
+        const finalLocationRewardPicked =
+            this.pickedRewards.includes(
+                lastLocationStage
+            );
+
         /*
         king league mode
         */
-        if(progress >= GameData.instance.getMaxProgress()) {
+        if(progress >= GameData.instance.getMaxProgress() && finalLocationRewardPicked) {
             let levelsData = GameData.instance.getLevels();
 
             progress = UserData.instance.getKingLeagueProgress() % levelsData.length;
@@ -196,7 +349,7 @@ export class Chest extends Component {
         /*
         main progress complete, but new levels not done
         */
-        else if(progress > this.data[this.data.length - 1].level) {
+        else if(progress > this.data[this.data.length - 1].level && finalLocationRewardPicked) {
             if(progress % 100 === 0) {
                 this.isComplete = updateComplete;
 
@@ -239,20 +392,24 @@ export class Chest extends Component {
         */
         else {
             if(progress >= this.data[this.stage].level) {
+
                 if(!this.pickedRewards.includes(this.stage)) {
+
                     this.isComplete = true;
                 }
-                else {
-                    if(this.stage < this.data.length - 1) {
-                        this.stage = this.stage + 1;
-                    }
+                else if(this.stage < this.data.length - 1) {
+
+                    this.stage = this.stage + 1;
 
                     SaveData.instance.saveChest();
 
                     this.updateStageData(updateComplete);
-
                     return;
                 }
+                else {
+                    this.isComplete = false;
+                }
+
             }
 
             let startLevel = 0;
@@ -304,7 +461,7 @@ export class Chest extends Component {
     closestLowerHundred(num: number): number {
         return Math.floor(num / 100) * 100;
     }
-    
+
     closestUpperHundred(num: number): number {
         return Math.ceil(num / 100) * 100;
     }

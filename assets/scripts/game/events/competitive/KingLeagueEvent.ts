@@ -1,12 +1,12 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node } from 'cc';
-import { CompetitiveEventBase } from './CompetitiveEventBase';
+import { _decorator } from 'cc';
 import { EventRewardData, PlayerEventData } from '../../../data/EventData';
-import { SaveData } from '../../../data/SaveData';
-import { Net } from '../../../net/Net';
-import { UserData } from '../../../data/UserData';
 import { GameData } from '../../../data/GameData';
+import { SaveData } from '../../../data/SaveData';
+import { UserData } from '../../../data/UserData';
+import { Net } from '../../../net/Net';
+import { CompetitiveEventBase } from './CompetitiveEventBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('KingLeagueEvent')
@@ -22,11 +22,11 @@ export class KingLeagueEvent extends CompetitiveEventBase {
     onLoad() {
         this.players = [];
     }
-    
+
     start() {
         this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
     }
-    
+
 
     initWeekly(startDayOfWeek: number, startHourUTC: number, durationDays: number) {
         super.initWeekly(startDayOfWeek, startHourUTC, durationDays);
@@ -65,12 +65,10 @@ export class KingLeagueEvent extends CompetitiveEventBase {
 
 
     canParticipate(): boolean {
-        const now = new Date();
-        const timeDiffInMillis = this.endTime.getTime() - now.getTime();
-        const hoursDiff = timeDiffInMillis / (1000 * 60 * 60);
-
-        //return  super.canParticipate() && hoursDiff > 1 && this.isKingLeagueMode();
-        return  super.canParticipate() && this.isKingLeagueMode();
+        return (
+            super.canParticipate() &&
+            this.isKingLeagueMode()
+        );
     }
 
     isEventAvailable(): boolean {
@@ -85,6 +83,9 @@ export class KingLeagueEvent extends CompetitiveEventBase {
 
         this.isStarted = true;
         this.isComplete = false;
+
+        this.isRewardPicked = false;
+        this.playerPlace = -1;
 
         this.currentStep = 0;
         UserData.instance.setKingLeagueProgress(0);
@@ -102,16 +103,24 @@ export class KingLeagueEvent extends CompetitiveEventBase {
     }
 
 
-    private handleEventCompletion() {
-        this.updateMultiplayerData();
+    private async handleEventCompletion() {
+
+        await this.updateMultiplayerData();
 
         this.isComplete = true;
 
-        let playerPlace = this.players.findIndex(player => player.playerName === UserData.instance.getPlayerName());
+        this.playerPlace =
+            this.players.findIndex(
+                player =>
+                    player.playerName ===
+                    UserData.instance.getPlayerName()
+            );
 
-        this.takeReward(playerPlace);
+        this.takeReward();
 
-        SaveData.instance.saveEvent(this.eventId);
+        SaveData.instance.saveEvent(
+            this.eventId
+        );
     }
 
 
@@ -129,20 +138,34 @@ export class KingLeagueEvent extends CompetitiveEventBase {
         this.node.emit("progress", 1);
     }
 
-    restartEvent() {
-        this.handleEventCompletion();
+    restartEvent(): void {
 
-        //this.initByGamepush();
-        this.initWeekly(this.startDayOfWeek, this.startTime.getUTCHours(), this.getEventDuration() / 24);
+        void this.finishAndRestartEvent();
+    }
+
+    private async finishAndRestartEvent() {
+
+        await this.handleEventCompletion();
+
+        this.initWeekly(
+            this.startDayOfWeek,
+            this.startTime.getUTCHours(),
+            this.getEventDuration() / 24
+        );
     }
 
 
     takeReward() {
+
         if(!this.isRewardAvailable()) {
             return;
         }
 
-        this.applyReward(this.rewards[this.playerPlace]);
+        this.applyReward(
+            this.rewards[this.playerPlace]
+        );
+
+        this.isRewardPicked = true;
 
         this.currentStep = 0;
 

@@ -44,6 +44,13 @@ export const languages = {
     "week": "Недельные",
     "text": "Введите имя"
   },
+  "main_menu": {
+    "locations": "Локации",
+    "leaderboard": "Рейтинг",
+    "play": "Играть",
+    "clan": "Клан",
+    "collection": "Коллекция"
+  },
   "clans": {
     "clans": "Кланы",
     "join": "Присоединиться",
@@ -149,6 +156,16 @@ export const languages = {
     "cbmyclan": "Мой клан",
     "lrnextstep": "Соберите больше тайлов, чтобы получить эту награду!",
     "lrdoublereward": "Количество наград за уровни временно увеличится в два раза!"
+  },
+  "locations": {
+    "title": "Локации",
+    "chapter": "Глава",
+    "unlocked": "Глава открыта!",
+    "continue": "Продолжить",
+    "levels": "Уровни",
+    "royalLeagueUnlocked": "Королевская лига открыта!",
+    "royalLeague": "Королевская лига",
+    "royalLeagueLevels": "Уровни 1–120"
   },
   "misc": {
     "min": "Мин",

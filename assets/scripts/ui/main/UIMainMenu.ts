@@ -16,6 +16,8 @@ import { UICollectionFrame } from '../collection/UICollectionFrame';
 import { UICollectionInfoPopup } from '../collection/UICollectionInfoPopup';
 import { UILeaderboardFrame } from '../leaderboard/UILeaderboardFrame';
 import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
+import { UILocationsFrame } from '../locations/UILocationsFrame';
+import { UILocationUnlockedPopup } from '../locations/UILocationUnlockedPopup';
 import { UIProfilePopup } from '../profile/UIProfilePopup';
 import { UIShopFrame } from '../shop/UIShopFrame';
 import { UISettingsFrame } from '../start/UISettingsFrame';
@@ -31,7 +33,7 @@ const { ccclass, property } = _decorator;
 export class UIMainMenu extends UIFrameBase {
 
     @property(Button)
-    shopBtn: Button = null;
+    locationsBtn: Button = null;
 
     @property(Button)
     clanBtn: Button = null;
@@ -99,6 +101,18 @@ export class UIMainMenu extends UIFrameBase {
     @property(UILeaderboardFrame)
     leaderboardFrame: UILeaderboardFrame = null;
 
+    @property(UIShopFrame)
+    shopFrame: UIShopFrame = null;
+
+    @property(UILocationsFrame)
+    locationsFrame: UILocationsFrame = null;
+
+    @property(UILocationUnlockedPopup)
+    locationUnlockedPopup: UILocationUnlockedPopup = null;
+
+    @property(SpriteFrame)
+    royalLeaguePopupImage: SpriteFrame = null;
+
     private collectionFramePromise: Promise<UIMainMenuFrame> = null;
 
     private collectionOpenRequestId: number = 0;
@@ -112,7 +126,7 @@ export class UIMainMenu extends UIFrameBase {
 
     // Скрываем сундук чисто визуально
     private hideChestVisual() {
-        if (this.chestPicture) {
+        if(this.chestPicture) {
             this.chestPicture.enabled = false;
         }
     }
@@ -413,6 +427,123 @@ export class UIMainMenu extends UIFrameBase {
         });
     }
 
+    private async checkLocationUnlockedPopup() {
+
+        if(
+            !this.chest ||
+            !this.locationsFrame ||
+            !this.locationUnlockedPopup
+        ) {
+            console.warn(
+                "[LOCATION UNLOCK] Missing references",
+                {
+                    chest: !!this.chest,
+                    locationsFrame: !!this.locationsFrame,
+                    popup: !!this.locationUnlockedPopup
+                }
+            );
+
+            return;
+        }
+
+        this.chest.updateStageData(true);
+
+        const currentStage =
+            this.chest.getStage();
+
+        const isComplete =
+            this.chest.isStageComplete();
+
+        console.log(
+            "[LOCATION UNLOCK] Check",
+            {
+                progress:
+                    UserData.instance.getProgress(),
+
+                currentStage:
+                    currentStage,
+
+                chapter:
+                    currentStage + 1,
+
+                endLevel:
+                    this.chest.getLocationEndLevel(
+                        currentStage
+                    ),
+
+                isComplete:
+                    isComplete,
+
+                pickedRewards:
+                    this.chest.getPickedRewards()
+            }
+        );
+
+        if(!isComplete) {
+            return;
+        }
+
+        if(this.locationUnlockedPopup.node.active) {
+            return;
+        }
+
+        const nextStage = currentStage + 1;
+
+        const locationsCount = this.chest.getLocationCount();
+
+        if(nextStage >= locationsCount) {
+            if(!this.royalLeaguePopupImage) {
+                console.warn(
+                    "[LOCATION UNLOCK] " +
+                    "Royal League image is missing"
+                );
+
+                return;
+            }
+
+            this.locationUnlockedPopup.init(
+                this.royalLeaguePopupImage,
+                "locations.royalLeagueUnlocked"
+            );
+
+            this.locationUnlockedPopup.show();
+
+            console.log(
+                "[LOCATION UNLOCK] " +
+                "Royal League popup shown"
+            );
+
+            return;
+        }
+
+        console.log(
+            "[LOCATION UNLOCK] Loading image for stage",
+            nextStage
+        );
+
+       const spriteFrame =
+            await this.locationsFrame
+                .getLocationSpriteFrame(
+                    nextStage
+                );
+
+        if(!spriteFrame) {
+            console.warn(
+                `[LOCATION UNLOCK] Image not found ` +
+                `for stage ${nextStage}`
+            );
+
+            return;
+        }
+
+        this.locationUnlockedPopup.init(
+            spriteFrame,
+            "locations.unlocked"
+        );
+
+        this.locationUnlockedPopup.show();
+    }
+
     private ensureCollectionFrame(): Promise<UIMainMenuFrame> {
         if(this.framesUi[4]) {
             return Promise.resolve(this.framesUi[4]);
@@ -623,6 +754,14 @@ export class UIMainMenu extends UIFrameBase {
     }
 
     onDestroy() {
+        if(this.locationUnlockedPopup) {
+            this.locationUnlockedPopup.node.off(
+                'continue',
+                this.onLocationUnlockedContinue,
+                this
+            );
+        }
+
         if(this.boundOnBackgroundResize && typeof window !== "undefined") {
             window.removeEventListener("resize", this.boundOnBackgroundResize);
         }
@@ -631,6 +770,14 @@ export class UIMainMenu extends UIFrameBase {
     }
 
     start() {
+        if(this.locationUnlockedPopup) {
+            this.locationUnlockedPopup.node.on(
+                'continue',
+                this.onLocationUnlockedContinue,
+                this
+            );
+        }
+
         this.assetsLoadingFrame.show();
         this.hideChestVisual();
 
@@ -751,6 +898,9 @@ export class UIMainMenu extends UIFrameBase {
                     this.preloadShopInBackground();
                     this.preloadCollectionInBackground();
                     this.preloadLeaderboardInBackground();
+                    this.preloadLocationsInBackground();
+
+                    this.scheduleOnce(() => {void this.checkLocationUnlockedPopup();}, 0);
 
                     this.scheduleOnce(() => {
                         void (async () => {
@@ -824,7 +974,7 @@ export class UIMainMenu extends UIFrameBase {
         SaveData.instance.loadStartBonusesData();
         SaveData.instance.loadButlersGiftData();
 
-        this.shopBtn.node.on(Button.EventType.CLICK, this.onBtnShopClick, this);
+        this.locationsBtn.node.on(Button.EventType.CLICK, this.onBtnLocationsClick, this);
         this.clanBtn.node.on(Button.EventType.CLICK, this.onBtnClanClick, this);
         this.playBtn.node.on(Button.EventType.CLICK, this.onBtnPlayClick, this);
         this.tbdBtn.node.on(Button.EventType.CLICK, this.onBtnTbdClick, this);
@@ -851,20 +1001,38 @@ export class UIMainMenu extends UIFrameBase {
         }, 5);
     }
 
-    show() {
+   show() {
         super.show();
         this.hideChestVisual();
         this.scheduleBackgroundLayoutRefresh();
         this.onBtnPlayClick();
         this.adsTimer.startMenuTimer();
 
-        AudioController.instance.playMainMenuSoundtrack();
+        AudioController.instance
+            .playMainMenuSoundtrack();
+
+        this.scheduleOnce(() => {
+            void this.checkLocationUnlockedPopup();
+        }, 0);
     }
 
     play() {
         console.log("play event handle");
         this.hide();
         this.adsTimer.startGameplayTimer();
+    }
+
+    private onLocationUnlockedContinue() {
+
+        if(!this.chest) {
+            return;
+        }
+
+        if(!this.chest.isStageComplete()) {
+            return;
+        }
+
+        this.chest.completeStage();
     }
 
     private async playWhenBackgroundReady() {
@@ -922,23 +1090,46 @@ export class UIMainMenu extends UIFrameBase {
         }, 0.5);
     }
 
-    private preloadShopInBackground() {
+    private preloadLocationsInBackground() {
+
         this.scheduleOnce(() => {
-            const frame = this.framesUi[0];
-            if(!frame) {
-                console.warn("[SHOP PRELOAD] Shop frame is not assigned");
+
+            if(!this.locationsFrame) {
+                console.warn(
+                    "[LOCATIONS PRELOAD] Locations frame is not assigned"
+                );
                 return;
             }
 
-            const shopFrame = frame.node.getComponent(UIShopFrame) ?? frame.node.getComponentInChildren(UIShopFrame);
-            if(!shopFrame) {
-                console.warn("[SHOP PRELOAD] UIShopFrame component not found");
+            console.log("[LOCATIONS PRELOAD] starting");
+
+            void this.locationsFrame
+                .preloadAssets()
+                .then(() => {
+                    console.log(
+                        "[LOCATIONS PRELOAD] fully ready"
+                    );
+                })
+                .catch((error) => {
+                    console.error(
+                        "[LOCATIONS PRELOAD] failed",
+                        error
+                    );
+                });
+
+        }, 0.2);
+    }
+
+    private preloadShopInBackground() {
+        this.scheduleOnce(() => {
+            if(!this.shopFrame) {
+                console.warn("[SHOP PRELOAD] Shop frame is not assigned");
                 return;
             }
 
             console.log("[SHOP PRELOAD] starting");
 
-            void shopFrame.preloadAssets();
+            void this.shopFrame.preloadAssets();
         }, 0);
     }
 
@@ -957,7 +1148,31 @@ export class UIMainMenu extends UIFrameBase {
     }
 
     onBtnShopClick() {
-        this.onMainMenuBtnClick(0);
+        this.collectionOpenRequestId++;
+
+        this.setAllBtnsPassive();
+        this.hideAllFrames();
+
+        this.shopFrame.show();
+
+        this.updateButtonsAdaptivity();
+        this.checkRecievedCards();
+    }
+
+    onBtnLocationsClick() {
+        this.collectionOpenRequestId++;
+
+        this.setAllBtnsPassive();
+        this.hideAllFrames();
+
+        this.buttonsUi[0].setActiveIcon(true);
+
+        if(this.locationsFrame) {
+            this.locationsFrame.show();
+        }
+
+        this.updateButtonsAdaptivity();
+        this.checkRecievedCards();
     }
 
     onBtnClanClick() {
@@ -1022,6 +1237,14 @@ export class UIMainMenu extends UIFrameBase {
             if(this.framesUi[i]) {
                 this.framesUi[i].hide();
             }
+        }
+
+        if(this.locationsFrame) {
+            this.locationsFrame.hide();
+        }
+
+        if(this.shopFrame) {
+            this.shopFrame.hide();
         }
     }
 

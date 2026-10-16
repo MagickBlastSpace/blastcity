@@ -1,23 +1,21 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Button, Label, assetManager } from 'cc';
-import { UIFrameBase } from '../UIFrameBase';
-import { GameData, LevelData  } from '../../data/GameData';
-import { UserData } from '../../data/UserData';
+import { _decorator, assetManager, Button, Label } from 'cc';
+import { NATIVE } from 'cc/env';
+import { GameData, LevelData } from '../../data/GameData';
 import { SaveData } from '../../data/SaveData';
-import { UIEventButton } from './UIEventButton';
+import { UserData } from '../../data/UserData';
 import { Field } from '../../game/Field';
-import { KingLeagueEvent } from '../../game/events/competitive/KingLeagueEvent';
-import { ResolutionManager } from '../../utils/ResolutionManager';
-import { UIChest } from '../chest/UIChest';
+import { Level } from '../../game/Level';
 import { EventsController } from '../../game/events/EventsController';
+import { KingLeagueEvent } from '../../game/events/competitive/KingLeagueEvent';
+import { AudioController } from '../../utils/AudioController';
+import { Localization } from '../../utils/Localization';
+import { ResolutionManager } from '../../utils/ResolutionManager';
+import { UIFrameBase } from '../UIFrameBase';
 import { UIStartFrameEffects } from '../effects/UIStartFrameEffects';
 import { UIAssetsLoadingFrame } from '../loading/UIAssetsLoadingFrame';
-import { AudioController } from '../../utils/AudioController';
-import { Level } from '../../game/Level';
-import { ChestRewardData } from '../../data/ChestData';
-import { Localization } from '../../utils/Localization';
-import { NATIVE } from 'cc/env';
+import { UIEventButton } from './UIEventButton';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIStartFrame')
@@ -31,9 +29,6 @@ export class UIStartFrame extends UIFrameBase {
 
     @property(UIFrameBase)
     briefingPopup: UIFrameBase = null;
-
-    @property(UIChest)
-    chest: UIChest = null;
 
     @property(Label)
     levelLabel: Label = null;
@@ -91,7 +86,7 @@ export class UIStartFrame extends UIFrameBase {
             this.playGameplaySoundtrack();
             this.preloadAssets();
         });
-        
+
         this.briefingPopup.node.on("play", () => this.onPlay());
         this.briefingPopup.node.on("play_rewarded", () => this.onPlayRewarded());
 
@@ -127,7 +122,6 @@ export class UIStartFrame extends UIFrameBase {
 
 
     refresh() {
-        //this.chest.refresh();
 
         /*for(let i = 0; i < this.eventBtns.length; i++) {
             this.eventBtns[i].refresh();
@@ -142,7 +136,7 @@ export class UIStartFrame extends UIFrameBase {
 
             let currentLevelNumber = UserData.instance.getKingLeagueProgress() + 1;
             this.levelLabel.string = Localization.instance.getLabelByKey("StartFrame.Stage");
-            this.levelCountLabel.string = currentLevelNumber;
+            this.levelCountLabel.string = String(currentLevelNumber);
         }
         else {
             const devLevelNumber = GameData.instance.getDevSelectedLevelNumber();
@@ -169,7 +163,6 @@ export class UIStartFrame extends UIFrameBase {
         this.eventsController.clearProgressData();
 
         this.scheduleOnce(() => {
-            this.chest.refresh();
 
             for(let i = 0; i < this.eventBtns.length; i++) {
                 this.eventBtns[i].refresh();
@@ -343,8 +336,6 @@ export class UIStartFrame extends UIFrameBase {
 
     refreshEventBtn(eName: string) {
         if(eName === "chest") {
-            this.chest.refresh();
-
             return;
         }
 

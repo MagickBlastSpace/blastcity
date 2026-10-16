@@ -1,18 +1,18 @@
 declare const gamepush: any;
 
-import { NATIVE } from 'cc/env';
 import {
-	_decorator,
-	Component,
-	Vec2,
-	Prefab,
-	TextAsset,
-	assetManager,
-	resources,
+    _decorator,
+    assetManager,
+    Component,
+    Prefab,
+    resources,
+    TextAsset,
+    Vec2,
 } from 'cc';
-import { UserData } from './UserData';
-import { Statistics } from './Statistics';
+import { NATIVE } from 'cc/env';
 import { SaveData } from './SaveData';
+import { Statistics } from './Statistics';
+import { UserData } from './UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('SpecialTileData')
@@ -431,6 +431,8 @@ export class GameData extends Component {
 	shopBundles: ShopItemData[] = [];
 	@property([ShopItemData])
 	clanGiftBundles: ShopItemData[] = [];
+    @property
+    mainCampaignMaxProgress: number = 400;
 
 	private levelStage: number = -1;
 	private maxProgress: number = 0;
@@ -484,63 +486,60 @@ export class GameData extends Component {
 	}
 
 	updateLevelStage() {
-		const isArtPreview =
-			NATIVE &&
-			(globalThis as any).gamepush?.__artPreview === true;
 
-		if (isArtPreview) {
-			this.maxProgress = this.levels.length;
+        let progress =
+            gamepush.player.get('score');
 
-			console.log(
-				'[Art Preview] updateLevelStage skipped;' +
-				` local maxProgress=${this.maxProgress}`
-			);
+        let maxStages =
+            gamepush.variables.get('max_stage');
 
-			return;
-		}
+        let stagesAmount = 0;
+        let newStage = 0;
 
-		console.log(
-			`[STARTUP +${performance.now().toFixed(0)}ms] Level stage calculation started`,
-		);
+        for(let i = 0; i <= maxStages; i++) {
 
-		let progress = gamepush.player.get('score');
-		let maxStages = gamepush.variables.get('max_stage');
+            const currentStageAmount =
+                gamepush.variables.get(
+                    'stage_count_' + i
+                );
 
-		let stagesAmount = 0;
-		let newStage = 0;
+            stagesAmount +=
+                currentStageAmount;
 
-		//console.log("Max Stages: " + maxStages);
+            if(stagesAmount <= progress) {
+                newStage = i + 1;
+            }
+        }
 
-		for (let i = 0; i <= maxStages; i++) {
-			let currentStageAmount = gamepush.variables.get('stage_count_' + i);
+        // У нас есть 600 уровней, но в текущем релизе игроку доступны только 400
+        this.maxProgress =
+            Math.min(
+                stagesAmount,
+                this.mainCampaignMaxProgress
+            );
 
-			//console.log("Stage Amount: " + i + " " + currentStageAmount);
+        // Как только основная кампания закончена, принудительно переключаемся на набор Royal League
+        if(progress >= this.maxProgress) {
+            newStage = maxStages + 1;
+        }
 
-			stagesAmount += currentStageAmount;
+        if(newStage > this.levelStage) {
 
-			if (stagesAmount <= progress) {
-				newStage = i + 1;
-			}
-		}
+            this.node.emit(
+                'level_stage_update'
+            );
 
-		//console.log("Current Stage: " + newStage);
+            this.levelStage =
+                newStage;
 
-		this.maxProgress = stagesAmount;
+            console.log(
+                `[STARTUP +${performance.now().toFixed(0)}ms] ` +
+                `Level stage resolved: ${newStage}`
+            );
 
-		//console.log("Maximal Progress Value: " + this.maxProgress);
-
-		if (newStage > this.levelStage) {
-			this.node.emit('level_stage_update');
-
-			this.levelStage = newStage;
-
-			console.log(
-				`[STARTUP +${performance.now().toFixed(0)}ms] Level stage resolved: ${newStage}`,
-			);
-
-			this.tryLoadLevels();
-		}
-	}
+            this.tryLoadLevels();
+        }
+    }
 
 	setDevSelectedLevel(level: LevelData): void {
 		if (NATIVE || !UserData.instance.isDevMode()) {

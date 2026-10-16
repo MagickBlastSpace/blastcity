@@ -1,21 +1,21 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Vec3 } from 'cc';
-import { UserData } from '../../data/UserData';
-import { SaveData } from '../../data/SaveData';
+import { _decorator, Component, Vec3 } from 'cc';
 import { EventRewardData, PlayerEventData } from '../../data/EventData';
+import { SaveData } from '../../data/SaveData';
+import { UserData } from '../../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('EventBase')
 export class EventBase extends Component {
-	private startTime: Date;
-	private endTime: Date;
+	protected startTime: Date;
+	protected endTime: Date;
 
-	private isStarted: boolean = false;
+	protected isStarted: boolean = false;
 
-	private eventId: string = 'base';
+	protected eventId: string = 'base';
 
-	private lastAttemptTimestamp: number = 0;
+	protected lastAttemptTimestamp: number = 0;
 
 	private unpickedRewards: EventRewardData[] = [];
 
