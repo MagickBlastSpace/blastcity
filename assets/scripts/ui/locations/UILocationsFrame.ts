@@ -70,6 +70,11 @@ export class UILocationsFrame extends UIFrameBase {
 
     private lastDevMode: boolean | null = null;
 
+    private lastStage: number | null = null;
+
+    private lastRoyalLeagueUnlocked:
+        boolean | null = null;
+
     onEnable() {
 
         if(typeof window === 'undefined') {
@@ -111,14 +116,51 @@ export class UILocationsFrame extends UIFrameBase {
         const isDevMode =
             UserData.instance?.isDevMode() ?? false;
 
-        if(
-            this.lastDevMode !== null &&
-            this.lastDevMode !== isDevMode
-        ) {
+        const currentStage =
+            this.chest.getStage();
+
+        const royalLeagueUnlocked =
+            isDevMode ||
+            UserData.instance.getProgress() >=
+                this.chest.getMainLocationsEndLevel();
+
+        const stateChanged =
+            (
+                this.lastDevMode !== null &&
+                this.lastDevMode !== isDevMode
+            ) ||
+            (
+                this.lastStage !== null &&
+                this.lastStage !== currentStage
+            ) ||
+            (
+                this.lastRoyalLeagueUnlocked !== null &&
+                this.lastRoyalLeagueUnlocked !==
+                    royalLeagueUnlocked
+            );
+
+        if(stateChanged) {
+
+            console.log(
+                "[LOCATIONS] State changed, rebuilding cards",
+                {
+                    currentStage,
+                    royalLeagueUnlocked,
+                    isDevMode
+                }
+            );
+
             this.clearCards();
         }
 
-        this.lastDevMode = isDevMode;
+        this.lastDevMode =
+            isDevMode;
+
+        this.lastStage =
+            currentStage;
+
+        this.lastRoyalLeagueUnlocked =
+            royalLeagueUnlocked;
 
         if(!this.cardsCreated) {
 
@@ -130,8 +172,11 @@ export class UILocationsFrame extends UIFrameBase {
         }
 
         this.scheduleOnce(() => {
+
             this.updateCardsLayout();
+
             this.scrollToCurrentLocation();
+
         }, 0);
     }
 
@@ -727,7 +772,7 @@ export class UILocationsFrame extends UIFrameBase {
             loadPromise;
 
         return loadPromise;
-    }
+    }UILocationsFrame
 
     private clearCards() {
 
