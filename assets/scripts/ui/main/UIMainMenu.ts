@@ -122,6 +122,12 @@ export class UIMainMenu extends UIFrameBase {
     private bigGraphicsBundlePromise: Promise<AssetManager.Bundle> | null = null;
     private loadedBackgroundLocation: number = -1;
 
+    private backgroundLoadPromise: Promise<void> | null = null;
+    private backgroundLoadLocation: number = -1;
+
+    private backgroundPreloadPromise: Promise<void> | null = null;
+    private preloadedNextBackgroundLocation: number = -1;
+
     private artPreviewMenuInitialized = false;
 
     // Скрываем сундук чисто визуально
@@ -328,60 +334,201 @@ export class UIMainMenu extends UIFrameBase {
         }
     }
 
+    private preloadBackgroundAsset(
+        bundle: AssetManager.Bundle,
+        path: string
+    ): Promise<boolean> {
 
-    private preloadNextBackground() {
-        const nextLocationIndex = this.chest.getStage() + 2;
+        return new Promise((resolve) => {
 
-        if (nextLocationIndex > 25) {
-            return;
+            bundle.preload(
+                path,
+                SpriteFrame,
+                (error) => {
+
+                    if(error) {
+
+                        console.warn(
+                            `[BACKGROUND PRELOAD] Failed: ${path}`,
+                            error
+                        );
+
+                        resolve(false);
+                        return;
+                    }
+
+                    console.log(
+                        `[BACKGROUND PRELOAD] Ready: ${path}`
+                    );
+
+                    resolve(true);
+                }
+            );
+        });
+    }
+
+    private preloadNextBackgroundPair(): Promise<void> {
+
+        const nextLocationIndex =
+            this.chest.getStage() + 2;
+
+        const locationsCount =
+            this.chest.getLocationCount();
+
+        if(nextLocationIndex > locationsCount) {
+            return Promise.resolve();
         }
 
-        void this.getBigGraphicsBundle()
-            .then((bundle) => {
+        if(
+            this.preloadedNextBackgroundLocation ===
+            nextLocationIndex
+        ) {
+            return Promise.resolve();
+        }
 
-                let paths: string[];
+        if(this.backgroundPreloadPromise) {
+            return this.backgroundPreloadPromise;
+        }
 
-                if (nextLocationIndex <= 7) {
-                    const number = this.getLocationNumber(nextLocationIndex);
+        const preloadPromise =
+            (async () => {
 
-                    paths = [
-                        `redesign/location_${number}_menu/spriteFrame`,
-                        `redesign/location_${number}_gameplay/spriteFrame`
-                    ];
+                try {
+
+                    const bundle =
+                        await this.getBigGraphicsBundle();
+
+                    const locationToPreload =
+                        this.chest.getStage() + 2;
+
+                    const currentLocationsCount =
+                        this.chest.getLocationCount();
+
+                    if(
+                        locationToPreload >
+                        currentLocationsCount
+                    ) {
+                        return;
+                    }
+
+                    if(
+                        this.preloadedNextBackgroundLocation ===
+                        locationToPreload
+                    ) {
+                        return;
+                    }
+
+                    const preloadSucceeded =
+                        await this.preloadBackgroundPair(
+                            bundle,
+                            locationToPreload
+                        );
+
+                    if(preloadSucceeded) {
+
+                        this.preloadedNextBackgroundLocation =
+                            locationToPreload;
+
+                        console.log(
+                            `[BACKGROUND PRELOAD] Next pair ready: ${locationToPreload}`
+                        );
+                    }
                 }
-                else {
-                    paths = [
-                        `back${nextLocationIndex}/spriteFrame`
-                    ];
-                }
+                catch(error) {
 
-                for (const path of paths) {
-                    bundle.preload(
-                        path,
-                        SpriteFrame,
-                        (err) => {
-                            if (err) {
-                                console.warn(
-                                    `[BACKGROUND PRELOAD] Failed: ${path}`,
-                                    err
-                                );
-
-                                return;
-                            }
-
-                            console.log(
-                                `[BACKGROUND PRELOAD] Ready: ${path}`
-                            );
-                        }
+                    console.warn(
+                        "[BACKGROUND PRELOAD] Next pair failed",
+                        error
                     );
                 }
-            })
-            .catch((error) => {
-                console.warn(
-                    "[BACKGROUND PRELOAD] big_graphics unavailable",
-                    error
+                finally {
+
+                    if(
+                        this.backgroundPreloadPromise ===
+                        preloadPromise
+                    ) {
+                        this.backgroundPreloadPromise =
+                            null;
+                    }
+
+                    const desiredNext =
+                        this.chest.getStage() + 2;
+
+                    if(
+                        desiredNext <=
+                            this.chest.getLocationCount() &&
+                        desiredNext !==
+                            this.preloadedNextBackgroundLocation
+                    ) {
+                        void this.preloadNextBackgroundPair();
+                    }
+                }
+            })();
+
+        this.backgroundPreloadPromise =
+            preloadPromise;
+
+        return preloadPromise;
+    }
+
+    private async preloadBackgroundPair(
+        bundle: AssetManager.Bundle,
+        locationIndex: number
+    ): Promise<boolean> {
+
+        console.log(
+            `[BACKGROUND PRELOAD] Pair ${locationIndex} started`
+        );
+
+        if(locationIndex <= 7) {
+
+            const number =
+                this.getLocationNumber(
+                    locationIndex
                 );
-            });
+
+            const menuPath = `redesign/location_${number}_menu/spriteFrame`;
+
+            const gameplayPath = `redesign/location_${number}_gameplay/spriteFrame`;
+
+            const menuReady =
+                await this.preloadBackgroundAsset(
+                    bundle,
+                    menuPath
+                );
+
+            if(!menuReady) {
+                return false;
+            }
+
+            const gameplayReady =
+                await this.preloadBackgroundAsset(
+                    bundle,
+                    gameplayPath
+                );
+
+            if(!gameplayReady) {
+                return false;
+            }
+        }
+        else {
+
+            const legacyReady =
+                await this.preloadBackgroundAsset(
+                    bundle,
+                    `back${locationIndex}/spriteFrame`
+                );
+
+            if(!legacyReady) {
+                return false;
+            }
+        }
+
+        console.log(
+            `[BACKGROUND PRELOAD] Pair ${locationIndex} finished`
+        );
+
+        return true;
     }
 
     private preloadCollectionCovers(): Promise<void> {
@@ -710,7 +857,7 @@ export class UIMainMenu extends UIFrameBase {
                 "[Art Preview] Initial background ready"
             );
 
-            this.preloadNextBackground();
+            void this.preloadNextBackgroundPair();
 
             AudioController.instance.playMainMenuSoundtrack();
             AudioController.instance.loadSoundsAssets();
@@ -884,7 +1031,7 @@ export class UIMainMenu extends UIFrameBase {
                         return;
                     }
 
-                    this.preloadNextBackground();
+                    void this.preloadNextBackgroundPair();
 
                     if (progress <= 0) {
                         return;
@@ -956,16 +1103,20 @@ export class UIMainMenu extends UIFrameBase {
         });
 
         this.chest.node.on("complete", () => {
-            void this.updateBackgroundGraphics()
-                .then(() => {
-                    this.preloadNextBackground();
-                })
-                .catch((error) => {
-                    console.error(
-                        "[BACKGROUND] Failed to change location",
-                        error
-                    );
-                });
+          void this.updateBackgroundGraphics()
+            .then(() => {
+
+                void this.preloadNextBackgroundPair();
+
+            })
+            .catch((error) => {
+
+                console.error(
+                    "[BACKGROUND] Failed to change location",
+                    error
+                );
+
+            });
         });
         this.chest.node.on("reward", (data) => this.showChestReward(data));
 
@@ -1248,10 +1399,124 @@ export class UIMainMenu extends UIFrameBase {
         }
     }
 
-    async updateBackgroundGraphics(): Promise<void> {
-        const locationIndex = this.chest.getStage() + 1;
+    private async loadCurrentBackgroundPair(
+        locationIndex: number
+    ): Promise<void> {
 
-        if (
+        const bundle =
+            await this.getBigGraphicsBundle();
+
+        const legacyPath =
+            `back${locationIndex}/spriteFrame`;
+
+        if(locationIndex <= 7) {
+
+            const locationNumber =
+                this.getLocationNumber(
+                    locationIndex
+                );
+
+            const menuPath = `redesign/location_${locationNumber}_menu/spriteFrame`;
+
+            const gameplayPath = `redesign/location_${locationNumber}_gameplay/spriteFrame`;
+
+            const menuSpriteFrame =
+                await this.loadBackgroundWithFallback(
+                    bundle,
+                    menuPath,
+                    legacyPath,
+                    "menu"
+                );
+
+            if(
+                this.chest.getStage() + 1 !==
+                locationIndex
+            ) {
+                return;
+            }
+
+            this.background_1.spriteFrame =
+                menuSpriteFrame;
+
+            this.background_1.enabled = true;
+
+            this.fitBackgroundCover(
+                this.background_1
+            );
+
+            console.log(
+                `[BACKGROUND] Menu ready: location ${locationIndex}`
+            );
+
+            const gameplaySpriteFrame =
+                await this.loadBackgroundWithFallback(
+                    bundle,
+                    gameplayPath,
+                    legacyPath,
+                    "gameplay"
+                );
+
+            if(
+                this.chest.getStage() + 1 !==
+                locationIndex
+            ) {
+                return;
+            }
+
+            this.background.spriteFrame =
+                gameplaySpriteFrame;
+
+            this.background.enabled = true;
+
+            this.fitBackgroundCover(
+                this.background
+            );
+
+            console.log(
+                `[BACKGROUND] Gameplay ready: location ${locationIndex}`
+            );
+        }
+        else {
+
+            const legacySpriteFrame =
+                await this.loadBackgroundSprite(
+                    bundle,
+                    legacyPath
+                );
+
+            if(
+                this.chest.getStage() + 1 !==
+                locationIndex
+            ) {
+                return;
+            }
+
+            this.background_1.spriteFrame =
+                legacySpriteFrame;
+
+            this.background.spriteFrame =
+                legacySpriteFrame;
+
+            this.background_1.enabled = true;
+            this.background.enabled = true;
+        }
+
+        this.loadedBackgroundLocation =
+            locationIndex;
+
+        this.refreshBackgroundLayout();
+
+        console.log(
+            `[BACKGROUND] Current pair ready: location ${locationIndex}`
+        );
+    }
+
+    async updateBackgroundGraphics(): Promise<void> {
+
+        const locationIndex =
+            this.chest.getStage() + 1;
+
+        if(
             this.loadedBackgroundLocation === locationIndex &&
             this.background_1?.spriteFrame &&
             this.background?.spriteFrame
@@ -1259,74 +1524,50 @@ export class UIMainMenu extends UIFrameBase {
             return;
         }
 
-        const bundle = await this.getBigGraphicsBundle();
+        if(this.backgroundLoadPromise) {
 
-        const legacyPath =
-            `back${locationIndex}/spriteFrame`;
+            if(
+                this.backgroundLoadLocation ===
+                locationIndex
+            ) {
+                await this.backgroundLoadPromise;
+                return;
+            }
 
-        let menuSpriteFrame: SpriteFrame;
-        let gameplaySpriteFrame: SpriteFrame;
+            try {
+                await this.backgroundLoadPromise;
+            }
+            catch {
+            }
 
-        if (locationIndex <= 7) {
-            const locationNumber = this.getLocationNumber(locationIndex);
-
-            const menuPath =
-                `redesign/location_${locationNumber}_menu/spriteFrame`;
-
-            const gameplayPath =
-                `redesign/location_${locationNumber}_gameplay/spriteFrame`;
-
-            [
-                menuSpriteFrame,
-                gameplaySpriteFrame
-            ] = await Promise.all([
-                this.loadBackgroundWithFallback(
-                    bundle,
-                    menuPath,
-                    legacyPath,
-                    "menu"
-                ),
-
-                this.loadBackgroundWithFallback(
-                    bundle,
-                    gameplayPath,
-                    legacyPath,
-                    "gameplay"
-                )
-            ]);
-
-            console.log(
-                `[BACKGROUND] location_${locationNumber} loaded`
-            );
-        }
-        else {
-            const legacySpriteFrame =
-                await this.loadBackgroundSprite(
-                    bundle,
-                    legacyPath
-                );
-
-            menuSpriteFrame = legacySpriteFrame;
-            gameplaySpriteFrame = legacySpriteFrame;
-
-            console.log(
-                `[BACKGROUND] legacy back${locationIndex} loaded`
-            );
+            return this.updateBackgroundGraphics();
         }
 
-        this.background_1.spriteFrame = menuSpriteFrame;
-        this.background.spriteFrame = gameplaySpriteFrame;
+        this.backgroundLoadLocation =
+            locationIndex;
 
-        this.background_1.enabled = true;
-        this.background.enabled = true;
+        const loadPromise =
+            this.loadCurrentBackgroundPair(
+                locationIndex
+            );
 
-        this.loadedBackgroundLocation = locationIndex;
+        this.backgroundLoadPromise =
+            loadPromise;
 
-        this.refreshBackgroundLayout();
+        try {
 
-        console.log(
-            `[BACKGROUND] location ${locationIndex} ready`
-        );
+            await loadPromise;
+
+        }
+        finally {
+
+            if(
+                this.backgroundLoadPromise === loadPromise
+            ) {
+                this.backgroundLoadPromise = null;
+                this.backgroundLoadLocation = -1;
+            }
+        }
     }
 
     showPremiumPurchase() {

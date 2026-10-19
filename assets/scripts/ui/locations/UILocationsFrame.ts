@@ -7,7 +7,8 @@ import {
     Prefab,
     ScrollView,
     SpriteFrame,
-    UITransform
+    UITransform,
+    Vec2
 } from 'cc';
 
 import { UserData } from '../../data/UserData';
@@ -47,7 +48,12 @@ export class UILocationsFrame extends UIFrameBase {
 
     private cardNodes: Node[] = [];
 
-    private readonly cardScale = 0.78;
+    private readonly desktopCardScale = 0.78;
+
+    private readonly mobileCardWidthFill = 0.82;
+    private readonly mobileCardHeightFill = 0.84;
+
+    private currentCardScale = this.desktopCardScale;
 
     private readonly columnGap = 120;
     private readonly rowGap = 120;
@@ -56,6 +62,8 @@ export class UILocationsFrame extends UIFrameBase {
 
     private readonly bottomPadding = 380;
 
+    private readonly currentCardOffsetY = 120;
+
     private bigGraphicsBundlePromise: Promise<AssetManager.Bundle> | null = null;
 
     private preloadPromise: Promise<void> | null = null;
@@ -63,8 +71,6 @@ export class UILocationsFrame extends UIFrameBase {
     private locationSpriteFrames: (SpriteFrame | null)[] = [];
 
     private locationLoadPromises: (Promise<SpriteFrame | null> | null)[] = [];
-
-    private backgroundPreloadPromise: Promise<void> | null = null;
 
     private boundResize: (() => void) | null = null;
 
@@ -84,8 +90,9 @@ export class UILocationsFrame extends UIFrameBase {
         this.boundResize = () => {
             this.scheduleOnce(() => {
                 this.updateCardsLayout();
+                this.scrollToCurrentLocation();
             }, 0);
-        };
+        }
 
         window.addEventListener(
             'resize',
@@ -180,6 +187,39 @@ export class UILocationsFrame extends UIFrameBase {
         }, 0);
     }
 
+    private calculateCardScale(
+        cardTransform: UITransform,
+        viewTransform: UITransform
+    ): number {
+
+        const isMobile =
+            typeof window !== 'undefined' &&
+            window.innerWidth < 768;
+
+        if(!isMobile) {
+            return this.desktopCardScale;
+        }
+
+        const scaleByWidth =
+            (
+                viewTransform.width *
+                this.mobileCardWidthFill
+            ) /
+            cardTransform.width;
+
+        const scaleByHeight =
+            (
+                viewTransform.height *
+                this.mobileCardHeightFill
+            ) /
+            cardTransform.height;
+
+        return Math.min(
+            scaleByWidth,
+            scaleByHeight
+        );
+    }
+
 
     private async createCards() {
 
@@ -197,6 +237,14 @@ export class UILocationsFrame extends UIFrameBase {
 
         const isDevMode = UserData.instance?.isDevMode() ?? false;
 
+        const cardsToLoad: {
+            index: number;
+            cardNode: Node;
+            card: UILocationCard;
+            startLevel: number;
+            endLevel: number;
+        }[] = [];
+
         for(
             let index = 0;
             index < locationsCount;
@@ -212,12 +260,6 @@ export class UILocationsFrame extends UIFrameBase {
 
             const cardNode =
                 instantiate(prefab);
-
-            cardNode.setScale(
-                this.cardScale,
-                this.cardScale,
-                1
-            );
 
             this.content.addChild(cardNode);
             this.cardNodes.push(cardNode);
@@ -257,24 +299,12 @@ export class UILocationsFrame extends UIFrameBase {
                 );
             }
             else {
-
-                void this.ensureLocationImage(
-                    index
-                ).then((loadedSpriteFrame) => {
-
-                    if(
-                        !loadedSpriteFrame ||
-                        !cardNode.isValid
-                    ) {
-                        return;
-                    }
-
-                    card.setup(
-                        index + 1,
-                        startLevel,
-                        endLevel,
-                        loadedSpriteFrame
-                    );
+                cardsToLoad.push({
+                    index,
+                    cardNode,
+                    card,
+                    startLevel,
+                    endLevel
                 });
             }
         }
@@ -287,12 +317,6 @@ export class UILocationsFrame extends UIFrameBase {
 
             const royalLeagueCard =
                 instantiate(royalLeaguePrefab);
-
-            royalLeagueCard.setScale(
-                this.cardScale,
-                this.cardScale,
-                1
-            );
 
             this.content.addChild(
                 royalLeagueCard
@@ -310,6 +334,10 @@ export class UILocationsFrame extends UIFrameBase {
 
         this.updateCardsLayout();
 
+        await this.loadCardImagesSequentially(
+            cardsToLoad
+        );
+
         this.cardsCreated = true;
         this.cardsCreating = false;
 
@@ -322,6 +350,50 @@ export class UILocationsFrame extends UIFrameBase {
 
     }
 
+    private async loadCardImagesSequentially(
+        items: {
+            index: number;
+            cardNode: Node;
+            card: UILocationCard;
+            startLevel: number;
+            endLevel: number;
+        }[]
+    ) {
+
+        for(const item of items) {
+
+            try {
+
+                const spriteFrame =
+                    await this.ensureLocationImage(
+                        item.index
+                    );
+
+                if(
+                    !spriteFrame ||
+                    !item.cardNode.isValid
+                ) {
+                    continue;
+                }
+
+                item.card.setup(
+                    item.index + 1,
+                    item.startLevel,
+                    item.endLevel,
+                    spriteFrame
+                );
+
+            }
+            catch(error) {
+
+                console.error(
+                    `[LOCATIONS] Failed to load location ${item.index + 1}`,
+                    error
+                );
+            }
+        }
+    }
+
     private async loadLocationImage(
         locationIndex: number
     ): Promise<SpriteFrame> {
@@ -330,86 +402,137 @@ export class UILocationsFrame extends UIFrameBase {
             await this.getBigGraphicsBundle();
 
         const number =
-        locationIndex < 10
-            ? `0${locationIndex}`
-            : `${locationIndex}`;
+            locationIndex < 10
+                ? `0${locationIndex}`
+                : `${locationIndex}`;
 
-        const redesignPath =
-            `redesign/location_${number}_menu/spriteFrame`;
+        const legacyPath =
+            `back${locationIndex}/spriteFrame`;
 
-        try {
-            return await new Promise<SpriteFrame>(
-                (resolve, reject) => {
+        // Для новых локаций 1–7 используем только облегчённые изображения карточек
+        if(locationIndex <= 7) {
 
-                    bundle.load(
-                        redesignPath,
-                        SpriteFrame,
-                        (error, spriteFrame) => {
+            const cardPath =
+                `redesign/cards/location_${number}_card/spriteFrame`;
 
-                            if(error) {
-                                reject(error);
-                                return;
+            try {
+
+                return await new Promise<SpriteFrame>(
+                    (resolve, reject) => {
+
+                        bundle.load(
+                            cardPath,
+                            SpriteFrame,
+                            (error, spriteFrame) => {
+
+                                if(error) {
+                                    reject(error);
+                                    return;
+                                }
+
+                                resolve(spriteFrame);
                             }
+                        );
+                    }
+                );
+            }
+            catch(error) {
 
-                            resolve(spriteFrame);
-                        }
-                    );
-                }
-            );
+                console.warn(
+                    `[LOCATIONS] Card preview not found: ${cardPath}. Using legacy background.`,
+                    error
+                );
+            }
         }
-        catch {
 
-            const legacyPath =
-                `back${locationIndex}/spriteFrame`;
+        // Локации 8–19 пока используют старые backN
+        return await new Promise<SpriteFrame>(
+            (resolve, reject) => {
 
-            return await new Promise<SpriteFrame>(
-                (resolve, reject) => {
+                bundle.load(
+                    legacyPath,
+                    SpriteFrame,
+                    (error, spriteFrame) => {
 
-                    bundle.load(
-                        legacyPath,
-                        SpriteFrame,
-                        (error, spriteFrame) => {
-
-                            if(error) {
-                                reject(error);
-                                return;
-                            }
-
-                            resolve(spriteFrame);
+                        if(error) {
+                            reject(error);
+                            return;
                         }
-                    );
-                }
-            );
-        }
+
+                        resolve(spriteFrame);
+                    }
+                );
+            }
+        );
     }
 
     private scrollToCurrentLocation() {
 
-        if(!this.scrollView) {
+        if(
+            !this.scrollView ||
+            !this.scrollView.view ||
+            this.cardNodes.length === 0
+        ) {
             return;
         }
 
-        const currentLocation = this.chest.getStage();
-
-        const locationsCount = this.chest.getLocationCount();
+        const currentLocation = Math.min(this.chest.getStage(), this.cardNodes.length - 1);
 
         const columns = this.getColumnsCount();
 
-        const rows = Math.ceil(locationsCount / columns);
-
         const currentRow = Math.floor(currentLocation / columns);
 
-        if(rows <= 1) {
-            this.scrollView.scrollToTop(0);
+        const firstCardTransform = this.cardNodes[0].getComponent(UITransform);
+
+        const contentTransform =  this.content.getComponent(UITransform);
+
+        const viewTransform = this.scrollView.view.getComponent(UITransform);
+
+        if(
+            !firstCardTransform ||
+            !contentTransform ||
+            !viewTransform
+        ) {
             return;
         }
 
-        const progress =
-            currentRow /
-            (rows - 1);
+        const cardScale = this.currentCardScale;
 
-        this.scrollView.scrollToPercentVertical(
-            1 - progress,
+        const cardHeight = firstCardTransform.height * cardScale;
+
+        const targetCenterFromTop =
+            this.topPadding +
+            cardHeight / 2 +
+            currentRow *
+                (
+                    cardHeight +
+                    this.rowGap
+                );
+
+
+        let offsetY = targetCenterFromTop - viewTransform.height / 2 + this.currentCardOffsetY;
+
+        const maxOffsetY =
+            Math.max(
+                0,
+                contentTransform.height -
+                viewTransform.height
+            );
+
+        offsetY =
+            Math.max(
+                0,
+                Math.min(
+                    offsetY,
+                    maxOffsetY
+                )
+            );
+
+        this.scrollView.scrollToOffset(
+            new Vec2(
+                0,
+                offsetY
+            ),
             0
         );
     }
@@ -417,16 +540,22 @@ export class UILocationsFrame extends UIFrameBase {
 
     private getColumnsCount(): number {
 
-        if(typeof window !== 'undefined') {
-
-            const isTabletOrDesktop =
-                window.innerWidth >= 768 &&
-                window.innerHeight >= 600;
-
-            return isTabletOrDesktop ? 2 : 1;
-        }
-
+        // Показываем Locations в один столбец на телефоне, планшете и десктопе.
         return 1;
+
+
+        // Старый вариант: 2 столбца на планшете/десктопе, 1 столбец на телефоне.
+        //
+        // if(typeof window !== 'undefined') {
+        //
+        //     const isTabletOrDesktop =
+        //         window.innerWidth >= 768 &&
+        //         window.innerHeight >= 600;
+        //
+        //     return isTabletOrDesktop ? 2 : 1;
+        // }
+        //
+        // return 1;
     }
 
 
@@ -442,26 +571,45 @@ export class UILocationsFrame extends UIFrameBase {
 
         const columns = this.getColumnsCount();
 
-        const firstCardTransform =
-            this.cardNodes[0].getComponent(UITransform);
+        const firstCardTransform = this.cardNodes[0].getComponent(UITransform);
 
-        const contentTransform =
-            this.content.getComponent(UITransform);
+        const contentTransform = this.content.getComponent(UITransform);
 
-        if(
-            !firstCardTransform ||
-            !contentTransform
-        ) {
+        const viewTransform = this.scrollView.view ?.getComponent(UITransform);
+
+        if( !firstCardTransform || !contentTransform || !viewTransform  ) {
             return;
         }
 
-        const cardWidth =
-            firstCardTransform.width *
-            this.cardScale;
+        const cardScale =
+            this.calculateCardScale(
+                firstCardTransform,
+                viewTransform
+            );
 
-        const cardHeight =
-            firstCardTransform.height *
-            this.cardScale;
+        this.currentCardScale = cardScale;
+
+        for(const cardNode of this.cardNodes) {
+
+            cardNode.setScale(
+                cardScale,
+                cardScale,
+                1
+            );
+        }
+
+        for(const cardNode of this.cardNodes) {
+
+            cardNode.setScale(
+                cardScale,
+                cardScale,
+                1
+            );
+        }
+
+        const cardWidth = firstCardTransform.width * cardScale;
+
+        const cardHeight = firstCardTransform.height * cardScale;
 
         const rows =
             Math.ceil(
@@ -599,6 +747,7 @@ export class UILocationsFrame extends UIFrameBase {
             this.chest.getLocationCount();
 
         const priorityStages = [
+            currentStage,
             currentStage + 1,
             currentStage + 2
         ].filter(
@@ -625,46 +774,6 @@ export class UILocationsFrame extends UIFrameBase {
 
         console.log(
             "[LOCATIONS PRELOAD] Priority finished"
-        );
-
-        if(!this.backgroundPreloadPromise) {
-
-            this.backgroundPreloadPromise =
-                this.preloadRemainingLocationImages();
-        }
-    }
-
-
-    private async preloadRemainingLocationImages():
-        Promise<void> {
-
-        this.ensureLocationCacheSize();
-
-        console.log(
-            "[LOCATIONS PRELOAD] Background starting"
-        );
-
-        const locationsCount =
-            this.chest.getLocationCount();
-
-        const tasks: Promise<SpriteFrame | null>[] = [];
-
-        for(
-            let stage = 0;
-            stage < locationsCount;
-            stage++
-        ) {
-            tasks.push(
-                this.ensureLocationImage(
-                    stage
-                )
-            );
-        }
-
-        await Promise.all(tasks);
-
-        console.log(
-            "[LOCATIONS PRELOAD] Background finished"
         );
     }
 
@@ -772,7 +881,7 @@ export class UILocationsFrame extends UIFrameBase {
             loadPromise;
 
         return loadPromise;
-    }UILocationsFrame
+    }
 
     private clearCards() {
 
