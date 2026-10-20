@@ -1632,14 +1632,33 @@ export class Field extends Component {
 		}
 
 		if (matches.length > 0 || isBonus) {
-			if (
-				(isComboBonus || choosenType === 'multi' || isAnimatedCombo) &&
-				isRespawn
-			) {
-				isRespawn = false;
-			}
-			this.spawnNewTiles(isRespawn, false);
-		}
+            if (
+                (isComboBonus || choosenType === 'multi' || isAnimatedCombo) &&
+                isRespawn
+            ) {
+                isRespawn = false;
+            }
+
+            const isSingleBomb =
+                choosenType === 'bomb' &&
+                !isComboBonus &&
+                !isAnimatedCombo;
+
+            if (isSingleBomb) {
+                this.scheduleOnce(() => {
+                    this.spawnNewTiles(
+                        isRespawn,
+                        false
+                    );
+                }, 0.25);
+            }
+            else {
+                this.spawnNewTiles(
+                    isRespawn,
+                    false
+                );
+            }
+        }
 
 		return true;
 	}

@@ -1,4 +1,4 @@
-import { _decorator, assetManager, AssetManager, Button, instantiate, macro, Node, Prefab, Sprite, SpriteFrame, UITransform, view, Widget } from 'cc';
+import { _decorator, assetManager, AssetManager, Button, instantiate, macro, Node, Prefab, Sprite, SpriteFrame, UITransform, Vec3, view, Widget } from 'cc';
 import { ChestRewardData } from '../../data/ChestData';
 import { SaveData } from '../../data/SaveData';
 import { UserData } from '../../data/UserData';
@@ -58,6 +58,12 @@ export class UIMainMenu extends UIFrameBase {
 
     @property(Sprite)
     background_1: Sprite = null;
+
+    @property(Node)
+    leftSidePanel: Node = null;
+
+    @property(Node)
+    rightSidePanel: Node = null;
 
     @property(Sprite)
     chestPicture: Sprite = null;
@@ -143,49 +149,134 @@ export class UIMainMenu extends UIFrameBase {
             : `${index}`;
     }
 
-    private fitBackgroundCover(sprite: Sprite) {
-        if (
-            !sprite ||
-            !sprite.node ||
-            !sprite.node.isValid ||
-            !sprite.spriteFrame
+    private getBackgroundArea(sprite: Sprite): {
+        width: number;
+        height: number;
+        centerX: number;
+    } {
+        const visibleSize = view.getVisibleSize();
+
+        const fullScreen = {
+            width: visibleSize.width,
+            height: visibleSize.height,
+            centerX: 0
+        };
+
+        if(
+            !this.leftSidePanel ||
+            !this.rightSidePanel ||
+            !this.leftSidePanel.activeInHierarchy ||
+            !this.rightSidePanel.activeInHierarchy
         ) {
+            return fullScreen;
+        }
+
+        const leftTransform = this.leftSidePanel.getComponent(UITransform);
+
+        const rightTransform = this.rightSidePanel.getComponent(UITransform);
+
+        const parentTransform = sprite.node.parent?.getComponent(UITransform);
+
+        if(!leftTransform || !rightTransform || !parentTransform) {
+            return fullScreen;
+        }
+
+        const leftEdgeWorld =
+            leftTransform.convertToWorldSpaceAR(
+                new Vec3(
+                    leftTransform.width *
+                    (1 - leftTransform.anchorX),
+                    0,
+                    0
+                )
+            );
+
+        const rightEdgeWorld =
+            rightTransform.convertToWorldSpaceAR(
+                new Vec3(
+                    -rightTransform.width *
+                    rightTransform.anchorX,
+                    0,
+                    0
+                )
+            );
+
+
+        const leftEdgeLocal = parentTransform.convertToNodeSpaceAR( leftEdgeWorld );
+
+        const rightEdgeLocal =  parentTransform.convertToNodeSpaceAR( rightEdgeWorld );
+
+        const width = rightEdgeLocal.x - leftEdgeLocal.x;
+
+        if(width <= 0) {
+            return fullScreen;
+        }
+
+        return {
+            width,
+            height: visibleSize.height,
+
+            centerX:
+                (
+                    leftEdgeLocal.x +
+                    rightEdgeLocal.x
+                ) / 2
+        };
+    }
+
+    private fitBackgroundCover(sprite: Sprite) {
+        if(!sprite || !sprite.node || !sprite.node.isValid ||!sprite.spriteFrame ) {
             return;
         }
 
-        const transform = sprite.node.getComponent(UITransform);
+        const transform = sprite.node.getComponent( UITransform );
 
-        if (!transform) {
-            console.warn(`[BACKGROUND] UITransform not found: ${sprite.node.name}`);
+        if(!transform) {
+            console.warn(
+                `[BACKGROUND] UITransform not found: ${sprite.node.name}`
+            );
+
             return;
         }
 
         const sourceSize = sprite.spriteFrame.originalSize;
-        const visibleSize = view.getVisibleSize();
 
-        if (
-            sourceSize.width <= 0 ||
-            sourceSize.height <= 0 ||
-            visibleSize.width <= 0 ||
-            visibleSize.height <= 0
-        ) {
+        const area = this.getBackgroundArea(sprite);
+
+        if( sourceSize.width <= 0 || sourceSize.height <= 0 || area.width <= 0 || area.height <= 0 ) {
             return;
         }
 
-        const coverScale = Math.max(visibleSize.width / sourceSize.width, visibleSize.height / sourceSize.height);
+        const coverScale =
+            Math.max(
+                area.width /
+                sourceSize.width,
+
+                area.height /
+                sourceSize.height
+            );
+
         const resultWidth = sourceSize.width * coverScale;
-        const resultHeight = sourceSize.height * coverScale;
+
+        const resultHeight = sourceSize.height *  coverScale;
 
         sprite.sizeMode = Sprite.SizeMode.CUSTOM;
-        sprite.node.setScale(1, 1, 1);
 
-        transform.setContentSize(resultWidth, resultHeight);
-        sprite.node.setPosition(0, 0, sprite.node.position.z);
+        sprite.node.setScale(
+            1,
+            1,
+            1
+        );
+
+        transform.setContentSize( resultWidth, resultHeight );
+
+        sprite.node.setPosition( area.centerX, 0, sprite.node.position.z );
 
         console.log(
             `[BACKGROUND COVER] ${sprite.node.name}` +
             ` | source=${sourceSize.width}x${sourceSize.height}` +
-            ` | viewport=${visibleSize.width.toFixed(0)}x${visibleSize.height.toFixed(0)}` +
+            ` | area=${area.width.toFixed(0)}x${area.height.toFixed(0)}` +
+            ` | centerX=${area.centerX.toFixed(0)}` +
             ` | result=${resultWidth.toFixed(0)}x${resultHeight.toFixed(0)}`
         );
     }

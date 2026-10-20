@@ -1,25 +1,24 @@
-import { _decorator, Component, Node, Vec2 } from 'cc';
-import { TileBase } from '../TileBase';
+import { _decorator, Node, Vec2 } from 'cc';
 import { AudioController } from '../../utils/AudioController';
+import { TileBase } from '../TileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('BonusTileBase')
 export class BonusTileBase extends TileBase {
 
-    private combo: string = "";
-    private comboPosition: Vec2 = null;
+    protected combo: string = "";
+    protected comboPosition: Vec2 = null;
+
+    protected respawnDelay: number = 0.5;
+    protected timeBetweenTiles: number = 0.1;
+
+    protected isActivated: boolean = false;
+
+    protected disco_combo_time: number = 2;
+
+    protected isBonusPoolState: boolean = false;
 
     private availableColors: string[] = [];
-
-    private respawnDelay: number = 0.5;
-    private timeBetweenTiles: number = 0.1;
-
-    private isActivated: boolean = false;
-
-    private disco_combo_time: number = 2;
-
-    private isBonusPoolState: boolean = false;
-
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -262,7 +261,7 @@ export class BonusTileBase extends TileBase {
         let biggestGroup = [];
 
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
-        
+
         for(let color = 0; color < this.availableColors.length; color++) {
             let tiles = [];
 
@@ -293,7 +292,7 @@ export class BonusTileBase extends TileBase {
                 }
             }
         }
-        
+
         return biggestGroup;
     }
 
@@ -301,27 +300,27 @@ export class BonusTileBase extends TileBase {
     getTwoBiggestCommonTilesGroups(field: Node[][], statuses: Node[][]): TileBase[] {
         const numRows = field.length;
         const numCols = numRows > 0 ? field[0].length : 0;
-        
+
         let biggestGroup: TileBase[] = [];
         let secondBiggestGroup: TileBase[] = [];
-        
+
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
-        
+
         for (const color of this.availableColors) {
             const tiles: TileBase[] = [];
-        
+
             for (let i = numRows - 1; i >= 0; i--) {
                 for (let j = 0; j < numCols; j++) {
                     const tile = field[i][j];
                     const status = statuses[i][j];
-                
+
                     if (status) {
                         const statusComp = status.getComponent("StatusBase");
                         if (statusComp && statusComp.isBlockingInteraction()) {
                             continue;
                         }
                     }
-                
+
                     if (tile && tile !== this.node) {
                         const tileComp = tile.getComponent("TileBase");
                         if (tileComp && tileComp.getTileType() === color) {
@@ -330,7 +329,7 @@ export class BonusTileBase extends TileBase {
                     }
                 }
             }
-        
+
             if (tiles.length > biggestGroup.length) {
                 secondBiggestGroup = biggestGroup;
                 biggestGroup = tiles.slice();
@@ -338,7 +337,7 @@ export class BonusTileBase extends TileBase {
                 secondBiggestGroup = tiles.slice();
             }
         }
-        
+
         return biggestGroup.concat(secondBiggestGroup);
     }
 
@@ -350,7 +349,7 @@ export class BonusTileBase extends TileBase {
 
     destroyTile(delay: number) {
         super.destroyTile(delay);
-        
+
         this.node.emit("goal", this.tileType);
     }
 

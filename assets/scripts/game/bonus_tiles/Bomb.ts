@@ -1,5 +1,7 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, Sprite } from 'cc';
+import { _decorator, Node, sp, Sprite, tween, Vec2, Vec3 } from 'cc';
+import { TileBase } from '../TileBase';
 import { BonusTileBase } from './BonusTileBase';
+import { Discoball } from './Discoball';
 const { ccclass, property } = _decorator;
 
 @ccclass('Bomb')
@@ -8,65 +10,137 @@ export class Bomb extends BonusTileBase {
     @property(Sprite)
     icon: Sprite = null;
 
+    @property(sp.Skeleton)
+    bombSpine: sp.Skeleton = null;
+
     private bombCombo_Delay: number = 0.3;
     private rocketCombo_Delay: number = 0.3;
-
-    private isBonusPoolState: boolean = false;
 
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
+
+        if(this.icon) {
+            this.icon.enabled = false;
+        }
+
+        if(this.bombSpine) {
+            this.bombSpine.node.active = true;
+            this.bombSpine.clearTracks();
+            this.bombSpine.setToSetupPose();
+            this.bombSpine.setAnimation(
+                0,
+                "idle",
+                true
+            );
+        }
+    }
+
+    private playNewBombAnimation() {
+
+        if(!this.bombSpine) {
+            this.playAnimation(
+                "bomb",
+                false,
+                1
+            );
+
+            return;
+        }
+
+        if(this.icon) {
+            this.icon.enabled = false;
+        }
+
+        this.bombSpine.node.active = true;
+
+        this.bombSpine.clearTracks();
+        this.bombSpine.setToSetupPose();
+
+        this.bombSpine.setAnimation(
+            0,
+            "bomb",
+            false
+        );
     }
 
 
-    getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
+    private useLegacyComboVisual() {
+
+        if(this.bombSpine) {
+            this.bombSpine.node.active = false;
+        }
+
+        if(this.icon) {
+            this.icon.enabled = true;
+        }
+    }
+
+
+    getMatches(
+        field: Node[][],
+        statuses: Node[][],
+        isBlockingCombo: boolean
+    ): Node[] {
+
         if(this.isActivated) {
-            return;
+            return [];
         }
 
         this.isActivated = true;
 
         this.combo = "";
+
         if(!isBlockingCombo) {
             this.getCombo(field);
         }
 
-        let tilesToDestroy = this.getMatchesByType(field, statuses);
-
-        return tilesToDestroy;
+        return this.getBombMatchesByType(
+            field,
+            statuses
+        );
     }
 
 
-    getMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = [];
+    private getBombMatchesByType(
+        field: Node[][],
+        statuses: Node[][]
+    ): Node[] {
 
         if(this.isCombo()) {
-            matches = matches.concat(this.getMatchesByCombo(field, statuses));
-            return matches;
+
+            this.useLegacyComboVisual();
+
+            return this.getMatchesByCombo(
+                field,
+                statuses
+            );
         }
 
-        matches = matches.concat(this.getBombMatches(field, statuses, this.row, this.col));
-
-        return matches;
+        return this.getBombMatches(
+            field,
+            statuses,
+            this.row,
+            this.col
+        );
     }
-
 
     getBombMatches(field: Node[][], statuses: Node[][], row: number, col: number): Node[] {
         let matches = [];
 
-        this.playAnimation("bomb", false, 1);
+        this.playNewBombAnimation();
         this.playBombSound();
 
         const totalTime = this.respawnDelay / 2;
         const timeStep = totalTime / 9;
 
         let counter = 0;
-        
+
         for(let i = this.row - 1; i <= this.row + 1; i++) {
             for(let j = this.col - 1; j <= this.col + 1; j++) {
                 let isBonusChain = i !== this.row || j !== this.col
-                isBonusChain = isBonusChain && !this.isBonusPoolState; 
-                
+                isBonusChain = isBonusChain && !this.isBonusPoolState;
+
                 this.node.emit("extra_hit", i, j, isBonusChain, timeStep * counter);
 
                 counter = counter + 1;
@@ -146,16 +220,19 @@ export class Bomb extends BonusTileBase {
                         if(i > 0 && i < numRows && j > 0 && j < numCols) {
                             let tile = field[i][j];
                             if(tile !== null && tile !== undefined) {
-                                const tileComp = tile.getComponent("TileBase");
-                                if(tileComp.getTileType() === this.tileType) {
+                                const tileComp = tile.getComponent(TileBase);
+                                if(
+                                    tileComp &&
+                                    tileComp.getTileType() === this.tileType
+                                ) {
                                     isBonusChain = false;
                                 }
                             }
                         }
                     }
-    
+
                     this.node.emit("extra_hit", i, j, isBonusChain, timeStep * counter);
-    
+
                     counter = counter + 1;
                 }
             }
@@ -177,14 +254,14 @@ export class Bomb extends BonusTileBase {
         for(let i = 0; i < tiles.length; i++) {
             this.node.emit("goal", "discoball");
         }
-        
+
         let totalTime = this.timeBetweenTiles * tiles.length;
         totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 try {
-                    let comboComp = field[this.comboPosition.x][this.comboPosition.y].getComponent("TileBase");
+                    let comboComp = field[this.comboPosition.x][this.comboPosition.y].getComponent(TileBase);
                     if(comboComp) {
                         this.renderLine(new Vec2(comboComp.getRow(), comboComp.getCol()), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
                     }
@@ -206,7 +283,7 @@ export class Bomb extends BonusTileBase {
             this.node.emit("activate_bonus_pool");
         }, totalTime);
 
-        this.setDicoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y], this.disco_combo_time / totalTime);
+        this.setDiscoballComboAnimation(field[this.comboPosition.x][this.comboPosition.y], this.disco_combo_time / totalTime);
 
         this.playComboSound();
 
@@ -221,10 +298,10 @@ export class Bomb extends BonusTileBase {
         this.node.emit("respawn", timeToRespawn);
     }
 
-    setDicoballComboAnimation(disco: Node, timeScale: number) {
+    setDiscoballComboAnimation(disco: Node, timeScale: number) {
         this.playAnimation("bomb_discoball", true, 1);
 
-        let discoComp = disco.getComponent("Discoball");
+        let discoComp = disco.getComponent(Discoball);
         if(discoComp) {
             discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
