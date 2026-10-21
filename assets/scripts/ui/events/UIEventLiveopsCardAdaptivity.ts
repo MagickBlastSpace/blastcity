@@ -208,21 +208,42 @@ export class UIEventLiveopsCardAdaptivity extends UIAdaptivityBase {
 
         if (this.runtimeScaleRoot && this.originalContentParent) {
             this.originalContentParent.addChild(this.content);
-            this.content.setSiblingIndex(this.originalContentSiblingIndex);
+            this.content.setSiblingIndex(
+                this.originalContentSiblingIndex
+            );
         }
 
         for (const [node, source] of this.snapshots) {
             if (node === this.runtimeScaleRoot) continue;
+
             const transform = node.getComponent(UITransform);
-            if (transform) transform.setContentSize(source.width, source.height);
+
+            if (transform) {
+                transform.setContentSize(
+                    source.width,
+                    source.height
+                );
+            }
+
             node.setPosition(source.position);
             node.setScale(source.scale);
         }
 
-        this.runtimeScaleRoot?.destroy();
-        if (this.skyRaceFrameWidget) {
-            this.skyRaceFrameWidget.enabled = this.skyRaceFrameWidgetWasEnabled;
+        if (this.node.name === 'SkyRace' && this.content) {
+            this.content.setScale(1, 1, 1);
         }
+
+        this.runtimeScaleRoot?.destroy();
+
+        if (this.skyRaceFrameWidget) {
+            this.skyRaceFrameWidget.enabled =
+                this.skyRaceFrameWidgetWasEnabled;
+
+            if(this.skyRaceFrameWidgetWasEnabled) {
+                this.skyRaceFrameWidget.updateAlignment();
+            }
+        }
+
         this.runtimeScaleRoot = null;
         this.cardRoot = null;
         this.content = null;
