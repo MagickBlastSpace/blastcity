@@ -68,6 +68,8 @@ export class UILocationsFrame extends UIFrameBase {
 
     private preloadPromise: Promise<void> | null = null;
 
+    private preparePromise: Promise<void> | null = null;
+
     private locationSpriteFrames: (SpriteFrame | null)[] = [];
 
     private locationLoadPromises: (Promise<SpriteFrame | null> | null)[] = [];
@@ -185,6 +187,30 @@ export class UILocationsFrame extends UIFrameBase {
             this.scrollToCurrentLocation();
 
         }, 0);
+    }
+
+    public prepareInBackground(): Promise<void> {
+
+        if(this.preparePromise) {
+            return this.preparePromise;
+        }
+
+        this.preparePromise = (async () => {
+            console.log( "[LOCATIONS] Background preparation started" );
+
+            await this.preloadAssets();
+
+            if(
+                !this.cardsCreated &&
+                !this.cardsCreating
+            ) {
+                await this.createCards();
+            }
+
+            console.log( "[LOCATIONS] Background preparation finished" );
+        })();
+
+        return this.preparePromise;
     }
 
     private calculateCardScale(
@@ -598,15 +624,6 @@ export class UILocationsFrame extends UIFrameBase {
             );
         }
 
-        for(const cardNode of this.cardNodes) {
-
-            cardNode.setScale(
-                cardScale,
-                cardScale,
-                1
-            );
-        }
-
         const cardWidth = firstCardTransform.width * cardScale;
 
         const cardHeight = firstCardTransform.height * cardScale;
@@ -719,11 +736,52 @@ export class UILocationsFrame extends UIFrameBase {
         }
 
         this.preloadPromise =
-            this.preloadPriorityLocationImages();
+            this.preloadLocationImagesInBackground();
 
         return this.preloadPromise;
     }
 
+
+    private async preloadLocationImagesInBackground():
+        Promise<void> {
+
+        this.ensureLocationCacheSize();
+
+        const currentStage = this.chest.getStage();
+
+        const locationsCount = this.chest.getLocationCount();
+
+        const loadOrder: number[] = [];
+
+        for(const stage of [ currentStage, currentStage - 1, currentStage + 1, currentStage - 2, currentStage + 2 ]) {
+            if( stage >= 0 && stage < locationsCount && !loadOrder.includes(stage) ) {
+                loadOrder.push(stage);
+            }
+        }
+
+        for( let stage = 0; stage < locationsCount; stage++ ) {
+            if(!loadOrder.includes(stage)) {
+                loadOrder.push(stage);
+            }
+        }
+
+        console.log(
+            "[LOCATIONS PRELOAD] Background order:",
+            loadOrder.map(
+                stage => stage + 1
+            )
+        );
+
+        for(const stage of loadOrder) {
+            await this.ensureLocationImage(
+                stage
+            );
+        }
+
+        console.log(
+            "[LOCATIONS PRELOAD] Background finished"
+        );
+    }
 
     public async getLocationSpriteFrame(
         stage: number
@@ -733,50 +791,6 @@ export class UILocationsFrame extends UIFrameBase {
             stage
         );
     }
-
-
-    private async preloadPriorityLocationImages():
-        Promise<void> {
-
-        this.ensureLocationCacheSize();
-
-        const currentStage =
-            this.chest.getStage();
-
-        const locationsCount =
-            this.chest.getLocationCount();
-
-        const priorityStages = [
-            currentStage,
-            currentStage + 1,
-            currentStage + 2
-        ].filter(
-            stage =>
-                stage >= 0 &&
-                stage < locationsCount
-        );
-
-        console.log(
-            "[LOCATIONS PRELOAD] Priority:",
-            priorityStages.map(
-                stage => stage + 1
-            )
-        );
-
-        await Promise.all(
-            priorityStages.map(
-                stage =>
-                    this.ensureLocationImage(
-                        stage
-                    )
-            )
-        );
-
-        console.log(
-            "[LOCATIONS PRELOAD] Priority finished"
-        );
-    }
-
 
     private ensureLocationCacheSize() {
 

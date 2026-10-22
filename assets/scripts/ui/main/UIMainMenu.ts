@@ -1133,10 +1133,11 @@ export class UIMainMenu extends UIFrameBase {
                     AudioController.instance.playMainMenuSoundtrack();
                     AudioController.instance.loadSoundsAssets();
 
+                    this.preloadLocationsInBackground();
+
                     this.preloadShopInBackground();
                     this.preloadCollectionInBackground();
                     this.preloadLeaderboardInBackground();
-                    this.preloadLocationsInBackground();
 
                     this.scheduleOnce(() => {void this.checkLocationUnlockedPopup();}, 0);
 
@@ -1334,32 +1335,28 @@ export class UIMainMenu extends UIFrameBase {
 
     private preloadLocationsInBackground() {
 
-        this.scheduleOnce(() => {
+        if(!this.locationsFrame) {
+            console.warn(
+                "[LOCATIONS PRELOAD] Locations frame is not assigned"
+            );
+            return;
+        }
 
-            if(!this.locationsFrame) {
-                console.warn(
-                    "[LOCATIONS PRELOAD] Locations frame is not assigned"
+        console.log("[LOCATIONS PRELOAD] starting");
+
+        void this.locationsFrame
+            .prepareInBackground()
+            .then(() => {
+                console.log(
+                    "[LOCATIONS PRELOAD] fully ready"
                 );
-                return;
-            }
-
-            console.log("[LOCATIONS PRELOAD] starting");
-
-            void this.locationsFrame
-                .preloadAssets()
-                .then(() => {
-                    console.log(
-                        "[LOCATIONS PRELOAD] fully ready"
-                    );
-                })
-                .catch((error) => {
-                    console.error(
-                        "[LOCATIONS PRELOAD] failed",
-                        error
-                    );
-                });
-
-        }, 0.2);
+            })
+            .catch((error) => {
+                console.error(
+                    "[LOCATIONS PRELOAD] failed",
+                    error
+                );
+            });
     }
 
     private preloadShopInBackground() {
