@@ -693,36 +693,28 @@ export class Field extends Component {
 	}
 
 	spawnBomb(row: number, col: number): Node {
-		this.destroyTile(row, col, false);
-		const tileNode = instantiate(this.bombPrefab);
-		this.layersForCleanup[0].addChild(tileNode);
-		const tileComponent = tileNode.getComponent('Bomb');
-		let spawnedTile = this.initTile(tileComponent, row, col, 'bomb');
+        this.destroyTile(row, col, false);
 
-        void ArtPreviewAssetLoader.applyPrefabArt(
-            tileNode,
-            ['bonus'],
-            'bomb',
-        );
+        const tileNode = instantiate(this.bombPrefab);
+        this.layersForCleanup[0].addChild(tileNode);
 
-		return spawnedTile;
-	}
+        const tileComponent = tileNode.getComponent("Bomb");
+        const spawnedTile = this.initTile(tileComponent, row, col, "bomb");
+
+        return spawnedTile;
+    }
 
 	spawnRocket(row: number, col: number, tileType: string): Node {
-		this.destroyTile(row, col, false);
-		const tileNode = instantiate(this.rocketPrefab);
-		this.layersForCleanup[0].addChild(tileNode);
-		const tileComponent = tileNode.getComponent('Rocket');
-		let spawnedTile = this.initTile(tileComponent, row, col, tileType);
+        this.destroyTile(row, col, false);
 
-        void ArtPreviewAssetLoader.applyPrefabArt(
-            tileNode,
-            ['bonus'],
-            tileType,
-        );
+        const tileNode = instantiate(this.rocketPrefab);
+        this.layersForCleanup[0].addChild(tileNode);
 
-		return spawnedTile;
-	}
+        const tileComponent = tileNode.getComponent("Rocket");
+        const spawnedTile = this.initTile(tileComponent, row, col, tileType);
+
+        return spawnedTile;
+    }
 
 	spawnRandomRocket(row: number, col: number) {
 		if (this.rocketPreset === 'random') {
@@ -738,21 +730,17 @@ export class Field extends Component {
 	}
 
 	spawnDiscoball(row: number, col: number): Node {
-		this.destroyTile(row, col, true);
-		const tileNode = instantiate(this.discoballPrefab);
-		this.layersForCleanup[0].addChild(tileNode);
-		const tileComponent = tileNode.getComponent('Discoball');
-		let tileType = this.isSuperDiscoballMode ? 'super' : 'multi';
-		let spawnedTile = this.initTile(tileComponent, row, col, tileType);
+        this.destroyTile(row, col, true);
 
-        void ArtPreviewAssetLoader.applyPrefabArt(
-            tileNode,
-            ['bonus'],
-            tileType,
-        );
+        const tileNode = instantiate(this.discoballPrefab);
+        this.layersForCleanup[0].addChild(tileNode);
 
-		return spawnedTile;
-	}
+        const tileComponent = tileNode.getComponent("Discoball");
+        const tileType = this.isSuperDiscoballMode ? "super" : "multi";
+        const spawnedTile = this.initTile(tileComponent, row, col, tileType);
+
+        return spawnedTile;
+    }
 
 	spawnEmptyTile(row: number, col: number): Node {
 		this.destroyTile(row, col, true);
