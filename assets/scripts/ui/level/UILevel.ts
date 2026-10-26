@@ -1,10 +1,10 @@
-import { _decorator, Node, Label, Sprite, SpriteFrame, Button } from 'cc';
+import { _decorator, Button, Label, Node, Sprite, SpriteFrame } from 'cc';
 import { GoalData } from '../../data/GameData';
-import { UILevelGoal } from './UILevelGoal';
-import { UIFrameBase } from '../UIFrameBase';
 import { SaveData } from '../../data/SaveData';
 import { Level } from '../../game/Level';
 import { AudioController } from '../../utils/AudioController';
+import { UIFrameBase } from '../UIFrameBase';
+import { UILevelGoal } from './UILevelGoal';
 import { UILevelResultFrame } from './UILevelResultFrame';
 const { ccclass, property } = _decorator;
 
@@ -120,22 +120,26 @@ export class UILevel extends UIFrameBase {
 
 	refreshAll() {
 		this.refresh(this.levelComp.getMoves());
-		if (!this.isRewarding) {
-			this.refreshGoals(this.levelComp.getGoals());
-		}
 
-		let difficulty = this.levelComp.getDifficulty();
+        if (!this.isRewarding) {
+            this.refreshGoals(this.levelComp.getGoals());
+        }
 
-		if (difficulty === 'hard') {
-			this.sidePanel_Left.spriteFrame = this.hard;
-			this.sidePanel_Right.spriteFrame = this.hard;
-		} else if (difficulty === 'superhard') {
-			this.sidePanel_Left.spriteFrame = this.superHard;
-			this.sidePanel_Right.spriteFrame = this.superHard;
-		} else {
-			this.sidePanel_Left.spriteFrame = this.common;
-			this.sidePanel_Right.spriteFrame = this.common;
-		}
+        const difficulty = this.levelComp.getDifficulty();
+
+        let sideSprite = this.common;
+
+        if(difficulty === 'hard') {
+            sideSprite = this.hard;
+        }
+        else if(difficulty === 'superhard') {
+            sideSprite = this.superHard;
+        }
+
+        if(sideSprite) {
+            this.sidePanel_Left.spriteFrame = sideSprite;
+            this.sidePanel_Right.spriteFrame = sideSprite;
+        }
 	}
 
 	showResult(isSuccess: boolean, goldEarned: number) {
