@@ -18,9 +18,13 @@ import {
 import { SaveData } from '../data/SaveData';
 import { UserData } from '../data/UserData';
 import { ArtPreviewAssetLoader } from '../preview/ArtPreviewAssetLoader';
+import { UITile } from '../ui/UITile';
+import { TileCollectSkin } from '../ui/effects/TileCollectFx';
+import { TileCollectFxManager } from '../ui/effects/TileCollectFxManager';
 import { AssetsLoader } from '../utils/AssetsLoader';
 import { AudioController } from '../utils/AudioController';
 import { TileBase } from './TileBase';
+import { Bomb } from './bonus_tiles/Bomb';
 import { Boosters } from './boosters/Boosters';
 import { ButlersGift } from './boosters/ButlersGift';
 import { StartBonuses } from './boosters/StartBonuses';
@@ -42,6 +46,9 @@ export class Field extends Component {
 
 	@property([SpecialPrefabData])
 	tutorialPrefabs: SpecialPrefabData[] = [];
+
+    @property(TileCollectFxManager)
+    tileCollectFxManager: TileCollectFxManager = null;
 
 	@property
 	numRows: number = 8;
@@ -230,6 +237,30 @@ export class Field extends Component {
 			}
 		});
 	}
+
+    private getTileCollectSkin(
+        tileType: string
+    ): TileCollectSkin {
+        switch(tileType) {
+            case 'blue':
+                return 'blue';
+
+            case 'red':
+                return 'red';
+
+            case 'green':
+                return 'green';
+
+            case 'yellow':
+                return 'yellow';
+
+            case 'purple':
+                return 'violet';
+
+            default:
+                return 'blue';
+        }
+    }
 
 	private removeOrangeFromPool(pool: string[]): string[] {
 		if (!pool) {
@@ -1603,6 +1634,10 @@ export class Field extends Component {
 		let isComboBonus = this.isComboBonus(choosenTile);
 		let isAnimatedCombo = this.isAnimatedCombo(choosenTile);
 
+        if(matches.length < 2 && !isBonus) {
+            return false;
+        }
+
 		if (isComboBonus && (choosenType === 'multi' || choosenType === 'super')) {
 			this.bonusPool.push(tile);
 		}
@@ -1613,23 +1648,170 @@ export class Field extends Component {
 			choosenType !== 'super' &&
 			!isAnimatedCombo;
 
-		if (matches.length >= 2 || isBonus) {
-			matches.forEach((matchedTile) => {
-				this.giveDamage(matchedTile, choosenType, isBonus, 0);
-			});
-		} else {
-			return false;
-		}
 
-		if (isCommon) {
-			if (matches.length >= 9) {
-				this.spawnDiscoball(choosenRow, choosenCol);
-			} else if (matches.length >= 7) {
-				this.spawnBomb(choosenRow, choosenCol);
-			} else if (matches.length >= 5) {
-				this.spawnRocket(choosenRow, choosenCol, potentialBonus);
-			}
-		}
+        const shouldAnimateSimpleCollapse =
+            isCommon &&
+            matches.length >= 2 &&
+            matches.length < 5 &&
+            this.tileCollectFxManager !== null;
+
+
+        if(shouldAnimateSimpleCollapse) {
+
+            const skin =
+                this.getTileCollectSkin(
+                    choosenType
+                );
+
+
+            const fxStarted =
+                this.tileCollectFxManager.playSimpleGroupCollapse(
+                    matches,
+                    skin,
+                    () => {
+                        this.spawnNewTiles(
+                            isRespawn,
+                            false
+                        );
+                    }
+                );
+
+
+            if(fxStarted) {
+                this.isClickAvailable = false;
+
+                matches.forEach(
+                    (matchedTile) => {
+
+                        this.giveDamage(
+                            matchedTile,
+                            choosenType,
+                            isBonus,
+                            0
+                        );
+
+                    }
+                );
+
+                return true;
+            }
+        }
+
+        const shouldAnimateBonusCreation = isCommon && matches.length >= 5 && this.tileCollectFxManager !== null;
+
+        if(shouldAnimateBonusCreation) {
+            const fxTiles = matches.includes(tile) ? [...matches] : [tile, ...matches];
+            const skin = this.getTileCollectSkin(choosenType);
+            let spawnedBonus: Node = null;
+
+            const fxStarted = this.tileCollectFxManager.playBonusGroupCollect(
+                fxTiles,
+                tile,
+                skin,
+
+                () => {
+                    if(matches.length >= 9) {
+                        spawnedBonus = this.spawnDiscoball(choosenRow, choosenCol);
+                    }
+                    else if(matches.length >= 7) {
+                        spawnedBonus = this.spawnBomb(choosenRow, choosenCol);
+                    }
+                    else {
+                        spawnedBonus = this.spawnRocket(choosenRow, choosenCol, potentialBonus);
+                    }
+
+                    if(spawnedBonus && spawnedBonus.isValid) {
+                        const bonusUi = spawnedBonus.getComponent(UITile);
+
+                        if(bonusUi) {
+                            bonusUi.prepareInstantBonusSpawn();
+                            bonusUi.hideForBonusSpawn();
+                        }
+                    }
+
+                    this.spawnNewTiles(isRespawn, false);
+
+                    return spawnedBonus;
+                },
+
+                () => {},
+
+                () => {
+                    if(!spawnedBonus || !spawnedBonus.isValid) {
+                        return;
+                    }
+
+                    const bonusUi = spawnedBonus.getComponent(UITile);
+
+                    if(bonusUi) {
+                        bonusUi.showAfterBonusSpawn();
+                    }
+
+                    spawnedBonus.setScale(1, 1, 1);
+
+                    if(matches.length >= 7 && matches.length < 9) {
+                        const bomb = spawnedBonus.getComponent(Bomb);
+
+                        if(bomb) {
+                            bomb.playSpawnAnimation();
+                        }
+
+                        return;
+                    }
+                }
+            );
+
+            if(fxStarted) {
+                this.isClickAvailable = false;
+
+                matches.forEach((matchedTile) => {
+                    this.giveDamage(matchedTile, choosenType, isBonus, 0);
+                });
+
+                return true;
+            }
+        }
+
+        matches.forEach((matchedTile) => {
+
+            this.giveDamage(
+                matchedTile,
+                choosenType,
+                isBonus,
+                0
+            );
+
+        });
+
+
+        if(isCommon) {
+
+            if(matches.length >= 9) {
+
+                this.spawnDiscoball(
+                    choosenRow,
+                    choosenCol
+                );
+
+            }
+            else if(matches.length >= 7) {
+
+                this.spawnBomb(
+                    choosenRow,
+                    choosenCol
+                );
+
+            }
+            else if(matches.length >= 5) {
+
+                this.spawnRocket(
+                    choosenRow,
+                    choosenCol,
+                    potentialBonus
+                );
+
+            }
+        }
 
 		if (matches.length > 0 || isBonus) {
             if (

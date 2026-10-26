@@ -1,6 +1,6 @@
-import { _decorator, Component, Node, tween, Vec3, Vec2, ParticleSystem2D, SpriteFrame, sp, UITransform, AudioClip, AudioSource, instantiate } from 'cc';
-import { AudioController } from '../utils/AudioController';
+import { _decorator, AudioClip, AudioSource, Component, instantiate, isValid, Node, ParticleSystem2D, sp, SpriteFrame, Tween, tween, UIOpacity, Vec2, Vec3 } from 'cc';
 import { UserData } from '../data/UserData';
+import { AudioController } from '../utils/AudioController';
 const { ccclass, property } = _decorator;
 
 
@@ -77,6 +77,7 @@ export class UITile extends Component {
     private originalContentPos: Vec2;
     private shakeTween: any = null;
 
+    private targetLayout: Node = null;
 
     start() {
         this.isBlocked = false;
@@ -85,7 +86,7 @@ export class UITile extends Component {
             this.spine.node.active = false;
         }
     }
-    
+
     init(posX: number, posY: number, layout: Node, isStatus: boolean, tileType: string) {
         if(this.isBlocked) {
             return;
@@ -97,6 +98,7 @@ export class UITile extends Component {
 
         this.currentX = posX;
         this.currentY = posY;
+        this.targetLayout = layout;
 
         this.destroyLayout = this.node.parent;
 
@@ -132,7 +134,7 @@ export class UITile extends Component {
 
         this.currentX = posX;
         this.currentY = posY;
-        
+
         tween(this.node).stop();
 
         tween(this.node)
@@ -160,7 +162,7 @@ export class UITile extends Component {
         if (this.isBlocked) {
             return;
         }
-    
+
         this.isBlocked = true;
 
         if ((globalThis as any).gamepush?.__artPreview === true) {
@@ -172,18 +174,18 @@ export class UITile extends Component {
             );
         }
         this.destroyLayout.addChild(this.node);
-    
+
         const particles = [this.particles_1, this.particles_2, this.particles_3, this.particles_4, this.particles_5];
         particles.forEach(particle => particle?.resetSystem());
-    
+
         if (this.particlesParent) {
             this.destroyLayout.addChild(this.particlesParent);
             this.particlesParent.setPosition(this.currentX, this.currentY);
         }
-    
+
         this.playAnimation("destroy", false, 1);
         this.playDestroySound();
-    
+
         this.scheduleOnce(() => {
             if ((globalThis as any).gamepush?.__artPreview === true) {
                 console.log(
@@ -197,9 +199,9 @@ export class UITile extends Component {
                     this.spine.node.destroy();
                 } catch {}
             }
-    
+
             tween(this.node).stop();
-    
+
             if (this.content) {
                 tween(this.content).stop();
                 tween(this.content)
@@ -220,29 +222,29 @@ export class UITile extends Component {
             }
         }, delay);
     }
-    
+
     playAnimation(animation: string, isLooped: boolean, timeScale: number) {
         try {
             if (this.spine) {
                 let trackEntry = this.spine.getCurrent(0);
                 let isPlaying = trackEntry && !trackEntry.isComplete();
-    
+
                 if (isPlaying) {
                     let isLoop = trackEntry.loop;
                     if (!isLoop) {
                         return;
                     }
                 }
-    
+
                 this.isSpineDestroyScheduled = isLooped;
-    
+
                 const spineNode = this.spine.node;
                 spineNode.active = true;
                 this.animationsLayout.addChild(spineNode);
                 spineNode.setPosition(this.currentX, this.currentY);
-    
+
                 let goalEmitLayout = this.animationsLayout;
-    
+
                 if (!isLooped) {
                     this.spine.setCompleteListener(() => {
                         if (animation === "goal") {
@@ -251,7 +253,7 @@ export class UITile extends Component {
                         spineNode.destroy();
                     });
                 }
-    
+
                 trackEntry = this.spine.setAnimation(0, animation, isLooped);
                 trackEntry.timeScale = timeScale;
             }
@@ -259,19 +261,19 @@ export class UITile extends Component {
             //console.error('Error setting spine animation:', error);
         }
     }
-    
+
     /*playAdditionalAnimation(skeleton: sp.Skeleton, animation: string, disableNode: Node) {
         try {
             const spineNode = skeleton ? skeleton.node : this.spine.node;
             spineNode.active = true;
-    
+
             if (disableNode) {
                 disableNode.active = false;
             }
-    
+
             this.animationsLayout.addChild(spineNode);
             spineNode.setPosition(this.currentX, this.currentY);
-    
+
             if (skeleton) {
                 skeleton.setCompleteListener(() => {
                     spineNode.destroy();
@@ -279,7 +281,7 @@ export class UITile extends Component {
                         disableNode.active = true;
                     }
                 });
-    
+
                 skeleton.setAnimation(0, animation, false);
             } else if (this.spine) {
                 this.spine.setCompleteListener(() => {
@@ -288,7 +290,7 @@ export class UITile extends Component {
                         disableNode.active = true;
                     }
                 });
-    
+
                 this.spine.setAnimation(0, animation, false);
             }
         } catch (error) {
@@ -300,23 +302,23 @@ export class UITile extends Component {
         try {
             const originalSpine = skeleton ? skeleton : this.spine;
             const originalNode = originalSpine.node;
-    
+
             // Clone the original node
             const clonedNode = instantiate(originalNode);
             const clonedSkeleton = clonedNode.getComponent(sp.Skeleton);
-    
+
             // Ensure it's active
             clonedNode.active = true;
-    
+
             // Optional: disable a node during animation
             if (disableNode) {
                 disableNode.active = false;
             }
-    
+
             // Set position and parent
             this.animationsLayout.addChild(clonedNode);
             clonedNode.setPosition(this.currentX, this.currentY);
-    
+
             // Play animation on cloned skeleton
             if (clonedSkeleton) {
                 clonedSkeleton.setCompleteListener(() => {
@@ -325,7 +327,7 @@ export class UITile extends Component {
                         disableNode.active = true;
                     }
                 });
-    
+
                 clonedSkeleton.setAnimation(0, animation, false);
             } else {
                 console.error("Cloned skeleton missing sp.Skeleton component");
@@ -334,8 +336,44 @@ export class UITile extends Component {
             console.error('Error setting additional spine animation:', error);
         }
     }
-        
-    
+
+
+    prepareInstantBonusSpawn() {
+        Tween.stopAllByTarget(this.node);
+
+        if(this.targetLayout && isValid(this.targetLayout, true)) {
+            this.targetLayout.addChild(this.node);
+        }
+
+        this.node.setPosition(this.currentX, this.currentY, 0);
+        this.node.setScale(0, 0, 1);
+    }
+
+    showInstantBonusSpawn(duration: number = 0.16) {
+        Tween.stopAllByTarget(this.node);
+
+        tween(this.node)
+            .to(duration, { scale: new Vec3(1, 1, 1) }, { easing: 'backOut' })
+            .start();
+    }
+
+    hideForBonusSpawn() {
+        let opacity = this.node.getComponent(UIOpacity);
+
+        if(!opacity) {
+            opacity = this.node.addComponent(UIOpacity);
+        }
+
+        opacity.opacity = 0;
+    }
+
+    showAfterBonusSpawn() {
+        const opacity = this.node.getComponent(UIOpacity);
+
+        if(opacity) {
+            opacity.opacity = 255;
+        }
+    }
 
     /*playAnimationsSequence(animations: string[], isGoal: boolean) {
         try {
@@ -455,7 +493,7 @@ export class UITile extends Component {
         if(!AudioController.instance.isSfxEnabled()) {
             return;
         }
-        
+
         if (!this.source) {
             return;
         }
@@ -475,7 +513,7 @@ export class UITile extends Component {
     startShake() {
         const shakeAmount = 5;
         const shakeDuration = 0.1;
-    
+
         if (this.content && !this.shakeTween) {
             this.shakeTween = tween(this.content)
                 .repeatForever(
@@ -494,7 +532,7 @@ export class UITile extends Component {
     stopShake() {
         if (this.content && this.shakeTween) {
             this.shakeTween.stop();
-    
+
             this.shakeTween = null;
 
             if(this.originalContentPos && !this.originalContentPos === undefined) {

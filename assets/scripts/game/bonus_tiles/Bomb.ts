@@ -326,6 +326,27 @@ export class Bomb extends BonusTileBase {
             .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
             .start();
     }
+
+    public hideForSpawn() {
+        if(!this.bombSpine) {
+            return;
+        }
+
+        this.bombSpine.clearTracks();
+        this.bombSpine.node.active = false;
+    }
+
+    public playSpawnAnimation() {
+        if(!this.bombSpine) {
+            return;
+        }
+
+        this.bombSpine.node.active = true;
+        this.bombSpine.clearTracks();
+        this.bombSpine.setToSetupPose();
+        this.bombSpine.setAnimation(0, 'spawn', false);
+        this.bombSpine.addAnimation(0, 'idle', true, 0);
+    }
 }
 
 
