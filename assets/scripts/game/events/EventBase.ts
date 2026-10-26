@@ -17,13 +17,13 @@ export class EventBase extends Component {
 
 	protected lastAttemptTimestamp: number = 0;
 
-	private unpickedRewards: EventRewardData[] = [];
+	protected unpickedRewards: EventRewardData[] = [];
 
-	private isPositionUpdated: boolean = false;
+	protected isPositionUpdated: boolean = false;
 
 	private isChecked: boolean = false;
 
-	private padTime(value: number): string {
+	protected padTime(value: number): string {
 		return value < 10 ? `0${value}` : String(value);
 	}
 

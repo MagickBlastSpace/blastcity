@@ -1,9 +1,8 @@
-import { _decorator, Component, Node } from 'cc';
-import { EventBase } from './EventBase';
-import { UserData } from '../../data/UserData';
-import { SaveData } from '../../data/SaveData';
+import { _decorator, Node } from 'cc';
 import { EventRewardData } from '../../data/EventData';
+import { SaveData } from '../../data/SaveData';
 import { Localization } from '../../utils/Localization';
+import { EventBase } from './EventBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('LavaAdventureEvent')
@@ -11,10 +10,15 @@ export class LavaAdventureEvent extends EventBase {
 
     @property(Node)
     level: Node = null;
-    
+
+    @property
+    RETRY_COOLDOWN_MINUTES: number = 30;
+
     private TOTAL_LEVELS: number = 7;
     private REWARD_COINS: number = 10000;
-    private RETRY_COOLDOWN_MINUTES: number = 30;
+
+    private readonly DAILY_RESET_HOUR_UTC: number = 4;
+    private readonly DAILY_DURATION_HOURS: number = 24;
 
     private MAX_PLAYERS: number = 100;
     private PLAYERS_REMOVE_COUNT_MIN: number = 12;
@@ -30,37 +34,122 @@ export class LavaAdventureEvent extends EventBase {
     onLoad() {
         this.unpickedRewards = [];
     }
-    
+
     start() {
         this.level.on("complete", (isComplete) => this.handleLevelCompletion(isComplete));
         this.level.on("fail", () => this.handleLevelFail());
     }
-    
-    init(startHourUTC: number, durationHours: number) {
-        super.init(startHourUTC, durationHours);
+
+    init(_startHourUTC: number, _durationHours: number) {
+        this.eventId = "lava_adventure";
 
         this.currentStep = 0;
+        this.currentPlayers = 0;
+
+        this.isStarted = false;
         this.isCompletedToday = false;
 
+        this.lastAttemptTimestamp = 0;
         this.unpickedRewards = [];
 
-        this.eventId = "lava_adventure";
+        super.init(
+            this.DAILY_RESET_HOUR_UTC,
+            this.DAILY_DURATION_HOURS
+        );
+
+        this.scheduleDailyReset();
+    }
+
+    private dailyResetCallback = () => {
+        this.restartEvent();
+    };
+
+
+    private scheduleDailyReset() {
+        this.unschedule(this.dailyResetCallback);
+
+        const secondsUntilReset = Math.max(
+            0,
+            (this.endTime.getTime() - Date.now()) / 1000
+        );
+
+        this.scheduleOnce(
+            this.dailyResetCallback,
+            secondsUntilReset + 0.1
+        );
     }
 
 
+    restartEvent(): void {
+        this.unschedule(this.cooldownFinishedCallback);
+
+        this.init(
+            this.DAILY_RESET_HOUR_UTC,
+            this.DAILY_DURATION_HOURS
+        );
+
+        SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("refresh");
+    }
+
+    private cooldownFinishedCallback = () => {
+        if(
+            this.isCompletedToday ||
+            this.isStarted ||
+            !this.isEventAvailable()
+        ) {
+            return;
+        }
+
+        if(this.canParticipate()) {
+            this.node.emit("refresh");
+        }
+    };
+
+
+    private scheduleCooldownRefresh() {
+        this.unschedule(this.cooldownFinishedCallback);
+
+        const cooldownEndTime =
+            this.lastAttemptTimestamp +
+            this.RETRY_COOLDOWN_MINUTES * 60 * 1000;
+
+        const secondsUntilCooldownEnd = Math.max(
+            0,
+            (cooldownEndTime - Date.now()) / 1000
+        );
+
+        this.scheduleOnce(
+            this.cooldownFinishedCallback,
+            secondsUntilCooldownEnd + 0.1
+        );
+    }
+
     canParticipate(): boolean {
-        return (this.lastAttemptTimestamp === 0 || this.isCooldownOver()) && super.canParticipate();
+        if(this.isStarted) {
+            return super.canParticipate();
+        }
+
+        return (
+            (this.lastAttemptTimestamp === 0 || this.isCooldownOver()) &&
+            super.canParticipate()
+        );
     }
 
     activateEvent() {
-        if(this.isEventAvailable() && !this.isStarted && this.canParticipate()) {
-            this.isStarted = true;
-        }
-
-        if(!this.isEventAvailable()) {
-            //console.log("Unable to start Lava Adventure");
+        if(
+            !this.isEventAvailable() ||
+            this.isCompletedToday ||
+            this.isStarted ||
+            !this.canParticipate()
+        ) {
             return;
         }
+
+        this.isStarted = true;
+
+        this.lastAttemptTimestamp = Date.now();
 
         this.currentStep = 0;
         this.currentPlayers = this.MAX_PLAYERS;
@@ -69,7 +158,12 @@ export class LavaAdventureEvent extends EventBase {
 
         SaveData.instance.saveEvent(this.eventId);
 
-        //console.log("Lava Adventure started for player at level: ", UserData.instance.getProgress());
+        this.node.emit("refresh");
+
+        console.log(
+            "[LAVA] Attempt started:",
+            new Date(this.lastAttemptTimestamp)
+        );
     }
 
 
@@ -79,24 +173,33 @@ export class LavaAdventureEvent extends EventBase {
     }
 
     getRemainingCooldownString(): string {
-        if (this.isCooldownOver()) {
+        const cooldownEndTime =
+            this.lastAttemptTimestamp +
+            this.RETRY_COOLDOWN_MINUTES * 60 * 1000;
+
+        const timeDiff = cooldownEndTime - Date.now();
+
+        if(timeDiff <= 0) {
             return "";
         }
-    
-        const now = Date.now();
-        const cooldownEndTime = this.lastAttemptTimestamp + this.RETRY_COOLDOWN_MINUTES * 60 * 1000;
-    
-        if (now >= cooldownEndTime) {
-            this.lastAttemptTimestamp = now;
-            return "";
-        }
-    
-        const timeDiff = cooldownEndTime - now;
-        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-    
-        return Localization.instance.getLabelByKey("events.lrcooldown") + ": " + `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        const hours = Math.floor(
+            timeDiff / (1000 * 60 * 60)
+        );
+
+        const minutes = Math.floor(
+            (timeDiff % (1000 * 60 * 60)) / (1000 * 60)
+        );
+
+        const seconds = Math.floor(
+            (timeDiff % (1000 * 60)) / 1000
+        );
+
+        return (
+            Localization.instance.getLabelByKey("events.lrcooldown") +
+            ": " +
+            `${this.padTime(hours)}:${this.padTime(minutes)}:${this.padTime(seconds)}`
+        );
     }
 
 
@@ -122,6 +225,8 @@ export class LavaAdventureEvent extends EventBase {
         this.isCompletedToday = true;
 
         SaveData.instance.saveEvent(this.eventId);
+
+        this.node.emit("refresh");
     }
 
 
@@ -148,15 +253,37 @@ export class LavaAdventureEvent extends EventBase {
     }
 
     private handleLevelFail() {
-        if(!this.canParticipate() || !this.isStarted || !this.isEventAvailable()) {
+        if(
+            !this.isStarted ||
+            !this.isEventAvailable()
+        ) {
             return;
         }
 
         this.isPositionUpdated = true;
 
-        this.handleEventCompletion();
+        this.lastAttemptTimestamp = Date.now();
 
-        //console.log("Lava Adventure failed!");
+        this.isStarted = false;
+
+        this.currentStep = 0;
+        this.currentPlayers = 0;
+
+        this.isCompletedToday = false;
+
+        this.unpickedRewards = [];
+
+        SaveData.instance.saveEvent(this.eventId);
+
+        this.scheduleCooldownRefresh();
+
+        this.node.emit("refresh");
+
+        console.log(
+            "[LAVA] Attempt failed. Cooldown started:",
+            this.RETRY_COOLDOWN_MINUTES,
+            "minutes"
+        );
     }
 
 
@@ -175,7 +302,16 @@ export class LavaAdventureEvent extends EventBase {
 
 
     setLastTimestamp(stamp: number) {
-        this.lastAttemptTimestamp = stamp;
+        super.setLastTimestamp(stamp);
+
+        if(
+            this.lastAttemptTimestamp > 0 &&
+            !this.isStarted &&
+            !this.isCompletedToday &&
+            !this.isCooldownOver()
+        ) {
+            this.scheduleCooldownRefresh();
+        }
     }
 
 
@@ -218,12 +354,14 @@ export class LavaAdventureEvent extends EventBase {
 
     isInteractable(): boolean {
         if(!this.isEventAvailable()) {
-            console.log("lava unavailable");
             return false;
         }
 
-        if(this.isCompletedToday && this.unpickedRewards.length === 0) {
-            console.log(this.isCompletedToday + " - " + this.unpickedRewards.length);
+        if(this.isCompletedToday) {
+            return this.unpickedRewards.length > 0;
+        }
+
+        if(!this.isStarted && !this.canParticipate()) {
             return false;
         }
 
@@ -234,9 +372,9 @@ export class LavaAdventureEvent extends EventBase {
         return this.isPositionUpdated;
     }
 
-    getPlayersRemoveCount(): number { 
+    getPlayersRemoveCount(): number {
         return this.playersRemoveCount;
     }
-}   
+}
 
 
