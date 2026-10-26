@@ -1,7 +1,7 @@
-import { _decorator, Component, Node, assetManager, AssetManager, Prefab } from 'cc';
+import { _decorator, assetManager, Component, Node, Prefab } from 'cc';
+import { LevelData } from '../data/GameData';
 import { Field } from '../game/Field';
 import { UIAssetsLoadingFrame } from '../ui/loading/UIAssetsLoadingFrame';
-import { LevelData } from '../data/GameData';
 const { ccclass, property } = _decorator;
 
 @ccclass('AssetsLoader')
@@ -34,7 +34,14 @@ export class AssetsLoader extends Component {
     }
 
     start() {
-        this.fieldComp = this.field.getComponent("Field");
+        const fieldComp = this.field.getComponent(Field);
+
+        if(!fieldComp) {
+            console.error('AssetsLoader: Field component not found');
+            return;
+        }
+
+        this.fieldComp = fieldComp;
     }
 
 
@@ -112,12 +119,12 @@ export class AssetsLoader extends Component {
 
         this.gamplayAssetsCounter = 0;
     }
-    
+
     loadGameplayAssets() {
         if(this.isLoadingStarted) {
             return;
         }
-        
+
         this.startLoading();
 
         this.maxGamplayAssets = 0;
@@ -179,7 +186,7 @@ export class AssetsLoader extends Component {
 
             this.maxGamplayAssets += assets.length;
             this.loadedGameplayBundlesCount++;
-            
+
             bundle.load("Tile", Prefab, (err, prefab) => {
                 if (err) {
                     console.error(`Failed to load prefab: Tile`, err);
@@ -244,16 +251,12 @@ export class AssetsLoader extends Component {
 
     private loadSpecBundle(bundleName: string, isStatus: boolean) {
         assetManager.loadBundle(bundleName, (err, bundle) => {
-            if (err) {
-                console.error(`Failed to load bundle: spec_tiles`, err);
+            if(err) {
+                console.error(`Failed to load bundle: ${bundleName}`, err);
                 return;
             }
 
-            console.log(`Successfully loaded Gameplay bundle: spec_tiles`);
-            
             const assets = bundle.getDirWithPath('/', Prefab);
-
-            console.log(`Assets in bundle: ${assets.length}`);
 
             this.maxGamplayAssets += assets.length;
             this.loadedGameplayBundlesCount++;
@@ -263,21 +266,20 @@ export class AssetsLoader extends Component {
                 const prefabName = prefabPath.toLowerCase();
 
                 if(this.currentSpecs.includes(prefabName)) {
-                    bundle!.load(prefabPath, Prefab, (err, prefab) => {
-                        if (err) {
+                    bundle.load(prefabPath, Prefab, (err, prefab) => {
+                        if(err) {
                             console.error(`Failed to load prefab: ${prefabPath}`, err);
+                            this.checkLoadCompletion();
                             return;
                         }
-    
-                        console.log(`Successfully loaded prefab: ${prefabPath}`);
-    
+
                         if(isStatus) {
                             this.fieldComp.addStatusPrefab(prefab, prefabName);
                         }
                         else {
                             this.fieldComp.addSpecialPrefab(prefab, prefabName);
                         }
-    
+
                         this.checkLoadCompletion();
                     });
                 }
