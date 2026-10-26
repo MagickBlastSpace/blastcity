@@ -2532,24 +2532,38 @@ export class Field extends Component {
 		}
 
 		this.savedVerticalRockets = updatedVerticalRockets;
-		this.savedHorizontalRockets = updatedHorizontalRockets;
+        this.savedHorizontalRockets = updatedHorizontalRockets;
 
-		if (!isMoveAvailable) {
-			this.shuffleTiles();
-		} else {
-			if (!this.isLevelComplete && !this.isSpawnScheduled) {
-				this.isClickAvailable = true;
-			} else if (this.isLevelComplete) {
-				//this.completeLevel();
-				return;
-			}
-		}
+        const levelComp = this.level ? this.level.getComponent('Level') as any : null;
+        const hasMovesRemaining = !levelComp || levelComp.getMoves() > 0;
 
-		if (!this.isSpawnScheduled) {
-			this.node.emit('move_end');
+        if(!hasMovesRemaining) {
+            this.isClickAvailable = false;
 
-			this.node.emit('game_state', this.tileArray, this.statusArray);
-		}
+            if(!this.isSpawnScheduled) {
+                this.node.emit('move_end');
+                this.node.emit('game_state', this.tileArray, this.statusArray);
+            }
+
+            return;
+        }
+
+        if(!isMoveAvailable) {
+            this.shuffleTiles();
+        }
+        else {
+            if(!this.isLevelComplete && !this.isSpawnScheduled) {
+                this.isClickAvailable = true;
+            }
+            else if(this.isLevelComplete) {
+                return;
+            }
+        }
+
+        if(!this.isSpawnScheduled) {
+            this.node.emit('move_end');
+            this.node.emit('game_state', this.tileArray, this.statusArray);
+        }
 	}
 
 	setPotentialBonus(tiles: Node[], bonus: string) {

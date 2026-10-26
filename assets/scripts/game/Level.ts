@@ -2,14 +2,14 @@ declare const gamepush: any;
 
 import { _decorator, Component, Node } from 'cc';
 import { GameData, GoalData, LevelData } from '../data/GameData';
-import { UserData } from '../data/UserData';
 import { SaveData } from '../data/SaveData';
 import { LevelProgressStatisticsData, Statistics } from '../data/Statistics';
+import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 @ccclass('Level')
 export class Level extends Component {
-    
+
     @property(Node)
     field: Node = null;
     @property(Node)
@@ -33,6 +33,8 @@ export class Level extends Component {
     private isMovesUnlimited: boolean = false;
     private startMovesCount: number = 0;
     private experimentCategory: string = "";
+
+    private isFailCompleted: boolean = false;
 
 
     start() {
@@ -62,7 +64,7 @@ export class Level extends Component {
 
     init(level: LevelData) {
         this.node.emit("init");
-        
+
         this.goals = [];
         this.difficulty = level.difficulty;
         this.moves = level.movesCount;
@@ -108,7 +110,7 @@ export class Level extends Component {
                 this.completionReward = 50;
                 break;
         }
-        
+
         for(let i = 0; i < level.goals.length; i++) {
             let newGoal = new GoalData();
             newGoal.id = level.goals[i].id;
@@ -130,6 +132,7 @@ export class Level extends Component {
         this.isInited = true;
         this.isComplete = false;
         this.isFailed = false;
+        this.isFailCompleted = false;
 
         this.checkLevelStatus();
     }
@@ -175,6 +178,11 @@ export class Level extends Component {
     }
 
     castFailEvent() {
+        if(this.isFailCompleted) {
+            return;
+        }
+
+        this.isFailCompleted = true;
         this.node.emit("complete", false, 0);
     }
 
@@ -223,7 +231,7 @@ export class Level extends Component {
         if(!this.stats) {
             return;
         }
-        
+
         switch(tileType) {
             case "red":
                 this.stats.redDestroyed++;
