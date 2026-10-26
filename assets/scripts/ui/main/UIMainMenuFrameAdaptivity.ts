@@ -1,4 +1,4 @@
-import { _decorator, Node, Widget, view, UITransform, Vec3, Size } from 'cc';
+import { _decorator, Node, UITransform, Vec3, view, Widget } from 'cc';
 import { UIAdaptivityBase } from '../UIAdaptivityBase';
 import { UIMainMenuButton } from './UIMainMenuButton';
 const { ccclass, property } = _decorator;
@@ -14,6 +14,12 @@ export class UIMainMenuFrameAdaptivity extends UIAdaptivityBase {
 
     @property(Node)
     sidePanel_right: Node = null;
+
+    @property(Node)
+    sideStick_left: Node = null;
+
+    @property(Node)
+    sideStick_right: Node = null;
 
     @property(Node)
     buttonsFrame: Node = null;
@@ -86,19 +92,46 @@ export class UIMainMenuFrameAdaptivity extends UIAdaptivityBase {
 
 
     private refreshSidePanels(w: number, h: number) {
+
         const sidePanelSize = 0.140 * w;
 
-        this.sidePanel_left.getComponent(UITransform).setContentSize(new Size(sidePanelSize, h));
-        this.sidePanel_left.setPosition(-w / 2 + sidePanelSize / 2, 0);
+        const leftTransform = this.sidePanel_left.getComponent(UITransform);
 
-        this.sidePanel_right.getComponent(UITransform).setContentSize(new Size(sidePanelSize, h));
-        this.sidePanel_right.setPosition(w / 2 - sidePanelSize / 2, 0);
+        const rightTransform = this.sidePanel_right.getComponent(UITransform);
+
+        leftTransform.setContentSize( sidePanelSize, h );
+
+        rightTransform.setContentSize( sidePanelSize, h );
+
+        this.sidePanel_left.setPosition( -w / 2 + sidePanelSize / 2, 0 );
+
+        this.sidePanel_right.setPosition( w / 2 - sidePanelSize / 2, 0 );
 
         this.left_widget.left = 0;
         this.left_widget.updateAlignment();
 
         this.right_widget.right = 0;
         this.right_widget.updateAlignment();
+
+        const leftStickX = this.sidePanel_left.position.x + sidePanelSize / 2;
+
+        const rightStickX = this.sidePanel_right.position.x - sidePanelSize / 2;
+
+        if(this.sideStick_left) {
+            this.sideStick_left.setPosition(
+                leftStickX,
+                0,
+                this.sideStick_left.position.z
+            );
+        }
+
+        if(this.sideStick_right) {
+            this.sideStick_right.setPosition(
+                rightStickX,
+                0,
+                this.sideStick_right.position.z
+            );
+        }
     }
 
 

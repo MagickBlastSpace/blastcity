@@ -60,10 +60,16 @@ export class UIMainMenu extends UIFrameBase {
     background_1: Sprite = null;
 
     @property(Node)
-    leftSidePanel: Node = null;
+    menuLeftSidePanel: Node = null;
 
     @property(Node)
-    rightSidePanel: Node = null;
+    menuRightSidePanel: Node = null;
+
+    @property(Node)
+    gameplayLeftSidePanel: Node = null;
+
+    @property(Node)
+    gameplayRightSidePanel: Node = null;
 
     @property(Sprite)
     chestPicture: Sprite = null;
@@ -154,35 +160,32 @@ export class UIMainMenu extends UIFrameBase {
         height: number;
         centerX: number;
     } {
+
         const visibleSize = view.getVisibleSize();
 
-        const fullScreen = {
-            width: visibleSize.width,
-            height: visibleSize.height,
-            centerX: 0
-        };
+        const fullScreen = { width: visibleSize.width, height: visibleSize.height, centerX: 0  };
 
-        if(
-            !this.leftSidePanel ||
-            !this.rightSidePanel ||
-            !this.leftSidePanel.activeInHierarchy ||
-            !this.rightSidePanel.activeInHierarchy
-        ) {
+        const isMenuBackground = sprite === this.background_1;
+
+        const leftSidePanel = isMenuBackground ? this.menuLeftSidePanel : this.gameplayLeftSidePanel;
+
+        const rightSidePanel = isMenuBackground ? this.menuRightSidePanel : this.gameplayRightSidePanel;
+
+        if(!leftSidePanel || !rightSidePanel || !leftSidePanel.activeInHierarchy || !rightSidePanel.activeInHierarchy ) {
             return fullScreen;
         }
 
-        const leftTransform = this.leftSidePanel.getComponent(UITransform);
+        const leftTransform = leftSidePanel.getComponent(UITransform);
 
-        const rightTransform = this.rightSidePanel.getComponent(UITransform);
+        const rightTransform = rightSidePanel.getComponent(UITransform);
 
-        const parentTransform = sprite.node.parent?.getComponent(UITransform);
+        const parentTransform =  sprite.node.parent?.getComponent(UITransform);
 
-        if(!leftTransform || !rightTransform || !parentTransform) {
+        if( !leftTransform || !rightTransform || !parentTransform  ) {
             return fullScreen;
         }
 
-        const leftEdgeWorld =
-            leftTransform.convertToWorldSpaceAR(
+        const leftEdgeWorld = leftTransform.convertToWorldSpaceAR(
                 new Vec3(
                     leftTransform.width *
                     (1 - leftTransform.anchorX),
@@ -191,8 +194,7 @@ export class UIMainMenu extends UIFrameBase {
                 )
             );
 
-        const rightEdgeWorld =
-            rightTransform.convertToWorldSpaceAR(
+        const rightEdgeWorld = rightTransform.convertToWorldSpaceAR(
                 new Vec3(
                     -rightTransform.width *
                     rightTransform.anchorX,
@@ -201,10 +203,9 @@ export class UIMainMenu extends UIFrameBase {
                 )
             );
 
-
         const leftEdgeLocal = parentTransform.convertToNodeSpaceAR( leftEdgeWorld );
 
-        const rightEdgeLocal =  parentTransform.convertToNodeSpaceAR( rightEdgeWorld );
+        const rightEdgeLocal = parentTransform.convertToNodeSpaceAR( rightEdgeWorld );
 
         const width = rightEdgeLocal.x - leftEdgeLocal.x;
 
