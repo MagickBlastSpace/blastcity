@@ -1,16 +1,15 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node, Label, Button, Sprite, SpriteFrame } from 'cc';
-import { UIFrameBase } from '../UIFrameBase';
-import { Field } from '../../game/Field';
+import { _decorator, Button, Label, Node, Sprite, SpriteFrame } from 'cc';
 import { GameData, GoalData } from '../../data/GameData';
-import { UserData } from '../../data/UserData';
 import { SaveData } from '../../data/SaveData';
+import { UserData } from '../../data/UserData';
+import { Localization } from '../../utils/Localization';
+import { UIFrameBase } from '../UIFrameBase';
 import { UIPopupFrameBase } from '../UIPopupFrameBase';
 import { UIEventMinified } from '../events/UIEventMinified';
-import { Localization } from '../../utils/Localization';
-import { UIStartBonusItem } from './UIStartBonusItem';
 import { UIBriefingGoalItem } from './UIBriefingGoalItem';
+import { UIStartBonusItem } from './UIStartBonusItem';
 import { UIStartSuperDiscoballItem } from './UIStartSuperDiscoballItem';
 const { ccclass, property } = _decorator;
 
@@ -148,12 +147,8 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
     }
 
     refresh() {
-        this.isFail = false;
 
-        this.bgNode.active = true;
-        this.goalsFailNode.active = false;
-
-       this.refreshLevelInfo();
+        this.refreshLevelInfo();
 
         for(let i = 0; i < this.minifiedEvents.length; i++) {
             this.minifiedEvents[i].updateData();
@@ -163,16 +158,23 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
             this.startBonuses[i].checkAutopick();
         }
 
-        this.levelReqLabel.string = this.l10n.getLabelByKey("events.levelreq") + " 28";
+        this.levelReqLabel.string =
+            this.l10n.getLabelByKey("events.levelreq") + " 28";
 
-        //this.x2.active = UserData.instance.isModifierX2();
         this.x2.active = false;
 
-        this.superdisco.node.active = UserData.instance.isSuperdiscoballAvailable();
+        this.superdisco.node.active =
+            UserData.instance.isSuperdiscoballAvailable();
+
         this.superdisco.refresh();
     }
 
     show() {
+        this.isFail = false;
+
+        this.bgNode.active = true;
+        this.goalsFailNode.active = false;
+
         super.show();
 
         this.refresh();
@@ -192,8 +194,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
                 this.goalItems[i].refresh(goals[i]);
             }
             else {
-                let goalData = new GoalData();
+                const goalData = new GoalData();
                 goalData.id = "common";
+
                 this.goalItems[i].refresh(goalData);
             }
         }
@@ -207,9 +210,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
                 return;
             }
         }
-        
+
         this.hide();
-        
+
         this.node.emit("play");
 
         console.log("Briefing play event");
@@ -222,9 +225,9 @@ export class UIStartBriefingPopup extends UIPopupFrameBase {
                 return;
             }
         }*/
-        
+
         this.hide();
-        
+
         this.node.emit("play_rewarded");
     }
 

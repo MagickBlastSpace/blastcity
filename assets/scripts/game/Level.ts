@@ -36,6 +36,9 @@ export class Level extends Component {
 
     private isFailCompleted: boolean = false;
 
+    private isFailFlowStarted: boolean = false;
+    private isFailFinalized: boolean = false;
+
 
     start() {
         this.field.on("move", () => this.moveCallback());
@@ -134,6 +137,9 @@ export class Level extends Component {
         this.isFailed = false;
         this.isFailCompleted = false;
 
+        this.isFailFlowStarted = false;
+        this.isFailFinalized = false;
+
         this.checkLevelStatus();
     }
 
@@ -167,27 +173,34 @@ export class Level extends Component {
             return;
         }
 
-        this.stats.fails++;
-        if(!this.isMovesUnlimited) {
-            //this.node.emit("complete", false, 0);
-            this.node.emit("no_moves");
+        if(this.isFailFlowStarted) {
+            return;
         }
+
+        this.isFailFlowStarted = true;
+
+        this.stats.fails++;
+        this.node.emit("no_moves");
 
         Statistics.instance.updateLevelStat(this.stats);
         SaveData.instance.saveStatistics();
     }
 
     castFailEvent() {
-        if(this.isFailCompleted) {
+        if(this.isFailFinalized) {
             return;
         }
 
-        this.isFailCompleted = true;
+        this.isFailFinalized = true;
+
         this.node.emit("complete", false, 0);
     }
 
     addExtraMoves(movesCount: number) {
         this.isFailed = false;
+
+        this.isFailFlowStarted = false;
+        this.isFailFinalized = false;
 
         this.moves += movesCount;
         this.startMovesCount += movesCount;
@@ -311,13 +324,17 @@ export class Level extends Component {
 
         if(!isGoalsComplete && this.moves <= 0) {
             if(this.isBonusLevel()) {
-                if (!GameData.instance.advanceDevSelectedLevel()) {
+                this.isComplete = true;
+                this.isFailed = false;
+
+                if(!GameData.instance.advanceDevSelectedLevel()) {
                     UserData.instance.addProgress();
                 }
 
                 this.node.emit("all_goals_complete_event", 0);
 
-                let totalReward = this.coinsCollected * this.difficultyMultiplier;
+                const totalReward =
+                    this.coinsCollected * this.difficultyMultiplier;
 
                 this.node.emit(
                     "publish_record",

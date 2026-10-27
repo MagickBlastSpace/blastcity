@@ -1,29 +1,26 @@
 declare const gamepush: any;
 
 import {
-	_decorator,
-	Component,
-	Node,
-	Label,
-	Button,
-	Sprite,
-	SpriteFrame,
-	assetManager,
-	sp,
-	Texture2D,
+    _decorator,
+    Button,
+    Label,
+    Node,
+    sp,
+    Sprite,
+    SpriteFrame
 } from 'cc';
-import { UILevelMovesShop } from './UILevelMovesShop';
-import { SaveData } from '../../data/SaveData';
-import { ButlersGift } from '../../game/boosters/ButlersGift';
-import { Level } from '../../game/Level';
-import { UserData } from '../../data/UserData';
 import { GameData } from '../../data/GameData';
-import { UIPopupFrameBase } from '../UIPopupFrameBase';
-import { UIMainMenu } from '../main/UIMainMenu';
-import { Field } from '../../game/Field';
-import { Localization } from '../../utils/Localization';
+import { SaveData } from '../../data/SaveData';
+import { UserData } from '../../data/UserData';
+import { ButlersGift } from '../../game/boosters/ButlersGift';
 import { EventBase } from '../../game/events/EventBase';
+import { Field } from '../../game/Field';
+import { Level } from '../../game/Level';
+import { Localization } from '../../utils/Localization';
+import { UIMainMenu } from '../main/UIMainMenu';
 import { UIStartBriefingPopup } from '../start/UIStartBriefingPopup';
+import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { UILevelMovesShop } from './UILevelMovesShop';
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelResultFrame')
@@ -119,6 +116,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
 	private difficulty: string = '';
 	private goldEarned: number = 0;
+    private isFailTransitionLocked: boolean = false;
 
 	start() {
 		this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
@@ -135,6 +133,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 	}
 
 	refresh(isSuccess: boolean, goldEarned: number) {
+        this.isFailTransitionLocked = false;
+
 		this.isSuccess = isSuccess;
 
 		const isKingLeague = this.isKingLeagueMode();
@@ -272,18 +272,18 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 	onPlayBtnClick() {
 		SaveData.instance.clearLevelProgress();
 
-		if (!this.isSuccess) {
-			this.butlersGift.clearStreak();
+        if (!this.isSuccess) {
+            this.butlersGift.clearStreak();
 
-			this.briefing.show();
-			this.briefing.init_Fail(this.level.getGoals());
+            this.briefing.show();
+            this.briefing.init_Fail(this.level.getGoals());
 
-			this.level.fail();
+            this.level.fail();
 
-			this.hide();
+            this.hide();
 
-			return;
-		}
+            return;
+        }
 
 		this.mainFrame.show();
 
@@ -297,21 +297,31 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 	}
 
 	fail() {
-		SaveData.instance.clearLevelProgress();
+        console.log('[FAIL UI] fail() called', {
+            transitionLocked: this.isFailTransitionLocked
+        });
 
-		this.butlersGift.clearStreak();
-		this.level.fail();
+        if(this.isFailTransitionLocked) {
+            return;
+        }
 
-		this.mainFrame.show();
+        this.isFailTransitionLocked = true;
 
-		this.hide();
+        SaveData.instance.clearLevelProgress();
 
-		this.node.emit('level_close');
+        this.butlersGift.clearStreak();
+        this.level.fail();
 
-		this.field.unloadAssets();
+        this.mainFrame.show();
 
-		UserData.instance.addLevelFail();
-	}
+        this.hide();
+
+        this.node.emit('level_close');
+
+        this.field.unloadAssets();
+
+        UserData.instance.addLevelFail();
+    }
 
 	async onShowAdBtnClick() {
 		const success = await gamepush.ads.showRewardedVideo();
