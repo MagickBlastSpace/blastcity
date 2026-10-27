@@ -1,5 +1,7 @@
-import { _decorator, Component, Node, tween, Vec3, SpriteFrame, Sprite, Vec2} from 'cc';
+import { _decorator, Node, sp, Sprite, SpriteFrame, tween, Vec2, Vec3 } from 'cc';
+import { TileBase } from '../TileBase';
 import { BonusTileBase } from './BonusTileBase';
+import { Discoball } from './Discoball';
 const { ccclass, property } = _decorator;
 
 @ccclass('Rocket')
@@ -10,24 +12,39 @@ export class Rocket extends BonusTileBase {
     @property(SpriteFrame)
     rocketHorizontal: SpriteFrame = null;
 
+    @property(sp.Skeleton)
+    spawnSpine: sp.Skeleton = null;
+
     @property(Sprite)
     icon: Sprite = null;
 
     private bombCombo_Delay: number = 0.3;
 
-    private isBonusPoolState: boolean = false;
+    private spawnVisualInOverlay: Node = null;
 
-    
+
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
         this.icon.spriteFrame = this.tileType === 'rocket_vertical' ? this.rocketVertical : this.rocketHorizontal;
     }
 
+    onDestroy() {
+        if(
+            this.spawnVisualInOverlay &&
+            this.spawnVisualInOverlay.isValid
+        ) {
+            this.spawnVisualInOverlay.destroy();
+        }
+
+        this.spawnVisualInOverlay = null;
+
+        super.onDestroy();
+    }
 
     getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
         if(this.isActivated) {
-            return;
+            return [];
         }
 
         this.isActivated = true;
@@ -37,13 +54,13 @@ export class Rocket extends BonusTileBase {
             this.getCombo(field);
         }
 
-        let matches = this.getMatchesByType(field, statuses);
+        let matches = this.getRocketMatchesByType(field, statuses);
 
         return matches;
     }
 
 
-    getMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
+    getRocketMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
         if(this.isCombo()) {
@@ -133,14 +150,14 @@ export class Rocket extends BonusTileBase {
         for(let i = 0; i < tiles.length; i++) {
             this.node.emit("goal", "discoball");
         }
-        
+
         let totalTime = this.timeBetweenTiles * tiles.length;
         totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 try {
-                    let comboComp = field[this.comboPosition.x][this.comboPosition.y].getComponent("TileBase");
+                    let comboComp = field[this.comboPosition.x][this.comboPosition.y].getComponent(TileBase);
                     if(comboComp) {
                         this.renderLine(new Vec2(comboComp.getRow(), comboComp.getCol()), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
                     }
@@ -183,7 +200,7 @@ export class Rocket extends BonusTileBase {
         let anim = this.tileType === "rocket_vertical" ? "rocket_discoball_vert" : "rocket_discoball_hor";
         this.playAnimation(anim, true, 1);
 
-        let discoComp = disco.getComponent("Discoball");
+        let discoComp = disco.getComponent(Discoball);
         if(discoComp) {
             discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
@@ -193,7 +210,7 @@ export class Rocket extends BonusTileBase {
         //this.isBonusPoolState = true;
 
         let anim = this.tileType === "rocket_vertical" ? "rocket_discoball_vert" : "rocket_discoball_hor";
-        
+
         this.scheduleOnce(() => {
             this.playAnimation(anim, true, 1);
         }, 0.2);
@@ -209,6 +226,105 @@ export class Rocket extends BonusTileBase {
         tween(nodeToHide)
             .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
             .start();
+    }
+
+    public playSpawnAnimation(overlayLayer?: Node) {
+        if(!this.spawnSpine) {
+            return;
+        }
+
+        const visualNode = this.spawnSpine.node;
+        const originalParent = visualNode.parent;
+
+        if(!originalParent) {
+            return;
+        }
+
+        const originalPosition = visualNode.position.clone();
+        const originalRotation = visualNode.rotation.clone();
+        const originalScale = visualNode.scale.clone();
+
+        if(this.icon) {
+            this.icon.node.active = false;
+        }
+
+        if(overlayLayer) {
+            visualNode.setParent(overlayLayer, true);
+            visualNode.setSiblingIndex(
+                overlayLayer.children.length - 1
+            );
+
+            this.spawnVisualInOverlay = visualNode;
+        }
+
+        visualNode.active = true;
+
+        visualNode.setRotationFromEuler(
+            0,
+            0,
+            this.tileType === 'rocket_vertical'
+                ? 90
+                : 0
+        );
+
+        this.spawnSpine.clearTracks();
+        this.spawnSpine.setToSetupPose();
+
+        const spawnTrack = this.spawnSpine.setAnimation(
+            0,
+            'spawn',
+            false
+        );
+
+        if(!spawnTrack) {
+            this.spawnVisualInOverlay = null;
+
+            if(originalParent.isValid && visualNode.isValid) {
+                visualNode.setParent(originalParent);
+
+                visualNode.setPosition(originalPosition);
+                visualNode.setRotation(originalRotation);
+                visualNode.setScale(originalScale);
+
+                visualNode.active = false;
+            }
+
+            if(this.icon && this.icon.node.isValid) {
+                this.icon.node.active = true;
+            }
+
+            return;
+        }
+
+        this.spawnSpine.setTrackCompleteListener(
+            spawnTrack,
+            () => {
+                if(!visualNode.isValid) {
+                    this.spawnVisualInOverlay = null;
+                    return;
+                }
+
+                if(!originalParent || !originalParent.isValid) {
+                    this.spawnVisualInOverlay = null;
+                    visualNode.destroy();
+                    return;
+                }
+
+                visualNode.setParent(originalParent);
+
+                visualNode.setPosition(originalPosition);
+                visualNode.setRotation(originalRotation);
+                visualNode.setScale(originalScale);
+
+                visualNode.active = false;
+
+                this.spawnVisualInOverlay = null;
+
+                if(this.icon && this.icon.node.isValid) {
+                    this.icon.node.active = true;
+                }
+            }
+        );
     }
 }
 

@@ -25,6 +25,7 @@ import { AssetsLoader } from '../utils/AssetsLoader';
 import { AudioController } from '../utils/AudioController';
 import { TileBase } from './TileBase';
 import { Bomb } from './bonus_tiles/Bomb';
+import { Rocket } from './bonus_tiles/Rocket';
 import { Boosters } from './boosters/Boosters';
 import { ButlersGift } from './boosters/ButlersGift';
 import { StartBonuses } from './boosters/StartBonuses';
@@ -1747,6 +1748,18 @@ export class Field extends Component {
 
                         if(bomb) {
                             bomb.playSpawnAnimation(
+                                this.bonusSpawnOverlay
+                            );
+                        }
+
+                        return;
+                    }
+
+                    if(matches.length >= 5 && matches.length < 7) {
+                        const rocket = spawnedBonus.getComponent(Rocket);
+
+                        if(rocket) {
+                            rocket.playSpawnAnimation(
                                 this.bonusSpawnOverlay
                             );
                         }
