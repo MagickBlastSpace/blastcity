@@ -342,6 +342,8 @@ export class Level extends Component {
                     this.startMovesCount - this.moves,
                     totalReward
                 );
+
+                return;
             }
 
             if(!this.isMovesUnlimited) {
