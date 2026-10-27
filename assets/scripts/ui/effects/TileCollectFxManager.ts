@@ -36,7 +36,19 @@ export class TileCollectFxManager extends Component {
     travelDuration: number = 0.25;
 
     @property
+    sourceArrivalScale: number = 0.35;
+
+    @property
+    sourceShrinkStart: number = 0.35;
+
+    @property
     targetScaleOutDuration: number = 0.12;
+
+    @property
+    targetFallScale: number = 0.08;
+
+    @property
+    targetFallShrinkDuration: number = 0.4;
 
     private rotateFxTowardsTarget(fxNode: Node, targetLocalPosition: Vec3) {
         const dx = targetLocalPosition.x - fxNode.position.x;
@@ -127,7 +139,7 @@ export class TileCollectFxManager extends Component {
         onAllArrived?: () => Node | null,
         onFinalAbsorbComplete?: () => void,
         onVisualComplete?: () => void,
-        useBombFx: boolean = false
+        useBombFx: boolean = false,
     ): boolean {
 
         if(!clickedTile || !tileNodes || tileNodes.length === 0 || !this.tileCollectFxPrefab || !this.fxLayer || !isValid(this.fxLayer, true)) {
@@ -340,6 +352,13 @@ export class TileCollectFxManager extends Component {
 
                     if(spawnedTarget) {
                         startFollowingTarget(spawnedTarget);
+
+                        if(!useBombFx) {
+                            this.shrinkTargetMassDuringFall(
+                                targetFx,
+                                this.targetFallShrinkDuration
+                            );
+                        }
                     }
                 }
 
@@ -400,6 +419,11 @@ export class TileCollectFxManager extends Component {
 
                         registerArrival();
                     }
+                );
+
+                this.shrinkSourceDuringTravel(
+                    sourceFx,
+                    this.travelDuration
                 );
             });
         }
@@ -473,6 +497,44 @@ export class TileCollectFxManager extends Component {
         return fx;
     }
 
+    private shrinkSourceDuringTravel(
+        sourceFx: TileCollectFx,
+        duration: number
+    ) {
+        if(
+            !sourceFx ||
+            !sourceFx.node ||
+            !sourceFx.node.isValid
+        ) {
+            return;
+        }
+
+        const node = sourceFx.node;
+        const startScale = node.scale.clone();
+
+        const delayDuration =
+            duration * this.sourceShrinkStart;
+
+        const shrinkDuration =
+            duration - delayDuration;
+
+        tween(node)
+            .delay(delayDuration)
+            .to(
+                shrinkDuration,
+                {
+                    scale: new Vec3(
+                        startScale.x * this.sourceArrivalScale,
+                        startScale.y * this.sourceArrivalScale,
+                        startScale.z
+                    )
+                },
+                {
+                    easing: 'sineIn'
+                }
+            )
+            .start();
+    }
 
     private worldToFxLayer(
         worldPosition: Vec3
@@ -499,6 +561,37 @@ export class TileCollectFxManager extends Component {
         return transform.convertToNodeSpaceAR(
             worldPosition
         );
+    }
+
+    private shrinkTargetMassDuringFall(
+        targetFx: TileCollectFx,
+        duration: number
+    ) {
+        if(
+            !targetFx ||
+            !targetFx.node ||
+            !targetFx.node.isValid
+        ) {
+            return;
+        }
+
+        Tween.stopAllByTarget(targetFx.node);
+
+        tween(targetFx.node)
+            .to(
+                Math.max(duration, 0.05),
+                {
+                    scale: new Vec3(
+                        this.targetFallScale,
+                        this.targetFallScale,
+                        1
+                    )
+                },
+                {
+                    easing: 'sineInOut'
+                }
+            )
+            .start();
     }
 
     private collapseTargetMassToZero(
