@@ -55,6 +55,9 @@ export class Field extends Component {
 	@property
 	numCols: number = 8;
 
+    @property(Node)
+    bonusSpawnOverlay: Node = null;
+
 	private tileArray: Node[][] = [];
 	private statusArray: Node[][] = [];
 
@@ -1692,6 +1695,8 @@ export class Field extends Component {
             const skin = this.getTileCollectSkin(choosenType);
             let spawnedBonus: Node = null;
 
+            const isBombCreation = matches.length >= 7 && matches.length < 9;
+
             const fxStarted = this.tileCollectFxManager.playBonusGroupCollect(
                 fxTiles,
                 tile,
@@ -1741,12 +1746,15 @@ export class Field extends Component {
                         const bomb = spawnedBonus.getComponent(Bomb);
 
                         if(bomb) {
-                            bomb.playSpawnAnimation();
+                            bomb.playSpawnAnimation(
+                                this.bonusSpawnOverlay
+                            );
                         }
 
                         return;
                     }
-                }
+                },
+                isBombCreation
             );
 
             if(fxStarted) {

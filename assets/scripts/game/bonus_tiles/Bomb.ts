@@ -336,16 +336,69 @@ export class Bomb extends BonusTileBase {
         this.bombSpine.node.active = false;
     }
 
-    public playSpawnAnimation() {
+    public playSpawnAnimation(overlayLayer?: Node) {
         if(!this.bombSpine) {
             return;
+        }
+
+        const visualNode = this.bombSpine.node;
+
+        const originalParent = visualNode.parent;
+        const originalSiblingIndex = visualNode.getSiblingIndex();
+
+        const originalPosition = visualNode.position.clone();
+        const originalRotation = visualNode.rotation.clone();
+        const originalScale = visualNode.scale.clone();
+
+        if(overlayLayer && originalParent) {
+            visualNode.setParent(overlayLayer, true);
+            visualNode.setSiblingIndex(overlayLayer.children.length - 1);
         }
 
         this.bombSpine.node.active = true;
         this.bombSpine.clearTracks();
         this.bombSpine.setToSetupPose();
-        this.bombSpine.setAnimation(0, 'spawn', false);
-        this.bombSpine.addAnimation(0, 'idle', true, 0);
+
+        const spawnTrack = this.bombSpine.setAnimation(
+            0,
+            'spawn',
+            false
+        );
+
+        if(spawnTrack) {
+            this.bombSpine.setTrackCompleteListener(
+                spawnTrack,
+                () => {
+                    if(
+                        !visualNode.isValid ||
+                        !originalParent ||
+                        !originalParent.isValid
+                    ) {
+                        return;
+                    }
+
+                    visualNode.setParent(originalParent);
+
+                    visualNode.setPosition(originalPosition);
+                    visualNode.setRotation(originalRotation);
+                    visualNode.setScale(originalScale);
+
+                    visualNode.setSiblingIndex(
+                        Math.min(
+                            originalSiblingIndex,
+                            originalParent.children.length - 1
+                        )
+                    );
+                }
+            );
+        }
+
+        this.bombSpine.addAnimation(
+            0,
+            'idle',
+            true,
+            0
+        );
     }
 }
 

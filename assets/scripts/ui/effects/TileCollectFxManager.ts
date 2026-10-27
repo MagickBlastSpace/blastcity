@@ -26,6 +26,9 @@ export class TileCollectFxManager extends Component {
     @property(Prefab)
     tileCollectFxPrefab: Prefab = null;
 
+    @property(Prefab)
+    bombCollectFxPrefab: Prefab = null;
+
     @property(Node)
     fxLayer: Node = null;
 
@@ -34,6 +37,14 @@ export class TileCollectFxManager extends Component {
 
     @property
     targetScaleOutDuration: number = 0.12;
+
+    private rotateFxTowardsTarget(fxNode: Node, targetLocalPosition: Vec3) {
+        const dx = targetLocalPosition.x - fxNode.position.x;
+        const dy = targetLocalPosition.y - fxNode.position.y;
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+        fxNode.setRotationFromEuler(0, 0, angle);
+    }
 
 
     public playSimpleGroupCollapse(
@@ -67,7 +78,7 @@ export class TileCollectFxManager extends Component {
             const fx =
                 this.createFx(
                     worldPosition,
-                    skin
+                    skin,
                 );
 
 
@@ -115,7 +126,9 @@ export class TileCollectFxManager extends Component {
         skin: TileCollectSkin,
         onAllArrived?: () => Node | null,
         onFinalAbsorbComplete?: () => void,
-        onVisualComplete?: () => void): boolean {
+        onVisualComplete?: () => void,
+        useBombFx: boolean = false
+    ): boolean {
 
         if(!clickedTile || !tileNodes || tileNodes.length === 0 || !this.tileCollectFxPrefab || !this.fxLayer || !isValid(this.fxLayer, true)) {
             return false;
@@ -132,7 +145,7 @@ export class TileCollectFxManager extends Component {
             sourcePositions.push( tile.worldPosition.clone() );
         }
 
-        const targetFx =  this.createFx( targetWorldPosition, skin );
+        const targetFx = this.createFx(targetWorldPosition, skin);
 
         if(!targetFx) {
             return false;
@@ -352,17 +365,31 @@ export class TileCollectFxManager extends Component {
             playNextAbsorb();
         });
 
-        for(const sourceWorldPosition of sourcePositions ) {
-            const sourceFx = this.createFx( sourceWorldPosition, skin);
+        for(const sourceWorldPosition of sourcePositions) {
+            const sourceFx = this.createFx(sourceWorldPosition, skin, useBombFx);
 
             if(!sourceFx) {
                 registerArrival();
                 continue;
             }
 
-            sourceFx.playCollapse(() => {
-                const targetLocalPosition =  this.worldToFxLayer( targetWorldPosition );
+            const targetLocalPosition = this.worldToFxLayer(targetWorldPosition);
 
+            if(useBombFx) {
+                this.rotateFxTowardsTarget(sourceFx.node, targetLocalPosition);
+
+                sourceFx.playCollapse(() => {
+                    if(sourceFx.node && sourceFx.node.isValid) {
+                        sourceFx.node.destroy();
+                    }
+
+                    registerArrival();
+                });
+
+                continue;
+            }
+
+            sourceFx.playCollapse(() => {
                 sourceFx.travelTo(
                     targetLocalPosition,
                     this.travelDuration,
@@ -370,6 +397,7 @@ export class TileCollectFxManager extends Component {
                         if(sourceFx.node && sourceFx.node.isValid) {
                             sourceFx.node.destroy();
                         }
+
                         registerArrival();
                     }
                 );
@@ -381,7 +409,8 @@ export class TileCollectFxManager extends Component {
 
     private createFx(
         worldPosition: Vec3,
-        skin: TileCollectSkin
+        skin: TileCollectSkin,
+        useBombFx: boolean = false
     ): TileCollectFx | null {
 
         if(!this.tileCollectFxPrefab) {
@@ -403,10 +432,11 @@ export class TileCollectFxManager extends Component {
             return null;
         }
 
-        const fxNode =
-            instantiate(
-                this.tileCollectFxPrefab
-            );
+        const fxPrefab = useBombFx && this.bombCollectFxPrefab
+            ? this.bombCollectFxPrefab
+            : this.tileCollectFxPrefab;
+
+        const fxNode = instantiate(fxPrefab);
 
         this.fxLayer.addChild(
             fxNode
