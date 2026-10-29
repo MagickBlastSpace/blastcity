@@ -13,6 +13,11 @@ export class Bomb extends BonusTileBase {
     @property(sp.Skeleton)
     bombSpine: sp.Skeleton = null;
 
+    @property
+    explosionScaleMultiplier: number = 1.25;
+
+    private bombSpineBaseScale: Vec3 = null;
+
     private bombCombo_Delay: number = 0.3;
     private rocketCombo_Delay: number = 0.3;
 
@@ -25,26 +30,22 @@ export class Bomb extends BonusTileBase {
         }
 
         if(this.bombSpine) {
+            if(!this.bombSpineBaseScale) {
+                this.bombSpineBaseScale = this.bombSpine.node.scale.clone();
+            }
+
+            this.bombSpine.node.setScale(this.bombSpineBaseScale);
             this.bombSpine.node.active = true;
+
             this.bombSpine.clearTracks();
             this.bombSpine.setToSetupPose();
-            this.bombSpine.setAnimation(
-                0,
-                "idle",
-                true
-            );
+            this.bombSpine.setAnimation(0, "idle", true);
         }
     }
 
     private playNewBombAnimation() {
-
         if(!this.bombSpine) {
-            this.playAnimation(
-                "bomb",
-                false,
-                1
-            );
-
+            this.playAnimation("bomb", false, 1);
             return;
         }
 
@@ -52,16 +53,23 @@ export class Bomb extends BonusTileBase {
             this.icon.enabled = false;
         }
 
-        this.bombSpine.node.active = true;
+        const visualNode = this.bombSpine.node;
+
+        if(!this.bombSpineBaseScale) {
+            this.bombSpineBaseScale = visualNode.scale.clone();
+        }
+
+        visualNode.setScale(
+            this.bombSpineBaseScale.x * this.explosionScaleMultiplier,
+            this.bombSpineBaseScale.y * this.explosionScaleMultiplier,
+            this.bombSpineBaseScale.z
+        );
+
+        visualNode.active = true;
 
         this.bombSpine.clearTracks();
         this.bombSpine.setToSetupPose();
-
-        this.bombSpine.setAnimation(
-            0,
-            "bomb",
-            false
-        );
+        this.bombSpine.setAnimation(0, "bomb", false);
     }
 
 
