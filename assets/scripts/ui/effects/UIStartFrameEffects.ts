@@ -52,15 +52,42 @@ export class UIStartFrameEffects extends Component {
 
 
     createProgressEffect(event: string, eventPos: Vec2, startPos: Vec2, count: number) {
+        if(!this.effectsLayer) return;
+
+        const sourceTransform = this.node.getComponent(UITransform);
+        const layerTransform = this.effectsLayer.getComponent(UITransform);
+
+        if(!sourceTransform || !layerTransform) {
+            console.error('[UIStartFrameEffects] Missing UITransform');
+            return;
+        }
+
+        const startWorld = sourceTransform.convertToWorldSpaceAR(new Vec3(startPos.x, startPos.y, 0));
+        const targetWorld = sourceTransform.convertToWorldSpaceAR(new Vec3(eventPos.x, eventPos.y, 0));
+
+        const startLocal = layerTransform.convertToNodeSpaceAR(startWorld);
+        const targetLocal = layerTransform.convertToNodeSpaceAR(targetWorld);
+
         const item = instantiate(this.eventProgressItem);
         this.effectsLayer.addChild(item);
+
         const itemComp = item.getComponent("UIEventProgressEffect");
+
+        if(!itemComp) {
+            console.error('[UIStartFrameEffects] UIEventProgressEffect not found');
+            item.destroy();
+            return;
+        }
+
         itemComp.setIcon(event);
         itemComp.setCount(count);
 
         item.on("event_progress_done", (eName) => this.onEventProgressDone(eName));
 
-        itemComp.init(startPos, eventPos);
+        itemComp.init(
+            new Vec2(startLocal.x, startLocal.y),
+            new Vec2(targetLocal.x, targetLocal.y)
+        );
     }
 
 
@@ -68,13 +95,13 @@ export class UIStartFrameEffects extends Component {
         if (this.eventBtns.length === 0) {
             return new Vec2(0, 0);
         }
-        
+
         let worldPos = this.eventBtns[0].getPosition();
-        
+
         for (let i = 0; i < this.eventBtns.length; i++) {
             if (event === this.eventBtns[i].getEventId()) {
                 worldPos = this.eventBtns[i].getPosition();
-                
+
                 const uiTransform = this.node.getComponent(UITransform);
                 if (uiTransform) {
                     const localPos = uiTransform.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
@@ -85,7 +112,7 @@ export class UIStartFrameEffects extends Component {
                 }
             }
         }
-        
+
         const uiTransform = this.node.getComponent(UITransform);
         if (uiTransform) {
             const localPos = uiTransform.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
@@ -107,7 +134,7 @@ export class UIStartFrameEffects extends Component {
 
     findNodePosition(nodeToObserve: Node): Vec2 {
         let worldPosition = new Vec3(0, 0, 0);
-    
+
         const uiTransform = nodeToObserve.getComponent(UITransform);
         if (uiTransform) {
             worldPosition = uiTransform.convertToWorldSpaceAR(new Vec3(0, 0, 0));
@@ -122,7 +149,7 @@ export class UIStartFrameEffects extends Component {
         } else {
             console.error("UITransform component missing on this node");
         }
-    
+
         return new Vec2(worldPosition.x, worldPosition.y);
     }
 

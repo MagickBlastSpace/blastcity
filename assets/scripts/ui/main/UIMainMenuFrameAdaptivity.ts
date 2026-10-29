@@ -184,13 +184,15 @@ export class UIMainMenuFrameAdaptivity extends UIAdaptivityBase {
     }
 
     private refreshSideSticksOrder() {
-        if(this.sideStick_left?.parent) {
-            this.sideStick_left.setSiblingIndex(this.sideStick_left.parent.children.length - 1);
-        }
+        if(!this.sideStick_left?.parent || !this.sideStick_right?.parent) return;
 
-        if(this.sideStick_right?.parent) {
-            this.sideStick_right.setSiblingIndex(this.sideStick_right.parent.children.length - 1);
-        }
+        const parent = this.sideStick_left.parent;
+        const navigation = parent.getChildByName('MainMenuButtonsPanel');
+
+        if(!navigation) return;
+
+        this.sideStick_left.setSiblingIndex(navigation.getSiblingIndex() + 1);
+        this.sideStick_right.setSiblingIndex(this.sideStick_left.getSiblingIndex() + 1);
     }
 
     private updateButtonsAdaptivity() {

@@ -69,7 +69,7 @@ export class Bomb extends BonusTileBase {
 
         this.bombSpine.clearTracks();
         this.bombSpine.setToSetupPose();
-        this.bombSpine.setAnimation(0, "bomb", false);
+        this.bombSpine.setAnimation(0, "activate", false);
     }
 
 
