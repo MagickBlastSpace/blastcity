@@ -60,9 +60,13 @@ export class UILocationsFrame extends UIFrameBase {
 
     private readonly topPadding = 80;
 
-    private readonly bottomPadding = 380;
+    private readonly mobileBottomPadding = 550;
+    private readonly defaultBottomPadding = 380;
+    private readonly desktopBottomPadding = 220;
 
-    private readonly currentCardOffsetY = 120;
+    private readonly mobileCardOffsetY = 230;
+    private readonly tabletCardOffsetY = 120;
+    private readonly desktopCardOffsetY = 20;
 
     private bigGraphicsBundlePromise: Promise<AssetManager.Bundle> | null = null;
 
@@ -128,10 +132,12 @@ export class UILocationsFrame extends UIFrameBase {
         const currentStage =
             this.chest.getStage();
 
-        const royalLeagueUnlocked =
-            isDevMode ||
-            UserData.instance.getProgress() >=
-                this.chest.getMainLocationsEndLevel();
+        const royalLeagueUnlocked = true;
+
+        // const royalLeagueUnlocked =
+        //     isDevMode ||
+        //     UserData.instance.getProgress() >=
+        //         this.chest.getMainLocationsEndLevel();
 
         const stateChanged =
             (
@@ -335,9 +341,11 @@ export class UILocationsFrame extends UIFrameBase {
             }
         }
 
-        const royalLeagueUnlocked = isDevMode || UserData.instance.getProgress() >= this.chest.getMainLocationsEndLevel();
+        const royalLeaguePrefab = this.royalLeagueUnlockedCardPrefab;
 
-        const royalLeaguePrefab = royalLeagueUnlocked ? this.royalLeagueUnlockedCardPrefab : this.royalLeagueLockedCardPrefab;
+        // const royalLeagueUnlocked = isDevMode || UserData.instance.getProgress() >= this.chest.getMainLocationsEndLevel();
+
+        // const royalLeaguePrefab = royalLeagueUnlocked ? this.royalLeagueUnlockedCardPrefab : this.royalLeagueLockedCardPrefab;
 
         if(royalLeaguePrefab) {
 
@@ -492,8 +500,28 @@ export class UILocationsFrame extends UIFrameBase {
         );
     }
 
-    private scrollToCurrentLocation() {
+    private getLocationLayoutMode(): 'mobile' | 'tablet' | 'desktop' {
+        const width = this.scrollView?.view?.getComponent(UITransform)?.width ?? 0;
+        const height = this.scrollView?.view?.getComponent(UITransform)?.height ?? 0;
 
+        if(width <= 0 || height <= 0) {
+            return 'desktop';
+        }
+
+        const ratio = width / height;
+
+        if(ratio < 0.7) {
+            return 'mobile';
+        }
+
+        if(ratio < 1.5) {
+            return 'tablet';
+        }
+
+        return 'desktop';
+    }
+
+    private scrollToCurrentLocation() {
         if(
             !this.scrollView ||
             !this.scrollView.view ||
@@ -502,16 +530,18 @@ export class UILocationsFrame extends UIFrameBase {
             return;
         }
 
-        const currentLocation = Math.min(this.chest.getStage(), this.cardNodes.length - 1);
+        const currentLocation = Math.min(
+            this.chest.getStage(),
+            this.cardNodes.length - 1
+        );
 
         const columns = this.getColumnsCount();
-
+        const rows = Math.ceil(this.cardNodes.length / columns);
         const currentRow = Math.floor(currentLocation / columns);
+        const reversedRow = rows - 1 - currentRow;
 
         const firstCardTransform = this.cardNodes[0].getComponent(UITransform);
-
-        const contentTransform =  this.content.getComponent(UITransform);
-
+        const contentTransform = this.content.getComponent(UITransform);
         const viewTransform = this.scrollView.view.getComponent(UITransform);
 
         if(
@@ -523,46 +553,41 @@ export class UILocationsFrame extends UIFrameBase {
         }
 
         const cardScale = this.currentCardScale;
-
         const cardHeight = firstCardTransform.height * cardScale;
 
         const targetCenterFromTop =
             this.topPadding +
             cardHeight / 2 +
-            currentRow *
-                (
-                    cardHeight +
-                    this.rowGap
-                );
+            reversedRow * (cardHeight + this.rowGap);
 
+        const layoutMode = this.getLocationLayoutMode();
 
-        let offsetY = targetCenterFromTop - viewTransform.height / 2 + this.currentCardOffsetY;
+        let cardOffsetY = this.desktopCardOffsetY;
 
-        const maxOffsetY =
-            Math.max(
-                0,
-                contentTransform.height -
-                viewTransform.height
-            );
+        if(layoutMode === 'mobile') {
+            cardOffsetY = this.mobileCardOffsetY;
+        }
+        else if(layoutMode === 'tablet') {
+            cardOffsetY = this.tabletCardOffsetY;
+        }
 
-        offsetY =
-            Math.max(
-                0,
-                Math.min(
-                    offsetY,
-                    maxOffsetY
-                )
-            );
+        let offsetY =
+            targetCenterFromTop -
+            viewTransform.height / 2 +
+            cardOffsetY;
 
-        this.scrollView.scrollToOffset(
-            new Vec2(
-                0,
-                offsetY
-            ),
-            0
+        const maxOffsetY = Math.max(
+            0,
+            contentTransform.height - viewTransform.height
         );
-    }
 
+        offsetY = Math.max(
+            0,
+            Math.min(offsetY, maxOffsetY)
+        );
+
+        this.scrollView.scrollToOffset( new Vec2(0, offsetY), 0 );
+    }
 
     private getColumnsCount(): number {
 
@@ -663,11 +688,12 @@ export class UILocationsFrame extends UIFrameBase {
                     (cardWidth + this.columnGap);
             }
 
+            const reversedRow = rows - 1 - row;
+
             const y =
                 -this.topPadding
                 - cardHeight / 2
-                - row *
-                    (cardHeight + this.rowGap);
+                - reversedRow * (cardHeight + this.rowGap);
 
             this.cardNodes[index].setPosition(
                 x,
@@ -676,14 +702,22 @@ export class UILocationsFrame extends UIFrameBase {
             );
         }
 
+        const layoutMode = this.getLocationLayoutMode();
+
+        let bottomPadding = this.desktopBottomPadding;
+
+        if(layoutMode === 'mobile') {
+            bottomPadding = this.mobileBottomPadding;
+        }
+        else if(layoutMode === 'tablet') {
+            bottomPadding = this.tabletBottomPadding;
+        }
+
         const contentHeight =
             this.topPadding +
             rows * cardHeight +
-            Math.max(
-                0,
-                rows - 1
-            ) * this.rowGap +
-            this.bottomPadding;
+            Math.max(0, rows - 1) * this.rowGap +
+            bottomPadding;
 
         contentTransform.setContentSize(
             contentTransform.width,
