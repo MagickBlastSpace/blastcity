@@ -30,6 +30,8 @@ export class Rocket extends BonusTileBase {
     }
 
     onDestroy() {
+        console.log( '[ROCKET DESTROY]', this.node.uuid, this.tileType);
+
         if(
             this.spawnVisualInOverlay &&
             this.spawnVisualInOverlay.isValid
@@ -197,11 +199,9 @@ export class Rocket extends BonusTileBase {
     }
 
     setDicoballComboAnimation(disco: Node, timeScale: number) {
-        let anim = this.tileType === "rocket_vertical" ? "rocket_discoball_vert" : "rocket_discoball_hor";
-        this.playAnimation(anim, true, 1);
+        const discoComp = disco.getComponent(Discoball);
 
-        let discoComp = disco.getComponent(Discoball);
-        if(discoComp) {
+        if (discoComp) {
             discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
     }
@@ -233,6 +233,8 @@ export class Rocket extends BonusTileBase {
             return;
         }
 
+        console.log('[ROCKET SPINE START POSITION]', this.node.uuid, this.spawnSpine.node.worldPosition.toString());
+
         const visualNode = this.spawnSpine.node;
         const originalParent = visualNode.parent;
 
@@ -244,12 +246,14 @@ export class Rocket extends BonusTileBase {
         const originalRotation = visualNode.rotation.clone();
         const originalScale = visualNode.scale.clone();
 
+        console.log( '[ROCKET SPAWN START]', this.node.uuid, this.tileType, this.node.isValid);
         if(this.icon) {
             this.icon.node.active = false;
         }
 
         if(overlayLayer) {
             visualNode.setParent(overlayLayer, true);
+            console.log('[ROCKET SPINE AFTER REPARENT]', this.node.uuid, visualNode.worldPosition.toString());
             visualNode.setSiblingIndex(
                 overlayLayer.children.length - 1
             );
@@ -275,6 +279,7 @@ export class Rocket extends BonusTileBase {
             'spawn',
             false
         );
+        console.log('[ROCKET SPINE TRACK]', this.node.uuid, 'track:', spawnTrack?.animation?.name, 'duration:', spawnTrack?.animation?.duration);
 
         if(!spawnTrack) {
             this.spawnVisualInOverlay = null;
@@ -288,6 +293,8 @@ export class Rocket extends BonusTileBase {
 
                 visualNode.active = false;
             }
+
+            console.warn('[ROCKET SPAWN FAILED]', this.node.uuid, this.tileType);
 
             if(this.icon && this.icon.node.isValid) {
                 this.icon.node.active = true;
@@ -320,9 +327,19 @@ export class Rocket extends BonusTileBase {
 
                 this.spawnVisualInOverlay = null;
 
+                console.log('[ROCKET SPAWN COMPLETE]', this.node.uuid, this.tileType );
+
                 if(this.icon && this.icon.node.isValid) {
                     this.icon.node.active = true;
+                    console.log('[ROCKET ICON]', this.node.uuid, 'active:', this.icon.node.active, 'inHierarchy:',
+                        this.icon.node.activeInHierarchy, 'parent:', this.icon.node.parent?.name,
+                        'scale:', this.icon.node.scale.toString()
+                    );
                 }
+
+                console.log('[ROCKET LAYER]', this.node.uuid, 'parent:', this.node.parent?.name, 'sibling:', this.node.getSiblingIndex());
+                console.log('[ROCKET POSITION]', this.node.uuid, 'position:', this.node.position.toString(), 'iconWorld:', this.icon?.node.worldPosition.toString());
+                console.log('[ROCKET SPRITE]', this.node.uuid, 'enabled:', this.icon?.enabled, 'frame:', this.icon?.spriteFrame?.name);
             }
         );
     }

@@ -299,10 +299,8 @@ export class Bomb extends BonusTileBase {
     }
 
     setDiscoballComboAnimation(disco: Node, timeScale: number) {
-        this.playAnimation("bomb_discoball", true, 1);
-
-        let discoComp = disco.getComponent(Discoball);
-        if(discoComp) {
+        const discoComp = disco.getComponent(Discoball);
+        if (discoComp) {
             discoComp.activateIsolatedDiscoballAnimation(timeScale);
         }
     }

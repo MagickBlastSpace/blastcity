@@ -1,6 +1,6 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, Vec2, tween, Vec3 } from 'cc';
-import { BonusTileBase } from './BonusTileBase';
+import { _decorator, Node, Sprite, SpriteFrame, tween, Vec2, Vec3 } from 'cc';
 import { SpriteTileData } from '../Tile';
+import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Discoball')
@@ -24,7 +24,7 @@ export class Discoball extends BonusTileBase {
 
     private disco_disco_time: number = 0.7;
 
-    
+
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
@@ -41,7 +41,7 @@ export class Discoball extends BonusTileBase {
         if(!isBlockingCombo) {
             this.getCombo(field);
         }
-        
+
         let tilesToDestroy = isBlockingCombo ? this.getMatchesClear(field, statuses) : this.getMatchesByType(field, statuses);
 
         return tilesToDestroy;
@@ -252,13 +252,13 @@ export class Discoball extends BonusTileBase {
                 for(let j = 0; j < numCols; j++) {
                     let isBonusChain = this.isChain(i, j);
                     this.node.emit("extra_hit", i, j, isBonusChain, 0);
-        
+
                     this.node.emit("goal", "discoball");
                 }
             }
 
             this.clearTiles();
-            
+
         }, this.disco_disco_time);
 
         this.setRespawnEvent(this.disco_disco_time);
@@ -286,13 +286,13 @@ export class Discoball extends BonusTileBase {
 
                     let isBonusChain = this.isChain(i, j);
                     this.node.emit("extra_hit", i, j, isBonusChain, 0);
-    
+
                     this.node.emit("goal", "discoball");
                 }
             }
 
             this.clearTiles();
-            
+
         }, this.disco_disco_time);
 
         this.setRespawnEvent(this.disco_disco_time);
@@ -328,34 +328,30 @@ export class Discoball extends BonusTileBase {
 
     activateDiscoballComboAnimation(field: Node[][]) {
         try {
-            let tile = field[this.comboPosition.x][this.comboPosition.y];
-            let tileComp = tile.getComponent("BonusTileBase");
+            const tile = field[this.comboPosition.x][this.comboPosition.y];
+            const tileComp = tile?.getComponent(BonusTileBase);
 
-            if(tileComp) {
-                let tileType = tileComp.getTileType();
-                let anim = "";
-                switch(tileType) {
-                    case "bomb":
-                        anim = "bomb_discoball";
-                        break;
-                    case "rocket_vertical":
-                        anim = "rocket_discoball_vert";
-                        break;
-                    case "rocket_horizontal":
-                        anim = "rocket_discoball_hor";
-                        break;
-                    case "multi":
-                        anim = "destroy";
-                        this.playHideAnimation(tile);
-                        break;
-                }
-                tileComp.playAnimation(anim, true, 1);
+            if (!tileComp) {
+                return;
             }
-        }
-        catch (error) {
+
+            const tileType = tileComp.getTileType();
+
+            if (
+                tileType === "bomb" ||
+                tileType === "rocket_vertical" ||
+                tileType === "rocket_horizontal"
+            ) {
+                return;
+            }
+
+            if (tileType === "multi") {
+                this.playHideAnimation(tile);
+                tileComp.playAnimation("destroy", true, 1);
+            }
+        } catch (error) {
             console.log("Activate disco animation error: " + error);
         }
-        
     }
 
     playHideAnimation(nodeToHide: Node) {

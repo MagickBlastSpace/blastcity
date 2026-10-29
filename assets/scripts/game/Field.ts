@@ -851,14 +851,44 @@ export class Field extends Component {
 			spawnedTile = this.spawnDiscoball(row, col);
 		}
 
-		if (!isBonusPool) {
-			return;
-		}
+		if (!isBonusPool || !spawnedTile) {
+            return;
+        }
 
-		this.bonusPool.push(spawnedTile);
+        this.bonusPool.push(spawnedTile);
 
-		let tileComp = spawnedTile.getComponent('BonusTileBase');
-		tileComp.setBonusPoolAnimation();
+        if (bonusId === 'bomb') {
+            const bomb = spawnedTile.getComponent(Bomb);
+
+            if (bomb?.bombSpine) {
+                bomb.playSpawnAnimation(this.bonusSpawnOverlay);
+                return;
+            }
+        }
+
+        if (
+            bonusId === 'rocket_vertical' ||
+            bonusId === 'rocket_horizontal'
+        ) {
+            const rocket = spawnedTile.getComponent(Rocket);
+
+            if (rocket?.spawnSpine) {
+                console.log('[ROCKET BEFORE SPAWN]', 'parent:', spawnedTile.parent?.name, 'position:', spawnedTile.position.toString());
+                const rocketUi = spawnedTile.getComponent(UITile);
+
+                rocketUi?.prepareInstantBonusSpawn()
+                spawnedTile.setScale(1, 1, 1);
+
+                rocket.playSpawnAnimation(this.bonusSpawnOverlay);
+                return;
+            }
+        }
+
+        const tileComp = spawnedTile.getComponent('BonusTileBase');
+
+        if (tileComp) {
+            tileComp.setBonusPoolAnimation();
+        }
 	}
 
 	initTile(
