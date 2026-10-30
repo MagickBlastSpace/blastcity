@@ -1,14 +1,11 @@
-import { _decorator, Component, Node, Prefab, Label, instantiate, ProgressBar, tween, Button, Sprite, SpriteFrame, Vec3 } from 'cc';
-import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
-import { UICollectionItem } from './UICollectionItem';
+import { _decorator, Button, instantiate, Label, Node, Prefab, ProgressBar, Sprite, SpriteFrame, tween, Vec3 } from 'cc';
 import { CollectionData } from '../../data/CollectionData';
-import { UIFrameBase } from '../UIFrameBase';
-import { UICollectionDuplicateExchange } from './UICollectionDuplicateExchange';
+import { UIEventPopupFrameBase } from '../events/UIEventPopupFrameBase';
 import { UIEventButton } from '../start/UIEventButton';
-import { UICollectionInfoPopup } from './UICollectionInfoPopup';
-import { UICollectionCardRecievePopup } from './UICollectionCardRecievePopup';
-import { UserData } from '../../data/UserData';
 import { UIEventTutorialPopup } from '../tutorial/UIEventTutorialPopup';
+import { UICollectionDuplicateExchange } from './UICollectionDuplicateExchange';
+import { UICollectionInfoPopup } from './UICollectionInfoPopup';
+import { UICollectionItem } from './UICollectionItem';
 const { ccclass, property } = _decorator;
 
 @ccclass('UICollectionFrame')
@@ -79,6 +76,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
     @property([UIEventTutorialPopup])
     badgeInfoPopups: UIEventTutorialPopup[] = [];
 
+    private collectionPopupRequestId: number = 0;
+
 
     start() {
         this.eventController.node.on("refresh", () => this.refresh());
@@ -127,11 +126,11 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
             if(i >= this.items.length) {
                 const itemNode = instantiate(this.itemPrefab);
                 this.itemsLayout.addChild(itemNode);
-        
+
                 let item = itemNode.getComponent("UICollectionItem");
 
                 itemNode.on("click", (data) => this.showCollection(data, i));
-        
+
                 this.items.push(item);
             }
 
@@ -166,7 +165,7 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         else {
             this.badge.spriteFrame = this.as_badges[curStage];
         }
-        
+
     }
 
 
@@ -190,6 +189,8 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
         collection: CollectionData,
         pageNumber: number
     ) {
+        const requestId = ++this.collectionPopupRequestId;
+
         const isReady = await this.collectionInfoPopup.initCollection(
             collection,
             this.eventController,
@@ -200,7 +201,16 @@ export class UICollectionFrame extends UIEventPopupFrameBase {
             return;
         }
 
+        if(requestId !== this.collectionPopupRequestId || !this.node.activeInHierarchy) {
+            return;
+        }
+
         this.collectionInfoPopup.show();
+    }
+
+    hideClean() {
+        this.collectionPopupRequestId++;
+        super.hideClean();
     }
 
 
