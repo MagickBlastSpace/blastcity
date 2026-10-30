@@ -165,7 +165,7 @@ export class Level extends Component {
     }
 
     moveEndCallback() {
-        if(!this.isFailed) {
+        if(this.isComplete || !this.isFailed) {
             return;
         }
 
@@ -303,6 +303,8 @@ export class Level extends Component {
         }
 
         if(isGoalsComplete) {
+            this.isFailed = false;
+
             if (!GameData.instance.advanceDevSelectedLevel()) {
                 UserData.instance.addProgress();
             }
