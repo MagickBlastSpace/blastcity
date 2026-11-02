@@ -29,6 +29,15 @@ export class TileCollectFxManager extends Component {
     @property(Prefab)
     bombCollectFxPrefab: Prefab = null;
 
+    @property(Prefab)
+    rocketHorizontalCollectFxPrefab: Prefab = null;
+
+    @property(Prefab)
+    rocketVerticalCollectFxPrefab: Prefab = null;
+
+    @property(Prefab)
+    discoballCollectFxPrefab: Prefab = null;
+
     @property(Node)
     fxLayer: Node = null;
 
@@ -140,6 +149,7 @@ export class TileCollectFxManager extends Component {
         onFinalAbsorbComplete?: () => void,
         onVisualComplete?: () => void,
         useBombFx: boolean = false,
+        bonusFxType: 'rocket_horizontal' | 'rocket_vertical' | 'discoball' | null = null,
     ): boolean {
 
         if(!clickedTile || !tileNodes || tileNodes.length === 0 || !this.tileCollectFxPrefab || !this.fxLayer || !isValid(this.fxLayer, true)) {
@@ -385,7 +395,7 @@ export class TileCollectFxManager extends Component {
         });
 
         for(const sourceWorldPosition of sourcePositions) {
-            const sourceFx = this.createFx(sourceWorldPosition, skin, useBombFx);
+            const sourceFx = this.createFx(sourceWorldPosition, skin, useBombFx, bonusFxType);
 
             if(!sourceFx) {
                 registerArrival();
@@ -394,7 +404,7 @@ export class TileCollectFxManager extends Component {
 
             const targetLocalPosition = this.worldToFxLayer(targetWorldPosition);
 
-            if(useBombFx) {
+            if(useBombFx|| bonusFxType !== null) {
                 this.rotateFxTowardsTarget(sourceFx.node, targetLocalPosition);
 
                 sourceFx.playCollapse(() => {
@@ -434,7 +444,8 @@ export class TileCollectFxManager extends Component {
     private createFx(
         worldPosition: Vec3,
         skin: TileCollectSkin,
-        useBombFx: boolean = false
+        useBombFx: boolean = false,
+        bonusFxType: 'rocket_horizontal' | 'rocket_vertical' | 'discoball' | null = null,
     ): TileCollectFx | null {
 
         if(!this.tileCollectFxPrefab) {
@@ -456,9 +467,20 @@ export class TileCollectFxManager extends Component {
             return null;
         }
 
-        const fxPrefab = useBombFx && this.bombCollectFxPrefab
-            ? this.bombCollectFxPrefab
-            : this.tileCollectFxPrefab;
+        let fxPrefab = this.tileCollectFxPrefab;
+
+        if(useBombFx && this.bombCollectFxPrefab) {
+            fxPrefab = this.bombCollectFxPrefab;
+        }
+        else if(bonusFxType === 'rocket_horizontal' && this.rocketHorizontalCollectFxPrefab) {
+            fxPrefab = this.rocketHorizontalCollectFxPrefab;
+        }
+        else if(bonusFxType === 'rocket_vertical' && this.rocketVerticalCollectFxPrefab) {
+            fxPrefab = this.rocketVerticalCollectFxPrefab;
+        }
+        else if(bonusFxType === 'discoball' && this.discoballCollectFxPrefab) {
+            fxPrefab = this.discoballCollectFxPrefab;
+        }
 
         const fxNode = instantiate(fxPrefab);
 

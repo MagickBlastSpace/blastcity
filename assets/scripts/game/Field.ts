@@ -1728,6 +1728,22 @@ export class Field extends Component {
 
             const isBombCreation = matches.length >= 7 && matches.length < 9;
 
+            let bonusFxType: 'rocket_horizontal' | 'rocket_vertical' | 'discoball' | null = null;
+
+            if(matches.length >= 9) {
+                bonusFxType = 'discoball';
+            }
+            else if(matches.length >= 5 && matches.length < 7) {
+                if(potentialBonus === 'rocket_horizontal') {
+                    bonusFxType = 'rocket_horizontal';
+                }
+                else if(potentialBonus === 'rocket_vertical') {
+                    bonusFxType = 'rocket_vertical';
+                }
+            }
+
+            console.log(`[TILE COLLECT] matches=${matches.length}, potentialBonus=${potentialBonus}, bonusFxType=${bonusFxType}`);
+
             const fxStarted = this.tileCollectFxManager.playBonusGroupCollect(
                 fxTiles,
                 tile,
@@ -1797,7 +1813,8 @@ export class Field extends Component {
                         return;
                     }
                 },
-                isBombCreation
+                isBombCreation,
+                bonusFxType
             );
 
             if(fxStarted) {
