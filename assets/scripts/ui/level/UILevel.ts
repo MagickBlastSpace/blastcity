@@ -1,4 +1,11 @@
-import { _decorator, Button, Label, Node, Sprite, SpriteFrame } from 'cc';
+import {
+    _decorator,
+    Button,
+    Label,
+    Node,
+    Sprite,
+    SpriteFrame,
+} from 'cc';
 import { GoalData } from '../../data/GameData';
 import { SaveData } from '../../data/SaveData';
 import { Level } from '../../game/Level';
@@ -6,120 +13,144 @@ import { AudioController } from '../../utils/AudioController';
 import { UIFrameBase } from '../UIFrameBase';
 import { UILevelGoal } from './UILevelGoal';
 import { UILevelResultFrame } from './UILevelResultFrame';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevel')
 export class UILevel extends UIFrameBase {
-	@property(Node)
-	level: Node = null;
-	@property(Level)
-	levelComp: Level = null;
+    @property(Node)
+    level: Node = null;
 
-	@property(Label)
-	movesCount: Label = null;
-	@property(Label)
-	movesCount_Duplicate: Label = null;
-	/*@property(Label)
-    goalLabel: Label = null;*/
+    @property(Level)
+    levelComp: Level = null;
 
-	@property([UILevelGoal])
-	goalItems: UILevelGoal[] = [];
+    @property(Label)
+    movesCount: Label = null;
 
-	@property([UILevelGoal])
-	goalItems_Duplicate: UILevelGoal[] = [];
+    @property(Label)
+    movesCount_Duplicate: Label = null;
 
-	@property(UILevelResultFrame)
-	levelResult: UILevelResultFrame = null;
-	@property(UIFrameBase)
-	levelCompletePopup: UIFrameBase = null;
-	@property(UIFrameBase)
-	levelFailPopup: UIFrameBase = null;
+    @property([UILevelGoal])
+    goalItems: UILevelGoal[] = [];
 
-	@property(Sprite)
-	sidePanel_Left: Sprite = null;
-	@property(Sprite)
-	sidePanel_Right: Sprite = null;
+    @property([UILevelGoal])
+    goalItems_Duplicate: UILevelGoal[] = [];
 
-	@property(Sprite)
-	picture_1: Sprite = null;
-	@property(Sprite)
-	picture_2: Sprite = null;
-	@property(Sprite)
-	picture_win: Sprite = null;
+    @property(UILevelResultFrame)
+    levelResult: UILevelResultFrame = null;
 
-	@property(SpriteFrame)
-	common: SpriteFrame = null;
-	@property(SpriteFrame)
-	hard: SpriteFrame = null;
-	@property(SpriteFrame)
-	superHard: SpriteFrame = null;
+    @property(UIFrameBase)
+    levelCompletePopup: UIFrameBase = null;
 
-	@property(Button)
-	settingsBtn_Portrait: Button = null;
-	@property(Button)
-	settingsBtn_Landscape: Button = null;
+    @property(UIFrameBase)
+    levelFailPopup: UIFrameBase = null;
 
-	@property(UIFrameBase)
-	settings_Portrait: UIFrameBase = null;
-	@property(UIFrameBase)
-	settings_Landscape: UIFrameBase = null;
+    @property(Sprite)
+    sidePanel_Left: Sprite = null;
 
-	private isRewarding: boolean = false;
-	private rewardGoal: GoalData = null;
+    @property(Sprite)
+    sidePanel_Right: Sprite = null;
 
-	start() {
-		this.level.on('init', () => this.init());
-		this.level.on('refresh', () => this.refreshAll());
-		this.level.on('complete', (isSuccess: boolean, goldEarned: number) =>
-			this.showResult(isSuccess, goldEarned),
-		);
-		this.level.on('all_goals_complete_event', (movesRemain) =>
-			this.showLevelCompletePopup(),
-		);
-		this.level.on('reward_move', () => this.addReward());
-		this.level.on('no_moves', () => this.showNoMovesPopup());
+    @property(Sprite)
+    upperPanel_Portrait: Sprite = null;
 
-		SaveData.instance.node.on('level_progress_loaded', () => this.refreshAll());
+    @property(Sprite)
+    bottomPanel_Portrait: Sprite = null;
 
-		this.settingsBtn_Portrait.node.on(
-			Button.EventType.CLICK,
-			this.onSettingsPortraitClick,
-			this,
-		);
-		this.settingsBtn_Landscape.node.on(
-			Button.EventType.CLICK,
-			this.onSettingsLandscapeClick,
-			this,
-		);
-	}
+    @property(Sprite)
+    picture_1: Sprite = null;
 
-	init() {
-		//this.goalLabel.string = "Goals";
+    @property(Sprite)
+    picture_2: Sprite = null;
 
-		this.isRewarding = false;
-	}
+    @property(Sprite)
+    picture_win: Sprite = null;
 
-	refresh(movesCount: number) {
-		this.movesCount.string = String(movesCount);
-		this.movesCount_Duplicate.string = String(movesCount);
-	}
+    @property(SpriteFrame)
+    common: SpriteFrame = null;
 
-	refreshGoals(goals: GoalData[]) {
-		for (let i = 0; i < goals.length || i < this.goalItems.length; i++) {
-			if (i < goals.length) {
-				this.goalItems[i].refresh(goals[i]);
-				this.goalItems_Duplicate[i].refresh(goals[i]);
-			} else {
-				let goalData = new GoalData();
-				goalData.id = 'common';
-				this.goalItems[i].refresh(goalData);
-				this.goalItems_Duplicate[i].refresh(goalData);
-			}
-		}
-	}
+    @property(SpriteFrame)
+    hard: SpriteFrame = null;
 
-	refreshAll() {
-		this.refresh(this.levelComp.getMoves());
+    @property(SpriteFrame)
+    superHard: SpriteFrame = null;
+
+    @property(SpriteFrame)
+    common_Portrait: SpriteFrame = null;
+
+    @property(SpriteFrame)
+    hard_Portrait: SpriteFrame = null;
+
+    @property(SpriteFrame)
+    superHard_Portrait: SpriteFrame = null;
+
+    @property(Button)
+    settingsBtn_Portrait: Button = null;
+
+    @property(Button)
+    settingsBtn_Landscape: Button = null;
+
+    @property(UIFrameBase)
+    settings_Portrait: UIFrameBase = null;
+
+    @property(UIFrameBase)
+    settings_Landscape: UIFrameBase = null;
+
+    private isRewarding: boolean = false;
+    private rewardGoal: GoalData = null;
+
+    start() {
+        this.level.on('init', () => this.init());
+        this.level.on('refresh', () => this.refreshAll());
+        this.level.on('complete', (isSuccess: boolean, goldEarned: number) =>
+            this.showResult(isSuccess, goldEarned),
+        );
+        this.level.on('all_goals_complete_event', () =>
+            this.showLevelCompletePopup(),
+        );
+        this.level.on('reward_move', () => this.addReward());
+        this.level.on('no_moves', () => this.showNoMovesPopup());
+
+        SaveData.instance.node.on('level_progress_loaded', () => this.refreshAll());
+
+        this.settingsBtn_Portrait.node.on(
+            Button.EventType.CLICK,
+            this.onSettingsPortraitClick,
+            this,
+        );
+
+        this.settingsBtn_Landscape.node.on(
+            Button.EventType.CLICK,
+            this.onSettingsLandscapeClick,
+            this,
+        );
+    }
+
+    init() {
+        this.isRewarding = false;
+    }
+
+    refresh(movesCount: number) {
+        this.movesCount.string = String(movesCount);
+        this.movesCount_Duplicate.string = String(movesCount);
+    }
+
+    refreshGoals(goals: GoalData[]) {
+        for (let i = 0; i < goals.length || i < this.goalItems.length; i++) {
+            if (i < goals.length) {
+                this.goalItems[i].refresh(goals[i]);
+                this.goalItems_Duplicate[i].refresh(goals[i]);
+            } else {
+                const goalData = new GoalData();
+                goalData.id = 'common';
+                this.goalItems[i].refresh(goalData);
+                this.goalItems_Duplicate[i].refresh(goalData);
+            }
+        }
+    }
+
+    refreshAll() {
+        this.refresh(this.levelComp.getMoves());
 
         if (!this.isRewarding) {
             this.refreshGoals(this.levelComp.getGoals());
@@ -128,79 +159,75 @@ export class UILevel extends UIFrameBase {
         const difficulty = this.levelComp.getDifficulty();
 
         let sideSprite = this.common;
+        let portraitSprite = this.common_Portrait;
 
-        if(difficulty === 'hard') {
+        if (difficulty === 'hard') {
             sideSprite = this.hard;
+            portraitSprite = this.hard_Portrait;
         }
-        else if(difficulty === 'superhard') {
+        else if (difficulty === 'superhard') {
             sideSprite = this.superHard;
+            portraitSprite = this.superHard_Portrait;
         }
 
-        if(sideSprite) {
-            this.sidePanel_Left.spriteFrame = sideSprite;
-            this.sidePanel_Right.spriteFrame = sideSprite;
+        if (sideSprite) {
+            if (this.sidePanel_Left) {
+                this.sidePanel_Left.spriteFrame = sideSprite;
+            }
+
+            if (this.sidePanel_Right) {
+                this.sidePanel_Right.spriteFrame = sideSprite;
+            }
         }
-	}
 
-	showResult(isSuccess: boolean, goldEarned: number) {
-		this.levelResult.show();
-		this.levelResult.refresh(isSuccess, goldEarned);
+        if (portraitSprite) {
+            if (this.upperPanel_Portrait) {
+                this.upperPanel_Portrait.spriteFrame = portraitSprite;
+            }
 
-		if (!isSuccess) {
-			//AudioController.instance.playWin();
-			AudioController.instance.playLose();
-		}
-		/*else {
+            if (this.bottomPanel_Portrait) {
+                this.bottomPanel_Portrait.spriteFrame = portraitSprite;
+            }
+        }
+    }
+
+    showResult(isSuccess: boolean, goldEarned: number) {
+        this.levelResult.show();
+        this.levelResult.refresh(isSuccess, goldEarned);
+
+        if (!isSuccess) {
             AudioController.instance.playLose();
-        }*/
-	}
+        }
+    }
 
-	showLevelCompletePopup() {
-		this.setRewardingMode();
+    showLevelCompletePopup() {
+        this.setRewardingMode();
 
-		this.levelCompletePopup.show();
+        this.levelCompletePopup.show();
 
-		AudioController.instance.playLevelComplete();
+        AudioController.instance.playLevelComplete();
+        AudioController.instance.playWin();
+    }
 
-		AudioController.instance.playWin();
-	}
+    showNoMovesPopup() {
+        if (this.levelFailPopup) {
+            this.levelFailPopup.show();
+        }
+    }
 
-	showNoMovesPopup() {
-		this.levelFailPopup.show();
+    addReward() {
+        this.isRewarding = true;
+    }
 
-		//AudioController.instance.playLose();
-	}
+    setRewardingMode() {
+        this.isRewarding = true;
+    }
 
-	setRewardingMode() {
-		this.isRewarding = true;
-		//this.goalLabel.string = "Reward";
+    onSettingsPortraitClick() {
+        this.settings_Portrait.show();
+    }
 
-		let rewardGoals = [];
-		this.rewardGoal = new GoalData();
-		this.rewardGoal.id = 'coin';
-		this.rewardGoal.count = this.levelComp.getCompletionReward();
-
-		rewardGoals.push(this.rewardGoal);
-
-		this.refreshGoals(rewardGoals);
-	}
-
-	addReward() {
-		let mul = this.levelComp.getDifficultyMultiplier();
-
-		this.rewardGoal.count += mul * 2;
-
-		let rewardGoals = [];
-		rewardGoals.push(this.rewardGoal);
-
-		this.refreshGoals(rewardGoals);
-	}
-
-	onSettingsPortraitClick() {
-		this.settings_Portrait.show();
-	}
-
-	onSettingsLandscapeClick() {
-		this.settings_Landscape.show();
-	}
+    onSettingsLandscapeClick() {
+        this.settings_Landscape.show();
+    }
 }
