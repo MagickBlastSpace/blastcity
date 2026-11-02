@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
+import { _decorator, Sprite, SpriteFrame } from 'cc';
 import { Box } from '../lvl_21/Box';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('BoxTriple')
@@ -10,8 +11,10 @@ export class BoxTriple extends Box {
 
     @property(SpriteFrame)
     hp3: SpriteFrame | null = null;
+
     @property(SpriteFrame)
     hp2: SpriteFrame | null = null;
+
     @property(SpriteFrame)
     hp1: SpriteFrame | null = null;
 
@@ -23,31 +26,33 @@ export class BoxTriple extends Box {
         this.refresh();
     }
 
+
     getDamage(damageType: string) {
+        const previousStrength = this.strength;
+
         super.getDamage(damageType);
 
-        this.refresh();
-    }
+        if (this.strength >= previousStrength) {
+            return;
+        }
 
-    refresh() {
-        switch(this.strength) {
-            case 1:
-                this.picture.spriteFrame = this.hp1;
-                this.playDamageSound();
-                break;
+        if (this.strength > 0) {
+            this.playDamageSound();
+        }
+
+        switch (this.strength) {
             case 2:
-                this.picture.spriteFrame = this.hp2;
-                this.playDamageSound();
+                this.playHitAnimation('hit_1', 'idle_2');
                 break;
-            case 3:
-                this.picture.spriteFrame = this.hp3;
+
+            case 1:
+                this.playHitAnimation('hit_2', 'idle_3');
                 break;
         }
     }
+
 
     playDamageSound() {
         this.playSound(0);
     }
 }
-
-
