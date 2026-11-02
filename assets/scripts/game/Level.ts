@@ -303,6 +303,7 @@ export class Level extends Component {
         }
 
         if(isGoalsComplete) {
+            this.isComplete = true;
             this.isFailed = false;
 
             if (!GameData.instance.advanceDevSelectedLevel()) {
@@ -311,8 +312,6 @@ export class Level extends Component {
 
             let bonusesToSpawn = this.isBonusGoldAvailable() ? this.moves : 0;
             this.node.emit("all_goals_complete_event", bonusesToSpawn);
-
-            this.isComplete = true;
 
             this.node.emit(
                 "publish_record",
