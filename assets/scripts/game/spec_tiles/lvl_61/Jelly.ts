@@ -1,68 +1,257 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Node, sp } from 'cc';
+import { UITile } from '../../../ui/UITile';
+import { TileBase } from '../../TileBase';
 import { SpecTileBase } from '../SpecTileBase';
-const { ccclass, property } = _decorator;
+const { ccclass } = _decorator;
 
 @ccclass('Jelly')
 export class Jelly extends SpecTileBase {
+    private jellyStrength: number = 1;
+
+    private static pendingAppearAnimations = new Map<string, string>();
+
+    private static getCellKey(row: number, col: number): string {
+        return `${row}:${col}`;
+    }
+
+    private playJellyAnimation(
+        animation: string,
+        loop: boolean = true
+    ): void {
+        const uiTile = this.node.getComponent(UITile);
+        const skeleton: sp.Skeleton | null = uiTile?.spine ?? null;
+
+        if (!skeleton) {
+            console.warn('[JELLY] Spine not found');
+            return;
+        }
+
+        skeleton.node.active = true;
+        skeleton.setAnimation(0, animation, loop);
+    }
+
+    private playJellyTransition(animation: string): void {
+        const uiTile = this.node.getComponent(UITile);
+        const skeleton = uiTile?.spine;
+
+        if (!skeleton) {
+            console.warn(`[JELLY] Spine not found for ${animation}`);
+            return;
+        }
+
+        skeleton.node.active = true;
+
+        skeleton.setAnimation(0, animation, false);
+        skeleton.addAnimation(0, 'idle', true, 0);
+    }
+
+    private getSpreadAnimations(
+        sourceRow: number,
+        sourceCol: number,
+        targetRow: number,
+        targetCol: number
+    ): { spread: string; appear: string } | null {
+
+        if (targetCol === sourceCol + 1 && targetRow === sourceRow) {
+            return {
+                spread: 'spread_right',
+                appear: 'appear_left'
+            };
+        }
+
+        if (targetCol === sourceCol - 1 && targetRow === sourceRow) {
+            return {
+                spread: 'spread_left',
+                appear: 'appear_right'
+            };
+        }
+
+        if (targetRow === sourceRow - 1 && targetCol === sourceCol) {
+            return {
+                spread: 'spread_up',
+                appear: 'appear_down'
+            };
+        }
+
+        if (targetRow === sourceRow + 1 && targetCol === sourceCol) {
+            return {
+                spread: 'spread_down',
+                appear: 'appear_up'
+            };
+        }
+
+        return null;
+    }
+
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
         this.isShifts = false;
-        this.strength = 1;
+        this.jellyStrength = 1;
 
         this.setAsDamaged();
+
+        const uiTile = this.node.getComponent(UITile);
+
+        if (uiTile) {
+            uiTile.keepSpineVisible = true;
+        }
+
+        const cellKey = Jelly.getCellKey(row, col);
+
+        const appearAnimation =
+            Jelly.pendingAppearAnimations.get(cellKey);
+
+        console.log('[JELLY INIT]', {
+            row,
+            col,
+            animation: appearAnimation ?? 'idle'
+        });
+
+        if (appearAnimation) {
+            Jelly.pendingAppearAnimations.delete(cellKey);
+
+            this.playJellyTransition(appearAnimation);
+        } else {
+            this.playJellyAnimation('idle', true);
+        }
     }
 
     getDamage(damageType: string) {
-        this.strength--;
+        this.jellyStrength--;
         this.node.emit("damage_all", this.tileType);
     }
 
     isReadyToDestroy(): boolean {
-        if(this.strength <= 0) {
-            return true;
-        }
-
-        return false;
+        return this.jellyStrength <= 0;
     }
 
 
-    startInActionEffect(field: Node[][], statuses: Node[][], isBlockingAction: boolean): boolean {
-        if(this.isDamaged || isBlockingAction) {
+    startInActionEffect(
+        field?: Node[][],
+        statuses?: Node[][],
+        isBlockingAction: boolean = false
+    ): boolean {
+
+        if (!field || !statuses) {
             return false;
         }
 
-        let jellies = this.findAllTilesThisType(field);
+        if (this.isTileDamaged() || isBlockingAction) {
+            return false;
+        }
 
-        let matches = [];
+        const jellies = this.findAllTilesThisType(field);
 
-        jellies.forEach(jelly => {
-            let tileComponent = jelly.getComponent("TileBase");
-            let status = statuses[tileComponent.getRow()][tileComponent.getCol()];
+        const candidates: {
+            source: Jelly;
+            target: Node;
+        }[] = [];
+
+        for (const jellyNode of jellies) {
+
+            const source = jellyNode.getComponent(Jelly);
+
+            if (!source) {
+                continue;
+            }
+
+            const sourceRow = source.getRow();
+            const sourceCol = source.getCol();
+
+            const status = statuses[sourceRow]?.[sourceCol];
 
             let isStatusBlock = false;
-            if(status !== null) {
-                let statusComp = status.getComponent("StatusBase");
-                isStatusBlock = statusComp.isBlockingDestroyTile();
+
+            if (status) {
+                const statusComp =
+                    status.getComponent('StatusBase') as any;
+
+                isStatusBlock =
+                    statusComp?.isBlockingDestroyTile() ?? false;
             }
 
-            if(!isStatusBlock) {
-                matches = matches.concat(tileComponent.getNextJellyCandidates(field));
+            if (isStatusBlock) {
+                continue;
             }
-        })
 
-        if (matches.length === 0) {
+            const neighbors =
+                source.getNextJellyCandidates(field);
+
+            for (const target of neighbors) {
+                candidates.push({
+                    source,
+                    target
+                });
+            }
+        }
+
+        if (candidates.length === 0) {
             return false;
         }
-    
-        const randomIndex = Math.floor(Math.random() * matches.length);
-        const randomTile = matches[randomIndex];
-        const rndTileComp = randomTile.getComponent("TileBase");
 
-        this.node.emit("change", rndTileComp.getRow(), rndTileComp.getCol(), this.tileType);
-        this.node.emit("damage_all", this.tileType);
+        const randomIndex =
+            Math.floor(Math.random() * candidates.length);
 
-        this.node.emit("goal_inc", "jelly");
+        const selected = candidates[randomIndex];
+
+        const source = selected.source;
+
+        const targetComp = selected.target.getComponent(TileBase);
+
+        if (!targetComp) {
+            return false;
+        }
+
+        const sourceRow = source.getRow();
+        const sourceCol = source.getCol();
+
+        const targetRow = targetComp.getRow();
+        const targetCol = targetComp.getCol();
+
+        const animations = this.getSpreadAnimations(
+            sourceRow,
+            sourceCol,
+            targetRow,
+            targetCol
+        );
+
+        const cellKey = Jelly.getCellKey(targetRow, targetCol);
+
+        if (animations) {
+            Jelly.pendingAppearAnimations.set(
+                cellKey,
+                animations.appear
+            );
+
+            source.playJellyTransition(
+                animations.spread
+            );
+        }
+
+        console.log('[JELLY SPREAD]', {
+            sourceRow,
+            sourceCol,
+            targetRow,
+            targetCol,
+            spread: animations?.spread,
+            appear: animations?.appear
+        });
+
+        try {
+            this.node.emit(
+                'change',
+                targetRow,
+                targetCol,
+                this.tileType
+            );
+        } finally {
+            Jelly.pendingAppearAnimations.delete(cellKey);
+        }
+
+        this.node.emit('damage_all', this.tileType);
+
+        this.node.emit('goal_inc', 'jelly');
 
         this.playSpawnSound();
 
@@ -105,13 +294,17 @@ export class Jelly extends SpecTileBase {
     }
 
     checkTileForMatch(tile: Node): boolean {
-        if(tile === null) {
+        if (!tile) {
             return false;
         }
-        
-        const tileComponent = tile.getComponent("TileBase");
 
-        if(tileComponent.isSpecialTile() || tileComponent.isEmptyTile() || tileComponent.isBonusTile()) {
+        const tileComponent = tile.getComponent(TileBase);
+
+        if (!tileComponent) {
+            return false;
+        }
+
+        if ( tileComponent.isSpecialTile() || tileComponent.isEmptyTile() || tileComponent.isBonusTile() ) {
             return false;
         }
 

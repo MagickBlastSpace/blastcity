@@ -61,6 +61,8 @@ export class UITile extends Component {
     @property
     disableSound: boolean = false;
 
+    public keepSpineVisible: boolean = false;
+
     private fallTime: number = 0.35;
     private fallSpeed: number = 3300;
 
@@ -82,7 +84,14 @@ export class UITile extends Component {
     start() {
         this.isBlocked = false;
 
-        if (this.spine) {
+        console.log('[UITILE SPINE DEBUG]', {
+            node: this.node.name,
+            keepSpineVisible: this.keepSpineVisible,
+            hasSpine: !!this.spine,
+            spineActiveBefore: this.spine?.node.active
+        });
+
+        if (this.spine && !this.keepSpineVisible) {
             this.spine.node.active = false;
         }
     }

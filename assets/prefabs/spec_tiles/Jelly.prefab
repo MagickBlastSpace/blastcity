@@ -155,7 +155,7 @@
     "node": {
       "__id__": 2
     },
-    "_enabled": true,
+    "_enabled": false,
     "__prefab": {
       "__id__": 6
     },
@@ -233,7 +233,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0,
+      "y": 17,
       "z": 0
     },
     "_lrot": {
@@ -245,8 +245,8 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0.77,
+      "y": 0.77,
       "z": 1
     },
     "_mobility": 0,
@@ -423,11 +423,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "e5565112-a9e2-49cc-942e-d5db6e8e00e4",
+      "__uuid__": "06fdff52-4847-4acc-8c0d-6df22324fcba",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "<None>",
+    "defaultAnimation": "idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -438,7 +438,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -543,6 +543,7 @@
         "__expectedType__": "cc.AudioClip"
       }
     ],
+    "disableSound": false,
     "_id": ""
   },
   {

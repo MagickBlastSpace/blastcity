@@ -1,9 +1,9 @@
-import { _decorator, Component, Node, math, EditBox } from 'cc';
-import { Field } from '../game/Field';
+import { _decorator, Component, EditBox, math, Node } from 'cc';
 import { GameData } from '../data/GameData';
-import { UIFrameBase } from '../ui/UIFrameBase';
-import { TileBase } from '../game/TileBase';
+import { Field } from '../game/Field';
 import { Level } from '../game/Level';
+import { TileBase } from '../game/TileBase';
+import { UIFrameBase } from '../ui/UIFrameBase';
 const { ccclass, property } = _decorator;
 const { clamp } = math;
 
@@ -69,7 +69,7 @@ export class TestBot extends Component {
         this.levelComp = this.level.getComponent("Level");
 
         this.availableColors = ["blue", "red", "green", "yellow", "purple", "orange"];
-        this.priorityList = ["pump", "fish", "frog", "magic_hat"];
+        this.priorityList = ["pump", "otter", "frog", "magic_hat"];
     }
 
 
@@ -119,53 +119,53 @@ export class TestBot extends Component {
 
     generateOutput(outputData: TestOutputData[]): string {
         let output = '';
-    
+
         outputData.forEach(data => {
             const moves = data.items.map(item => item.moves);
             const scores = data.items.map(item => item.score);
-    
+
             const minMoves = Math.min(...moves);
             const maxMoves = Math.max(...moves);
             const medianMoves = this.getMedian(moves);
-    
+
             const minScore = Math.min(...scores);
             const maxScore = Math.max(...scores);
             const medianScore = this.getMedian(scores);
-    
+
             output += `${data.id}\n`;
             output += `min movesCount value: ${minMoves}, max movesCount value: ${maxMoves}, median movesCount: ${medianMoves}\n`;
             output += `min score value: ${minScore}, max score value: ${maxScore}, median score: ${medianScore}\n\n`;
         });
-    
+
         return output;
     }
 
     generateSingleOutput(outputData: TestOutputData[], id: string): string {
         const data = outputData.find(item => item.id === id);
-    
+
         if (!data) {
             console.error(`Item with ID '${id}' not found.`);
             return ''; // Return an empty string or handle the error as needed.
         }
-    
+
         const moves = data.items.map(item => item.moves);
         const scores = data.items.map(item => item.score);
-    
+
         const minMoves = Math.min(...moves);
         const maxMoves = Math.max(...moves);
         const medianMoves = this.getMedian(moves);
-    
+
         const minScore = Math.min(...scores);
         const maxScore = Math.max(...scores);
         const medianScore = this.getMedian(scores);
-    
+
         let output = `${data.id}\n`;
         output += `min movesCount value: ${minMoves}, max movesCount value: ${maxMoves}, median movesCount: ${medianMoves}\n`;
         output += `min score value: ${minScore}, max score value: ${maxScore}, median score: ${medianScore}\n\n`;
-    
+
         return output;
     }
-    
+
     getMedian(values: number[]): number {
         const sorted = values.sort((a, b) => a - b);
         const mid = Math.floor(sorted.length / 2);
@@ -205,13 +205,13 @@ export class TestBot extends Component {
         this.fieldComp.spawnInitialBoard(GameData.instance.levels[this.currentLevelIndex]);
 
         this.currentIteration++;
-        
+
         this.levelResult.hide();
 
         this.movesCounter = 0;
     }
 
-    
+
     makeMove(tiles: Node[][], statuses: Node[][]) {
         if(!this.isBotActive) {
             return;
@@ -236,7 +236,7 @@ export class TestBot extends Component {
         if(this.checkBonusTiles(tiles, statuses)) {
             return;
         }
-        
+
         if(this.checkPrioritySpecTiles(tiles, statuses)) {
             return;
         }
@@ -244,7 +244,7 @@ export class TestBot extends Component {
         if(this.checkGoalCommonTiles(tiles, statuses)) {
             return;
         }
-        
+
         if(this.checkSpecTiles(tiles, statuses)) {
             return;
         }
@@ -291,14 +291,14 @@ export class TestBot extends Component {
         if (this.isMoveScheduled) {
             this.unschedule(this.makeMove.bind(this, tiles, statuses));
         }
-    
+
         this.isMoveScheduled = true;
         this.scheduleOnce(() => {
             this.isMoveScheduled = false;
             this.makeMove(tiles, statuses);
         }, 0.03);
     }
-    
+
 
     updateGoalsData() {
         this.goals = [];
@@ -535,7 +535,7 @@ export class TestBot extends Component {
                             }
                         }
                     }
-                } 
+                }
             }
         }
 
@@ -615,7 +615,7 @@ export class TestBot extends Component {
                     return true;
                 }
             }
-            
+
         }
 
         return false;
@@ -644,7 +644,7 @@ export class TestBot extends Component {
 
                                 choosenCommonTile = tile;
                             }
-                        } 
+                        }
                     }
                 }
             }
@@ -717,7 +717,7 @@ export class TestBot extends Component {
                     if(tileComp.isSpecialTile()) {
                         let tileType = tileComp.getTileType();
 
-                        if(tileType === "pump" || tileType === "fish" || tileType === "frog") {
+                        if(tileType === "pump" || tileType === "otter" || tileType === "frog") {
                             if(tileComp.getCustomParameter() > 0) {
                                 if(this.findAdjacentMatch(tiles, statuses, tileComp)) {
                                     return true;
@@ -759,7 +759,7 @@ export class TestBot extends Component {
                                 let matches = tileComp.getMatches(tiles, statuses);
                                 if(matches.length > maximalCommonMatch) {
                                     maximalCommonMatch = matches.length;
-    
+
                                     choosenCommonTile = tile;
                                 }
                             }
@@ -794,7 +794,7 @@ export class TestBot extends Component {
                             let matches = tileComp.getMatches(tiles, statuses);
                             if(matches.length > 1) {
                                 this.fieldComp.onTileClick(tile);
-    
+
                                 return true;
                             }
                         }
@@ -836,7 +836,7 @@ export class TestBot extends Component {
                             return true;
                         }
                     }
-                } 
+                }
             }
         }
 
@@ -871,7 +871,7 @@ export class TestBot extends Component {
                             }
                         }
                     }
-                } 
+                }
             }
         }
 
@@ -909,14 +909,14 @@ export class TestBot extends Component {
                             }
                         }
                     }
-                } 
+                }
             }
         }
 
         return false;
     }
 
-    
+
     checkSpecTiles_Circle_1(tiles: Node[][], statuses: Node[][]): boolean {
         for (let row = 8; row >= 0; row--) {
             for (let col = 0; col <= 8; col++) {

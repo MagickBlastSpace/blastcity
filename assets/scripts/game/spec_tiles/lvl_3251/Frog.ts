@@ -1,9 +1,9 @@
-import { _decorator, Component, Node } from 'cc';
-import { Fish } from '../lvl_321/Fish';
+import { _decorator, Node } from 'cc';
+import { Otter } from '../lvl_321/Otter';
 const { ccclass, property } = _decorator;
 
 @ccclass('Frog')
-export class Frog extends Fish {
+export class Frog extends Otter {
     isReadyToDestroy(): boolean {
         return false;
     }
@@ -28,7 +28,7 @@ export class Frog extends Fish {
         if(this.isSubscribed) {
             return;
         }
-        
+
         this.isSubscribed = true;
 
         this.fieldNode = field;

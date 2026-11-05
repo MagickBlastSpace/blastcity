@@ -10,6 +10,7 @@ import {
     Vec2,
 } from 'cc';
 import { NATIVE } from 'cc/env';
+import { LevelIdTranslator } from './LevelIdTranslator';
 import { SaveData } from './SaveData';
 import { Statistics } from './Statistics';
 import { UserData } from './UserData';
@@ -790,9 +791,9 @@ export class GameData extends Component {
 
 					// Iterate over each LevelData object in the JSON data
 					for (const levelJson of jsonData.levels) {
-						const levelData = GameData.parseLevelData(
+                        const levelData = GameData.parseLevelData(
 							JSON.stringify(levelJson),
-						);
+                        );
 						levelDataArray.push(levelData);
 					}
 
@@ -961,16 +962,21 @@ export class GameData extends Component {
 	}
 
 	static parseLevelData(jsonString: string): LevelData {
-		const jsonData = JSON.parse(jsonString);
-		return LevelData.fromJSON(JSON.stringify(jsonData));
-	}
+        const jsonData = JSON.parse(jsonString);
+
+        const translatedLevel = LevelIdTranslator.translateLevel(jsonData);
+
+        return LevelData.fromJSON(
+            JSON.stringify(translatedLevel)
+        );
+    }
 
 	static parseLevelsData(jsonString: string): LevelData[] {
 		try {
 			const jsonData = JSON.parse(jsonString);
 			if (Array.isArray(jsonData.levels)) {
 				return jsonData.levels.map((levelObj: any) =>
-					LevelData.fromJSON(JSON.stringify(levelObj)),
+					GameData.parseLevelData(JSON.stringify(levelObj))
 				);
 			} else {
 				console.error('Invalid JSON format: levels property is not an array');

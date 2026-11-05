@@ -42,7 +42,7 @@ export class HintFinder extends Component {
         this.levelComp = this.level.getComponent("Level");
 
         this.availableColors = ["blue", "red", "green", "yellow", "purple"];
-        this.priorityList = ["pump", "fish", "frog", "magic_hat"];
+        this.priorityList = ["pump", "otter", "frog", "magic_hat"];
 
         this.stopTimer();
     }
@@ -102,7 +102,7 @@ export class HintFinder extends Component {
         if(this.checkAbsolutePrioritySpecTiles(tiles, statuses)) {
             return;
         }
-        
+
         if(this.checkPrioritySpecTiles(tiles, statuses)) {
             return;
         }
@@ -110,7 +110,7 @@ export class HintFinder extends Component {
         if(this.checkGoalCommonTiles(tiles, statuses)) {
             return;
         }
-        
+
         if(this.checkSpecTiles(tiles, statuses)) {
             return;
         }
@@ -319,7 +319,7 @@ export class HintFinder extends Component {
                         let matches = candTileComp.getMatches(tiles, statuses);
                         if(matches.length > 1) {
                             this.shakeMatch(matches);
-                
+
                             return true;
                         }
                     }
@@ -346,7 +346,7 @@ export class HintFinder extends Component {
                         let matches = candTileComp.getMatches(tiles, statuses);
                         if(matches.length > 1) {
                             this.shakeMatch(matches);
-                
+
                             return true;
                         }
                     }
@@ -379,7 +379,7 @@ export class HintFinder extends Component {
 
                                 this.currentMatch = matches;
                             }
-                        } 
+                        }
                     }
                 }
             }
@@ -452,7 +452,7 @@ export class HintFinder extends Component {
                     if(tileComp.isSpecialTile()) {
                         let tileType = tileComp.getTileType();
 
-                        if(tileType === "pump" || tileType === "fish" || tileType === "frog") {
+                        if(tileType === "pump" || tileType === "otter" || tileType === "frog") {
                             if(tileComp.getCustomParameter() > 0) {
                                 if(this.findAdjacentMatch(tiles, statuses, tileComp)) {
                                     return true;
@@ -493,7 +493,7 @@ export class HintFinder extends Component {
                                 let matches = tileComp.getMatches(tiles, statuses);
                                 if(matches.length > maximalCommonMatch) {
                                     maximalCommonMatch = matches.length;
-    
+
                                     this.currentMatch = matches;
                                 }
                             }
@@ -528,7 +528,7 @@ export class HintFinder extends Component {
                             let matches = tileComp.getMatches(tiles, statuses);
                             if(matches.length > 1) {
                                 this.shakeMatch(matches);
-    
+
                                 return true;
                             }
                         }
@@ -552,7 +552,7 @@ export class HintFinder extends Component {
         return false;
     }
 
-    
+
     checkSpecTiles_Circle_1(tiles: Node[][], statuses: Node[][]): boolean {
         for (let row = 8; row >= 0; row--) {
             for (let col = 0; col <= 8; col++) {
