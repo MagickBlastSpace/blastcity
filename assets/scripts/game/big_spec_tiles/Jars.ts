@@ -1,5 +1,7 @@
-import { _decorator, Component, Node, sp } from 'cc';
+import { _decorator, Node, sp } from 'cc';
+import { UITile } from '../../ui/UITile';
 import { BigTileBase } from './BigTileBase';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('Jars')
@@ -11,6 +13,79 @@ export class Jars extends BigTileBase {
     @property([sp.Skeleton])
     hps_anim: sp.Skeleton[] = [];
 
+    @property(sp.Skeleton)
+    boxSpine: sp.Skeleton = null;
+
+    private readonly jarDestroySpeed: number = 0.7;
+    private readonly jarDestroyDuration: number = 1.35;
+    private isBoxDestroying: boolean = false;
+
+
+    private initializeSpineVisuals(): void {
+        if (this.tileType !== 'jars') return;
+
+        this.isBoxDestroying = false;
+
+        if (this.boxSpine?.skeletonData) {
+            this.boxSpine.node.active = true;
+            this.boxSpine.setAnimation(0, 'box_idle', true);
+        }
+
+        for (let i = 0; i < this.hps_anim.length; i++) {
+            const skeleton = this.hps_anim[i];
+
+            if (!skeleton?.skeletonData) {
+                console.warn(`[JARS] Missing Spine for jar ${i}`);
+                continue;
+            }
+
+            skeleton.node.active = true;
+            skeleton.setAnimation(0, 'jar_idle', true);
+        }
+    }
+
+
+    private playJarAnimation(index: number, animation: string, loop: boolean): void {
+        const skeleton = this.hps_anim[index];
+
+        if (!skeleton?.skeletonData) {
+            console.warn(`[JARS] Missing Spine for jar ${index}`);
+            return;
+        }
+
+        skeleton.node.active = true;
+        skeleton.setAnimation(0, animation, loop);
+    }
+
+
+    private playBoxHit(): void {
+        if (!this.boxSpine?.skeletonData || this.isBoxDestroying) return;
+
+        this.boxSpine.node.active = true;
+        this.boxSpine.setAnimation(0, 'box_hit', false);
+        this.boxSpine.addAnimation(0, 'box_idle', true, 0);
+    }
+
+
+    private destroyJar(index: number): void {
+        const skeleton = this.hps_anim[index];
+
+        if (!skeleton?.skeletonData) return;
+
+        skeleton.node.active = true;
+
+        skeleton.timeScale = this.jarDestroySpeed;
+
+        skeleton.clearTracks();
+        skeleton.setAnimation(0, 'jar_destroy', false);
+
+        this.scheduleOnce(() => {
+            if (skeleton.isValid && skeleton.node.isValid) {
+                skeleton.node.active = false;
+            }
+        }, this.jarDestroyDuration);
+    }
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -21,63 +96,94 @@ export class Jars extends BigTileBase {
 
         this.strength = 9;
         this.refresh();
+
+        if (this.tileType === 'jars') {
+            const uiTile = this.node.getComponent(UITile);
+
+            if (uiTile) {
+                uiTile.keepSpineVisible = true;
+                uiTile.useSpineDestroyOnly = true;
+            }
+        }
+    }
+
+
+    start() {
+        if (this.tileType !== 'jars') return;
+
+        this.initializeSpineVisuals();
     }
 
 
     getDamage(damageType: string) {
-        if(this.strength > 0) {
-            this.strength--;
+        if (this.tileType !== 'jars') return;
+        if (this.strength <= 0) return;
 
-            this.node.emit("goal", "jars");
+        this.strength--;
+
+        this.node.emit('goal', 'jars');
+
+        const destroyedJarIndex = this.strength;
+
+        this.destroyJar(destroyedJarIndex);
+
+        if (this.strength > 0) {
+            this.playBoxHit();
+            this.playDamageSound();
+        } else {
+            this.isBoxDestroying = true;
+
+            if (this.boxSpine?.skeletonData) {
+                this.boxSpine.node.active = true;
+
+                this.boxSpine.clearTracks();
+                this.boxSpine.setAnimation(0, 'box_destroy', false);
+
+                console.log('[JARS] FINAL DESTROY START', {
+                    row: this.row,
+                    col: this.col,
+                    animation: this.boxSpine.getCurrent(0)?.animation?.name
+                });
+            }
         }
-        
+
         this.refresh();
     }
 
+
     isReadyToDestroy(): boolean {
-        if(this.strength <= 0) {
-            return true;
-        }
-        return false;
+        return this.strength <= 0;
     }
 
 
     refresh() {
-        for(let i = 0; i < this.hps.length; i++) {
-            this.hps[i].active = false;
-        }
+        if (this.tileType !== 'jars') return;
 
-        for(let i = 0; i < this.strength && i < this.hps.length; i++) {
-            this.hps[i].active = true;
-
-            /*if(this.hps_anim.length >= (i + 1)) {
-                let animName = "jars" + (Math.floor(Math.random() * 3) + 1);
-
-                this.playAdditionalAnimation(this.hps_anim[i], animName, this.hps[i]);
-            }*/
-        }
-
-        if(this.hps_anim.length >= (this.strength + 1)) {
-            let animName = "destroy" + (Math.floor(Math.random() * 3) + 1);
-
-            this.playAdditionalAnimation(this.hps_anim[this.strength], animName, null);
-
-            if(this.strength > 0) {
-                this.playDamageSound();
+        for (const oldJar of this.hps) {
+            if (oldJar) {
+                oldJar.active = false;
             }
         }
     }
 
 
     startDestroyConsequences() {
-        this.playAnimation("destroy", false, 1);
+        if (this.tileType !== 'jars') {
+            this.playAnimation('destroy', false, 1);
+            return;
+        }
+
+        console.log('[JARS] DESTROY CONSEQUENCES', {
+            row: this.row,
+            col: this.col,
+            strength: this.strength,
+            boxAnimation: this.boxSpine?.getCurrent(0)?.animation?.name
+        });
     }
 
 
     playDamageSound() {
-        let soundIndex = this.strength % 2;
+        const soundIndex = this.strength % 2;
         this.playSound(soundIndex);
     }
 }
-
-

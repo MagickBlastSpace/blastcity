@@ -108,7 +108,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 3
@@ -244,7 +244,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 9
@@ -380,7 +380,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 15
@@ -516,7 +516,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 21
@@ -652,7 +652,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 27
@@ -788,7 +788,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 33
@@ -924,7 +924,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 39
@@ -1060,7 +1060,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 45
@@ -1196,7 +1196,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 51
@@ -1332,7 +1332,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 57
@@ -1486,8 +1486,8 @@
     },
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
+      "x": 2,
+      "y": -150,
       "z": 0
     },
     "_lrot": {
@@ -1499,8 +1499,8 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0.7,
+      "y": 0.7,
       "z": 1
     },
     "_mobility": 0,
@@ -1677,11 +1677,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "destroy",
+    "defaultAnimation": "box_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -1692,7 +1692,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -1761,7 +1761,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0,
+      "y": -23,
       "z": 0
     },
     "_lrot": {
@@ -1773,8 +1773,8 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0.9,
+      "y": 0.9,
       "z": 1
     },
     "_mobility": 0,
@@ -1888,11 +1888,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "<None>",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -1903,7 +1903,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -2024,11 +2024,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -2039,7 +2039,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -2160,11 +2160,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -2175,7 +2175,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -2296,11 +2296,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -2311,7 +2311,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -2432,11 +2432,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -2447,7 +2447,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -2568,11 +2568,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -2583,7 +2583,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -2704,11 +2704,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -2719,7 +2719,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -2840,11 +2840,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -2855,7 +2855,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -2976,11 +2976,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "55f32b0c-2a1e-49a0-9c09-25a5690e6d2b",
+      "__uuid__": "e6f6acbc-90cb-41fe-8822-78c1b5ccd1db",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "jar_idle",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -2991,7 +2991,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -3150,6 +3150,9 @@
         "__id__": 126
       }
     ],
+    "boxSpine": {
+      "__id__": 71
+    },
     "_id": ""
   },
   {

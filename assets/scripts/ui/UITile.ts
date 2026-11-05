@@ -62,6 +62,7 @@ export class UITile extends Component {
     disableSound: boolean = false;
 
     public keepSpineVisible: boolean = false;
+    public useSpineDestroyOnly: boolean = false;
 
     private fallTime: number = 0.35;
     private fallSpeed: number = 3300;
@@ -190,6 +191,24 @@ export class UITile extends Component {
         if (this.particlesParent) {
             this.destroyLayout.addChild(this.particlesParent);
             this.particlesParent.setPosition(this.currentX, this.currentY);
+        }
+
+        if (this.useSpineDestroyOnly) {
+            this.playDestroySound();
+
+            tween(this.node).stop();
+
+            if (this.content && this.content !== this.node) {
+                tween(this.content).stop();
+            }
+
+            this.scheduleOnce(() => {
+                if (this.node.isValid) {
+                    this.node.destroy();
+                }
+            }, Math.max(0, delay) + 1.35);
+
+            return;
         }
 
         this.playAnimation("destroy", false, 1);
