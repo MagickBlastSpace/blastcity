@@ -45,7 +45,7 @@ export const languages = {
     "text": "Enter name"
   },
   "main_menu": {
-    "locations": "Locations",
+    "locations": "Saga",
     "leaderboard": "Leaderboard",
     "play": "Play",
     "clan": "Clan",
@@ -158,7 +158,7 @@ export const languages = {
     "lrdoublereward": "The number of rewards for levels will temporarily double!"
   },
   "locations": {
-    "title": "Locations",
+    "title": "Saga",
     "chapter": "Chapter",
     "unlocked": "Chapter unlocked!",
     "continue": "Continue",

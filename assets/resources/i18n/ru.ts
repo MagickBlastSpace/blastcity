@@ -45,7 +45,7 @@ export const languages = {
     "text": "Введите имя"
   },
   "main_menu": {
-    "locations": "Локации",
+    "locations": "Сага",
     "leaderboard": "Рейтинг",
     "play": "Играть",
     "clan": "Клан",
@@ -158,7 +158,7 @@ export const languages = {
     "lrdoublereward": "Количество наград за уровни временно увеличится в два раза!"
   },
   "locations": {
-    "title": "Локации",
+    "title": "Сага",
     "chapter": "Глава",
     "unlocked": "Глава открыта!",
     "continue": "Продолжить",

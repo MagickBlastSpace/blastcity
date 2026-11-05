@@ -2,6 +2,7 @@ import {
     _decorator,
     AssetManager,
     assetManager,
+    EventMouse,
     instantiate,
     Node,
     Prefab,
@@ -88,38 +89,42 @@ export class UILocationsFrame extends UIFrameBase {
         boolean | null = null;
 
     onEnable() {
+        if (typeof window !== 'undefined') {
+            this.boundResize = () => {
+                this.scheduleOnce(() => {
+                    this.updateCardsLayout();
+                    this.scrollToCurrentLocation();
+                }, 0);
+            };
 
-        if(typeof window === 'undefined') {
-            return;
+            window.addEventListener('resize', this.boundResize);
         }
 
-        this.boundResize = () => {
-            this.scheduleOnce(() => {
-                this.updateCardsLayout();
-                this.scrollToCurrentLocation();
-            }, 0);
-        }
+        this.scrollView?.node.off(
+            Node.EventType.MOUSE_WHEEL,
+            this.onSagaMouseWheel,
+            this
+        );
 
-        window.addEventListener(
-            'resize',
-            this.boundResize
+        this.scrollView?.node.on(
+            Node.EventType.MOUSE_WHEEL,
+            this.onSagaMouseWheel,
+            this
         );
     }
 
-
     onDisable() {
-
-        if(
-            this.boundResize &&
-            typeof window !== 'undefined'
-        ) {
-            window.removeEventListener(
-                'resize',
-                this.boundResize
-            );
+        if (this.boundResize && typeof window !== 'undefined') {
+            window.removeEventListener('resize', this.boundResize);
         }
 
         this.boundResize = null;
+
+        this.scrollView?.node.off(
+            Node.EventType.MOUSE_WHEEL,
+            this.onSagaMouseWheel,
+            this
+        );
     }
 
     show() {
@@ -710,7 +715,7 @@ export class UILocationsFrame extends UIFrameBase {
             bottomPadding = this.mobileBottomPadding;
         }
         else if(layoutMode === 'tablet') {
-            bottomPadding = this.tabletBottomPadding;
+            bottomPadding = this.defaultBottomPadding;
         }
 
         const contentHeight =
@@ -929,6 +934,31 @@ export class UILocationsFrame extends UIFrameBase {
             loadPromise;
 
         return loadPromise;
+    }
+
+    private onSagaMouseWheel(event: EventMouse) {
+        if (!this.scrollView || !this.scrollView.node.activeInHierarchy) {
+            return;
+        }
+
+        const wheelSpeed = 1.5;
+        const wheelDelta = event.getScrollY();
+
+        const currentOffset = this.scrollView.getScrollOffset();
+        const maxOffset = this.scrollView.getMaxScrollOffset();
+
+        const nextOffsetY = Math.max(
+            0,
+            Math.min(
+                maxOffset.y,
+                currentOffset.y - wheelDelta * wheelSpeed
+            )
+        );
+
+        this.scrollView.scrollToOffset(
+            new Vec2(currentOffset.x, nextOffsetY),
+            0
+        );
     }
 
     private clearCards() {
