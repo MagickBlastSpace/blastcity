@@ -221,7 +221,7 @@
         "__id__": 9
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 15
@@ -236,7 +236,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0,
+      "y": -12,
       "z": 0
     },
     "_lrot": {
@@ -248,8 +248,8 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0.7,
+      "y": 0.7,
       "z": 1
     },
     "_mobility": 0,
@@ -426,11 +426,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "b522be48-bbe1-4497-a23c-5bdd09dc0308",
+      "__uuid__": "c33ac1f7-1c6c-45b8-864a-c4a3cd3bc682",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "destroy",
+    "defaultAnimation": "idle_closed",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -441,7 +441,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -557,6 +557,7 @@
         "__expectedType__": "cc.AudioClip"
       }
     ],
+    "disableSound": false,
     "_id": ""
   },
   {

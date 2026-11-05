@@ -6,9 +6,9 @@ const { ccclass } = _decorator;
 @ccclass('SpecTileBase')
 export class SpecTileBase extends TileBase {
 
-    private strength: number;
+    protected strength: number;
 
-    private isDamaged: boolean;
+    protected isDamaged: boolean;
     private isGrouped: boolean;
 
     private isDoubleX: boolean;

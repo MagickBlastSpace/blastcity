@@ -326,42 +326,67 @@ export class UITile extends Component {
         }
     }*/
 
-    playAdditionalAnimation(skeleton: sp.Skeleton, animation: string, disableNode: Node) {
+    playAdditionalAnimation(
+        skeleton: sp.Skeleton,
+        animation: string,
+        disableNode: Node,
+        goalType: string | null = null
+    ) {
         try {
             const originalSpine = skeleton ? skeleton : this.spine;
+
+            if (!originalSpine?.skeletonData || !this.animationsLayout) {
+                console.warn(`[UITILE] Cannot play additional animation: ${animation}`);
+                return;
+            }
+
             const originalNode = originalSpine.node;
 
-            // Clone the original node
             const clonedNode = instantiate(originalNode);
             const clonedSkeleton = clonedNode.getComponent(sp.Skeleton);
 
-            // Ensure it's active
+            if (!clonedSkeleton) {
+                console.error('[UITILE] Cloned skeleton missing sp.Skeleton');
+                clonedNode.destroy();
+                return;
+            }
+
             clonedNode.active = true;
 
-            // Optional: disable a node during animation
             if (disableNode) {
                 disableNode.active = false;
             }
 
-            // Set position and parent
-            this.animationsLayout.addChild(clonedNode);
-            clonedNode.setPosition(this.currentX, this.currentY);
+            const goalEmitLayout = this.animationsLayout;
+            const posX = this.currentX;
+            const posY = this.currentY;
 
-            // Play animation on cloned skeleton
-            if (clonedSkeleton) {
-                clonedSkeleton.setCompleteListener(() => {
+            goalEmitLayout.addChild(clonedNode);
+            clonedNode.setPosition(posX, posY);
+
+            clonedSkeleton.setCompleteListener(() => {
+                if (goalType) {
+                    goalEmitLayout.emit(
+                        'goal_effect_positioned',
+                        goalType,
+                        posX,
+                        posY
+                    );
+                }
+
+                if (clonedNode.isValid) {
                     clonedNode.destroy();
-                    if (disableNode) {
-                        disableNode.active = true;
-                    }
-                });
+                }
 
-                clonedSkeleton.setAnimation(0, animation, false);
-            } else {
-                console.error("Cloned skeleton missing sp.Skeleton component");
-            }
+                if (disableNode?.isValid) {
+                    disableNode.active = true;
+                }
+            });
+
+            clonedSkeleton.setAnimation(0, animation, false);
+
         } catch (error) {
-            console.error('Error setting additional spine animation:', error);
+            console.error('[UITILE] Additional animation error:', error);
         }
     }
 
