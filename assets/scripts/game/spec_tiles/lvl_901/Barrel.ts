@@ -1,10 +1,10 @@
-import { _decorator, Component, Node } from 'cc';
-import { Watermelon } from '../lvl_241/Watermelon';
+import { _decorator, Node } from 'cc';
+import { Pumpkin } from '../lvl_241/Pumpkin';
 const { ccclass, property } = _decorator;
 
 @ccclass('Barrel')
-export class Barrel extends Watermelon {
-    
+export class Barrel extends Pumpkin {
+
     private possibleBonuses: string[] = [];
 
 

@@ -11,6 +11,9 @@
 export const LEGACY_LEVEL_IDS: Readonly<Record<string, string>> = {
     Fish: 'Otter',
     fish: 'otter',
+
+    Watermelon: 'Pumpkin',
+    watermelon: 'pumpkin',
 };
 
 export class LevelIdTranslator {

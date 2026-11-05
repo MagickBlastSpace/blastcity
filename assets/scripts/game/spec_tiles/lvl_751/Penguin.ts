@@ -1,9 +1,11 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame } from 'cc';
-import { Watermelon } from '../lvl_241/Watermelon';
+import { _decorator, SpriteFrame } from 'cc';
+import { Pumpkin } from '../lvl_241/Pumpkin';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('Penguin')
-export class Penguin extends Watermelon {
+export class Penguin extends Pumpkin {
+
     @property(SpriteFrame)
     hp4: SpriteFrame | null = null;
 
@@ -15,16 +17,21 @@ export class Penguin extends Watermelon {
     }
 
     refresh() {
-        switch(this.strength) {
+        if (!this.picture) return;
+
+        switch (this.strength) {
             case 1:
                 this.picture.spriteFrame = this.hp1;
                 break;
+
             case 2:
                 this.picture.spriteFrame = this.hp2;
                 break;
+
             case 3:
                 this.picture.spriteFrame = this.hp3;
                 break;
+
             case 4:
                 this.picture.spriteFrame = this.hp4;
                 break;
@@ -32,8 +39,6 @@ export class Penguin extends Watermelon {
     }
 
     startDestroyConsequences() {
-        this.node.emit("goal", "penguin");
+        this.node.emit('goal', 'penguin');
     }
 }
-
-
