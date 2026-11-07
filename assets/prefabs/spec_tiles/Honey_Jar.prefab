@@ -82,7 +82,7 @@
         "__id__": 3
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 9
@@ -97,7 +97,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 0,
+      "y": -10,
       "z": 0
     },
     "_lrot": {
@@ -109,8 +109,8 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0.75,
+      "y": 0.65,
       "z": 1
     },
     "_mobility": 0,
@@ -287,11 +287,11 @@
       "a": 255
     },
     "_skeletonData": {
-      "__uuid__": "9967748f-3ce7-499e-8407-fdd9d72ec802",
+      "__uuid__": "15234e8e-fc20-4f21-bee7-f692d1519d08",
       "__expectedType__": "sp.SkeletonData"
     },
     "defaultSkin": "default",
-    "defaultAnimation": "",
+    "defaultAnimation": "idle_jar",
     "_premultipliedAlpha": true,
     "_timeScale": 1,
     "_preCacheMode": 0,
@@ -302,7 +302,7 @@
     "_debugBones": false,
     "_debugSlots": false,
     "_enableBatch": false,
-    "loop": false,
+    "loop": true,
     "_id": ""
   },
   {
@@ -358,7 +358,7 @@
     "node": {
       "__id__": 1
     },
-    "_enabled": true,
+    "_enabled": false,
     "__prefab": {
       "__id__": 17
     },
@@ -447,6 +447,7 @@
       }
     ],
     "additionalAudios": [],
+    "disableSound": false,
     "_id": ""
   },
   {
