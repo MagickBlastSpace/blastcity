@@ -14,6 +14,15 @@ export const LEGACY_LEVEL_IDS: Readonly<Record<string, string>> = {
 
     Watermelon: 'Pumpkin',
     watermelon: 'pumpkin',
+
+    BigPinata: 'big_hive',
+    Big_Pinata: 'big_hive',
+    big_pinata: 'big_hive',
+    Big_Hive: 'big_hive',
+
+    Pinata: 'hive',
+    pinata: 'hive',
+    Hive: 'hive',
 };
 
 export class LevelIdTranslator {
