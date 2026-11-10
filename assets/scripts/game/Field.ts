@@ -861,6 +861,17 @@ export class Field extends Component {
             const bomb = spawnedTile.getComponent(Bomb);
 
             if (bomb?.bombSpine) {
+                const bombUi = spawnedTile.getComponent(UITile);
+
+                bombUi?.prepareInstantBonusSpawn();
+                spawnedTile.setScale(1, 1, 1);
+
+                console.log('[BOMB SPAWN FIX]', {
+                    row,
+                    col,
+                    position: spawnedTile.worldPosition.toString()
+                });
+
                 bomb.playSpawnAnimation(this.bonusSpawnOverlay);
                 return;
             }

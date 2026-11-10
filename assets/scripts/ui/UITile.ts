@@ -251,6 +251,12 @@ export class UITile extends Component {
         }, delay);
     }
 
+    public getAnimationsLayout(): Node | null {
+        return this.animationsLayout?.isValid
+            ? this.animationsLayout
+            : null;
+    }
+
     playAnimation(animation: string, isLooped: boolean, timeScale: number) {
         try {
             if (this.spine) {
@@ -596,6 +602,10 @@ export class UITile extends Component {
 
     setAnimationsLayout(layout: Node) {
         this.animationsLayout = layout;
+    }
+
+    public setSpineDestroyOnly(enabled: boolean): void {
+        this.useSpineDestroyOnly = enabled;
     }
 }
 

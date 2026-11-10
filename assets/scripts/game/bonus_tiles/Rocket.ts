@@ -1,4 +1,5 @@
-import { _decorator, Node, sp, Sprite, SpriteFrame, tween, Vec2, Vec3 } from 'cc';
+import { _decorator, instantiate, Node, sp, Sprite, SpriteFrame, tween, Vec2, Vec3 } from 'cc';
+import { UITile } from '../../ui/UITile';
 import { TileBase } from '../TileBase';
 import { BonusTileBase } from './BonusTileBase';
 import { Discoball } from './Discoball';
@@ -18,10 +19,108 @@ export class Rocket extends BonusTileBase {
     @property(Sprite)
     icon: Sprite = null;
 
+    @property
+    explosionScaleMultiplier: number = 1.25;
+
     private bombCombo_Delay: number = 0.3;
 
     private spawnVisualInOverlay: Node = null;
 
+
+
+    private playNewRocketExplosion( direction: 'rocket_horizontal' |
+         'rocket_vertical' = this.tileType as 'rocket_horizontal' |
+         'rocket_vertical' ): void {
+        const sourceSpine = this.spawnSpine;
+        const uiTile = this.node.getComponent(UITile);
+
+        if(!sourceSpine || !sourceSpine.skeletonData) {
+            console.warn('[ROCKET EXPLOSION] Source Spine missing');
+            return;
+        }
+
+        const overlayLayer = uiTile?.getAnimationsLayout();
+
+        if(!overlayLayer || !overlayLayer.isValid) {
+            console.warn('[ROCKET EXPLOSION] AnimationsLayer missing');
+            return;
+        }
+
+        const worldPosition = this.node.worldPosition.clone();
+
+        const visualNode = instantiate(sourceSpine.node);
+        const skeleton = visualNode.getComponent(sp.Skeleton);
+
+        if(!skeleton) {
+            visualNode.destroy();
+            console.warn('[ROCKET EXPLOSION] Cloned Skeleton missing');
+            return;
+        }
+
+        overlayLayer.addChild(visualNode);
+        visualNode.setWorldPosition(worldPosition);
+        visualNode.setSiblingIndex(overlayLayer.children.length - 1);
+
+        skeleton.enabled = true;
+        visualNode.active = true;
+
+        const baseScale = sourceSpine.node.scale;
+
+        visualNode.setScale(
+            baseScale.x * this.explosionScaleMultiplier,
+            baseScale.y * this.explosionScaleMultiplier,
+            baseScale.z
+        );
+
+        visualNode.setRotationFromEuler(
+            0,
+            0,
+            direction === 'rocket_vertical' ? 90 : 0
+        );
+
+        try {
+            if(!skeleton.findAnimation('activate')) {
+                throw new Error('Spine animation "activate" unavailable');
+            }
+
+            skeleton.clearTracks();
+            skeleton.setToSetupPose();
+
+            const track = skeleton.setAnimation(0, 'activate', false);
+
+            if(!track) {
+                throw new Error('Cannot start rocket activate');
+            }
+
+            uiTile?.setSpineDestroyOnly(true);
+
+            if(this.icon) {
+                this.icon.enabled = false;
+            }
+
+            skeleton.setTrackCompleteListener(track, () => {
+                if(visualNode.isValid) {
+                    visualNode.destroy();
+                }
+            });
+
+            console.log('[ROCKET EXPLOSION OVERLAY]', {
+                type: this.tileType,
+                position: worldPosition.toString(),
+                rotation:  direction === 'rocket_vertical' ? 90 : 0,
+                scale: visualNode.scale.toString(),
+                duration: track.animation?.duration,
+                parent: visualNode.parent?.name
+            });
+
+        } catch(error) {
+            console.error('[ROCKET EXPLOSION] Failed:', error);
+
+            if(visualNode.isValid) {
+                visualNode.destroy();
+            }
+        }
+    }
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -56,6 +155,14 @@ export class Rocket extends BonusTileBase {
             this.getCombo(field);
         }
 
+        console.log('[ROCKET ACTIVATION PATH]', {
+            type: this.tileType,
+            isBlockingCombo,
+            combo: this.combo,
+            row: this.row,
+            col: this.col
+        });
+
         let matches = this.getRocketMatchesByType(field, statuses);
 
         return matches;
@@ -70,7 +177,7 @@ export class Rocket extends BonusTileBase {
             return matches;
         }
 
-        this.playAnimation(this.tileType, false, 1);
+        this.playNewRocketExplosion();
 
         switch(this.tileType) {
             case 'rocket_vertical':
@@ -103,10 +210,13 @@ export class Rocket extends BonusTileBase {
         return matches;
     }
 
-    getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = [];
 
-        this.playAnimation("rocket_rocket", false, 1);
+    getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
+        const matches = [];
+
+        this.playNewRocketExplosion('rocket_horizontal');
+        this.playNewRocketExplosion('rocket_vertical');
+
         this.playComboSound();
 
         this.rowExtraHit(field, this.row, this.col);
@@ -114,6 +224,7 @@ export class Rocket extends BonusTileBase {
 
         return matches;
     }
+
 
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
@@ -209,11 +320,9 @@ export class Rocket extends BonusTileBase {
     setBonusPoolAnimation() {
         //this.isBonusPoolState = true;
 
-        let anim = this.tileType === "rocket_vertical" ? "rocket_discoball_vert" : "rocket_discoball_hor";
-
-        this.scheduleOnce(() => {
-            this.playAnimation(anim, true, 1);
-        }, 0.2);
+        if(!this.spawnSpine?.skeletonData) {
+            console.warn('[ROCKET BONUS POOL] New Spine is missing');
+        }
     }
 
 
