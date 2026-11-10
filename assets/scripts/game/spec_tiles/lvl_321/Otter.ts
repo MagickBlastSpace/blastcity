@@ -197,7 +197,18 @@ export class Otter extends SpecTileBase {
         this.isInactive = true;
 
         if (this.isOtter()) {
-            this.playOtterAnimation('idle_inactive', true);
+            const skeleton = this.getOtterSpine();
+
+            if (skeleton && skeleton.skeletonData) {
+                skeleton.node.active = true;
+
+                skeleton.setAnimation(0, 'collaps', false);
+                skeleton.addAnimation(0, 'idle_inactive', true, 0);
+
+                console.log('[OTTER] Sleep sequence started: collaps -> idle_inactive');
+            } else {
+                console.warn('[OTTER] Cannot play sleep sequence: Spine is missing');
+            }
         } else {
             this.icon.spriteFrame = this.inactive;
         }
