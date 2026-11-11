@@ -1,9 +1,45 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, isValid, sp } from 'cc';
+import { UITile } from '../../../ui/UITile';
 import { SpecTileBase } from '../SpecTileBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Sticker')
 export class Sticker extends SpecTileBase {
+
+    @property(sp.Skeleton)
+    crystalBallSpine: sp.Skeleton = null;
+
+    playAnimation(
+        animation: string,
+        isLooped: boolean,
+        timeScale: number
+    ): void {
+
+        if(
+            /^balloon\d+$/i.test(animation) &&
+            this.crystalBallSpine &&
+            this.crystalBallSpine.skeletonData &&
+            isValid(this.crystalBallSpine.node, true)
+        ) {
+            const uiTile = this.node.getComponent(UITile);
+
+            if(uiTile?.getAnimationsLayout()) {
+
+                uiTile.playAdditionalAnimation(
+                    this.crystalBallSpine,
+                    'destroy',
+                    null
+                );
+
+                this.crystalBallSpine.node.active = false;
+
+                return;
+            }
+        }
+
+        super.playAnimation(animation, isLooped, timeScale);
+    }
+
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 

@@ -23,6 +23,21 @@ export const LEGACY_LEVEL_IDS: Readonly<Record<string, string>> = {
     Pinata: 'hive',
     pinata: 'hive',
     Hive: 'hive',
+
+
+    Balloon: 'CrystalBall',
+    balloon: 'crystal_ball',
+    Balloon_Blue: 'CrystalBall_Blue',
+    balloon_blue: 'crystal_ball_blue',
+    Balloon_Green: 'CrystalBall_Green',
+    balloon_green: 'crystal_ball_green',
+    Balloon_Red: 'CrystalBall_Red',
+    balloon_red: 'crystal_ball_red',
+    Balloon_Yellow: 'CrystalBall_Yellow',
+    balloon_yellow: 'crystal_ball_yellow',
+    Balloon_Purple: 'CrystalBall_Purple',
+    balloon_purple: 'crystal_ball_purple',
+
 };
 
 export class LevelIdTranslator {
@@ -53,7 +68,11 @@ export class LevelIdTranslator {
         };
 
         translateItems(data.specialTiles);
-        translateItems(data.goals);
+        translateItems(
+            data.goals.filter((goal: any) =>
+                goal?.id?.toLowerCase() !== 'balloon'
+            )
+        );
         translateItems(data.statuses);
         translateItems(data.dynamiteGoals);
 
