@@ -1,4 +1,6 @@
-import { _decorator, Sprite, SpriteFrame } from 'cc';
+
+import { _decorator, sp, Sprite, SpriteFrame } from 'cc';
+import { UITile } from '../../../ui/UITile';
 import { SpecTileBase } from '../SpecTileBase';
 
 const { ccclass, property } = _decorator;
@@ -15,6 +17,9 @@ export class Lamp extends SpecTileBase {
     @property(Sprite)
     icon: Sprite = null;
 
+    @property(sp.Skeleton)
+    flashlightSpine: sp.Skeleton = null;
+
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -22,6 +27,11 @@ export class Lamp extends SpecTileBase {
         this.setIsShifts(true);
         this.setStrength(2);
         this.refresh();
+
+        if (this.flashlightSpine?.skeletonData) {
+            this.flashlightSpine.node.active = true;
+            this.flashlightSpine.setAnimation(0, 'idle_1', true);
+        }
     }
 
 
@@ -30,7 +40,8 @@ export class Lamp extends SpecTileBase {
             this.setStrength(this.getStrength() - 1);
             this.setAsDamaged();
 
-            if (this.getStrength() > 0) {
+            if (this.getStrength() === 1) {
+                this.playFirstHit();
                 this.playDamageSound();
             }
         }
@@ -39,13 +50,25 @@ export class Lamp extends SpecTileBase {
     }
 
 
+    private playFirstHit(): void {
+        const spine = this.flashlightSpine;
+
+        if (!spine?.skeletonData) {
+            return;
+        }
+
+        spine.setAnimation(0, 'hit_1', false);
+        spine.addAnimation(0, 'idle_2', true, 0);
+    }
+
+
     isReadyToDestroy(): boolean {
         return this.getStrength() <= 0;
     }
 
-
     destroyTile(delay: number) {
-        const hasVFX = this.node.getComponent('LampVFX') !== null;
+        const lampVFX = this.node.getComponent('LampVFX');
+        const hasVFX = lampVFX !== null && lampVFX.enabled;
 
         if (hasVFX) {
             super.destroyTile(Math.max(delay, 0.75));
@@ -56,19 +79,35 @@ export class Lamp extends SpecTileBase {
     }
 
 
+
     refresh() {
-        this.icon.spriteFrame =
-            this.getStrength() === 1 ? this.hp1 : this.hp2;
+        if (this.icon) {
+            this.icon.spriteFrame =
+                this.getStrength() === 1 ? this.hp1 : this.hp2;
+        }
     }
 
 
     startDestroyConsequences() {
-        this.node.emit("lamp_break_vfx");
+        const spine = this.flashlightSpine;
+        const uiTile = this.node.getComponent(UITile);
 
-        this.node.emit("goal", "lamp");
+        if (spine?.skeletonData) {
+            if (uiTile?.getAnimationsLayout()) {
+                this.playAdditionalAnimation(spine, 'hit_2', null);
+                spine.node.active = false;
+            } else {
+                spine.setAnimation(0, 'hit_2', false);
+            }
+        } else {
+            this.node.emit('lamp_break_vfx');
+        }
+
+        this.node.emit('goal', 'lamp');
+
         this.node.emit(
-            "goal_effect",
-            "lamp",
+            'goal_effect',
+            'lamp',
             this.getRow(),
             this.getCol()
         );
