@@ -1,6 +1,6 @@
-import { _decorator, Component, Node, Vec2, Vec3, sp } from 'cc';
-import { UIDiscoballLineRenderer } from './effects/UIDiscoballLineRenderer';
+import { _decorator, Component, Node, sp, Vec2, Vec3 } from 'cc';
 import { AudioController } from '../utils/AudioController';
+import { UIDiscoballLineRenderer } from './effects/UIDiscoballLineRenderer';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIField')
@@ -96,7 +96,7 @@ export class UIField extends Component {
         tileUi.init(posX, posY, layout, false, tileType);
         tileUi.setAnimationsLayout(this.animationsLayout);
 
-        tile.on("render_line", (start, end) => this.renderLine(start, end));
+        tile.on( 'render_line', (start, end, skinName, animationName) =>  this.renderLine(start, end, skinName, animationName));
         tile.on("clear_lines", () => this.clearLines());
     }
 
@@ -138,7 +138,7 @@ export class UIField extends Component {
         tileUi.setAnimationsLayout(this.animationsLayout);
     }
 
-    
+
     refresh(tiles: Node[][], statuses: Node[][]) {
         const numRows: number = tiles.length;
         const numCols: number = tiles.length > 0 ? tiles[0].length : 0;
@@ -182,14 +182,14 @@ export class UIField extends Component {
     }
 
 
-    renderLine(start: Vec2, end: Vec2) {
+    renderLine(start: Vec2, end: Vec2, skinName: string = 'blue', animationName: 'line_color_1' | 'line_color_2' = 'line_color_1') {
         let start_pos_X = start.y * (this.tileSize + this.tileSpacing) + this.xOffset;
         let start_pos_Y = start.x * (this.tileSize + this.tileSpacing) + this.xOffset;
 
         let end_pos_X = end.y * (this.tileSize + this.tileSpacing) + this.xOffset;
         let end_pos_Y = end.x * (this.tileSize + this.tileSpacing) + this.xOffset;
 
-        this.lr.renderDiscoballLine(new Vec3(start_pos_X, start_pos_Y, 0), new Vec3(end_pos_X, end_pos_Y, 0));
+        this.lr.renderDiscoballLine(new Vec3(start_pos_X, start_pos_Y, 0), new Vec3(end_pos_X, end_pos_Y, 0), skinName, animationName);
     }
 
     clearLines() {

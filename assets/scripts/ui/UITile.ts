@@ -82,6 +82,13 @@ export class UITile extends Component {
 
     private targetLayout: Node = null;
 
+    private visualMovementTween: Tween<Node> | null = null;
+    private isVisualMovementActive: boolean = false;
+
+    public isVisualMoving(): boolean {
+        return this.isVisualMovementActive;
+    }
+
     start() {
         this.isBlocked = false;
 
@@ -120,13 +127,25 @@ export class UITile extends Component {
 
         let fallTime = (startPosition - posY) / this.fallSpeed;
 
-        tween(this.node)
+
+        this.visualMovementTween?.stop();
+        this.isVisualMovementActive = true;
+
+        this.visualMovementTween = tween(this.node)
             .to(0.05, { scale: new Vec3(0.92, 1.08, 1) }, { easing: 'linear' })
             .to(fallTime, { position: new Vec3(posX, posY, 0) })
-            .call(() => layout.addChild(this.node))
+            .call(() => {
+                if(layout.isValid && this.node.isValid) {
+                    layout.addChild(this.node);
+                }
+            })
             .to(0.07, { scale: new Vec3(1.03, 0.97, 1) }, { easing: 'elasticInOut' })
             .to(0.07, { scale: new Vec3(0.97, 1.03, 1) }, { easing: 'elasticInOut' })
             .to(0.07, { scale: new Vec3(1, 1, 1) }, { easing: 'elasticInOut' })
+            .call(() => {
+                this.isVisualMovementActive = false;
+                this.visualMovementTween = null;
+            })
             .start();
 
         this.setParticlesIcons(tileType);
@@ -145,15 +164,24 @@ export class UITile extends Component {
         this.currentX = posX;
         this.currentY = posY;
 
-        tween(this.node).stop();
+        this.visualMovementTween?.stop();
+        this.isVisualMovementActive = true;
 
-        tween(this.node)
+        this.visualMovementTween = tween(this.node)
             .to(0.05, { scale: new Vec3(0.92, 1.08, 1) }, { easing: 'linear' })
             .to(this.fallTime, { position: new Vec3(posX, posY, 0) })
-            .call(() => layout.addChild(this.node))
+            .call(() => {
+                if(layout.isValid && this.node.isValid) {
+                    layout.addChild(this.node);
+                }
+            })
             .to(0.07, { scale: new Vec3(1.03, 0.97, 1) }, { easing: 'elasticInOut' })
             .to(0.07, { scale: new Vec3(0.97, 1.03, 1) }, { easing: 'elasticInOut' })
             .to(0.07, { scale: new Vec3(1, 1, 1) }, { easing: 'elasticInOut' })
+            .call(() => {
+                this.isVisualMovementActive = false;
+                this.visualMovementTween = null;
+            })
             .start();
     }
 
@@ -399,6 +427,9 @@ export class UITile extends Component {
 
     prepareInstantBonusSpawn() {
         Tween.stopAllByTarget(this.node);
+
+        this.visualMovementTween = null;
+        this.isVisualMovementActive = false;
 
         if(this.targetLayout && isValid(this.targetLayout, true)) {
             this.targetLayout.addChild(this.node);

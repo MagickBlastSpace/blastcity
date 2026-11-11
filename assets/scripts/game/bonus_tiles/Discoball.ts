@@ -1,5 +1,7 @@
-import { _decorator, Node, Sprite, SpriteFrame, tween, Vec2, Vec3 } from 'cc';
+import { _decorator, instantiate, Node, sp, Sprite, SpriteFrame, tween, Vec2, Vec3 } from 'cc';
+import { UITile } from '../../ui/UITile';
 import { SpriteTileData } from '../Tile';
+import { TileBase } from '../TileBase';
 import { BonusTileBase } from './BonusTileBase';
 const { ccclass, property } = _decorator;
 
@@ -19,10 +21,18 @@ export class Discoball extends BonusTileBase {
     @property(Sprite)
     icon: Sprite = null;
 
+    @property(sp.Skeleton)
+    discoballSpine: sp.Skeleton = null;
+
     private primaryColor: string = "";
     private secondaryColor: string = "";
 
     private disco_disco_time: number = 0.7;
+
+    private currentSpineSkin: string = "";
+    private isSpineSpawned: boolean = false;
+
+    private isSpineActivationStarted: boolean = false;
 
 
     init(row: number, col: number, tileType: string) {
@@ -42,20 +52,20 @@ export class Discoball extends BonusTileBase {
             this.getCombo(field);
         }
 
-        let tilesToDestroy = isBlockingCombo ? this.getMatchesClear(field, statuses) : this.getMatchesByType(field, statuses);
+        let tilesToDestroy = isBlockingCombo ? this.getMatchesClear(field, statuses) : this.getDiscoballMatchesByType(field, statuses);
 
         return tilesToDestroy;
     }
 
 
     getMatchesClear(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = this.getMatchesByType(field, statuses);
+        let matches = this.getDiscoballMatchesByType(field, statuses);
 
         return matches;
     }
 
 
-    getMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
+    getDiscoballMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
         if(this.isActivated) {
             return;
         }
@@ -85,7 +95,11 @@ export class Discoball extends BonusTileBase {
         let totalTime = this.timeBetweenTiles * tiles.length;
         totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
 
-        this.activateIsolatedDiscoballAnimation(this.disco_combo_time / totalTime);
+
+        const lastLineEnd = Math.max( totalTime,  Math.max(0, tiles.length - 2) * this.timeBetweenTiles + 0.87);
+
+        this.activateIsolatedDiscoballAnimation( this.disco_combo_time / totalTime, lastLineEnd);
+
 
         this.setRespawnEvent(totalTime + 0.05);
 
@@ -98,7 +112,12 @@ export class Discoball extends BonusTileBase {
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 try {
-                    this.renderLine(new Vec2(this.row, this.col), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+                    this.renderLine(
+                        new Vec2(this.row, this.col),
+                        new Vec2(tiles[i].getRow(), tiles[i].getCol()),
+                        this.getLineSkinName(),
+                        this.getLineAnimationForTarget(tiles[i].getTileType())
+                    );
                 }
                 catch (error) {
                     console.log("Render Line Error: " + error);
@@ -143,6 +162,7 @@ export class Discoball extends BonusTileBase {
         return matches;
     }
 
+
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
 
@@ -150,45 +170,84 @@ export class Discoball extends BonusTileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         let tiles = [];
-        tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
+
+        tiles = this.tileType === 'super'
+            ? this.getTwoBiggestCommonTilesGroups(field, statuses)
+            : this.getBiggestCommonTilesGroup(field, statuses);
 
         for(let i = 0; i < tiles.length; i++) {
-            this.node.emit("goal", "discoball");
+            this.node.emit('goal', 'discoball');
         }
 
         let totalTime = this.timeBetweenTiles * tiles.length;
-        totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
+
+        totalTime = totalTime < this.disco_combo_time
+            ? this.disco_combo_time
+            : totalTime;
 
         this.activateDiscoballComboAnimation(field);
-        this.activateIsolatedDiscoballAnimation(this.disco_combo_time / totalTime);
+
+        const lastLineEnd = Math.max(
+            totalTime,
+            Math.max(0, tiles.length - 1) * this.timeBetweenTiles + 0.87
+        );
+
+        this.activateIsolatedDiscoballAnimation(
+            this.disco_combo_time / totalTime,
+            lastLineEnd
+        );
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 try {
-                    this.renderLine(new Vec2(this.row, this.col), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+                    this.renderLine(
+                        new Vec2(this.row, this.col),
+                        new Vec2(tiles[i].getRow(), tiles[i].getCol()),
+                        this.getLineSkinName(),
+                        this.getLineAnimationForTarget(tiles[i].getTileType())
+                    );
                 }
-                catch (error) {
-                    console.log("Render Line Error: " + error);
+                catch(error) {
+                    console.log('Render Line Error: ' + error);
                 }
 
-                const rocketString = Math.floor(Math.random() * 2) === 0 ? "rocket_vertical" : "rocket_horizontal";
+                const rocketString = Math.floor(Math.random() * 2) === 0
+                    ? 'rocket_vertical'
+                    : 'rocket_horizontal';
+
                 this.changeTile(tiles[i], rocketString);
+
             }, this.timeBetweenTiles * i);
         }
 
         this.scheduleOnce(() => {
-            this.node.emit("clear_lines");
+            this.node.emit('clear_lines');
 
-            this.node.emit("extra_hit", this.row, this.col, false, 0);
-            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
+            this.node.emit(
+                'extra_hit',
+                this.row,
+                this.col,
+                false,
+                0
+            );
 
-            this.node.emit("activate_bonus_pool");
+            this.node.emit(
+                'extra_hit',
+                this.comboPosition.x,
+                this.comboPosition.y,
+                false,
+                0
+            );
+
+            this.node.emit('activate_bonus_pool');
+
         }, totalTime);
 
         this.playComboSound();
 
         return matches;
     }
+
 
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
@@ -197,38 +256,73 @@ export class Discoball extends BonusTileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         let tiles = [];
-        tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
+
+        tiles = this.tileType === 'super'
+            ? this.getTwoBiggestCommonTilesGroups(field, statuses)
+            : this.getBiggestCommonTilesGroup(field, statuses);
 
         for(let i = 0; i < tiles.length; i++) {
-            this.node.emit("goal", "discoball");
+            this.node.emit('goal', 'discoball');
         }
 
         let totalTime = this.timeBetweenTiles * tiles.length;
-        totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
+
+        totalTime = totalTime < this.disco_combo_time
+            ? this.disco_combo_time
+            : totalTime;
 
         this.activateDiscoballComboAnimation(field);
-        this.activateIsolatedDiscoballAnimation(2.0 / totalTime);
+
+        const lastLineEnd = Math.max(
+            totalTime,
+            Math.max(0, tiles.length - 1) * this.timeBetweenTiles + 0.87
+        );
+
+        this.activateIsolatedDiscoballAnimation(
+            2.0 / totalTime,
+            lastLineEnd
+        );
 
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 try {
-                    this.renderLine(new Vec2(this.row, this.col), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+                    this.renderLine(
+                        new Vec2(this.row, this.col),
+                        new Vec2(tiles[i].getRow(), tiles[i].getCol()),
+                        this.getLineSkinName(),
+                        this.getLineAnimationForTarget(tiles[i].getTileType())
+                    );
                 }
-                catch (error) {
-                    console.log("Render Line Error: " + error);
+                catch(error) {
+                    console.log('Render Line Error: ' + error);
                 }
 
-                this.changeTile(tiles[i], "bomb");
+                this.changeTile(tiles[i], 'bomb');
+
             }, this.timeBetweenTiles * i);
         }
 
         this.scheduleOnce(() => {
-            this.node.emit("clear_lines");
+            this.node.emit('clear_lines');
 
-            this.node.emit("extra_hit", this.row, this.col, false, 0);
-            this.node.emit("extra_hit", this.comboPosition.x, this.comboPosition.y, false, 0);
+            this.node.emit(
+                'extra_hit',
+                this.row,
+                this.col,
+                false,
+                0
+            );
 
-            this.node.emit("activate_bonus_pool");
+            this.node.emit(
+                'extra_hit',
+                this.comboPosition.x,
+                this.comboPosition.y,
+                false,
+                0
+            );
+
+            this.node.emit('activate_bonus_pool');
+
         }, totalTime);
 
         this.playComboSound();
@@ -236,35 +330,51 @@ export class Discoball extends BonusTileBase {
         return matches;
     }
 
-    getDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = [];
 
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
+    getDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
+        const matches: Node[] = [];
+
+        const numRows = field.length;
+        const numCols = numRows > 0 ? field[0].length : 0;
+
+        const hitDelay = 0.1;
+        const activeFadeTime = 0.8333;
 
         this.activateDiscoballComboAnimation(field);
-        this.playAnimation("discoball_discoball", false, 1);
+
+        this.activateIsolatedDiscoballAnimation(
+            1,
+            activeFadeTime
+        );
+
         this.playDoubleDiscoballSound();
-        this.playHideAnimation(this.icon.node);
 
         this.scheduleOnce(() => {
             for(let i = 0; i < numRows; i++) {
                 for(let j = 0; j < numCols; j++) {
-                    let isBonusChain = this.isChain(i, j);
-                    this.node.emit("extra_hit", i, j, isBonusChain, 0);
+                    const isBonusChain = this.isChain(i, j);
 
-                    this.node.emit("goal", "discoball");
+                    this.node.emit(
+                        'extra_hit',
+                        i,
+                        j,
+                        isBonusChain,
+                        0
+                    );
+
+                    this.node.emit('goal', 'discoball');
                 }
             }
 
             this.clearTiles();
 
-        }, this.disco_disco_time);
+        }, hitDelay);
 
-        this.setRespawnEvent(this.disco_disco_time);
+        this.setRespawnEvent(hitDelay + this.respawnDelay);
 
         return matches;
     }
+
 
     getSuperDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
         let matches = [];
@@ -273,9 +383,13 @@ export class Discoball extends BonusTileBase {
         const numCols: number = field.length > 0 ? field[0].length : 0;
 
         this.activateDiscoballComboAnimation(field);
-        this.playAnimation("discoball_discoball", false, 1);
+        //Временно оставим шар+шар без анимации поля , после добавим новую анимацию
+        this.activateIsolatedDiscoballAnimation(
+            1,
+            this.disco_disco_time
+        );
+
         this.playDoubleDiscoballSound();
-        this.playHideAnimation(this.icon.node);
 
         this.scheduleOnce(() => {
             for(let i = 0; i < numRows; i++) {
@@ -326,33 +440,47 @@ export class Discoball extends BonusTileBase {
     }
 
 
-    activateDiscoballComboAnimation(field: Node[][]) {
+    activateDiscoballComboAnimation(field: Node[][]): void {
         try {
-            const tile = field[this.comboPosition.x][this.comboPosition.y];
-            const tileComp = tile?.getComponent(BonusTileBase);
-
-            if (!tileComp) {
+            if(!this.comboPosition) {
                 return;
             }
 
-            const tileType = tileComp.getTileType();
+            const tile = field[this.comboPosition.x]?.[this.comboPosition.y];
 
-            if (
-                tileType === "bomb" ||
-                tileType === "rocket_vertical" ||
-                tileType === "rocket_horizontal"
-            ) {
+            if(!tile || !tile.isValid || tile === this.node) {
                 return;
             }
 
-            if (tileType === "multi") {
-                this.playHideAnimation(tile);
-                tileComp.playAnimation("destroy", true, 1);
+            const otherDiscoball = tile.getComponent(Discoball);
+
+            if(!otherDiscoball || !otherDiscoball.isValid) {
+                return;
             }
-        } catch (error) {
-            console.log("Activate disco animation error: " + error);
+
+            const tileType = otherDiscoball.getTileType();
+
+            if(tileType !== 'multi' && tileType !== 'super') {
+                return;
+            }
+
+            otherDiscoball.activateIsolatedDiscoballAnimation(
+                1,
+                0.8333
+            );
+
+            console.log('[DISCO COMBO SECOND SPINE]', {
+                type: tileType,
+                row: otherDiscoball.getRow(),
+                col: otherDiscoball.getCol(),
+                skin: otherDiscoball.getLineSkinName()
+            });
+
+        } catch(error) {
+            console.error('[DISCO COMBO] Second discoball activation failed:', error);
         }
     }
+
 
     playHideAnimation(nodeToHide: Node) {
         tween(nodeToHide)
@@ -360,7 +488,14 @@ export class Discoball extends BonusTileBase {
             .start();
     }
 
-    activateIsolatedDiscoballAnimation(timeScale: number) {
+    activateIsolatedDiscoballAnimation(
+        timeScale: number,
+        visibleUntil?: number
+    ) {
+        if(this.playNewDiscoballActivation(timeScale, visibleUntil)) {
+            return;
+        }
+
         let colorString = "0";
 
         switch(this.primaryColor) {
@@ -463,6 +598,102 @@ export class Discoball extends BonusTileBase {
     }
 
 
+    private playNewDiscoballSpawn(): void {
+        const skeleton = this.discoballSpine;
+
+        if(!skeleton || !skeleton.skeletonData) {
+            console.warn('[DISCO SPINE] New Spine missing');
+            return;
+        }
+
+        if(this.isSpineActivationStarted) {
+            return;
+        }
+
+        if(!this.primaryColor) {
+            console.warn('[DISCO SPINE] Primary color not selected');
+            return;
+        }
+
+        if(this.tileType === 'super' && !this.secondaryColor) {
+            return;
+        }
+
+        const skinName = this.getLineSkinName();
+
+        const visualNode = skeleton.node;
+        visualNode.active = true;
+        skeleton.enabled = true;
+
+        if(!visualNode.activeInHierarchy) {
+            console.warn('[DISCO SPINE] Node is inactive in hierarchy');
+            return;
+        }
+
+        try {
+            if(this.currentSpineSkin !== skinName) {
+                skeleton.setSkin(skinName);
+                skeleton.setSlotsToSetupPose();
+
+                this.currentSpineSkin = skinName;
+
+                console.log('[DISCO SPINE COLOR]', {
+                    type: this.tileType,
+                    skin: skinName,
+                    isSpineSpawned: this.isSpineSpawned
+                });
+            }
+
+            if(this.isSpineSpawned) {
+                return;
+            }
+
+            skeleton.clearTracks();
+            skeleton.setToSetupPose();
+
+            const spawnTrack = skeleton.setAnimation(
+                0,
+                'appiert',
+                false
+            );
+
+            if(!spawnTrack) {
+                throw new Error('Cannot start appiert animation');
+            }
+
+            skeleton.addAnimation(
+                0,
+                'idle',
+                true,
+                0
+            );
+
+            this.isSpineSpawned = true;
+
+            if(this.icon) {
+                this.icon.enabled = false;
+            }
+
+            console.log('[DISCO SPINE SPAWN]', {
+                type: this.tileType,
+                skin: skinName,
+                animation: 'appiert -> idle',
+                duration: spawnTrack.animation?.duration
+            });
+
+        } catch(error) {
+            console.error('[DISCO SPINE] Spawn failed:', error);
+
+            if(!this.isSpineSpawned) {
+                visualNode.active = false;
+
+                if(this.icon) {
+                    this.icon.enabled = true;
+                }
+            }
+        }
+    }
+
     setColor(primaryColor: string, secondaryColor: string) {
         this.primaryColor = primaryColor;
         this.secondaryColor = secondaryColor;
@@ -472,6 +703,259 @@ export class Discoball extends BonusTileBase {
         }
         else {
             this.icon.spriteFrame = this.superIcons.find(i => i.id === (primaryColor + "_" + secondaryColor))?.icon;
+        }
+
+        this.playNewDiscoballSpawn();
+    }
+
+
+    public getLineSkinName(): string {
+        if(this.tileType !== 'super' || !this.secondaryColor) {
+            return this.primaryColor || 'blue';
+        }
+
+        const colorOrder = ['yellow', 'red', 'purple', 'green', 'blue'];
+
+        const firstIndex = colorOrder.indexOf(this.primaryColor);
+        const secondIndex = colorOrder.indexOf(this.secondaryColor);
+
+        if(firstIndex < 0 || secondIndex < 0 || firstIndex === secondIndex) {
+            return this.primaryColor || 'blue';
+        }
+
+        return firstIndex < secondIndex
+            ? `${this.primaryColor}_${this.secondaryColor}`
+            : `${this.secondaryColor}_${this.primaryColor}`;
+    }
+
+    public getLineAnimationForTarget(
+        targetColor: string
+    ): 'line_color_1' | 'line_color_2' {
+        const skinName = this.getLineSkinName();
+        const colors = skinName.split('_');
+
+        if(colors.length === 2 && targetColor === colors[1]) {
+            return 'line_color_2';
+        }
+
+        return 'line_color_1';
+    }
+
+    private playNewDiscoballActivation(
+        timeScale: number,
+        visibleUntil?: number
+    ): boolean {
+        if(this.tileType !== 'multi' && this.tileType !== 'super') {
+            return false;
+        }
+
+        if(this.tileType === 'super' && !this.secondaryColor) {
+            return false;
+        }
+
+        if(this.isSpineActivationStarted) {
+            return true;
+        }
+
+        const sourceSpine = this.discoballSpine;
+        const uiTile = this.node.getComponent(UITile);
+        const overlayLayer = uiTile?.getAnimationsLayout();
+
+        if(
+            !sourceSpine ||
+            !sourceSpine.skeletonData ||
+            !sourceSpine.node.isValid ||
+            !overlayLayer?.isValid
+        ) {
+            console.warn('[DISCO ACTIVE] Spine or overlay missing');
+            return false;
+        }
+
+        console.log('[DISCO ACTIVATION SOURCE]', {
+            type: this.tileType,
+            row: this.row,
+            col: this.col,
+            moving: uiTile?.isVisualMoving(),
+            tileWorldPosition: this.node.worldPosition.toString(),
+            spineWorldPosition: sourceSpine.node.worldPosition.toString(),
+            spineActive: sourceSpine.node.active,
+            overlayActive: overlayLayer.activeInHierarchy
+        });
+
+        const sourceNode = sourceSpine.node;
+
+        const worldPosition = sourceNode.worldPosition.clone();
+        const worldRotation = sourceNode.worldRotation.clone();
+        const worldScale = sourceNode.worldScale.clone();
+
+        const visualNode = instantiate(sourceNode);
+        visualNode.name = 'DiscoballActiveFx';
+
+        const skeleton = visualNode.getComponent(sp.Skeleton);
+
+        if(!skeleton) {
+            console.warn('[DISCO ACTIVE] Cloned Skeleton missing');
+            visualNode.destroy();
+            return false;
+        }
+
+        overlayLayer.addChild(visualNode);
+
+        visualNode.setWorldPosition(worldPosition);
+        visualNode.setWorldRotation(worldRotation);
+        visualNode.setWorldScale(worldScale);
+        visualNode.setSiblingIndex(overlayLayer.children.length - 1);
+
+        visualNode.active = true;
+        skeleton.enabled = true;
+
+        console.log('[DISCO OVERLAY POSITION]', {
+            type: this.tileType,
+            row: this.row,
+            col: this.col,
+            source: worldPosition.toString(),
+            clone: visualNode.worldPosition.toString(),
+            parent: overlayLayer.name
+        });
+
+        try {
+            const skinName = this.getLineSkinName();
+
+            skeleton.setSkin(skinName);
+            skeleton.setSlotsToSetupPose();
+
+            if(
+                !skeleton.findAnimation('idle') ||
+                !skeleton.findAnimation('active')
+            ) {
+                throw new Error('Discoball idle or active animation missing');
+            }
+
+            skeleton.clearTracks();
+            skeleton.setToSetupPose();
+            skeleton.timeScale = 1;
+
+            const idleTrack = skeleton.setAnimation(
+                0,
+                'idle',
+                true
+            );
+
+            if(!idleTrack) {
+                throw new Error('Cannot start discoball idle');
+            }
+
+            const safeTimeScale = Math.max(0.01, timeScale);
+
+            const totalTime = this.disco_combo_time / safeTimeScale;
+            const lastLineEnd = visibleUntil ?? (totalTime + 0.87);
+
+            const activeFadeTime = 0.8333;
+
+            const activeDelay = Math.max(
+                0,
+                lastLineEnd - activeFadeTime
+            );
+
+            tween(visualNode)
+                .delay(activeDelay)
+                .call(() => {
+                    if(!visualNode.isValid || !skeleton.isValid) {
+                        return;
+                    }
+
+                    try {
+                        skeleton.clearTracks();
+                        skeleton.setToSetupPose();
+                        skeleton.timeScale = 1;
+
+                        const activeTrack = skeleton.setAnimation(
+                            0,
+                            'active',
+                            false
+                        );
+
+                        if(!activeTrack) {
+                            throw new Error('Cannot start discoball active');
+                        }
+
+                        skeleton.setTrackCompleteListener(
+                            activeTrack,
+                            () => {
+                                if(visualNode.isValid) {
+                                    console.log('[DISCO ACTIVE COMPLETE]', {
+                                        skin: skinName
+                                    });
+
+                                    visualNode.destroy();
+                                }
+                            }
+                        );
+
+                        console.log('[DISCO ACTIVE START]', {
+                            skin: skinName,
+                            delay: activeDelay,
+                            duration: activeTrack.animation?.duration
+                        });
+
+                    } catch(error) {
+                        console.error(
+                            '[DISCO ACTIVE] Playback failed:',
+                            error
+                        );
+
+                        if(visualNode.isValid) {
+                            visualNode.destroy();
+                        }
+                    }
+                })
+
+                .delay(1.5)
+                .call(() => {
+                    if(visualNode.isValid) {
+                        console.warn(
+                            '[DISCO FX FALLBACK CLEANUP]',
+                            {
+                                skin: skinName,
+                                node: visualNode.name,
+                                position: visualNode.worldPosition.toString()
+                            }
+                        );
+
+                        visualNode.destroy();
+                    }
+                })
+                .start();
+
+            this.isSpineActivationStarted = true;
+
+            sourceNode.active = false;
+
+            if(this.icon) {
+                this.icon.enabled = false;
+            }
+
+            uiTile?.setSpineDestroyOnly(true);
+
+            console.log('[DISCO ACTIVE SCHEDULED]', {
+                type: this.tileType,
+                skin: skinName,
+                totalTime,
+                lastLineEnd,
+                activeDelay,
+                position: worldPosition.toString()
+            });
+
+            return true;
+
+        } catch(error) {
+            console.error('[DISCO ACTIVE] Setup failed:', error);
+
+            if(visualNode.isValid) {
+                visualNode.destroy();
+            }
+
+            return false;
         }
     }
 }

@@ -59,6 +59,9 @@ export class Field extends Component {
     @property(Node)
     bonusSpawnOverlay: Node = null;
 
+    @property
+    devForceSuperDiscoball: boolean = false;
+
 	private tileArray: Node[][] = [];
 	private statusArray: Node[][] = [];
 
@@ -740,7 +743,9 @@ export class Field extends Component {
         this.layersForCleanup[0].addChild(tileNode);
 
         const tileComponent = tileNode.getComponent("Discoball");
-        const tileType = this.isSuperDiscoballMode ? "super" : "multi";
+        const useSuper = this.isSuperDiscoballMode || (UserData.instance?.isDevMode() && this.devForceSuperDiscoball);
+
+        const tileType = useSuper ? 'super' : 'multi';
         const spawnedTile = this.initTile(tileComponent, row, col, tileType);
 
         return spawnedTile;
@@ -1354,141 +1359,241 @@ export class Field extends Component {
 		}
 	}
 
-	activateBonusByIndex(index: number, byOrder: boolean) {
-		if (index >= this.bonusPool.length) {
-			this.scheduleRespawn(0, true);
-			this.scheduleRespawn(0.2, true); //additional respawn to fix bug after complex combos
 
-			return;
-		}
+    activateBonusByIndex(index: number, byOrder: boolean): void {
+        if(index >= this.bonusPool.length) {
+            this.scheduleRespawn(this.fallTime, false);
+            return;
+        }
 
-		const bonusTile = this.bonusPool[index];
+        if(byOrder) {
+            this.bonusIndex = index + 1;
+        }
 
-		if (byOrder) {
-			this.bonusIndex = this.bonusIndex + 1;
-		}
+        const bonusTile = this.bonusPool[index];
 
-		if (!bonusTile || !isValid(bonusTile)) {
-			console.warn(
-				`[Field] Invalid bonus tile in bonusPool. index=${index}, bonusIndex=${this.bonusIndex}`,
-			);
+        const continueBonusPool = () => {
+            if(byOrder) {
+                this.activateBonusByIndex(this.bonusIndex, true);
+            }
+        };
 
-			if (byOrder) {
-				this.activateBonusByIndex(this.bonusIndex, true);
-			}
+        if(!bonusTile || !isValid(bonusTile, true)) {
+            console.warn('[BONUS POOL] Skipping destroyed bonus', {
+                index,
+                poolLength: this.bonusPool.length
+            });
 
-			return;
-		}
+            continueBonusPool();
+            return;
+        }
 
-		let bonusTileComp = bonusTile.getComponent('TileBase');
+        const bonusComp = bonusTile.getComponent(TileBase);
 
-		if (bonusTileComp) {
-			let bonusTileType = bonusTileComp.getTileType();
+        if(!bonusComp || !isValid(bonusComp, true)) {
+            console.warn('[BONUS POOL] TileBase missing', {
+                index,
+                node: bonusTile.name
+            });
 
-			if (bonusTileType === 'multi' || bonusTileType === 'super') {
-				this.setPrimaryColors();
-			}
-		}
+            continueBonusPool();
+            return;
+        }
 
-		let isBonusDestroyed = this.findAndDestroyMatches(bonusTile, false);
+        const bonusType = bonusComp.getTileType();
 
-		if (!byOrder) {
-			return;
-		}
+        const activate = () => {
+            if(!this.node.isValid || !this.node.activeInHierarchy) {
+                return;
+            }
 
-		if (isBonusDestroyed) {
-			return;
-		}
+            if(!bonusTile || !isValid(bonusTile, true)) {
+                console.warn('[BONUS POOL] Bonus destroyed while waiting', {
+                    index,
+                    type: bonusType
+                });
 
-		this.activateBonusByIndex(this.bonusIndex, true);
-	}
+                continueBonusPool();
+                return;
+            }
 
-	extraHit(row: number, col: number, isBonusChain: boolean, delay: number) {
-		if (
-			row > this.numRows - 1 ||
-			col > this.numCols - 1 ||
-			row < 0 ||
-			col < 0
-		) {
-			return;
-		}
+            const currentComp = bonusTile.getComponent('TileBase');
 
-		let tile = this.tileArray[row][col];
+            if(!currentComp || !isValid(currentComp, true)) {
+                continueBonusPool();
+                return;
+            }
 
-		this.node.emit('extra_hit', row, col);
+            if(currentComp.isTileActivated()) {
+                continueBonusPool();
+                return;
+            }
 
-		if (tile !== null) {
-			if (isBonusChain) {
-				const tileComp = tile.getComponent('TileBase');
-				if (tileComp.isBonusTile()) {
-					if (this.bonusPool.includes(tile)) {
-						this.scheduleOnce(() => {
-							if (!tileComp || !tile) {
-								return;
-							}
+            console.log('[BONUS POOL ACTIVATE]', {
+                index,
+                type: bonusType,
+                row: currentComp.getRow(),
+                col: currentComp.getCol()
+            });
 
-							if (tileComp.isTileActivated()) {
-								return;
-							}
+            if(bonusType === 'multi' || bonusType === 'super') {
+                this.setPrimaryColors();
+            }
 
-							if (
-								tileComp.getTileType() === 'multi' ||
-								tileComp.getTileType() === 'super'
-							) {
-								let matches = tileComp.getMatchesClear(
-									this.tileArray,
-									this.statusArray,
-								);
+            const isBonusDestroyed = this.findAndDestroyMatches(
+                bonusTile,
+                false
+            );
 
-								return;
-							}
+            if(byOrder && !isBonusDestroyed) {
+                continueBonusPool();
+            }
+        };
+        if(bonusType === 'multi' || bonusType === 'super') {
+            console.log('[DISCO WAITING FOR FALL]', {
+                index,
+                type: bonusType
+            });
 
-							this.clearExtra();
-							tileComp.getMatches(this.tileArray, this.statusArray, true);
-						}, this.fallTime);
-					} else {
-						this.bonusPool.push(tile);
-						if (!this.isBonusPoolActivated) {
-							this.scheduleOnce(() => {
-								this.bonusPool.push(tile);
-								this.activateBonusPool();
-							}, this.fallTime);
-						} else {
-							this.scheduleOnce(() => {
-								if (!tileComp || !tile) {
-									return;
-								}
+            this.waitForVisualFallEnd(
+                activate,
+                bonusTile
+            );
 
-								if (tileComp.isTileActivated()) {
-									return;
-								}
+            return;
+        }
 
-								if (
-									tileComp.getTileType() === 'multi' ||
-									tileComp.getTileType() === 'super'
-								) {
-									let matches = tileComp.getMatchesClear(
-										this.tileArray,
-										this.statusArray,
-									);
+        activate();
+    }
 
-									return;
-								}
 
-								this.clearExtra();
-								tileComp.getMatches(this.tileArray, this.statusArray, true);
-							}, this.fallTime);
-						}
-					}
-					return;
-				}
-			}
+    extraHit(row: number, col: number, isBonusChain: boolean, delay: number) {
+        if(
+            row < 0 ||
+            row >= this.numRows ||
+            col < 0 ||
+            col >= this.numCols
+        ) {
+            return;
+        }
 
-			this.giveDamage(tile, 'extra_hit', true, delay);
-		} else {
-			this.giveStatusDamage(row, col, true); //true - not destroy empty bubbles, false - destroy empty bubbles
-		}
-	}
+        const tile = this.tileArray[row][col];
+
+        if(!tile || !tile.isValid) {
+            this.giveStatusDamage(row, col);
+            return;
+        }
+
+        if(isBonusChain) {
+            const tileComp = tile.getComponent('TileBase');
+
+            if(tileComp && tileComp.isBonusTile()) {
+                const bonusType = tileComp.getTileType();
+                const isDiscoball = bonusType === 'multi' || bonusType === 'super';
+
+                const activateBonus = () => {
+                    if(
+                        !this.node.isValid ||
+                        !tile.isValid ||
+                        !tileComp.isValid ||
+                        tileComp.isTileActivated()
+                    ) {
+                        return;
+                    }
+
+                    if(isDiscoball) {
+                        console.log('[DISCO EXTRA HIT WAIT]', {
+                            type: bonusType,
+                            row: tileComp.getRow(),
+                            col: tileComp.getCol()
+                        });
+
+                        this.waitForVisualFallEnd(() => {
+                            if(
+                                !this.node.isValid ||
+                                !tile.isValid ||
+                                !tileComp.isValid ||
+                                tileComp.isTileActivated()
+                            ) {
+                                return;
+                            }
+
+                            console.log('[DISCO EXTRA HIT ACTIVATE]', {
+                                type: bonusType,
+                                row: tileComp.getRow(),
+                                col: tileComp.getCol()
+                            });
+
+                            this.setPrimaryColors();
+
+                            const matches = tileComp.getMatches(
+                                this.tileArray,
+                                this.statusArray,
+                                true
+                            );
+
+                            if(Array.isArray(matches)) {
+                                matches.forEach(matchedTile => {
+                                    if(matchedTile?.isValid) {
+                                        this.giveDamage(
+                                            matchedTile,
+                                            bonusType,
+                                            false,
+                                            0
+                                        );
+                                    }
+                                });
+                            }
+                        }, tile);
+
+                        return;
+                    }
+
+                    this.clearExtra();
+
+                    tileComp.getMatches(
+                        this.tileArray,
+                        this.statusArray,
+                        true
+                    );
+                };
+
+                if(this.bonusPool.includes(tile)) {
+                    this.scheduleOnce(() => {
+                        activateBonus();
+                    }, this.fallTime);
+
+                    return;
+                }
+
+                this.bonusPool.push(tile);
+
+                if(!this.isBonusPoolActivated) {
+                    this.scheduleOnce(() => {
+                        if(!tile.isValid || !tileComp.isValid) {
+                            return;
+                        }
+
+                        this.activateBonusPool();
+                    }, this.fallTime);
+                }
+                else {
+                    this.scheduleOnce(() => {
+                        activateBonus();
+                    }, this.fallTime);
+                }
+
+                return;
+            }
+        }
+
+        this.giveDamage(
+            tile,
+            'extra_hit',
+            true,
+            delay
+        );
+    }
 
 	extraHitWithDamage(row: number, col: number) {
 		if (
@@ -3353,4 +3458,88 @@ export class Field extends Component {
 
 		return count;
 	}
+
+
+    private areTilesVisuallySettled(watchedBonus?: Node): boolean {
+        if(watchedBonus?.isValid) {
+            const bonusUi = watchedBonus.getComponent(UITile);
+
+            if(bonusUi?.isVisualMoving()) {
+                return false;
+            }
+        }
+
+        for(const row of this.tileArray) {
+            for(const tile of row) {
+                if(!tile?.isValid) {
+                    continue;
+                }
+
+                const tileComp = tile.getComponent('TileBase');
+
+                if(!tileComp || !tileComp.isCommonTile()) {
+                    continue;
+                }
+
+                const tileUi = tile.getComponent(UITile);
+
+                if(tileUi?.isVisualMoving()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private waitForVisualFallEnd(
+        onReady: () => void,
+        watchedBonus?: Node,
+        attempt: number = 0,
+        stableChecks: number = 0
+    ): void {
+        if(!this.node.isValid || !this.node.activeInHierarchy) {
+            return;
+        }
+
+        if(watchedBonus && !isValid(watchedBonus, true)) {
+            console.warn('[FIELD FALL] Watched bonus destroyed');
+
+            onReady();
+            return;
+        }
+
+        const settled = this.areTilesVisuallySettled(watchedBonus);
+        const nextStableChecks = settled ? stableChecks + 1 : 0;
+
+        if(nextStableChecks >= 2) {
+            console.log('[FIELD FALL SETTLED]', {
+                waited: (attempt * 0.05).toFixed(2),
+                bonus: watchedBonus?.name
+            });
+
+            onReady();
+            return;
+        }
+
+        if(attempt >= 20) {
+            console.warn('[FIELD FALL WAIT LIMIT]', {
+                waited: '1.00s',
+                settled,
+                bonus: watchedBonus?.name
+            });
+
+            onReady();
+            return;
+        }
+
+        this.scheduleOnce(() => {
+            this.waitForVisualFallEnd(
+                onReady,
+                watchedBonus,
+                attempt + 1,
+                nextStableChecks
+            );
+        }, 0.05);
+    }
 }

@@ -266,12 +266,19 @@ export class Bomb extends BonusTileBase {
         let totalTime = this.timeBetweenTiles * tiles.length;
         totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
 
+        const discoComp = field[this.comboPosition.x]?.[this.comboPosition.y]?.getComponent(Discoball);
+
         for(let i = 0; i < tiles.length; i++) {
             this.scheduleOnce(() => {
                 try {
                     let comboComp = field[this.comboPosition.x][this.comboPosition.y].getComponent(TileBase);
                     if(comboComp) {
-                        this.renderLine(new Vec2(comboComp.getRow(), comboComp.getCol()), new Vec2(tiles[i].getRow(), tiles[i].getCol()));
+                       this.renderLine(
+                            new Vec2(comboComp.getRow(), comboComp.getCol()),
+                            new Vec2(tiles[i].getRow(), tiles[i].getCol()),
+                            discoComp?.getLineSkinName() ?? 'blue',
+                            discoComp?.getLineAnimationForTarget(tiles[i].getTileType()) ?? 'line_color_1'
+                        );
                     }
                 }
                 catch (error) {

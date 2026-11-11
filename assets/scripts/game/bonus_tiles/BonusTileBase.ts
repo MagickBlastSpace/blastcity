@@ -18,7 +18,7 @@ export class BonusTileBase extends TileBase {
 
     protected isBonusPoolState: boolean = false;
 
-    private availableColors: string[] = [];
+    protected availableColors: string[] = [];
 
     init(row: number, col: number, tileType: string) {
         this.row = row;
@@ -354,13 +354,13 @@ export class BonusTileBase extends TileBase {
     }
 
 
-    renderLine(start: Vec2, end: Vec2) {
-        try {
-            this.node.emit("render_line", start, end);
-        }
-        catch (error) {
-            console.log("Render Line Error: " + error);
-        }
+    renderLine(
+        start: Vec2,
+        end: Vec2,
+        skinName: string = 'blue',
+        animationName: 'line_color_1' | 'line_color_2' = 'line_color_1'
+    ): void {
+        this.node.emit('render_line', start, end, skinName, animationName);
     }
 
 

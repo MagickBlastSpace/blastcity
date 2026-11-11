@@ -1,37 +1,103 @@
-import { _decorator, Component, Node, Sprite, Vec3 } from 'cc';
+
+import { _decorator, Component, sp, Vec3 } from 'cc';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('UIDiscoballLine')
 export class UIDiscoballLine extends Component {
 
-    @property(Sprite)
-    line: Sprite = null;
+    @property(sp.Skeleton)
+    lineSpine: sp.Skeleton = null;
 
+    @property
+    referenceLength: number = 720;
 
-    setLinePositions(startPos: Vec3, endPos: Vec3) {
-        let direction = new Vec3();
+    @property
+    lineThicknessScale: number = 0.7;
+
+    setLinePositions(
+        startPos: Vec3,
+        endPos: Vec3,
+        skinName: string = 'blue',
+        animationName: 'line_color_1' | 'line_color_2' = 'line_color_1'
+    ): void {
+
+        if(!this.lineSpine || !this.lineSpine.skeletonData) {
+            console.warn('[DISCO SPINE LINE] SkeletonData missing');
+            this.node.destroy();
+            return;
+        }
+
+        const direction = new Vec3();
         Vec3.subtract(direction, endPos, startPos);
-    
-        let distance = direction.length();
-        let midPoint = startPos.clone().add(direction.multiplyScalar(0.5));
-    
-        let angle = Math.atan2(direction.y, direction.x) * (180 / Math.PI);
-        this.line.node.angle = angle;
-    
-        this.flyLine(startPos, endPos, distance);
-    }
-    
-    flyLine(startPos: Vec3, endPos: Vec3, maxDistance: number) {
-        const flyDuration = 0.67;
-    
-        this.line.node.width = 0;
-        this.line.node.setPosition(startPos);
-    
-        cc.tween(this.line.node)
-            .to(flyDuration / 2, { width: maxDistance, position: startPos.clone().add(endPos).multiplyScalar(0.5) })
-            //.to(flyDuration / 2, { width: 0, position: endPos })
-            .start();
+
+        const distance = direction.length();
+
+        if(distance < 0.001) {
+            this.node.destroy();
+            return;
+        }
+
+        const angle = Math.atan2(direction.y, direction.x) * 180 / Math.PI;
+
+        this.node.setPosition(startPos);
+        this.node.angle = angle;
+
+        const visualNode = this.lineSpine.node;
+
+        visualNode.setPosition(0, 0, 0);
+        visualNode.setRotationFromEuler(0, 0, 0);
+
+        visualNode.setScale(
+            distance / this.referenceLength,
+            this.lineThicknessScale,
+            1
+        );
+
+        visualNode.active = true;
+        this.lineSpine.enabled = true;
+
+        try {
+            this.lineSpine.setSkin(skinName);
+            this.lineSpine.setSlotsToSetupPose();
+
+            if(!this.lineSpine.findAnimation(animationName)) {
+                throw new Error(`Animation ${animationName} not found`);
+            }
+
+            this.lineSpine.clearTracks();
+            this.lineSpine.setToSetupPose();
+
+            const track = this.lineSpine.setAnimation(
+                0,
+                animationName,
+                false
+            );
+
+            if(!track) {
+                throw new Error('Failed to start Spine line');
+            }
+
+            this.lineSpine.setTrackCompleteListener(track, () => {
+                if(this.node.isValid) {
+                    this.node.destroy();
+                }
+            });
+
+            console.log('[DISCO SPINE LINE]', {
+                skin: skinName,
+                animation: animationName,
+                distance,
+                angle,
+                duration: track.animation?.duration
+            });
+
+        } catch(error) {
+            console.error('[DISCO SPINE LINE] Playback failed:', error);
+
+            if(this.node.isValid) {
+                this.node.destroy();
+            }
+        }
     }
 }
-
-
