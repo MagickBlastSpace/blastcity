@@ -461,11 +461,9 @@ export class UIMainMenu extends UIFrameBase {
 
     private preloadNextBackgroundPair(): Promise<void> {
 
-        const nextLocationIndex =
-            this.chest.getStage() + 2;
+        const nextLocationIndex = this.chest.getProgressStage() + 2
 
-        const locationsCount =
-            this.chest.getLocationCount();
+        const locationsCount = this.chest.getLocationCount();
 
         if(nextLocationIndex > locationsCount) {
             return Promise.resolve();
@@ -487,14 +485,11 @@ export class UIMainMenu extends UIFrameBase {
 
                 try {
 
-                    const bundle =
-                        await this.getBigGraphicsBundle();
+                    const bundle = await this.getBigGraphicsBundle();
 
-                    const locationToPreload =
-                        this.chest.getStage() + 2;
+                    const locationToPreload = this.chest.getProgressStage() + 2
 
-                    const currentLocationsCount =
-                        this.chest.getLocationCount();
+                    const currentLocationsCount = this.chest.getLocationCount();
 
                     if(
                         locationToPreload >
@@ -543,8 +538,7 @@ export class UIMainMenu extends UIFrameBase {
                             null;
                     }
 
-                    const desiredNext =
-                        this.chest.getStage() + 2;
+                    const desiredNext = this.chest.getProgressStage() + 2
 
                     if(
                         desiredNext <=
@@ -1518,7 +1512,7 @@ export class UIMainMenu extends UIFrameBase {
                 );
 
             if(
-                this.chest.getStage() + 1 !==
+                this.chest.getProgressStage() + 1 !==
                 locationIndex
             ) {
                 return;
@@ -1546,7 +1540,7 @@ export class UIMainMenu extends UIFrameBase {
                 );
 
             if(
-                this.chest.getStage() + 1 !==
+                this.chest.getProgressStage() + 1 !==
                 locationIndex
             ) {
                 return;
@@ -1574,7 +1568,7 @@ export class UIMainMenu extends UIFrameBase {
                 );
 
             if(
-                this.chest.getStage() + 1 !==
+                this.chest.getProgressStage() + 1 !==
                 locationIndex
             ) {
                 return;
@@ -1602,8 +1596,7 @@ export class UIMainMenu extends UIFrameBase {
 
     async updateBackgroundGraphics(): Promise<void> {
 
-        const locationIndex =
-            this.chest.getStage() + 1;
+        const locationIndex = this.chest.getProgressStage() + 1;
 
         if(
             this.loadedBackgroundLocation === locationIndex &&

@@ -131,11 +131,9 @@ export class UILocationsFrame extends UIFrameBase {
 
         super.show();
 
-        const isDevMode =
-            UserData.instance?.isDevMode() ?? false;
+        const isDevMode = UserData.instance?.isDevMode() ?? false;
 
-        const currentStage =
-            this.chest.getStage();
+        const currentStage = this.chest.getProgressStage();
 
         const royalLeagueUnlocked = true;
 
@@ -173,14 +171,11 @@ export class UILocationsFrame extends UIFrameBase {
             this.clearCards();
         }
 
-        this.lastDevMode =
-            isDevMode;
+        this.lastDevMode = isDevMode;
 
-        this.lastStage =
-            currentStage;
+        this.lastStage = currentStage;
 
-        this.lastRoyalLeagueUnlocked =
-            royalLeagueUnlocked;
+        this.lastRoyalLeagueUnlocked = royalLeagueUnlocked;
 
         if(!this.cardsCreated) {
 
@@ -229,9 +224,7 @@ export class UILocationsFrame extends UIFrameBase {
         viewTransform: UITransform
     ): number {
 
-        const isMobile =
-            typeof window !== 'undefined' &&
-            window.innerWidth < 768;
+        const isMobile = typeof window !== 'undefined' &&  window.innerWidth < 768;
 
         if(!isMobile) {
             return this.desktopCardScale;
@@ -270,9 +263,17 @@ export class UILocationsFrame extends UIFrameBase {
 
         const locationsCount = this.chest.getLocationCount();
 
-        const currentLocation = this.chest.getStage();
+        const currentLocation = this.chest.getProgressStage();
 
         const isDevMode = UserData.instance?.isDevMode() ?? false;
+
+        console.log('[LOCATIONS PROGRESS AUDIT]', {
+            gamepushProgress: UserData.instance.getProgress(),
+            progressStage: currentLocation,
+            displayedChapter: currentLocation + 1,
+            savedChestStage: this.chest.getStage(),
+            isDevMode
+        });
 
         const cardsToLoad: {
             index: number;
@@ -536,7 +537,7 @@ export class UILocationsFrame extends UIFrameBase {
         }
 
         const currentLocation = Math.min(
-            this.chest.getStage(),
+            this.chest.getProgressStage(),
             this.cardNodes.length - 1
         );
 
@@ -786,7 +787,7 @@ export class UILocationsFrame extends UIFrameBase {
 
         this.ensureLocationCacheSize();
 
-        const currentStage = this.chest.getStage();
+        const currentStage = this.chest.getProgressStage();
 
         const locationsCount = this.chest.getLocationCount();
 

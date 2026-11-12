@@ -1,15 +1,15 @@
 declare const gamepush: any;
 
-import { _decorator, Component, Node } from 'cc';
-import { GameData } from './GameData';
-import { SaveData } from './SaveData';
+import { _decorator, Component } from 'cc';
+import { Clans } from '../game/Clans';
 import { CollectionEvent } from '../game/events/special/CollectionEvent';
-import { PlayerEventData } from './EventData';
+import { Field } from '../game/Field';
 import { Net } from '../net/Net';
 import { Localization } from '../utils/Localization';
-import { Clans } from '../game/Clans';
 import { CollectionCardData, CollectionCardSenderData } from './CollectionData';
-import { Field } from '../game/Field';
+import { PlayerEventData } from './EventData';
+import { GameData } from './GameData';
+import { SaveData } from './SaveData';
 const { ccclass, property } = _decorator;
 
 @ccclass('UserData')
@@ -244,7 +244,14 @@ export class UserData extends Component {
 	}
 
 	addProgress() {
-		if (this.currentProgress < GameData.instance.getMaxProgress()) {
+        if (this.isDevMode()) {
+            console.warn(
+                '[DEV MODE] addProgress blocked: permanent progress will not be changed'
+            );
+            return;
+        }
+
+        if (this.currentProgress < GameData.instance.getMaxProgress()) {
 			this.currentProgress++;
 
 			if (this.isSuperdiscoballAvailable() && !this.isSuperDiscoballActive) {

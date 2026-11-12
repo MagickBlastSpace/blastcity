@@ -37,6 +37,8 @@ export class Chest extends Component {
             this.node.emit("progress", value);
         });
         GameData.instance.node.on("levels_loaded", () => this.updateStageData(false));
+
+        this.debugLocationBoundaries();
     }
 
 
@@ -96,6 +98,26 @@ export class Chest extends Component {
         );
     }
 
+    getProgressStage(): number {
+        if (!this.data || this.data.length === 0) {
+            return 0;
+        }
+
+        const progress = UserData.instance.getProgress();
+
+        if (!Number.isFinite(progress)) {
+            return 0;
+        }
+
+        for (let stage = 0; stage < this.data.length; stage++) {
+            if (progress < this.data[stage].level) {
+                return stage;
+            }
+        }
+
+        return this.data.length - 1;
+    }
+
 
     setStage(stage: number) {
 
@@ -112,6 +134,15 @@ export class Chest extends Component {
                     )
                 );
         }
+
+        console.log('[CHEST DEBUG]', {
+            progress: UserData.instance.getProgress(),
+            stage: this.stage,
+            chapter: this.getStage() + 1,
+            chapterStart: this.getLocationStartLevel(this.getStage()),
+            chapterEnd: this.getLocationEndLevel(this.getStage()),
+            isComplete: this.isComplete
+        });
 
         this.node.emit("refresh");
     }
@@ -178,37 +209,23 @@ export class Chest extends Component {
             return 0;
         }
 
-        const currentStage =
-            this.getStage();
+        const currentStage = this.getProgressStage();
 
-        const startBoundary =
-            currentStage === 0
-                ? 0
-                : this.data[currentStage - 1].level;
+        const startBoundary = currentStage === 0 ? 0 : this.data[currentStage - 1].level;
 
-        const endBoundary =
-            this.data[currentStage].level;
+        const endBoundary =  this.data[currentStage].level;
 
-        const currentProgress =
-            UserData.instance.getProgress();
+        const currentProgress =  UserData.instance.getProgress();
 
-        const locationLength =
-            endBoundary - startBoundary;
+        const locationLength =  endBoundary - startBoundary;
 
         if(locationLength <= 0) {
             return 0;
         }
 
-        const completedInLocation =
-            currentProgress - startBoundary;
+        const completedInLocation = currentProgress - startBoundary;
 
-        return Math.max(
-            0,
-            Math.min(
-                1,
-                completedInLocation / locationLength
-            )
-        );
+        return Math.max( 0, Math.min( 1, completedInLocation / locationLength ) );
     }
 
     getCollectables(): number {
@@ -469,6 +486,19 @@ export class Chest extends Component {
 
     getCurrentReward(): ChestRewardData {
         return this.data[this.stage].rewards[0];
+    }
+
+    debugLocationBoundaries() {
+        console.log('========== LOCATION BOUNDARIES ==========');
+
+        for (let stage = 0; stage < this.getLocationCount(); stage++) {
+            console.log(
+                `Chapter ${stage + 1}: ` +
+                `${this.getLocationStartLevel(stage)}–${this.getLocationEndLevel(stage)}`
+            );
+        }
+
+        console.log('=========================================');
     }
 }
 

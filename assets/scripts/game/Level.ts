@@ -306,9 +306,33 @@ export class Level extends Component {
             this.isComplete = true;
             this.isFailed = false;
 
-            if (!GameData.instance.advanceDevSelectedLevel()) {
-                UserData.instance.addProgress();
-            }
+            console.log('[LEVEL PROGRESS AUDIT] BEFORE', {
+            isDevMode: UserData.instance.isDevMode(),
+            devSelectedLevel: GameData.instance.getDevSelectedLevelNumber(),
+            userProgress: UserData.instance.getProgress(),
+            gamepushScore: gamepush.player.get('score')
+        });
+
+        if (UserData.instance.isDevMode()) {
+            const advanced = GameData.instance.advanceDevSelectedLevel();
+
+            console.log('[LEVEL PROGRESS AUDIT] DEV MODE', {
+                advanced,
+                nextDevLevel: GameData.instance.getDevSelectedLevelNumber(),
+                userProgress: UserData.instance.getProgress()
+            });
+        } else {
+            UserData.instance.addProgress();
+
+            console.log('[LEVEL PROGRESS AUDIT] NORMAL MODE', {
+                userProgress: UserData.instance.getProgress()
+            });
+        }
+
+        console.log('[LEVEL PROGRESS AUDIT] AFTER', {
+            userProgress: UserData.instance.getProgress(),
+            gamepushScore: gamepush.player.get('score')
+        });
 
             let bonusesToSpawn = this.isBonusGoldAvailable() ? this.moves : 0;
             this.node.emit("all_goals_complete_event", bonusesToSpawn);
@@ -328,9 +352,33 @@ export class Level extends Component {
                 this.isComplete = true;
                 this.isFailed = false;
 
-                if(!GameData.instance.advanceDevSelectedLevel()) {
+                console.log('[LEVEL PROGRESS AUDIT] BEFORE', {
+                    isDevMode: UserData.instance.isDevMode(),
+                    devSelectedLevel: GameData.instance.getDevSelectedLevelNumber(),
+                    userProgress: UserData.instance.getProgress(),
+                    gamepushScore: gamepush.player.get('score')
+                });
+
+                if (UserData.instance.isDevMode()) {
+                    const advanced = GameData.instance.advanceDevSelectedLevel();
+
+                    console.log('[LEVEL PROGRESS AUDIT] DEV MODE', {
+                        advanced,
+                        nextDevLevel: GameData.instance.getDevSelectedLevelNumber(),
+                        userProgress: UserData.instance.getProgress()
+                    });
+                } else {
                     UserData.instance.addProgress();
+
+                    console.log('[LEVEL PROGRESS AUDIT] NORMAL MODE', {
+                        userProgress: UserData.instance.getProgress()
+                    });
                 }
+
+                console.log('[LEVEL PROGRESS AUDIT] AFTER', {
+                    userProgress: UserData.instance.getProgress(),
+                    gamepushScore: gamepush.player.get('score')
+                });
 
                 this.node.emit("all_goals_complete_event", 0);
 
@@ -354,30 +402,43 @@ export class Level extends Component {
     }
 
     setLevelCompleteEvent(goldEarned: number) {
-        let totalReward = this.isBonusGoldAvailable() ? (goldEarned * this.difficultyMultiplier + this.completionReward) : this.completionReward;
-        totalReward = this.isBonusLevel() ? this.coinsCollected * this.difficultyMultiplier : totalReward;
+        const isDevMode = UserData.instance.isDevMode();
 
-        UserData.instance.addResource("gold", totalReward);
+        let totalReward = this.isBonusGoldAvailable()
+            ? goldEarned * this.difficultyMultiplier + this.completionReward
+            : this.completionReward;
 
-        switch(this.difficulty) {
-            case "common":
-                UserData.instance.addResource("stars", 1);
-                break;
-            case "hard":
-                UserData.instance.addResource("stars", 3);
-                break;
-            case "superhard":
-                UserData.instance.addResource("stars", 5);
-                break;
+        totalReward = this.isBonusLevel()
+            ? this.coinsCollected * this.difficultyMultiplier
+            : totalReward;
+
+        if (!isDevMode) {
+            UserData.instance.addResource("gold", totalReward);
+
+            switch (this.difficulty) {
+                case "common":
+                    UserData.instance.addResource("stars", 1);
+                    break;
+
+                case "hard":
+                    UserData.instance.addResource("stars", 3);
+                    break;
+
+                case "superhard":
+                    UserData.instance.addResource("stars", 5);
+                    break;
+            }
+
+            if (this.stats.fails === 0) {
+                gamepush.player.add('stat_win', 1);
+                gamepush.player.sync();
+            }
+        } else {
+            console.log('[DEV MODE] Permanent victory rewards and win statistics skipped');
         }
 
-        this.node.emit("complete", true, totalReward);
+        this.node.emit("complete", true, isDevMode ? 0 : totalReward);
         this.node.emit("complete_statistics", this.stats);
-
-        if(this.stats.fails === 0) {
-            gamepush.player.add('stat_win', 1);
-            gamepush.player.sync();
-        }
 
         SaveData.instance.clearLevelProgress();
     }
