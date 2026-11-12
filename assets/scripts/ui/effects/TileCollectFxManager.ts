@@ -299,11 +299,9 @@ export class TileCollectFxManager extends Component {
                     return;
                 }
 
-                waitUntilTargetSettled(followNode, () => {
-                    this.collapseTargetMassToZero(targetFx, () => {
-                        stopFollowingTarget();
-                        onVisualComplete?.();
-                    });
+                this.collapseTargetMassToZero(targetFx, () => {
+                    stopFollowingTarget();
+                    onVisualComplete?.();
                 });
             });
         };
