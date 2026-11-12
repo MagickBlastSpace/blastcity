@@ -3,18 +3,27 @@ import { UITile } from '../../ui/UITile';
 import { SpriteTileData } from '../Tile';
 import { TileBase } from '../TileBase';
 import { BonusTileBase } from './BonusTileBase';
+
 const { ccclass, property } = _decorator;
+
+type DiscoballTarget = {
+    row: number;
+    col: number;
+    color: string;
+};
 
 @ccclass('Discoball')
 export class Discoball extends BonusTileBase {
 
     @property(SpriteFrame)
     multi: SpriteFrame = null;
+
     @property(SpriteFrame)
     super: SpriteFrame = null;
 
     @property([SpriteTileData])
     multiIcons: SpriteTileData[] = [];
+
     @property([SpriteTileData])
     superIcons: SpriteTileData[] = [];
 
@@ -24,527 +33,386 @@ export class Discoball extends BonusTileBase {
     @property(sp.Skeleton)
     discoballSpine: sp.Skeleton = null;
 
-    private primaryColor: string = "";
-    private secondaryColor: string = "";
+    private primaryColor: string = '';
+    private secondaryColor: string = '';
 
     private disco_disco_time: number = 0.7;
-
-    private currentSpineSkin: string = "";
+    private currentSpineSkin: string = '';
     private isSpineSpawned: boolean = false;
-
     private isSpineActivationStarted: boolean = false;
+    private isSpineActivationCompleted: boolean = false;
+    private activeFxNode: Node | null = null;
+    private activeHoldNode: Node | null = null;
+    private activeReadyCallbacks: Array<() => void> = [];
 
-
-    init(row: number, col: number, tileType: string) {
+    init(row: number, col: number, tileType: string): void {
         super.init(row, col, tileType);
 
-        this.icon.spriteFrame = this.tileType === 'multi' ? this.multi : this.super;
+        if(this.icon) {
+            this.icon.spriteFrame = (this.tileType === 'multi' ? this.multi : this.super) ?? this.icon.spriteFrame;
+            this.icon.enabled = true;
+        }
     }
-
 
     getMatches(field: Node[][], statuses: Node[][], isBlockingCombo: boolean): Node[] {
-        if(this.isActivated) {
-            return;
-        }
+        if(this.isActivated) return [];
 
-        this.combo = "";
-        if(!isBlockingCombo) {
-            this.getCombo(field);
-        }
+        this.combo = '';
+        if(!isBlockingCombo) this.getCombo(field);
 
-        let tilesToDestroy = isBlockingCombo ? this.getMatchesClear(field, statuses) : this.getDiscoballMatchesByType(field, statuses);
-
-        return tilesToDestroy;
+        return isBlockingCombo
+            ? this.getMatchesClear(field, statuses)
+            : this.getDiscoballMatchesByType(field, statuses);
     }
-
 
     getMatchesClear(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = this.getDiscoballMatchesByType(field, statuses);
-
-        return matches;
+        return this.getDiscoballMatchesByType(field, statuses);
     }
-
 
     getDiscoballMatchesByType(field: Node[][], statuses: Node[][]): Node[] {
-        if(this.isActivated) {
-            return;
-        }
-
+        if(this.isActivated) return [];
         this.isShifts = false;
 
-        let matches = [];
+        if(this.isCombo()) return this.getMatchesByCombo(field, statuses);
 
-        if(this.isCombo()) {
-            matches = this.getMatchesByCombo(field, statuses);
-            return matches;
-        }
-
-        let tiles = [];
-        tiles = this.tileType === "super" ? this.getTwoBiggestCommonTilesGroups(field, statuses) : this.getBiggestCommonTilesGroup(field, statuses);
+        const tiles = this.tileType === 'super'
+            ? this.getTwoBiggestCommonTilesGroups(field, statuses)
+            : this.getBiggestCommonTilesGroup(field, statuses);
 
         this.isActivated = true;
+        const targets = this.toTargets(tiles);
 
-        for(let i = 0; i < tiles.length; i++) {
-            tiles[i].startShake();
-
-            this.node.emit("goal", "discoball");
+        for(const tile of tiles) {
+            tile.startShake();
+            this.node.emit('goal', 'discoball');
         }
 
-        tiles.push(this);
+        this.reserveRespawnForLines(targets.length);
 
-        let totalTime = this.timeBetweenTiles * tiles.length;
-        totalTime = totalTime < this.disco_combo_time ? this.disco_combo_time : totalTime;
-
-
-        const lastLineEnd = Math.max( totalTime,  Math.max(0, tiles.length - 2) * this.timeBetweenTiles + 0.87);
-
-        this.activateIsolatedDiscoballAnimation( this.disco_combo_time / totalTime, lastLineEnd);
-
-
-        this.setRespawnEvent(totalTime + 0.05);
-
-        if(this.respawnDelay < totalTime) { //protection from delayed combo bonuses
-            this.scheduleOnce(() => {
-                this.setRespawnEvent(totalTime + 0.05 - this.respawnDelay);
-            }, this.respawnDelay);
-        }
-
-        for(let i = 0; i < tiles.length; i++) {
-            this.scheduleOnce(() => {
-                try {
-                    this.renderLine(
-                        new Vec2(this.row, this.col),
-                        new Vec2(tiles[i].getRow(), tiles[i].getCol()),
-                        this.getLineSkinName(),
-                        this.getLineAnimationForTarget(tiles[i].getTileType())
-                    );
-                }
-                catch (error) {
-                    console.log("Render Line Error: " + error);
-                }
-            }, this.timeBetweenTiles * i);
-        }
-
-        this.scheduleOnce(() => {
-            this.node.emit("clear_lines");
-
-            for(let i = 0; i < tiles.length; i++) {
-                this.node.emit("extra_hit_with_damage", tiles[i].getRow(), tiles[i].getCol());
-            }
-
-            this.setRespawnEvent(0);
-        }, totalTime - 0.05);
+        this.activateIsolatedDiscoballAnimation(1, undefined, () => {
+            this.launchTargetLines(targets, target => {
+                this.node.emit('extra_hit_with_damage', target.row, target.col);
+            }, () => {
+                this.node.emit('clear_lines');
+                this.finishActiveFx(() => {
+                    if(!this.node.isValid) return;
+                    this.node.emit('extra_hit_with_damage', this.row, this.col);
+                    this.setRespawnEvent(0);
+                });
+            });
+        });
 
         this.playDiscoballSound();
-
-        return matches;
+        return [];
     }
-
 
     getMatchesByCombo(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = [];
-
         this.isActivated = true;
 
-        if(this.combo === "rocket_vertical" || this.combo === "rocket_horizontal") {
-            matches = this.getRocketComboMatches(field, statuses);
+        if(this.combo === 'rocket_vertical' || this.combo === 'rocket_horizontal') {
+            return this.getRocketComboMatches(field, statuses);
         }
-        else if(this.combo === "bomb") {
-            matches = this.getBombComboMatches(field, statuses);
+        if(this.combo === 'bomb') return this.getBombComboMatches(field, statuses);
+        if(this.availableColors.includes(this.combo) || this.combo === 'multi') {
+            return this.getDiscoballComboMatches(field, statuses);
         }
-        else if(this.availableColors.includes(this.combo) || this.combo === "multi") {
-            matches = this.getDiscoballComboMatches(field, statuses);
-        }
-        else if(this.combo === "super") {
-            matches = this.getSuperDiscoballComboMatches(field, statuses);
-        }
+        if(this.combo === 'super') return this.getSuperDiscoballComboMatches(field, statuses);
 
-        return matches;
+        return [];
     }
-
 
     getRocketComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = [];
-
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        let tiles = [];
-
-        tiles = this.tileType === 'super'
-            ? this.getTwoBiggestCommonTilesGroups(field, statuses)
-            : this.getBiggestCommonTilesGroup(field, statuses);
-
-        for(let i = 0; i < tiles.length; i++) {
-            this.node.emit('goal', 'discoball');
-        }
-
-        let totalTime = this.timeBetweenTiles * tiles.length;
-
-        totalTime = totalTime < this.disco_combo_time
-            ? this.disco_combo_time
-            : totalTime;
-
-        this.activateDiscoballComboAnimation(field);
-
-        const lastLineEnd = Math.max(
-            totalTime,
-            Math.max(0, tiles.length - 1) * this.timeBetweenTiles + 0.87
-        );
-
-        this.activateIsolatedDiscoballAnimation(
-            this.disco_combo_time / totalTime,
-            lastLineEnd
-        );
-
-        for(let i = 0; i < tiles.length; i++) {
-            this.scheduleOnce(() => {
-                try {
-                    this.renderLine(
-                        new Vec2(this.row, this.col),
-                        new Vec2(tiles[i].getRow(), tiles[i].getCol()),
-                        this.getLineSkinName(),
-                        this.getLineAnimationForTarget(tiles[i].getTileType())
-                    );
-                }
-                catch(error) {
-                    console.log('Render Line Error: ' + error);
-                }
-
-                const rocketString = Math.floor(Math.random() * 2) === 0
-                    ? 'rocket_vertical'
-                    : 'rocket_horizontal';
-
-                this.changeTile(tiles[i], rocketString);
-
-            }, this.timeBetweenTiles * i);
-        }
-
-        this.scheduleOnce(() => {
-            this.node.emit('clear_lines');
-
-            this.node.emit(
-                'extra_hit',
-                this.row,
-                this.col,
-                false,
-                0
-            );
-
-            this.node.emit(
-                'extra_hit',
-                this.comboPosition.x,
-                this.comboPosition.y,
-                false,
-                0
-            );
-
-            this.node.emit('activate_bonus_pool');
-
-        }, totalTime);
-
-        this.playComboSound();
-
-        return matches;
+        return this.startBonusCombo(field, statuses, 'rocket');
     }
-
 
     getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = [];
+        return this.startBonusCombo(field, statuses, 'bomb');
+    }
 
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        let tiles = [];
-
-        tiles = this.tileType === 'super'
+    private startBonusCombo(field: Node[][], statuses: Node[][], bonus: 'rocket' | 'bomb'): Node[] {
+        const tiles = this.tileType === 'super'
             ? this.getTwoBiggestCommonTilesGroups(field, statuses)
             : this.getBiggestCommonTilesGroup(field, statuses);
+        const targets = this.toTargets(tiles);
 
-        for(let i = 0; i < tiles.length; i++) {
-            this.node.emit('goal', 'discoball');
-        }
+        for(const target of targets) this.node.emit('goal', 'discoball');
+        this.reserveRespawnForLines(targets.length);
 
-        let totalTime = this.timeBetweenTiles * tiles.length;
+        this.activateIsolatedDiscoballAnimation(1, undefined, () => {
+            this.launchTargetLines(targets, target => {
+                const bonusType = bonus === 'bomb'
+                    ? 'bomb'
+                    : Math.random() < 0.5 ? 'rocket_vertical' : 'rocket_horizontal';
 
-        totalTime = totalTime < this.disco_combo_time
-            ? this.disco_combo_time
-            : totalTime;
-
-        this.activateDiscoballComboAnimation(field);
-
-        const lastLineEnd = Math.max(
-            totalTime,
-            Math.max(0, tiles.length - 1) * this.timeBetweenTiles + 0.87
-        );
-
-        this.activateIsolatedDiscoballAnimation(
-            2.0 / totalTime,
-            lastLineEnd
-        );
-
-        for(let i = 0; i < tiles.length; i++) {
-            this.scheduleOnce(() => {
-                try {
-                    this.renderLine(
-                        new Vec2(this.row, this.col),
-                        new Vec2(tiles[i].getRow(), tiles[i].getCol()),
-                        this.getLineSkinName(),
-                        this.getLineAnimationForTarget(tiles[i].getTileType())
-                    );
-                }
-                catch(error) {
-                    console.log('Render Line Error: ' + error);
-                }
-
-                this.changeTile(tiles[i], 'bomb');
-
-            }, this.timeBetweenTiles * i);
-        }
-
-        this.scheduleOnce(() => {
-            this.node.emit('clear_lines');
-
-            this.node.emit(
-                'extra_hit',
-                this.row,
-                this.col,
-                false,
-                0
-            );
-
-            this.node.emit(
-                'extra_hit',
-                this.comboPosition.x,
-                this.comboPosition.y,
-                false,
-                0
-            );
-
-            this.node.emit('activate_bonus_pool');
-
-        }, totalTime);
+                this.node.emit('change_bonus', target.row, target.col, bonusType, true);
+            }, () => {
+                this.node.emit('clear_lines');
+                this.finishActiveFx(() => {
+                    if(!this.node.isValid) return;
+                    this.node.emit('extra_hit', this.row, this.col, false, 0);
+                    if(this.comboPosition) {
+                        this.node.emit('extra_hit', this.comboPosition.x, this.comboPosition.y, false, 0);
+                    }
+                    this.node.emit('activate_bonus_pool');
+                });
+            });
+        });
 
         this.playComboSound();
-
-        return matches;
+        return [];
     }
-
 
     getDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        const matches: Node[] = [];
-
         const numRows = field.length;
         const numCols = numRows > 0 ? field[0].length : 0;
-
-        const hitDelay = 0.1;
-        const activeFadeTime = 0.8333;
-
-        this.activateDiscoballComboAnimation(field);
-
-        this.activateIsolatedDiscoballAnimation(
-            1,
-            activeFadeTime
-        );
-
+        this.setRespawnEvent(this.getActiveDuration() + 0.15 + this.respawnDelay + 0.35);
         this.playDoubleDiscoballSound();
 
-        this.scheduleOnce(() => {
-            for(let i = 0; i < numRows; i++) {
-                for(let j = 0; j < numCols; j++) {
-                    const isBonusChain = this.isChain(i, j);
-
-                    this.node.emit(
-                        'extra_hit',
-                        i,
-                        j,
-                        isBonusChain,
-                        0
-                    );
-
-                    this.node.emit('goal', 'discoball');
+        this.startBothDiscoballActives(field, other => {
+            this.finishBothDiscoballFx(other, () => {
+                for(let i = 0; i < numRows; i++) {
+                    for(let j = 0; j < numCols; j++) {
+                        this.node.emit('extra_hit', i, j, this.isChain(i, j), 0);
+                        this.node.emit('goal', 'discoball');
+                    }
                 }
-            }
-
-            this.clearTiles();
-
-        }, hitDelay);
-
-        this.setRespawnEvent(hitDelay + this.respawnDelay);
-
-        return matches;
+                this.clearTiles();
+                this.setRespawnEvent(0);
+            });
+        });
+        return [];
     }
-
 
     getSuperDiscoballComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = [];
-
-        const numRows: number = field.length;
-        const numCols: number = field.length > 0 ? field[0].length : 0;
-
-        this.activateDiscoballComboAnimation(field);
-        //Временно оставим шар+шар без анимации поля , после добавим новую анимацию
-        this.activateIsolatedDiscoballAnimation(
-            1,
-            this.disco_disco_time
-        );
-
+        const numRows = field.length;
+        const numCols = numRows > 0 ? field[0].length : 0;
+        this.setRespawnEvent(this.getActiveDuration() + this.disco_disco_time + 0.15 + this.respawnDelay + 0.35);
         this.playDoubleDiscoballSound();
 
-        this.scheduleOnce(() => {
-            for(let i = 0; i < numRows; i++) {
-                for(let j = 0; j < numCols; j++) {
-                    if(i === this.getRow() && j === this.getCol()) {
-                        continue;
+        this.startBothDiscoballActives(field, other => {
+            this.finishBothDiscoballFx(other, () => {
+                for(let i = 0; i < numRows; i++) {
+                    for(let j = 0; j < numCols; j++) {
+                        if(i === this.row && j === this.col) continue;
+                        this.node.emit('extra_hit', i, j, this.isChain(i, j), 0);
+                        this.node.emit('goal', 'discoball');
+                    }
+                }
+
+                this.scheduleOnce(() => {
+                    if(!this.node.isValid) return;
+                    for(let i = 0; i < numRows; i++) {
+                        for(let j = 0; j < numCols; j++) {
+                            this.node.emit('extra_hit', i, j, this.isChain(i, j), 0);
+                            this.node.emit('goal', 'discoball');
+                        }
+                    }
+                    this.clearTiles();
+                    this.setRespawnEvent(0);
+                }, this.disco_disco_time);
+            });
+        });
+        return [];
+    }
+
+    private getComboDiscoball(field: Node[][]): Discoball | null {
+        if(!this.comboPosition) return null;
+        const tile = field[this.comboPosition.x]?.[this.comboPosition.y];
+        if(!tile?.isValid || tile === this.node) return null;
+        const other = tile.getComponent(Discoball);
+        if(!other?.isValid) return null;
+        return other;
+    }
+
+    private startBothDiscoballActives(field: Node[][], onReady: (other: Discoball | null) => void): void {
+        const other = this.getComboDiscoball(field);
+        let pending = other ? 2 : 1;
+        const ready = () => {
+            pending--;
+            if(pending === 0 && this.node.isValid) onReady(other);
+        };
+
+        this.activateIsolatedDiscoballAnimation(1, undefined, ready);
+        if(other) other.activateIsolatedDiscoballAnimation(1, undefined, ready);
+    }
+
+    private finishBothDiscoballFx(other: Discoball | null, onFinished: () => void): void {
+        let pending = other ? 2 : 1;
+        const finished = () => {
+            pending--;
+            if(pending === 0) onFinished();
+        };
+
+        this.finishActiveFx(finished);
+        if(other?.isValid) other.finishActiveFx(finished);
+        else if(other) finished();
+    }
+
+    private toTargets(tiles: TileBase[]): DiscoballTarget[] {
+        return tiles.map(tile => ({
+            row: tile.getRow(),
+            col: tile.getCol(),
+            color: tile.getTileType()
+        })).filter(target => target.row !== this.row || target.col !== this.col);
+    }
+
+    private launchTargetLines(
+        targets: DiscoballTarget[],
+        onHit: (target: DiscoballTarget) => void,
+        onAllFinished: () => void
+    ): void {
+        if(targets.length === 0) {
+            onAllFinished();
+            return;
+        }
+
+        let remaining = targets.length;
+        const from = new Vec2(this.row, this.col);
+
+        for(let i = 0; i < targets.length; i++) {
+            const target = targets[i];
+            const to = new Vec2(target.row, target.col);
+            const skin = this.getLineSkinName();
+            const animation = this.getLineAnimationForTarget(target.color);
+
+            this.scheduleOnce(() => {
+                if(!this.node.isValid) return;
+                let completed = false;
+
+                const complete = (reached: boolean) => {
+                    if(completed) return;
+                    completed = true;
+                    if(!this.node.isValid) return;
+
+                    if(!reached) {
+                        console.warn('[DISCO LINE] Visual failed, finishing gameplay target:', target);
                     }
 
-                    let isBonusChain = this.isChain(i, j);
-                    this.node.emit("extra_hit", i, j, isBonusChain, 0);
+                    try {
+                        onHit(target);
+                    } catch(error) {
+                        console.error('[DISCO LINE] Target action failed:', target, error);
+                    }
 
-                    this.node.emit("goal", "discoball");
+                    remaining--;
+                    console.log('[DISCO LINE ARRIVED]', { target, remaining });
+                    if(remaining === 0) onAllFinished();
+                };
+
+                try {
+                    this.renderLine(from, to, skin, animation, complete);
+                } catch(error) {
+                    console.error('[DISCO LINE] renderLine failed:', error);
+                    complete(false);
                 }
-            }
-
-            this.clearTiles();
-
-        }, this.disco_disco_time);
-
-        this.setRespawnEvent(this.disco_disco_time);
-        this.setRespawnEvent(this.disco_disco_time * 2);
-
-        this.scheduleOnce(() => {
-            this.getDiscoballComboMatches(field, statuses);
-        }, this.disco_disco_time);
-
-        return matches;
+            }, i * this.timeBetweenTiles);
+        }
     }
 
-    changeTile(tile: TileBase, tileType: string) {
-        if(tile === null) {
-            return;
-        }
+    private getActiveDuration(): number {
         try {
-            this.node.emit("change_bonus", tile.getRow(), tile.getCol(), tileType, true);
-        }
-        catch (error) {
-            return;
+            return Math.max(0.8333, this.discoballSpine?.findAnimation('active')?.duration ?? 0.8333);
+        } catch(error) {
+            return 0.8333;
         }
     }
 
-    setRespawnEvent(timeToRespawn: number) {
-        this.node.emit("respawn", timeToRespawn);
+    private getMaxLineDuration(): number {
+        let duration = 0.87;
+        this.node.emit('get_discoball_line_duration', (actual: number) => {
+            if(Number.isFinite(actual) && actual > 0) duration = Math.max(duration, actual);
+        });
+        return duration;
     }
 
-    isChain(row: number, col: number) {
+    private reserveRespawnForLines(targetCount: number): void {
+        const lastStart = Math.max(0, targetCount - 1) * this.timeBetweenTiles;
+        const scheduledTime = this.getActiveDuration() + lastStart + this.getMaxLineDuration() + 0.15 + 0.3;
+        this.setRespawnEvent(scheduledTime);
+        console.log('[DISCO RESPAWN RESERVED]', { targetCount, scheduledTime });
+    }
+
+    changeTile(tile: TileBase, tileType: string): void {
+        if(!tile) return;
+        try {
+            this.node.emit('change_bonus', tile.getRow(), tile.getCol(), tileType, true);
+        } catch(error) {
+            console.error('[DISCO] changeTile failed:', error);
+        }
+    }
+
+    setRespawnEvent(timeToRespawn: number): void {
+        this.node.emit('respawn', timeToRespawn);
+    }
+
+    isChain(row: number, col: number): boolean {
         return row !== this.row && col !== this.col && row !== this.row + 1 && row !== this.row - 1 && col !== this.col + 1 && col !== this.col - 1;
     }
 
-
     activateDiscoballComboAnimation(field: Node[][]): void {
-        try {
-            if(!this.comboPosition) {
-                return;
-            }
-
-            const tile = field[this.comboPosition.x]?.[this.comboPosition.y];
-
-            if(!tile || !tile.isValid || tile === this.node) {
-                return;
-            }
-
-            const otherDiscoball = tile.getComponent(Discoball);
-
-            if(!otherDiscoball || !otherDiscoball.isValid) {
-                return;
-            }
-
-            const tileType = otherDiscoball.getTileType();
-
-            if(tileType !== 'multi' && tileType !== 'super') {
-                return;
-            }
-
-            otherDiscoball.activateIsolatedDiscoballAnimation(
-                1,
-                0.8333
-            );
-
-            console.log('[DISCO COMBO SECOND SPINE]', {
-                type: tileType,
-                row: otherDiscoball.getRow(),
-                col: otherDiscoball.getCol(),
-                skin: otherDiscoball.getLineSkinName()
-            });
-
-        } catch(error) {
-            console.error('[DISCO COMBO] Second discoball activation failed:', error);
-        }
+        const other = this.getComboDiscoball(field);
+        if(other) other.activateIsolatedDiscoballAnimation(1);
     }
 
-
-    playHideAnimation(nodeToHide: Node) {
+    playHideAnimation(nodeToHide: Node, onFinished?: () => void): void {
+        if(!nodeToHide?.isValid) {
+            onFinished?.();
+            return;
+        }
         tween(nodeToHide)
             .to(0.15, { scale: new Vec3(0, 0, 0) }, { easing: 'linear' })
+            .call(() => onFinished?.())
             .start();
+    }
+
+    private finishActiveFx(onFinished: () => void): void {
+        const activeNode = this.activeFxNode;
+        const holdNode = this.activeHoldNode;
+
+        this.activeFxNode = null;
+        this.activeHoldNode = null;
+
+        const visibleNode =
+            holdNode?.isValid && holdNode.activeInHierarchy
+                ? holdNode
+                : activeNode;
+
+        const finish = () => {
+            if(activeNode?.isValid) activeNode.destroy();
+            if(holdNode?.isValid) holdNode.destroy();
+
+            onFinished();
+        };
+
+        if(!visibleNode?.isValid) {
+            finish();
+            return;
+        }
+
+        console.log('[DISCO FINAL HIDE START]', {
+            row: this.row,
+            col: this.col,
+            visual: visibleNode.name
+        });
+
+        this.playHideAnimation(visibleNode, finish);
     }
 
     activateIsolatedDiscoballAnimation(
         timeScale: number,
-        visibleUntil?: number
-    ) {
-        if(this.playNewDiscoballActivation(timeScale, visibleUntil)) {
-            return;
-        }
+        visibleUntil?: number,
+        onReady?: () => void
+    ): void {
+        if(this.playNewDiscoballActivation(onReady)) return;
 
-        let colorString = "0";
-
-        switch(this.primaryColor) {
-            case "yellow":
-                colorString = "1";
-                break;
-            case "red":
-                colorString = "2";
-                break;
-            case "blue":
-                colorString = "3";
-                break;
-            case "green":
-                colorString = "4";
-                break;
-            case "purple":
-                colorString = "5";
-                break;
-            case "orange":
-                colorString = "6";
-                break;
-        }
-
-        if(this.tileType === "super") {
-            switch(this.secondaryColor) {
-                case "yellow":
-                    colorString += "_1";
-                    break;
-                case "red":
-                    colorString += "_2";
-                    break;
-                case "blue":
-                    colorString += "_3";
-                    break;
-                case "green":
-                    colorString += "_4";
-                    break;
-                case "purple":
-                    colorString += "_5";
-                    break;
-                case "orange":
-                    colorString += "_6";
-                    break;
-            }
-        }
-
-        let time = timeScale < 1 ? timeScale : 1;
-
-        this.playAnimation("discoball_color" + colorString, false, time);
+        let colorString = '0';
+        const numbers: Record<string, string> = {
+            yellow: '1', red: '2', blue: '3', green: '4', purple: '5', orange: '6'
+        };
+        colorString = numbers[this.primaryColor] ?? '0';
+        if(this.tileType === 'super') colorString += `_${numbers[this.secondaryColor] ?? '0'}`;
+        this.playAnimation('discoball_color' + colorString, false, Math.min(1, timeScale));
+        this.scheduleOnce(() => onReady?.(), this.getActiveDuration());
     }
 
     activateFastAnimation() {
@@ -698,14 +566,36 @@ export class Discoball extends BonusTileBase {
         this.primaryColor = primaryColor;
         this.secondaryColor = secondaryColor;
 
-        if(this.tileType === "multi") {
-            this.icon.spriteFrame = this.multiIcons.find(i => i.id === primaryColor)?.icon;
-        }
-        else {
-            this.icon.spriteFrame = this.superIcons.find(i => i.id === (primaryColor + "_" + secondaryColor))?.icon;
+        const coloredFrame = this.tileType === 'multi'
+            ? this.multiIcons.find(i => i.id === primaryColor)?.icon
+            : this.superIcons.find(i => i.id === `${primaryColor}_${secondaryColor}`)?.icon;
+
+        if(this.icon) {
+            if(coloredFrame) {
+                this.icon.spriteFrame = coloredFrame;
+            }
+            else {
+                this.icon.spriteFrame = this.icon.spriteFrame ?? (this.tileType === 'multi' ? this.multi : this.super);
+
+                console.warn('[DISCO SPAWN] Colored icon missing, using fallback:', {
+                    row: this.row,
+                    col: this.col,
+                    type: this.tileType,
+                    primaryColor,
+                    secondaryColor
+                });
+            }
+
+            if(!this.isSpineSpawned && !this.isSpineActivationStarted) {
+                this.icon.enabled = true;
+            }
         }
 
         this.playNewDiscoballSpawn();
+
+        if(!this.isSpineSpawned && !this.isSpineActivationStarted && this.icon) {
+            this.icon.enabled = true;
+        }
     }
 
 
@@ -741,19 +631,17 @@ export class Discoball extends BonusTileBase {
         return 'line_color_1';
     }
 
-    private playNewDiscoballActivation(
-        timeScale: number,
-        visibleUntil?: number
-    ): boolean {
-        if(this.tileType !== 'multi' && this.tileType !== 'super') {
-            return false;
-        }
 
-        if(this.tileType === 'super' && !this.secondaryColor) {
-            return false;
-        }
+    private playNewDiscoballActivation(onReady?: () => void): boolean {
+        if(this.tileType !== 'multi' && this.tileType !== 'super') return false;
+        if(this.tileType === 'super' && !this.secondaryColor) return false;
 
         if(this.isSpineActivationStarted) {
+            if(onReady) {
+                if(this.isSpineActivationCompleted) onReady();
+                else this.activeReadyCallbacks.push(onReady);
+            }
+
             return true;
         }
 
@@ -761,29 +649,12 @@ export class Discoball extends BonusTileBase {
         const uiTile = this.node.getComponent(UITile);
         const overlayLayer = uiTile?.getAnimationsLayout();
 
-        if(
-            !sourceSpine ||
-            !sourceSpine.skeletonData ||
-            !sourceSpine.node.isValid ||
-            !overlayLayer?.isValid
-        ) {
+        if(!sourceSpine?.skeletonData || !sourceSpine.node.isValid || !overlayLayer?.isValid) {
             console.warn('[DISCO ACTIVE] Spine or overlay missing');
             return false;
         }
 
-        console.log('[DISCO ACTIVATION SOURCE]', {
-            type: this.tileType,
-            row: this.row,
-            col: this.col,
-            moving: uiTile?.isVisualMoving(),
-            tileWorldPosition: this.node.worldPosition.toString(),
-            spineWorldPosition: sourceSpine.node.worldPosition.toString(),
-            spineActive: sourceSpine.node.active,
-            overlayActive: overlayLayer.activeInHierarchy
-        });
-
         const sourceNode = sourceSpine.node;
-
         const worldPosition = sourceNode.worldPosition.clone();
         const worldRotation = sourceNode.worldRotation.clone();
         const worldScale = sourceNode.worldScale.clone();
@@ -794,140 +665,92 @@ export class Discoball extends BonusTileBase {
         const skeleton = visualNode.getComponent(sp.Skeleton);
 
         if(!skeleton) {
-            console.warn('[DISCO ACTIVE] Cloned Skeleton missing');
             visualNode.destroy();
             return false;
         }
 
-        overlayLayer.addChild(visualNode);
+        const holdNode = instantiate(sourceNode);
+        holdNode.name = 'DiscoballHoldFx';
 
-        visualNode.setWorldPosition(worldPosition);
-        visualNode.setWorldRotation(worldRotation);
-        visualNode.setWorldScale(worldScale);
-        visualNode.setSiblingIndex(overlayLayer.children.length - 1);
+        const holdSkeleton = holdNode.getComponent(sp.Skeleton);
 
-        visualNode.active = true;
-        skeleton.enabled = true;
-
-        console.log('[DISCO OVERLAY POSITION]', {
-            type: this.tileType,
-            row: this.row,
-            col: this.col,
-            source: worldPosition.toString(),
-            clone: visualNode.worldPosition.toString(),
-            parent: overlayLayer.name
-        });
+        if(!holdSkeleton) {
+            visualNode.destroy();
+            holdNode.destroy();
+            return false;
+        }
 
         try {
             const skinName = this.getLineSkinName();
 
+            overlayLayer.addChild(visualNode);
+
+            visualNode.setWorldPosition(worldPosition);
+            visualNode.setWorldRotation(worldRotation);
+            visualNode.setWorldScale(worldScale);
+            visualNode.setSiblingIndex(overlayLayer.children.length - 1);
+
+            visualNode.active = true;
+            skeleton.enabled = true;
+
             skeleton.setSkin(skinName);
             skeleton.setSlotsToSetupPose();
 
-            if(
-                !skeleton.findAnimation('idle') ||
-                !skeleton.findAnimation('active')
-            ) {
-                throw new Error('Discoball idle or active animation missing');
+            overlayLayer.addChild(holdNode);
+
+            holdNode.setWorldPosition(worldPosition);
+            holdNode.setWorldRotation(worldRotation);
+            holdNode.setWorldScale(worldScale);
+            holdNode.setSiblingIndex(overlayLayer.children.length - 1);
+
+            holdNode.active = true;
+            holdSkeleton.enabled = true;
+
+            holdSkeleton.setSkin(skinName);
+            holdSkeleton.setSlotsToSetupPose();
+            holdSkeleton.clearTracks();
+            holdSkeleton.setToSetupPose();
+
+            const hasEmptyHold = !!holdSkeleton.findAnimation('empty_hold');
+
+            if(hasEmptyHold) {
+                holdSkeleton.setAnimation(0, 'empty_hold', true);
+                holdSkeleton.timeScale = 1;
+            }
+            else if(holdSkeleton.findAnimation('idle')) {
+                holdSkeleton.setAnimation(0, 'idle', true);
+                holdSkeleton.updateAnimation(0);
+                holdSkeleton.timeScale = 0;
+            }
+            else {
+                throw new Error('No empty_hold or idle for discoball hold');
+            }
+
+            holdNode.active = false;
+
+            if(!skeleton.findAnimation('active')) {
+                throw new Error('Discoball active animation missing');
             }
 
             skeleton.clearTracks();
             skeleton.setToSetupPose();
             skeleton.timeScale = 1;
 
-            const idleTrack = skeleton.setAnimation(
-                0,
-                'idle',
-                true
-            );
+            const activeTrack = skeleton.setAnimation(0, 'active', false);
 
-            if(!idleTrack) {
-                throw new Error('Cannot start discoball idle');
+            if(!activeTrack) {
+                throw new Error('Cannot start discoball active');
             }
 
-            const safeTimeScale = Math.max(0.01, timeScale);
-
-            const totalTime = this.disco_combo_time / safeTimeScale;
-            const lastLineEnd = visibleUntil ?? (totalTime + 0.87);
-
-            const activeFadeTime = 0.8333;
-
-            const activeDelay = Math.max(
-                0,
-                lastLineEnd - activeFadeTime
-            );
-
-            tween(visualNode)
-                .delay(activeDelay)
-                .call(() => {
-                    if(!visualNode.isValid || !skeleton.isValid) {
-                        return;
-                    }
-
-                    try {
-                        skeleton.clearTracks();
-                        skeleton.setToSetupPose();
-                        skeleton.timeScale = 1;
-
-                        const activeTrack = skeleton.setAnimation(
-                            0,
-                            'active',
-                            false
-                        );
-
-                        if(!activeTrack) {
-                            throw new Error('Cannot start discoball active');
-                        }
-
-                        skeleton.setTrackCompleteListener(
-                            activeTrack,
-                            () => {
-                                if(visualNode.isValid) {
-                                    console.log('[DISCO ACTIVE COMPLETE]', {
-                                        skin: skinName
-                                    });
-
-                                    visualNode.destroy();
-                                }
-                            }
-                        );
-
-                        console.log('[DISCO ACTIVE START]', {
-                            skin: skinName,
-                            delay: activeDelay,
-                            duration: activeTrack.animation?.duration
-                        });
-
-                    } catch(error) {
-                        console.error(
-                            '[DISCO ACTIVE] Playback failed:',
-                            error
-                        );
-
-                        if(visualNode.isValid) {
-                            visualNode.destroy();
-                        }
-                    }
-                })
-
-                .delay(1.5)
-                .call(() => {
-                    if(visualNode.isValid) {
-                        console.warn(
-                            '[DISCO FX FALLBACK CLEANUP]',
-                            {
-                                skin: skinName,
-                                node: visualNode.name,
-                                position: visualNode.worldPosition.toString()
-                            }
-                        );
-
-                        visualNode.destroy();
-                    }
-                })
-                .start();
-
             this.isSpineActivationStarted = true;
+            this.isSpineActivationCompleted = false;
+
+            this.activeFxNode = visualNode;
+            this.activeHoldNode = holdNode;
+
+            if(onReady) {
+                this.activeReadyCallbacks.push(onReady);
+            }
 
             sourceNode.active = false;
 
@@ -937,12 +760,73 @@ export class Discoball extends BonusTileBase {
 
             uiTile?.setSpineDestroyOnly(true);
 
-            console.log('[DISCO ACTIVE SCHEDULED]', {
-                type: this.tileType,
+            const enterEmptyBallHold = (trigger: 'event' | 'progress' | 'complete') => {
+                if(!visualNode.isValid || !skeleton.isValid || this.isSpineActivationCompleted) {
+                    return;
+                }
+
+                skeleton.timeScale = 0;
+
+                visualNode.active = true;
+                skeleton.enabled = true;
+
+                if(holdNode.isValid) {
+                    holdNode.active = false;
+                }
+
+                this.isSpineActivationCompleted = true;
+
+                console.log('[DISCO EMPTY BALL FROZEN]', {
+                    trigger,
+                    skin: skinName,
+                    row: this.row,
+                    col: this.col,
+                    trackTime: activeTrack.trackTime,
+                    nodeActive: visualNode.active
+                });
+
+                const callbacks = this.activeReadyCallbacks.splice(0);
+
+                for(const callback of callbacks) {
+                    try {
+                        callback();
+                    }
+                    catch(error) {
+                        console.error('[DISCO ACTIVE] Ready callback failed:', error);
+                    }
+                }
+            };
+
+            const emptyBallTime = 0.4;
+
+            this.scheduleOnce(() => {
+                if(!this.node.isValid || !visualNode.isValid || this.isSpineActivationCompleted) {
+                    return;
+                }
+
+                enterEmptyBallHold('progress');
+
+            }, emptyBallTime);
+
+            skeleton.setTrackEventListener(activeTrack, (_entry, event) => {
+                if(typeof event === 'number') return;
+
+                if(event?.data?.name === 'empty_ready') {
+                    enterEmptyBallHold('event');
+                }
+            });
+
+            skeleton.setTrackCompleteListener(activeTrack, () => {
+                if(this.isSpineActivationCompleted) return;
+
+                console.warn('[DISCO] active completed without empty_ready event');
+
+                enterEmptyBallHold('complete');
+            });
+
+            console.log('[DISCO ACTIVE START]', {
                 skin: skinName,
-                totalTime,
-                lastLineEnd,
-                activeDelay,
+                duration: activeTrack.animation?.duration,
                 position: worldPosition.toString()
             });
 
@@ -951,13 +835,20 @@ export class Discoball extends BonusTileBase {
         } catch(error) {
             console.error('[DISCO ACTIVE] Setup failed:', error);
 
-            if(visualNode.isValid) {
-                visualNode.destroy();
-            }
+            if(visualNode.isValid) visualNode.destroy();
+            if(holdNode.isValid) holdNode.destroy();
+
+            if(sourceNode.isValid) sourceNode.active = true;
+            if(this.icon) this.icon.enabled = true;
+
+            this.activeReadyCallbacks = [];
+            this.activeFxNode = null;
+            this.activeHoldNode = null;
+
+            this.isSpineActivationStarted = false;
+            this.isSpineActivationCompleted = false;
 
             return false;
         }
     }
 }
-
-

@@ -72,6 +72,10 @@ export class Field extends Component {
 	private isBonusPoolActivated: boolean = false;
 	private bonusIndex = 0;
 
+    private activeDiscoballSequences: Set<Node> = new Set();
+    private shouldActivateBonusPoolAfterDiscoball: boolean = false;
+    private discoballPendingBlockingInaction: boolean = false;
+
 	private availableColors: string[] = [];
 	private startPool: string[] = [];
 	private spawnPools: string[][] = [];
@@ -595,7 +599,18 @@ export class Field extends Component {
 	}
 
 	clearBoard() {
-		this.bonusPool = [];
+        if(this.spawnTilesSchedule) {
+            this.unschedule(this.spawnTilesSchedule);
+        }
+
+        this.spawnTilesSchedule = null;
+        this.isSpawnScheduled = false;
+
+        this.activeDiscoballSequences.clear();
+        this.shouldActivateBonusPoolAfterDiscoball = false;
+        this.discoballPendingBlockingInaction = false;
+
+        this.bonusPool = [];
 
 		for (let row = 0; row < this.numRows; row++) {
 			for (let col = 0; col < this.numCols; col++) {
@@ -946,14 +961,35 @@ export class Field extends Component {
 			}
 		});
 		tileNode.on('activate_bonus_pool', () => {
-			this.activateBonusPool();
-		});
-		tileNode.on('respawn', (timeToRespawn) => {
-			this.scheduleRespawn(timeToRespawn, false); //true
-		});
-		tileNode.on('respawn_block_inaction', (timeToRespawn) => {
-			this.scheduleRespawn(timeToRespawn, true);
-		});
+            const isDiscoball = tileType === 'multi' || tileType === 'super';
+
+            if(isDiscoball && this.activeDiscoballSequences.has(tileNode)) {
+                this.completeDiscoballSequence(tileNode, true);
+                return;
+            }
+
+            this.activateBonusPool();
+        });
+
+        tileNode.on('respawn', (timeToRespawn: number) => {
+            const isDiscoball = tileType === 'multi' || tileType === 'super';
+
+            if(isDiscoball && timeToRespawn > 0) {
+                this.beginDiscoballSequence(tileNode);
+                return;
+            }
+
+            if(isDiscoball && timeToRespawn === 0 && this.activeDiscoballSequences.has(tileNode)) {
+                this.completeDiscoballSequence(tileNode, false);
+                return;
+            }
+
+            this.scheduleRespawn(timeToRespawn, false);
+        });
+
+        tileNode.on('respawn_block_inaction', (timeToRespawn: number) => {
+            this.scheduleRespawn(timeToRespawn, true);
+        });
 		tileNode.on('damage_all', (tileId) => {
 			this.setAllDamagedByType(tileId);
 		});
@@ -2222,10 +2258,15 @@ export class Field extends Component {
 				}
 			}
 
-			if (this.isBonusPoolActivated) {
-				this.activateBonusByIndex(this.bonusIndex, true);
-				return;
-			}
+			if(this.isBonusPoolActivated) {
+                if(this.activeDiscoballSequences.size > 0) {
+                    console.log('[BONUS POOL] Waiting for discoball sequence');
+                    return;
+                }
+
+                this.activateBonusByIndex(this.bonusIndex, true);
+                return;
+            }
 
 			if (isRespawn) {
 				if (this.checkIfAnyBonusActivated()) {
@@ -2256,23 +2297,102 @@ export class Field extends Component {
 		}, this.fallTime);
 	}
 
+    private beginDiscoballSequence(tileNode: Node): void {
+        if(this.activeDiscoballSequences.has(tileNode)) {
+            return;
+        }
+
+        this.activeDiscoballSequences.add(tileNode);
+        this.isClickAvailable = false;
+
+        if(this.isSpawnScheduled && this.spawnTilesSchedule) {
+            this.unschedule(this.spawnTilesSchedule);
+            this.spawnTilesSchedule = null;
+            this.isSpawnScheduled = false;
+        }
+
+        console.log('[DISCO FIELD LOCK]', {
+            tile: tileNode.name,
+            activeSequences: this.activeDiscoballSequences.size
+        });
+    }
+
+    private completeDiscoballSequence(
+        tileNode: Node,
+        activateBonusPool: boolean
+    ): void {
+        if(activateBonusPool) {
+            this.shouldActivateBonusPoolAfterDiscoball = true;
+        }
+
+        if(!this.activeDiscoballSequences.has(tileNode)) {
+            return;
+        }
+
+        this.activeDiscoballSequences.delete(tileNode);
+
+        console.log('[DISCO FIELD UNLOCK]', {
+            tile: tileNode.name,
+            activeSequences: this.activeDiscoballSequences.size,
+            activateBonusPool
+        });
+
+        if(this.activeDiscoballSequences.size > 0) {
+            return;
+        }
+
+        const shouldStartBonusPool = this.shouldActivateBonusPoolAfterDiscoball;
+        const shouldBlockInaction = this.discoballPendingBlockingInaction;
+
+        this.shouldActivateBonusPoolAfterDiscoball = false;
+        this.discoballPendingBlockingInaction = false;
+
+        if(this.isBonusPoolActivated) {
+            this.spawnNewTiles(false, true);
+            return;
+        }
+
+        if(shouldStartBonusPool && this.bonusPool.length > 0) {
+            this.activateBonusPool();
+            return;
+        }
+
+        this.scheduleRespawn(0, shouldBlockInaction);
+    }
+
 	scheduleRespawn(timeToRespawn: number, isBlockingInactionEffect: boolean) {
-		if (this.isSpawnScheduled) {
-			return;
-		}
+        if(this.activeDiscoballSequences.size > 0) {
+            this.discoballPendingBlockingInaction =
+                this.discoballPendingBlockingInaction || isBlockingInactionEffect;
 
-		this.isClickAvailable = false;
+            this.isClickAvailable = false;
 
-		this.spawnTilesSchedule = () => {
-			this.bonusPool = [];
-			this.isBonusPoolActivated = false;
-			this.spawnNewTiles(true, isBlockingInactionEffect);
-			this.isSpawnScheduled = false;
-		};
-		this.scheduleOnce(this.spawnTilesSchedule, timeToRespawn);
+            console.log('[DISCO RESPAWN DEFERRED]', {
+                requestedDelay: timeToRespawn,
+                activeSequences: this.activeDiscoballSequences.size
+            });
 
-		this.isSpawnScheduled = true;
-	}
+            return;
+        }
+
+        if(this.isSpawnScheduled) {
+            return;
+        }
+
+        this.isClickAvailable = false;
+
+        this.spawnTilesSchedule = () => {
+            this.bonusPool = [];
+            this.isBonusPoolActivated = false;
+
+            this.spawnNewTiles(true, isBlockingInactionEffect);
+
+            this.isSpawnScheduled = false;
+        };
+
+        this.scheduleOnce(this.spawnTilesSchedule, timeToRespawn);
+        this.isSpawnScheduled = true;
+    }
 
 	fallTiles() {
 		for (let col = 0; col < this.numCols; col++) {

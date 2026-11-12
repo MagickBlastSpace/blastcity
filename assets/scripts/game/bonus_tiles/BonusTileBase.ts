@@ -1,6 +1,7 @@
 import { _decorator, Node, Vec2 } from 'cc';
 import { AudioController } from '../../utils/AudioController';
 import { TileBase } from '../TileBase';
+import { StatusBase } from '../statuses/StatusBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('BonusTileBase')
@@ -44,7 +45,7 @@ export class BonusTileBase extends TileBase {
         for(let i = 0; i < adjTiles.length; i++) {
             const tile = adjTiles[i];
             if(tile !== null) {
-                const tileComponent = tile.getComponent("TileBase");
+                const tileComponent = tile.getComponent(TileBase);
                 if(tileComponent.isBonusTile()) {
                     possibleCombos.push(tileComponent.getTileType());
                     possibleCombosPositions.push(new Vec2(tileComponent.getRow(), tileComponent.getCol()));
@@ -271,13 +272,13 @@ export class BonusTileBase extends TileBase {
                     const status = statuses[i][j];
 
                     if(status !== null && status !== undefined) {
-                        const statusComp = status.getComponent("StatusBase");
+                        const statusComp = status.getComponent(StatusBase);
                         if(statusComp.isBlockingInteraction()) {
                             continue;
                         }
                     }
                     if(tile !== null && tile !== this.node) {
-                        const tileComp = tile.getComponent("TileBase");
+                        const tileComp = tile.getComponent(TileBase);
                         if(tileComp.getTileType() === this.availableColors[color]) {
                             tiles.push(tileComp);
                         }
@@ -315,14 +316,14 @@ export class BonusTileBase extends TileBase {
                     const status = statuses[i][j];
 
                     if (status) {
-                        const statusComp = status.getComponent("StatusBase");
+                        const statusComp = status.getComponent(StatusBase);
                         if (statusComp && statusComp.isBlockingInteraction()) {
                             continue;
                         }
                     }
 
                     if (tile && tile !== this.node) {
-                        const tileComp = tile.getComponent("TileBase");
+                        const tileComp = tile.getComponent(TileBase);
                         if (tileComp && tileComp.getTileType() === color) {
                             tiles.push(tileComp);
                         }
@@ -358,9 +359,10 @@ export class BonusTileBase extends TileBase {
         start: Vec2,
         end: Vec2,
         skinName: string = 'blue',
-        animationName: 'line_color_1' | 'line_color_2' = 'line_color_1'
+        animationName: 'line_color_1' | 'line_color_2' = 'line_color_1',
+        onFinished?: (reached: boolean) => void
     ): void {
-        this.node.emit('render_line', start, end, skinName, animationName);
+        this.node.emit('render_line', start, end, skinName, animationName, onFinished);
     }
 
 
@@ -387,5 +389,3 @@ export class BonusTileBase extends TileBase {
 
     setBonusPoolAnimation() {}
 }
-
-
