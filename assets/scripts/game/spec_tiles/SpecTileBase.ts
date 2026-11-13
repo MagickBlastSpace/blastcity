@@ -11,11 +11,11 @@ export class SpecTileBase extends TileBase {
     protected isDamaged: boolean;
     protected isGrouped: boolean;
 
-    private isDoubleX: boolean;
-    private isDoubleY: boolean;
+    protected isDoubleX: boolean;
+    protected isDoubleY: boolean;
 
-    private isTripleX: boolean;
-    private isTripleY: boolean;
+    protected isTripleX: boolean;
+    protected isTripleY: boolean;
 
 
     init(row: number, col: number, tileType: string) {
