@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Layout, Widget, view, UITransform, Vec3, Size } from 'cc';
+import { _decorator, Layout, Node, Size, UITransform, Vec3, view, Widget } from 'cc';
 import { UIAdaptivityBase } from '../UIAdaptivityBase';
 const { ccclass, property } = _decorator;
 
@@ -36,18 +36,18 @@ export class UIStartFrameAdaptivity extends UIAdaptivityBase {
     private basic_EventIconSize: number = 280;
 
     private basic_X: number = 512;
-    
+
 
     refresh() {
         const visibleSize = view.getVisibleSize();
-    
+
         const w = visibleSize.width;
         const h = visibleSize.height;
-    
+
         if (w > h) {
             const y = 0.125 * h;
             const x = 0.140 * w;
-            
+
             const eventsScale = y / this.basic_EventIconSize;
             for(let i = 0; i < this.events.length; i++) {
                 this.events[i].setScale(new Vec3(eventsScale, eventsScale, 1));
@@ -77,9 +77,14 @@ export class UIStartFrameAdaptivity extends UIAdaptivityBase {
                 this.playBtns[i].getComponent(UITransform).setContentSize(new Size(playBtn_W, playBtn_H));
             }
 
+            const aspectRatio = w / h;
+            const tabletFactor = Math.max(0, Math.min(1, (1.75 - aspectRatio) / 0.15));
+            const playBtnBottom = 400 + 450 * tabletFactor;
+
             for(let i = 0; i < this.playBtns_Widgets.length; i++) {
                 this.playBtns_Widgets[i].center = 0;
-                this.playBtns_Widgets[i].bottom = 400;
+                this.playBtns_Widgets[i].bottom = playBtnBottom;
+                this.playBtns_Widgets[i].updateAlignment();
             }
 
             const chestSize = 1.167 * x;
@@ -101,7 +106,7 @@ export class UIStartFrameAdaptivity extends UIAdaptivityBase {
         } else {
             const y = 0.078 * h;
             const x = 0.2487 * w;
-            
+
             const eventsScale = y / this.basic_EventIconSize;
             for(let i = 0; i < this.events.length; i++) {
                 this.events[i].setScale(new Vec3(eventsScale, eventsScale, 1));
@@ -129,7 +134,8 @@ export class UIStartFrameAdaptivity extends UIAdaptivityBase {
 
             for(let i = 0; i < this.playBtns_Widgets.length; i++) {
                 this.playBtns_Widgets[i].center = 0;
-                this.playBtns_Widgets[i].bottom = 800;
+                this.playBtns_Widgets[i].bottom = 1150;
+                this.playBtns_Widgets[i].updateAlignment();
             }
 
             const chestSize = 1.68 * x;
@@ -139,7 +145,7 @@ export class UIStartFrameAdaptivity extends UIAdaptivityBase {
 
             const xScale = x / this.basic_X;
             this.resources.setScale(new Vec3(xScale, xScale, 1));
-            
+
             for(let i = 0; i < this.eventProgressBtns.length; i++) {
                 this.eventProgressBtns[i].setScale(new Vec3(xScale, xScale, 1));
             }

@@ -824,19 +824,22 @@ export class UIMainMenu extends UIFrameBase {
                             collectionNode.setSiblingIndex(landscapeItems.getSiblingIndex());
                         }
 
-                        const mainBtnsFrame =
-                           this.node.getChildByName("MainBtnsFrame");
+                        const mainBtnsFrame = this.node.getChildByName("MainBtnsFrame");
+
                         if(mainBtnsFrame) {
                             mainBtnsFrame.setSiblingIndex(collectionNode.getSiblingIndex() + 1);
                         }
 
-                        const mainMenuButtonsPanel =
-                            this.node.getChildByName("MainMenuButtonsPanel");
+                        const mainMenuButtonsPanel = this.node.getChildByName("MainMenuButtonsPanel");
+                        const playFrame = this.node.getChildByName("PlayFrame");
 
                         if(mainMenuButtonsPanel) {
-                            const navbarIndex = mainBtnsFrame
-                                ? mainBtnsFrame.getSiblingIndex() + 1
-                                : collectionNode.getSiblingIndex() + 1;
+                            const navbarIndex = Math.max(
+                                collectionNode.getSiblingIndex(),
+                                mainBtnsFrame?.getSiblingIndex() ?? -1,
+                                playFrame?.getSiblingIndex() ?? -1
+                            ) + 1;
+
                             mainMenuButtonsPanel.setSiblingIndex(navbarIndex);
                             popupsNode.setSiblingIndex(mainMenuButtonsPanel.getSiblingIndex() + 1);
                         }
@@ -978,6 +981,7 @@ export class UIMainMenu extends UIFrameBase {
 
         this.boundOnBackgroundResize = () => {
             if(!this.node || !this.node.isValid) return;
+
             this.scheduleBackgroundLayoutRefresh();
         };
 
