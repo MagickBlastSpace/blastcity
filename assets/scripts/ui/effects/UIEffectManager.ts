@@ -1,6 +1,6 @@
-import { _decorator, Component, Node, Prefab, Vec2, instantiate, Vec3, UITransform } from 'cc';
-import { ResolutionManager } from '../../utils/ResolutionManager';
+import { _decorator, Component, instantiate, Node, Prefab, UITransform, Vec2, Vec3 } from 'cc';
 import { SpecialPrefabData } from '../../data/GameData';
+import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UILevelGoal } from '../level/UILevelGoal';
 const { ccclass, property } = _decorator;
 
@@ -60,8 +60,10 @@ export class UIEffectManager extends Component {
     }
 
     createSpecGoalEffect(spec: string, row: number, col: number) {
-        const prefab = this.specialPrefabs.find(p => p.id === "goal_fly")?.prefab;
-        if(prefab === null) {
+        const prefab = this.specialPrefabs.find(p => p.id === 'goal_fly')?.prefab;
+
+        if(!prefab) {
+            console.warn('[GOAL EFFECT] goal_fly prefab not found');
             return;
         }
 
@@ -83,8 +85,10 @@ export class UIEffectManager extends Component {
     }
 
     createSpecGoalEffectPositioned(spec: string, x: number, y: number) {
-        const prefab = this.specialPrefabs.find(p => p.id === "goal_fly")?.prefab;
-        if(prefab === null) {
+        const prefab = this.specialPrefabs.find(p => p.id === 'goal_fly')?.prefab;
+
+        if(!prefab) {
+            console.warn('[GOAL EFFECT] goal_fly prefab not found');
             return;
         }
 
@@ -110,13 +114,13 @@ export class UIEffectManager extends Component {
         if (goals.length === 0) {
             return new Vec2();
         }
-        
+
         let worldPos = goals[0].getPosition();
-        
+
         for (let i = 0; i < goals.length; i++) {
             if (goalId === goals[i].getGoalId()) {
                 worldPos = goals[i].getPosition();
-                
+
                 const uiTransform = this.node.getComponent(UITransform);
                 if (uiTransform) {
                     const localPos = uiTransform.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));
@@ -127,7 +131,7 @@ export class UIEffectManager extends Component {
                 }
             }
         }
-        
+
         const uiTransform = this.node.getComponent(UITransform);
         if (uiTransform) {
             const localPos = uiTransform.convertToNodeSpaceAR(new Vec3(worldPos.x, worldPos.y, 0));

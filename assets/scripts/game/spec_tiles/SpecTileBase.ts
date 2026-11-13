@@ -9,7 +9,7 @@ export class SpecTileBase extends TileBase {
     protected strength: number;
 
     protected isDamaged: boolean;
-    private isGrouped: boolean;
+    protected isGrouped: boolean;
 
     private isDoubleX: boolean;
     private isDoubleY: boolean;

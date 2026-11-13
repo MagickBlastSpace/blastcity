@@ -23,8 +23,7 @@ export class TileBase extends Component {
     protected isShifts: boolean;
     protected isSpecial: boolean;
 
-    private currentTween: any = null;
-    private isSubscribed: boolean = false;
+    protected isSubscribed: boolean = false;
 
     protected uiComponent: UITile = null;
 
