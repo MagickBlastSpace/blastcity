@@ -50,6 +50,7 @@ export class MagicHat extends SpecTileBase {
         }
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
+        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
         super.destroyTile(delay);
     }
 
@@ -59,6 +60,7 @@ export class MagicHat extends SpecTileBase {
         }
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
+        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
         super.destroyClear();
     }
 
@@ -72,6 +74,9 @@ export class MagicHat extends SpecTileBase {
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
         this.node.on(Node.EventType.TOUCH_END, this.onHatTouched, this);
+
+        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
+        this.node.on('touch_feedback', this.playHatTouchAnimation, this);
 
         if(this.hatSpine?.skeletonData) {
             this.hatSpine.node.active = true;
@@ -114,11 +119,22 @@ export class MagicHat extends SpecTileBase {
         const uiTile = this.node.getComponent(UITile);
         const overlayLayer = uiTile?.getAnimationsLayout();
 
+        let displayFx: Node = null;
+        let carrotFx: Node = null;
+        let sourceNode: Node = null;
+        let sourceWasActive = true;
         let completed = false;
 
         const completeGoal = () => {
             if(completed) return;
             completed = true;
+
+            if(displayFx?.isValid) displayFx.destroy();
+            if(carrotFx?.isValid) carrotFx.destroy();
+
+            if(sourceNode?.isValid) {
+                sourceNode.active = sourceWasActive;
+            }
 
             this.isCarrotAnimating = false;
 
@@ -138,85 +154,113 @@ export class MagicHat extends SpecTileBase {
             .filter(name => !!sourceSpine.findAnimation(name));
 
         if(animations.length === 0) {
-            console.warn('[MAGIC HAT] No carrot animations found');
+            console.warn('[MAGIC HAT] Carrot animations missing');
             completeGoal();
             return;
         }
 
         if(!overlayLayer?.isValid || !overlayLayer.activeInHierarchy) {
-            console.warn('[MAGIC HAT] AnimationsLayer missing or inactive');
+            console.warn('[MAGIC HAT] AnimationsLayer missing');
+            completeGoal();
+            return;
+        }
+
+        if(!sourceSpine.findAnimation('hat_back') || !sourceSpine.findAnimation('hat_front')) {
+            console.warn('[MAGIC HAT] Hat animations missing');
             completeGoal();
             return;
         }
 
         const animationName = animations[Math.floor(Math.random() * animations.length)];
 
-        this.isCarrotAnimating = true;
+        sourceNode = sourceSpine.node;
+        sourceWasActive = sourceNode.active;
 
-        const sourceNode = sourceSpine.node;
         const worldPosition = sourceNode.worldPosition.clone();
         const worldRotation = sourceNode.worldRotation.clone();
         const worldScale = sourceNode.worldScale.clone();
 
-        let fxNode: Node = null;
+        this.isCarrotAnimating = true;
 
         try {
-            // Создаём отдельную копию Spine только для вылета морковки.
-            fxNode = instantiate(sourceNode);
-            fxNode.name = 'MagicHatCarrotFx';
+            const getOrCreateLayer = (name: string): Node => {
+                let layer = overlayLayer.getChildByName(name);
 
-            const fxSpine = fxNode.getComponent(sp.Skeleton);
+                if(!layer) {
+                    layer = new Node(name);
+                    overlayLayer.addChild(layer);
+                }
 
-            if(!fxSpine?.skeletonData) {
-                throw new Error('Cloned carrot Spine is missing');
+                return layer;
+            };
+
+            const displayLayer = getOrCreateLayer('MagicHatDisplayLayer');
+            const carrotLayer = getOrCreateLayer('MagicHatCarrotLayer');
+
+            displayLayer.setSiblingIndex(overlayLayer.children.length - 1);
+            carrotLayer.setSiblingIndex(overlayLayer.children.length - 1);
+
+            const createFxNode = (name: string, parent: Node): Node => {
+                const fx = instantiate(sourceNode);
+                fx.name = name;
+
+                parent.addChild(fx);
+
+                fx.setWorldPosition(worldPosition);
+                fx.setWorldRotation(worldRotation);
+                fx.setWorldScale(worldScale);
+
+                fx.active = true;
+
+                return fx;
+            };
+
+            displayFx = createFxNode('MagicHatDisplayFx', displayLayer);
+            carrotFx = createFxNode('MagicHatCarrotFx', carrotLayer);
+
+            const displaySpine = displayFx.getComponent(sp.Skeleton);
+            const carrotSpine = carrotFx.getComponent(sp.Skeleton);
+
+            if(!displaySpine?.skeletonData || !carrotSpine?.skeletonData) {
+                throw new Error('MagicHat Spine clone missing');
             }
 
-            // Помещаем эффект поверх игрового поля.
-            overlayLayer.addChild(fxNode);
+            displaySpine.enabled = true;
+            displaySpine.timeScale = 1;
+            displaySpine.clearTracks();
+            displaySpine.setToSetupPose();
 
-            // Сохраняем точное положение и масштаб исходного Spine.
-            fxNode.setWorldPosition(worldPosition);
-            fxNode.setWorldRotation(worldRotation);
-            fxNode.setWorldScale(worldScale);
-            fxNode.setSiblingIndex(overlayLayer.children.length - 1);
+            carrotSpine.enabled = true;
+            carrotSpine.timeScale = 1;
+            carrotSpine.clearTracks();
+            carrotSpine.setToSetupPose();
 
-            fxNode.active = true;
-            fxSpine.enabled = true;
-            fxSpine.timeScale = 1;
+            const backTrack = displaySpine.setAnimation(0, 'hat_back', false);
+            const frontTrack = displaySpine.setAnimation(1, 'hat_front', false);
 
-            // Убираем все старые анимации и возвращаем setup pose.
-            // В нашем hat.json слоты шляпы в setup pose пустые.
-            fxSpine.clearTracks();
-            fxSpine.setToSetupPose();
+            const carrotTrack = carrotSpine.setAnimation(0, animationName, false);
 
-            // Запускаем только морковку, без touch и анимации шляпы.
-            const carrotTrack = fxSpine.setAnimation(0, animationName, false);
-
-            if(!carrotTrack) {
-                throw new Error('Cannot start animation: ' + animationName);
+            if(!backTrack || !frontTrack || !carrotTrack) {
+                throw new Error('Cannot start MagicHat animations');
             }
 
-            console.log('[MAGIC HAT CARROT OVERLAY START]', {
-                animation: animationName,
+            sourceNode.active = false;
+
+            console.log('[MAGIC HAT OVERLAY START]', {
                 row: this.row,
                 col: this.col,
-                overlay: overlayLayer.name,
-                position: fxNode.worldPosition.toString()
+                animation: animationName,
+                displayLayer: displayLayer.name,
+                carrotLayer: carrotLayer.name
             });
 
-            fxSpine.setTrackCompleteListener(carrotTrack, () => {
-                console.log('[MAGIC HAT CARROT OVERLAY COMPLETE]', animationName);
-
-                if(fxNode?.isValid) fxNode.destroy();
-
+            carrotSpine.setTrackCompleteListener(carrotTrack, () => {
+                console.log('[MAGIC HAT OVERLAY COMPLETE]', animationName);
                 completeGoal();
             });
 
         } catch(error) {
-            console.error('[MAGIC HAT CARROT OVERLAY ERROR]', error);
-
-            if(fxNode?.isValid) fxNode.destroy();
-
+            console.error('[MAGIC HAT OVERLAY ERROR]', error);
             completeGoal();
         }
     }

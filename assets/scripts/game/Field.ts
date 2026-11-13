@@ -1131,6 +1131,25 @@ export class Field extends Component {
 
 		this.statusArray[row][col] = statusNode;
 
+        if(statusType === 'bubble') {
+            statusNode.on('bubble_click', () => {
+                if(this.statusArray[row]?.[col] !== statusNode) return;
+
+                const tile = this.tileArray[row]?.[col];
+
+                if(!tile?.isValid) {
+                    if(this.isClickAvailable && !this.isLevelComplete && !this.isBonusPoolActivated && !this.isTutorialActive) {
+                        statusNode.emit('bubble_touch');
+                    }
+                    return;
+                }
+
+                console.log('[BUBBLE CLICK FORWARDED]', { row, col });
+
+                this.onTileClick(tile);
+            });
+        }
+
 		this.node.emit('init_status', statusNode, statusType);
 
 		return statusNode;
@@ -2124,10 +2143,22 @@ export class Field extends Component {
 				tileComponent.giveDamage(this.tileArray, this.statusArray);
 			}
 
-			if (isDestroyAvailable && !tileComponent.isSpecialTile()) {
-				this.tileArray[tileComponent.getRow()][tileComponent.getCol()] = null;
-				tileComponent.destroyTile(destroyDelay);
-			}
+			if(isDestroyAvailable && !tileComponent.isSpecialTile()) {
+                const row = tileComponent.getRow();
+                const col = tileComponent.getCol();
+
+                const statusNode = this.statusArray[row]?.[col];
+                const statusComp = statusNode?.getComponent('StatusBase');
+
+                if(statusComp?.getStatusType() === 'bubble' && !statusComp.isReadyToDestroy()) {
+                    statusComp.getDamage();
+
+                    console.log('[BUBBLE MATCH DAMAGE]', { row, col });
+                }
+
+                this.tileArray[row][col] = null;
+                tileComponent.destroyTile(destroyDelay);
+            }
 
 			if (isBonus && choosenType !== 'multi' && choosenType !== 'super') {
 				let isSpec = tileComponent.isSpecialTile();
@@ -2882,11 +2913,21 @@ export class Field extends Component {
 			}
 		}
 
-		if (tileComponent.isSpecialTile()) {
-			this.node.emit('game_state', this.tileArray, this.statusArray);
+		if(tileComponent.isSpecialTile()) {
+            const row = tileComponent.getRow();
+            const col = tileComponent.getCol();
 
-			return;
-		}
+            const statusNode = this.statusArray[row]?.[col];
+            const statusComp = statusNode?.getComponent('StatusBase');
+
+            if(statusComp?.getStatusType() === 'bubble') {
+                statusNode.emit('bubble_touch');
+                tile.emit('touch_feedback');
+            }
+
+            this.node.emit('game_state', this.tileArray, this.statusArray);
+            return;
+        }
 
 		if (
 			!this.isInteractionAvailable(
@@ -2912,8 +2953,18 @@ export class Field extends Component {
 				this.levelCompletePoints = this.levelCompletePoints - 1;
 			}
 		} else {
-			this.node.emit('game_state', this.tileArray, this.statusArray);
-		}
+            const row = tileComponent.getRow();
+            const col = tileComponent.getCol();
+
+            const statusNode = this.statusArray[row]?.[col];
+            const statusComp = statusNode?.getComponent('StatusBase');
+
+            if(statusComp?.getStatusType() === 'bubble') {
+                statusNode.emit('bubble_touch');
+            }
+
+            this.node.emit('game_state', this.tileArray, this.statusArray);
+        }
 	}
 
 	isInteractionAvailable(row: number, col: number): boolean {

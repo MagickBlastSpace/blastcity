@@ -3,24 +3,24 @@ const { ccclass, property } = _decorator;
 
 @ccclass('StatusBase')
 export class StatusBase extends Component {
-    
+
     private statusType: string;
     private row: number;
     private col: number;
 
-    private isBlockMovement: boolean;
-    private isBlockInteraction: boolean;
-    private isBlockDestroyTile: boolean;
+    protected  isBlockMovement: boolean;
+    protected  isBlockInteraction: boolean;
+    protected  isBlockDestroyTile: boolean;
 
-    private isMatchHit: boolean;
+    protected  isMatchHit: boolean;
 
-    private isDamaged: boolean;
+    protected isDamaged: boolean;
 
-    private currentTween: any = null;
+    protected  currentTween: any = null;
 
-    private isSubscribed: boolean = false;
-    
-    
+    protected  isSubscribed: boolean = false;
+
+
     init(row: number, col: number, statusType: string) {
         this.row = row;
         this.col = col;
