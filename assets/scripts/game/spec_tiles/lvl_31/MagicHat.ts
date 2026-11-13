@@ -1,4 +1,3 @@
-
 import { _decorator, EventTouch, instantiate, Node, sp, Vec2 } from 'cc';
 import { GoalData } from '../../../data/GameData';
 import { UITile } from '../../../ui/UITile';
@@ -50,7 +49,6 @@ export class MagicHat extends SpecTileBase {
         }
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
-        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
         super.destroyTile(delay);
     }
 
@@ -60,7 +58,6 @@ export class MagicHat extends SpecTileBase {
         }
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
-        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
         super.destroyClear();
     }
 
@@ -74,9 +71,6 @@ export class MagicHat extends SpecTileBase {
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
         this.node.on(Node.EventType.TOUCH_END, this.onHatTouched, this);
-
-        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
-        this.node.on('touch_feedback', this.playHatTouchAnimation, this);
 
         if(this.hatSpine?.skeletonData) {
             this.hatSpine.node.active = true;

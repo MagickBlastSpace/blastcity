@@ -2922,7 +2922,6 @@ export class Field extends Component {
 
             if(statusComp?.getStatusType() === 'bubble') {
                 statusNode.emit('bubble_touch');
-                tile.emit('touch_feedback');
             }
 
             this.node.emit('game_state', this.tileArray, this.statusArray);
