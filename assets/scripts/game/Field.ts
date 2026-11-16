@@ -5,7 +5,10 @@ import {
     isValid,
     Node,
     Prefab,
-    Vec2
+    Quat,
+    sp,
+    Vec2,
+    Vec3
 } from 'cc';
 import {
     GameData,
@@ -15,6 +18,7 @@ import {
     SpecialTileData,
     SpecialTileStateData,
 } from '../data/GameData';
+import { LevelIdTranslator } from '../data/LevelIdTranslator';
 import { SaveData } from '../data/SaveData';
 import { UserData } from '../data/UserData';
 import { ArtPreviewAssetLoader } from '../preview/ArtPreviewAssetLoader';
@@ -25,6 +29,7 @@ import { AssetsLoader } from '../utils/AssetsLoader';
 import { AudioController } from '../utils/AudioController';
 import { TileBase } from './TileBase';
 import { Bomb } from './bonus_tiles/Bomb';
+import { Discoball } from './bonus_tiles/Discoball';
 import { Rocket } from './bonus_tiles/Rocket';
 import { Boosters } from './boosters/Boosters';
 import { ButlersGift } from './boosters/ButlersGift';
@@ -308,6 +313,8 @@ export class Field extends Component {
 		if (level === null || level === undefined) {
 			return;
 		}
+
+        level = LevelIdTranslator.translateLevel(level);
 
 		if (!this.isAssetsLoaded) {
 			this.savedLevelData = level;
@@ -665,54 +672,112 @@ export class Field extends Component {
 		}
 	}
 
-	spawnCommonTile(row: number, col: number, tType: string): Node {
-		this.destroyTile(row, col, true);
-		const tileNode = instantiate(this.tilePrefab);
-		this.layersForCleanup[0].addChild(tileNode);
-		const tileComponent = tileNode.getComponent('Tile');
-		const tileTypeIndex =
-			tType === 'start'
-				? Math.floor(Math.random() * this.startPool.length).toString()
-				: Math.floor(Math.random() * this.spawnPools[col].length).toString();
-		let tileType =
-			tType === 'random' ? this.spawnPools[col][tileTypeIndex] : tType;
-		tileType = tType === 'start' ? this.startPool[tileTypeIndex] : tileType;
 
-		if (!this.availableColors.includes(tileType)) {
-			if (tileType === 'rocket') {
-				this.spawnRandomRocket(row, col);
-			} else if (
-				tileType === 'rocket_horizontal' ||
-				tileType === 'rocket_vertical'
-			) {
-				this.spawnRocket(row, col, tileType);
-			} else if (tileType === 'bomb') {
-				this.spawnBomb(row, col);
-			} else if (
-				tileType === 'discoball' ||
-				tileType.split('_')[0] === 'discoball'
-			) {
-				this.spawnDiscoball(row, col);
-			} else {
-				this.spawnSpecialTile(row, col, tileType);
+    spawnCommonTile(row: number, col: number, tType: string): Node {
 
-				let goalType = tileType;
-				if (this.isColoredType(tileType)) {
-					goalType = 'colored_' + tileType.split('_')[0];
-				}
+        let tileType = tType;
 
-				this.node.emit(
-					'goal_check',
-					goalType,
-					this.countAllTilesByType(tileType),
-				);
-			}
-			return;
-		}
+        if(tType === 'start' || tType === 'random') {
+            const pool = tType === 'start' ? this.startPool : this.spawnPools[col];
 
-		let spawnedTile = this.initTile(tileComponent, row, col, tileType);
-		return spawnedTile;
-	}
+            const validPool = pool?.length ? pool : this.availableColors;
+
+            if(!validPool?.length) {
+                console.error('[FIELD SPAWN] Empty spawn pool', {
+                    row,
+                    col,
+                    tType
+                });
+
+                return null;
+            }
+
+            tileType = validPool[ Math.floor(Math.random() * validPool.length) ];
+        }
+
+        if(!this.availableColors.includes(tileType)) {
+
+            if(tileType === 'rocket') {
+                this.spawnRandomRocket(row, col);
+                return;
+            }
+
+            if(tileType === 'rocket_horizontal' || tileType === 'rocket_vertical') {
+                return this.spawnRocket(row, col, tileType);
+            }
+
+            if(tileType === 'bomb') {
+                return this.spawnBomb(row, col);
+            }
+
+            if(tileType === 'discoball' || tileType?.split('_')[0] === 'discoball') {
+                return this.spawnDiscoball(row, col);
+            }
+
+            const prefabData = this.specialPrefabs.find((item) => item.id === tileType);
+
+            if(!prefabData?.prefab || !isValid(prefabData.prefab, true)) {
+
+                console.error('[FIELD SPAWN FALLBACK]', {
+                    missingTileId: tileType,
+                    row,
+                    col,
+                    tType,
+                    availableSpecs: this.specialPrefabs.map(
+                        (item) => item.id
+                    )
+                });
+
+                const colorsFromPool = ( this.spawnPools[col] ?? [] ).filter((color) => this.availableColors.includes(color));
+
+                const safeColors = colorsFromPool.length ? colorsFromPool : this.availableColors;
+
+                if(!safeColors.length) {
+                    console.error('[FIELD SPAWN] No fallback color');
+                    return null;
+                }
+
+                const fallbackColor = safeColors[ Math.floor(Math.random() * safeColors.length) ];
+
+                return this.spawnCommonTile(row, col, fallbackColor);
+            }
+
+            const spawnedTile = this.spawnSpecialTile(
+                row,
+                col,
+                tileType
+            );
+
+            if(spawnedTile) {
+                let goalType = tileType;
+
+            if(this.isColoredType(tileType)) {
+                goalType = LevelIdTranslator.getColoredGoalIdForTile(
+                    tileType
+                );
+            }
+
+                this.node.emit('goal_check', goalType, this.countAllTilesByType(tileType));
+            }
+
+            return spawnedTile;
+        }
+
+        this.destroyTile(row, col, true);
+
+        const tileNode = instantiate(this.tilePrefab);
+        this.layersForCleanup[0].addChild(tileNode);
+
+        const tileComponent = tileNode.getComponent('Tile');
+
+        return this.initTile(
+            tileComponent,
+            row,
+            col,
+            tileType
+        );
+    }
+
 
 	spawnBomb(row: number, col: number): Node {
         this.destroyTile(row, col, false);
@@ -786,10 +851,23 @@ export class Field extends Component {
 			tileId = tileId.split('_')[0] + '_' + color;
 		}
 
-		const prefab = this.specialPrefabs.find((p) => p.id === tileId)?.prefab;
-		if (prefab === null) {
-			return;
-		}
+		const prefabData = this.specialPrefabs.find((p) => p.id === tileId);
+        const prefab = prefabData?.prefab;
+
+        if(!prefab || !isValid(prefab, true)) {
+            console.error('[FIELD MISSING SPECIAL PREFAB]', {
+                tileId,
+                row,
+                col,
+                spawnPool: this.spawnPools[col],
+                registeredSpecs: this.specialPrefabs.map((item) => ({
+                    id: item.id,
+                    loaded: !!item.prefab && isValid(item.prefab, true)
+                }))
+            });
+
+            return null;
+        }
 
 		this.destroyTile(row, col, true);
 		const tileNode = instantiate(prefab);
@@ -1922,21 +2000,68 @@ export class Field extends Component {
 
                 () => {
                     if(matches.length >= 9) {
-                        spawnedBonus = this.spawnDiscoball(choosenRow, choosenCol);
+                        spawnedBonus = this.spawnDiscoball(
+                            choosenRow,
+                            choosenCol
+                        );
                     }
                     else if(matches.length >= 7) {
-                        spawnedBonus = this.spawnBomb(choosenRow, choosenCol);
+                        spawnedBonus = this.spawnBomb(
+                            choosenRow,
+                            choosenCol
+                        );
                     }
                     else {
-                        spawnedBonus = this.spawnRocket(choosenRow, choosenCol, potentialBonus);
+                        spawnedBonus = this.spawnRocket(
+                            choosenRow,
+                            choosenCol,
+                            potentialBonus
+                        );
                     }
 
-                    if(spawnedBonus && spawnedBonus.isValid) {
+                    if(spawnedBonus?.isValid) {
                         const bonusUi = spawnedBonus.getComponent(UITile);
 
                         if(bonusUi) {
-                            bonusUi.prepareInstantBonusSpawn();
-                            bonusUi.hideForBonusSpawn();
+                            bonusUi.keepSpineVisible = true;
+
+                            bonusUi.prepareBonusSpawnAtCell();
+                        }
+
+                        if(matches.length >= 9) {
+                            const disco = spawnedBonus.getComponent(Discoball);
+
+                            if(disco?.discoballSpine?.node?.isValid) {
+                                this.followBonusSpawnVisual(
+                                    spawnedBonus,
+                                    disco.discoballSpine.node,
+                                    true
+                                );
+                            }
+                        }
+                        else if(matches.length >= 7) {
+                            const bomb = spawnedBonus.getComponent(Bomb);
+
+                            if(bomb) {
+                                bomb.playSpawnAnimation();
+
+                                this.followBonusSpawnVisual(
+                                    spawnedBonus,
+                                    bomb.bombSpine?.node
+                                );
+                            }
+                        }
+                        else {
+                            const rocket = spawnedBonus.getComponent(Rocket);
+
+                            if(rocket) {
+                                rocket.playSpawnAnimation();
+
+                                this.followBonusSpawnVisual(
+                                    spawnedBonus,
+                                    rocket.spawnSpine?.node
+                                );
+                            }
                         }
                     }
 
@@ -1947,43 +2072,8 @@ export class Field extends Component {
 
                 () => {},
 
-                () => {
-                    if(!spawnedBonus || !spawnedBonus.isValid) {
-                        return;
-                    }
+                () => {},
 
-                    const bonusUi = spawnedBonus.getComponent(UITile);
-
-                    if(bonusUi) {
-                        bonusUi.showAfterBonusSpawn();
-                    }
-
-                    spawnedBonus.setScale(1, 1, 1);
-
-                    if(matches.length >= 7 && matches.length < 9) {
-                        const bomb = spawnedBonus.getComponent(Bomb);
-
-                        if(bomb) {
-                            bomb.playSpawnAnimation(
-                                this.bonusSpawnOverlay
-                            );
-                        }
-
-                        return;
-                    }
-
-                    if(matches.length >= 5 && matches.length < 7) {
-                        const rocket = spawnedBonus.getComponent(Rocket);
-
-                        if(rocket) {
-                            rocket.playSpawnAnimation(
-                                this.bonusSpawnOverlay
-                            );
-                        }
-
-                        return;
-                    }
-                },
                 isBombCreation,
                 bonusFxType
             );
@@ -3215,34 +3305,53 @@ export class Field extends Component {
 		this.node.emit('goal_complete', goalId);
 	}
 
-	setGoalPossible(goalId: string) {
-		if (goalId === 'coin') {
-			return;
-		}
 
-		let tilesToRemove = [];
+    setGoalPossible(goalId: string) {
+        if(goalId === 'coin') {
+            return;
+        }
 
-		if (goalId.includes('colored')) {
-			let tileBaseName = goalId.split('_')[1];
+        const tilesToRemove =
+            LevelIdTranslator.getSpawnIdsForGoal(
+                goalId,
+                this.availableColors
+            );
 
-			for (let i = 0; i < this.availableColors.length; i++) {
-				tilesToRemove.push(tileBaseName + '_' + this.availableColors[i]);
-			}
-		} else {
-			tilesToRemove.push(goalId);
-		}
+        const removeIds = new Set(
+            tilesToRemove.filter(
+                (id) => !this.availableColors.includes(id)
+            )
+        );
 
-		for (let i = 0; i < tilesToRemove.length; i++) {
-			for (let j = 0; j < this.spawnPools.length; j++) {
-				if (
-					this.spawnPools[j].includes(tilesToRemove[i]) &&
-					!this.availableColors.includes(tilesToRemove[i])
-				) {
-					this.removeStringFromArray(this.spawnPools[j], tilesToRemove[i]);
-				}
-			}
-		}
-	}
+        if(removeIds.size === 0) {
+            return;
+        }
+
+        for(let col = 0; col < this.spawnPools.length; col++) {
+
+            const pool = this.spawnPools[col];
+
+            if(!pool || pool.length === 0) {
+                continue;
+            }
+
+            for(let i = pool.length - 1; i >= 0; i--) {
+
+                const normalizedId =
+                    LevelIdTranslator.translateId(pool[i]);
+
+                if(removeIds.has(normalizedId)) {
+                    pool.splice(i, 1);
+                }
+            }
+        }
+
+        console.log('[FIELD GOAL POSSIBLE]', {
+            goalId,
+            removedTypes: [...removeIds]
+        });
+    }
+
 
 	removeStringFromArray(array: string[], target: string) {
 		const index = array.indexOf(target);
@@ -3711,5 +3820,138 @@ export class Field extends Component {
                 nextStableChecks
             );
         }, 0.05);
+    }
+
+
+    private followBonusSpawnVisual(
+        bonusNode: Node,
+        visualNode: Node | null,
+        restoreAfterAppear: boolean = false
+    ): void {
+
+        const overlay = this.bonusSpawnOverlay;
+
+        if(
+            !bonusNode?.isValid ||
+            !visualNode?.isValid ||
+            !overlay?.isValid
+        ) {
+            return;
+        }
+
+        const originalParent = visualNode.parent;
+
+        if(!originalParent?.isValid) return;
+
+        const originalPosition = visualNode.position.clone();
+        const originalRotation = visualNode.rotation.clone();
+        const originalScale = visualNode.scale.clone();
+
+        visualNode.setParent(overlay, true);
+        visualNode.setSiblingIndex(overlay.children.length - 1);
+
+        let hasSeenAppear = false;
+        let elapsed = 0;
+
+        const restore = () => {
+            this.unschedule(updatePosition);
+
+            if(!visualNode.isValid || !originalParent.isValid) {
+                return;
+            }
+
+            if(visualNode.parent !== overlay) {
+                return;
+            }
+
+            visualNode.setParent(originalParent);
+
+            visualNode.setPosition(originalPosition);
+            visualNode.setRotation(originalRotation);
+            visualNode.setScale(originalScale);
+        };
+
+        const updatePosition = (dt: number) => {
+
+            if(
+                !bonusNode.isValid ||
+                !visualNode.isValid ||
+                !originalParent.isValid ||
+                !overlay.isValid
+            ) {
+                this.unschedule(updatePosition);
+
+                if(
+                    visualNode.isValid &&
+                    (!bonusNode.isValid || !originalParent.isValid)
+                ) {
+                    visualNode.destroy();
+                }
+
+                return;
+            }
+
+            if(visualNode.parent !== overlay) {
+                this.unschedule(updatePosition);
+                return;
+            }
+
+            const worldPosition = new Vec3();
+
+            Vec3.transformMat4(
+                worldPosition,
+                originalPosition,
+                originalParent.worldMatrix
+            );
+
+            visualNode.setWorldPosition(worldPosition);
+
+            const worldRotation = new Quat();
+
+            Quat.multiply(
+                worldRotation,
+                originalParent.worldRotation,
+                originalRotation
+            );
+
+            visualNode.setWorldRotation(worldRotation);
+
+            const parentScale = originalParent.worldScale;
+
+            visualNode.setWorldScale(
+                parentScale.x * originalScale.x,
+                parentScale.y * originalScale.y,
+                parentScale.z * originalScale.z
+            );
+
+            if(restoreAfterAppear) {
+                const skeleton = visualNode.getComponent(sp.Skeleton);
+                const currentAnimation =
+                    skeleton?.getCurrent(0)?.animation?.name;
+
+                if(currentAnimation === 'appiert') {
+                    hasSeenAppear = true;
+                }
+
+                if(hasSeenAppear && currentAnimation === 'idle') {
+                    restore();
+                    return;
+                }
+
+                elapsed += dt;
+
+                if(!hasSeenAppear && elapsed > 2) {
+                    console.warn(
+                        '[BONUS SPAWN] Appear was not started',
+                        bonusNode.name
+                    );
+
+                    restore();
+                }
+            }
+        };
+
+        this.schedule(updatePosition, 0);
+        updatePosition(0);
     }
 }

@@ -40,41 +40,108 @@ export const LEGACY_LEVEL_IDS: Readonly<Record<string, string>> = {
 
 };
 
+
 export class LevelIdTranslator {
 
     static translateId(id: string): string {
-        return LEGACY_LEVEL_IDS[id] ?? id;
+        const translated =
+            LEGACY_LEVEL_IDS[id] ??
+            LEGACY_LEVEL_IDS[id.toLowerCase()] ??
+            id;
+
+        if(/^crystal_?ball(?:_(blue|green|red|yellow|purple))?$/i.test(translated)) {
+            return translated
+                .replace(/^crystal_?ball/i, 'crystalball')
+                .toLowerCase();
+        }
+
+        return translated;
     }
 
+
+    static getColoredGoalIdForTile(tileId: string): string {
+        const currentId = LevelIdTranslator.translateId(tileId);
+
+        const legacyId = Object.keys(LEGACY_LEVEL_IDS).find(
+            (oldId) =>
+                oldId === oldId.toLowerCase() &&
+                oldId.includes('_') &&
+                LevelIdTranslator.translateId(oldId) === currentId
+        );
+
+        const groupName = (legacyId ?? currentId).split('_')[0];
+
+        return `colored_${groupName}`;
+    }
+
+
+    static getSpawnIdsForGoal(
+        goalId: string,
+        availableColors: string[]
+    ): string[] {
+
+        if(!goalId.startsWith('colored_')) {
+            return [LevelIdTranslator.translateId(goalId)];
+        }
+
+        const groupName = goalId.substring('colored_'.length);
+
+        return availableColors.map((color) =>
+            LevelIdTranslator.translateId(
+                `${groupName}_${color}`
+            )
+        );
+    }
+
+
     static translateLevel<T>(level: T): T {
-        if (!level || typeof level !== 'object') {
+        if(!level || typeof level !== 'object') {
             return level;
         }
 
         const translated = structuredClone(level) as T;
-
         const data = translated as any;
 
         const translateItems = (items: any[]) => {
-            if (!Array.isArray(items)) {
-                return;
-            }
+            if(!Array.isArray(items)) return;
 
-            for (const item of items) {
-                if (item && typeof item.id === 'string') {
+            for(const item of items) {
+                if(item && typeof item.id === 'string') {
                     item.id = LevelIdTranslator.translateId(item.id);
                 }
             }
         };
 
+        const translatePool = (pool: any): any => {
+            if(!Array.isArray(pool)) return pool;
+
+            return pool.map((id: any) =>
+                typeof id === 'string'
+                    ? LevelIdTranslator.translateId(id)
+                    : id
+            );
+        };
+
         translateItems(data.specialTiles);
-        translateItems(
-            data.goals.filter((goal: any) =>
-                goal?.id?.toLowerCase() !== 'balloon'
-            )
-        );
+
+        if(Array.isArray(data.goals)) {
+            translateItems(
+                data.goals.filter((goal: any) =>
+                    goal?.id?.toLowerCase() !== 'balloon'
+                )
+            );
+        }
+
         translateItems(data.statuses);
         translateItems(data.dynamiteGoals);
+
+        data.startPool = translatePool(data.startPool);
+
+        if(Array.isArray(data.spawnPools)) {
+            data.spawnPools = data.spawnPools.map(
+                (pool: any) => translatePool(pool)
+            );
+        }
 
         return translated;
     }

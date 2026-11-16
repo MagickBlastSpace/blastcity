@@ -425,6 +425,31 @@ export class UITile extends Component {
     }
 
 
+    public prepareBonusSpawnAtCell(): void {
+        if(!this.node.isValid) return;
+
+        Tween.stopAllByTarget(this.node);
+
+        if(this.targetLayout && isValid(this.targetLayout, true)) {
+            this.targetLayout.addChild(this.node);
+        }
+
+        this.node.setPosition(
+            this.currentX,
+            this.currentY,
+            0
+        );
+
+        this.node.setScale(1, 1, 1);
+
+        const opacity = this.node.getComponent(UIOpacity);
+
+        if(opacity) {
+            opacity.opacity = 255;
+        }
+    }
+
+
     prepareInstantBonusSpawn() {
         Tween.stopAllByTarget(this.node);
 

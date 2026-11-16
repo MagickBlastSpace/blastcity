@@ -141,6 +141,7 @@ export class TileCollectFxManager extends Component {
         return true;
     }
 
+
     public playBonusGroupCollect(
         tileNodes: Node[],
         clickedTile: Node,
@@ -152,19 +153,26 @@ export class TileCollectFxManager extends Component {
         bonusFxType: 'rocket_horizontal' | 'rocket_vertical' | 'discoball' | null = null,
     ): boolean {
 
-        if(!clickedTile || !tileNodes || tileNodes.length === 0 || !this.tileCollectFxPrefab || !this.fxLayer || !isValid(this.fxLayer, true)) {
+        if(
+            !clickedTile?.isValid ||
+            !tileNodes ||
+            tileNodes.length === 0 ||
+            !this.tileCollectFxPrefab ||
+            !this.fxLayer ||
+            !isValid(this.fxLayer, true)
+        ) {
             return false;
         }
 
-        const targetWorldPosition =clickedTile.worldPosition.clone();
+        const targetWorldPosition = clickedTile.worldPosition.clone();
         const sourcePositions: Vec3[] = [];
 
         for(const tile of tileNodes) {
-            if(tile === clickedTile) {
+            if(!tile?.isValid || tile === clickedTile) {
                 continue;
             }
 
-            sourcePositions.push( tile.worldPosition.clone() );
+            sourcePositions.push(tile.worldPosition.clone());
         }
 
         const targetFx = this.createFx(targetWorldPosition, skin);
@@ -173,158 +181,54 @@ export class TileCollectFxManager extends Component {
             return false;
         }
 
-        if(sourcePositions.length === 0) {
-            targetFx.playCollapse(() => {
-                onAllArrived?.();
-
-                targetFx.playAbsorb(() => {
-                    onFinalAbsorbComplete?.();
-                    this.collapseTargetMassToZero(targetFx, onVisualComplete);
-                });
-            });
-
-            return true;
-        }
-
         let arrivedCount = 0;
         let targetReady = false;
         let absorbInProgress = false;
         let pendingAbsorbs = 0;
-        let allArrivedNotified = false;
+        let isFinished = false;
 
-        let followNode: Node = null;
-        let followCallback: (() => void) | null = null;
-
-        let finishRequested = false;
-
-        let finishStarted = false;
-
-        const startFollowingTarget = (node: Node) => {
-            if(!node || !node.isValid || followCallback) {
+        const finishCollection = () => {
+            if(isFinished) {
                 return;
             }
 
-            followNode = node;
-
-            followCallback = () => {
-                if(!followNode || !followNode.isValid || !targetFx || !targetFx.node || !targetFx.node.isValid) {
-                    return;
-                }
-
-                targetFx.node.setPosition(this.worldToFxLayer(followNode.worldPosition));
-            };
-
-            this.schedule(followCallback, 0);
-        };
-
-        const stopFollowingTarget = () => {
-            if(followCallback) {
-                this.unschedule(followCallback);
-                followCallback = null;
-            }
-
-            followNode = null;
-        };
-
-        const waitUntilTargetSettled = (node: Node, onSettled: () => void) => {
-            if(!node || !node.isValid) {
-                onSettled();
-                return;
-            }
-
-            let previousPosition = node.worldPosition.clone();
-            let stableFrames = 0;
-            let hasMoved = false;
-            let totalFrames = 0;
-
-            const checkSettled = () => {
-                if(!node || !node.isValid) {
-                    this.unschedule(checkSettled);
-                    onSettled();
-                    return;
-                }
-
-                totalFrames++;
-
-                const currentPosition = node.worldPosition.clone();
-                const distance = Vec3.distance(previousPosition, currentPosition);
-
-                if(distance >= 0.1) {
-                    hasMoved = true;
-                    stableFrames = 0;
-                }
-                else {
-                    stableFrames++;
-                }
-
-                previousPosition.set(currentPosition);
-
-                const settledAfterMovement = hasMoved && stableFrames >= 3;
-                const neverMoved = !hasMoved && totalFrames >= 6;
-
-                if(settledAfterMovement || neverMoved) {
-                    this.unschedule(checkSettled);
-                    onSettled();
-                }
-            };
-
-            this.schedule(checkSettled, 0);
-        };
-
-        const startFinalVisual = () => {
-            if(finishStarted) {
-                return;
-            }
-
-            if(!finishRequested) {
-                return;
-            }
-
-            if(!targetReady) {
-                return;
-            }
-
-            if(absorbInProgress) {
-                return;
-            }
-
-            finishStarted = true;
+            isFinished = true;
             pendingAbsorbs = 0;
 
-            targetFx.playAbsorb(() => {
-                onFinalAbsorbComplete?.();
+            const targetNode = targetFx.node;
 
-                if(!followNode || !followNode.isValid) {
-                    this.collapseTargetMassToZero(targetFx, onVisualComplete);
-                    return;
-                }
+            if(targetNode && isValid(targetNode, true)) {
+                Tween.stopAllByTarget(targetNode);
 
-                this.collapseTargetMassToZero(targetFx, () => {
-                    stopFollowingTarget();
-                    onVisualComplete?.();
-                });
+                targetNode.setScale(0, 0, 0);
+                targetNode.active = false;
+                targetNode.destroy();
+            }
+
+            onAllArrived?.();
+            onFinalAbsorbComplete?.();
+
+            onVisualComplete?.();
+
+            console.log('[BONUS COLLECT COMPLETE]', {
+                arrived: arrivedCount,
+                total: sourcePositions.length,
+                bonusFxType,
+                useBombFx
             });
         };
 
         const playNextAbsorb = () => {
-            if(finishStarted) {
+            if(
+                isFinished ||
+                !targetReady ||
+                absorbInProgress ||
+                pendingAbsorbs <= 0
+            ) {
                 return;
             }
 
-            if(!targetReady) {
-                return;
-            }
-
-            if(absorbInProgress) {
-                return;
-            }
-
-            if(finishRequested) {
-                startFinalVisual();
-                return;
-            }
-
-            if(pendingAbsorbs <= 0) {
+            if(!targetFx.node?.isValid) {
                 return;
             }
 
@@ -334,79 +238,78 @@ export class TileCollectFxManager extends Component {
             targetFx.playAbsorb(() => {
                 absorbInProgress = false;
 
-                if(finishRequested) {
-                    startFinalVisual();
+                if(isFinished || !targetFx.node?.isValid) {
                     return;
                 }
 
-                if(pendingAbsorbs > 0) {
-                    targetFx.playTravel();
-                }
+                targetFx.playTravel();
 
-                playNextAbsorb();
+                if(pendingAbsorbs > 0) {
+                    playNextAbsorb();
+                }
             });
         };
 
         const registerArrival = () => {
-            arrivedCount++;
-
-            const isLastArrival = arrivedCount >= sourcePositions.length;
-
-            if(isLastArrival) {
-                if(!allArrivedNotified) {
-                    allArrivedNotified = true;
-
-                    const spawnedTarget = onAllArrived?.() ?? null;
-
-                    if(spawnedTarget) {
-                        startFollowingTarget(spawnedTarget);
-
-                        if(!useBombFx) {
-                            this.shrinkTargetMassDuringFall(
-                                targetFx,
-                                this.targetFallShrinkDuration
-                            );
-                        }
-                    }
-                }
-
-                finishRequested = true;
-                pendingAbsorbs = 0;
-                startFinalVisual();
+            if(isFinished) {
                 return;
             }
-            pendingAbsorbs++;
 
+            arrivedCount++;
+
+            const isLastArrival =
+                arrivedCount >= sourcePositions.length;
+
+            if(isLastArrival) {
+                finishCollection();
+                return;
+            }
+
+            pendingAbsorbs++;
             playNextAbsorb();
         };
 
         targetFx.playCollapse(() => {
-            targetReady = true;
-
-            if(finishRequested) {
-                startFinalVisual();
+            if(isFinished || !targetFx.node?.isValid) {
                 return;
             }
 
+            targetReady = true;
+
             targetFx.playTravel();
             playNextAbsorb();
+
+            if(sourcePositions.length === 0) {
+                finishCollection();
+            }
         });
 
         for(const sourceWorldPosition of sourcePositions) {
-            const sourceFx = this.createFx(sourceWorldPosition, skin, useBombFx, bonusFxType);
+
+            const sourceFx = this.createFx(
+                sourceWorldPosition,
+                skin,
+                useBombFx,
+                bonusFxType
+            );
 
             if(!sourceFx) {
                 registerArrival();
                 continue;
             }
 
-            const targetLocalPosition = this.worldToFxLayer(targetWorldPosition);
+            const targetLocalPosition =
+                this.worldToFxLayer(targetWorldPosition);
 
-            if(useBombFx|| bonusFxType !== null) {
-                this.rotateFxTowardsTarget(sourceFx.node, targetLocalPosition);
+            if(useBombFx || bonusFxType !== null) {
+
+                this.rotateFxTowardsTarget(
+                    sourceFx.node,
+                    targetLocalPosition
+                );
 
                 sourceFx.playCollapse(() => {
-                    if(sourceFx.node && sourceFx.node.isValid) {
+                    if(sourceFx.node?.isValid) {
                         sourceFx.node.destroy();
                     }
 
@@ -417,11 +320,19 @@ export class TileCollectFxManager extends Component {
             }
 
             sourceFx.playCollapse(() => {
+                if(isFinished) {
+                    if(sourceFx.node?.isValid) {
+                        sourceFx.node.destroy();
+                    }
+
+                    return;
+                }
+
                 sourceFx.travelTo(
                     targetLocalPosition,
                     this.travelDuration,
                     () => {
-                        if(sourceFx.node && sourceFx.node.isValid) {
+                        if(sourceFx.node?.isValid) {
                             sourceFx.node.destroy();
                         }
 
