@@ -31,11 +31,14 @@ import { AssetsLoader } from '../utils/AssetsLoader';
 import { AudioController } from '../utils/AudioController';
 import { TileBase } from './TileBase';
 import { Bomb } from './bonus_tiles/Bomb';
+import { BonusTileBase } from './bonus_tiles/BonusTileBase';
 import { Discoball } from './bonus_tiles/Discoball';
 import { Rocket } from './bonus_tiles/Rocket';
 import { Boosters } from './boosters/Boosters';
 import { ButlersGift } from './boosters/ButlersGift';
 import { StartBonuses } from './boosters/StartBonuses';
+import { SpecTileBase } from './spec_tiles/SpecTileBase';
+import { StatusBase } from './statuses/StatusBase';
 const { ccclass, property } = _decorator;
 
 @ccclass('Field')
@@ -499,7 +502,7 @@ export class Field extends Component {
 				let row = level.destroyedOnStart[i].y;
 				let col = level.destroyedOnStart[i].x;
 				if (this.tileArray[row][col]) {
-					let tileComp = this.tileArray[row][col].getComponent('TileBase');
+					let tileComp = this.tileArray[row][col].getComponent(TileBase);
 					if (tileComp.isCommonTile()) {
 						this.destroyTile(row, col, true);
 					}
@@ -554,7 +557,7 @@ export class Field extends Component {
 		for (let i = 0; i < specs.length; i++) {
 			let tile = this.tileArray[specs[i].row][specs[i].col];
 			if (tile) {
-				let tileComp = tile.getComponent('TileBase');
+				let tileComp = tile.getComponent(TileBase);
 				if (tileComp.isSpecialTile()) {
 					tileComp.setStrength(specs[i].strength);
 
@@ -574,7 +577,7 @@ export class Field extends Component {
 		for (let i = 0; i < statuses.length; i++) {
 			let status = this.statusArray[statuses[i].row][statuses[i].col];
 			if (status) {
-				let statusComp = status.getComponent('StatusBase');
+				let statusComp = status.getComponent(StatusBase);
 				statusComp.setCustomParameter(statuses[i].customParameter);
 			}
 		}
@@ -660,14 +663,14 @@ export class Field extends Component {
 			for (let col = 0; col < this.numCols; col++) {
 				let tile = this.tileArray[row][col];
 				if (tile !== null) {
-					let tileComp = tile.getComponent('TileBase');
+					let tileComp = tile.getComponent(TileBase);
 					tileComp.subscribeOnFieldEvents(this.node);
 					tileComp.subscribeOnGoals(goals);
 				}
 
 				let status = this.statusArray[row][col];
 				if (status !== null) {
-					let statusComp = status.getComponent('StatusBase');
+					let statusComp = status.getComponent(StatusBase);
 					statusComp.subscribeOnFieldEvents(this.node);
 				}
 			}
@@ -874,7 +877,7 @@ export class Field extends Component {
 		this.destroyTile(row, col, true);
 		const tileNode = instantiate(prefab);
 		this.layersForCleanup[0].addChild(tileNode);
-		const tileComponent = tileNode.getComponent('SpecTileBase');
+		const tileComponent = tileNode.getComponent(SpecTileBase);
 		let spawnedTile = this.initTile(tileComponent, row, col, tileId);
 
         void ArtPreviewAssetLoader.applyPrefabArt(
@@ -898,7 +901,7 @@ export class Field extends Component {
 		this.destroyStatus(row, col, true);
 		const statusNode = instantiate(prefab);
 		this.layersForCleanup[0].addChild(statusNode);
-		const statusComponent = statusNode.getComponent('StatusBase');
+		const statusComponent = statusNode.getComponent(StatusBase);
 		let spawnedStatus = this.initStatus(statusComponent, row, col, statusId);
 
         void ArtPreviewAssetLoader.applyPrefabArt(
@@ -1006,7 +1009,7 @@ export class Field extends Component {
             }
         }
 
-        const tileComp = spawnedTile.getComponent('BonusTileBase');
+        const tileComp = spawnedTile.getComponent(BonusTileBase);
 
         if (tileComp) {
             tileComp.setBonusPoolAnimation();
@@ -1038,7 +1041,7 @@ export class Field extends Component {
 		const tileNode = tileComponent.node;
 
         tileNode.on('click', (tile: Node) => {
-            const comp = tile?.getComponent('TileBase') as any;
+            const comp = tile?.getComponent(TileBase) as any;
 
             console.log('[FIELD TILE CLICK]', {
                 type: comp?.getTileType(),
@@ -1397,7 +1400,7 @@ export class Field extends Component {
 			for (let j = 0; j < this.numCols; j++) {
 				const tile = this.tileArray[i][j];
 				if (tile !== null) {
-					const tileComp = tile.getComponent('TileBase');
+					const tileComp = tile.getComponent(TileBase);
 					if (tileComp.isCommonTile()) {
 						tiles.push(tileComp);
 					}
@@ -1416,7 +1419,7 @@ export class Field extends Component {
 	destroyStatus(row: number, col: number, isClear: boolean) {
 		const status = this.statusArray[row][col];
 		if (status !== null) {
-			let statusComponent = status.getComponent('StatusBase');
+			let statusComponent = status.getComponent(StatusBase);
 			if (isClear) {
 				statusComponent.destroyClear();
 			} else {
@@ -1450,7 +1453,7 @@ export class Field extends Component {
 					if (tile === null) {
 						tiles.push(new Vec2(row, col));
 					} else {
-						const tileComp = tile.getComponent('TileBase');
+						const tileComp = tile.getComponent(TileBase);
 						if (tileComp.isCommonTile()) {
 							tiles.push(new Vec2(row, col));
 						}
@@ -1471,7 +1474,7 @@ export class Field extends Component {
 				if (tile === null) {
 					tiles.push(new Vec2(row, col));
 				} else {
-					const tileComp = tile.getComponent('TileBase');
+					const tileComp = tile.getComponent(TileBase);
 					if (tileComp.isCommonTile()) {
 						tiles.push(new Vec2(row, col));
 					}
@@ -1490,7 +1493,7 @@ export class Field extends Component {
 				if (this.checkPositionForStatus(row, col)) {
 					let tile = this.tileArray[row][col];
 					if (tile !== null) {
-						const tileComp = tile.getComponent('TileBase');
+						const tileComp = tile.getComponent(TileBase);
 						if (tileComp.isBonusTile()) {
 							tiles.push(new Vec2(row, col));
 						}
@@ -1514,7 +1517,7 @@ export class Field extends Component {
 			) {
 				let tile = this.tileArray[commonTiles[i].x][commonTiles[i].y];
 				if (tile !== null) {
-					let tileComp = tile.getComponent('TileBase');
+					let tileComp = tile.getComponent(TileBase);
 					if (
 						tileComp.getMatches(this.tileArray, this.statusArray).length < 2
 					) {
@@ -1552,7 +1555,7 @@ export class Field extends Component {
 				if (this.checkPositionForStatus(row, col)) {
 					let tile = this.tileArray[row][col];
 					if (tile !== null) {
-						const tileComp = tile.getComponent('TileBase');
+						const tileComp = tile.getComponent(TileBase);
 						if (
 							tileComp.isCommonTile() &&
 							tileComp.getTileType() === tileType
@@ -1642,7 +1645,7 @@ export class Field extends Component {
                 return;
             }
 
-            const currentComp = bonusTile.getComponent('TileBase');
+            const currentComp = bonusTile.getComponent(TileBase);
 
             if(!currentComp || !isValid(currentComp, true)) {
                 continueBonusPool();
@@ -1728,7 +1731,7 @@ export class Field extends Component {
         }
 
         if(isBonusChain) {
-            const tileComp = tile.getComponent('TileBase');
+            const tileComp = tile.getComponent(TileBase);
 
             if(tileComp && tileComp.isBonusTile()) {
                 const bonusType = tileComp.getTileType();
@@ -1851,7 +1854,7 @@ export class Field extends Component {
 		let tile = this.tileArray[row][col];
 
 		if (tile !== null) {
-			const tileComp = tile.getComponent('TileBase');
+			const tileComp = tile.getComponent(TileBase);
 			this.giveDamage(tile, tileComp.getTileType(), false, 0);
 		}
 	}
@@ -1869,7 +1872,7 @@ export class Field extends Component {
 		let tile = this.tileArray[row][col];
 
 		if (tile !== null) {
-			const tileComp = tile.getComponent('TileBase');
+			const tileComp = tile.getComponent(TileBase);
 			if (tileComp.isBonusTile()) {
 				return;
 			}
@@ -1895,7 +1898,7 @@ export class Field extends Component {
 			for (let j = 0; j < this.numCols; j++) {
 				const tile = this.tileArray[i][j];
 				if (tile !== null) {
-					const tileComp = tile.getComponent('TileBase');
+					const tileComp = tile.getComponent(TileBase);
 					if (tileComp.isCommonTile()) {
 						tiles.push(tile);
 					} else if (
@@ -1931,7 +1934,7 @@ export class Field extends Component {
 
 			if (status === null) {
 				if (tile !== null) {
-					let tileComp = tile.getComponent('TileBase');
+					let tileComp = tile.getComponent(TileBase);
 					if (!tileComp.isEmptyTile() && !tileComp.isSpecialTile()) {
 						return true;
 					}
@@ -1951,13 +1954,13 @@ export class Field extends Component {
 
 			if (tile !== null) {
 				if (status !== null && status !== undefined) {
-					let statusComp = status.getComponent('StatusBase');
+					let statusComp = status.getComponent(StatusBase);
 					if (statusComp.isBlockingInteraction()) {
 						return false;
 					}
 				}
 
-				let tileComp = tile.getComponent('TileBase');
+				let tileComp = tile.getComponent(TileBase);
 				if (!tileComp.isEmptyTile() && !tileComp.isSpecialTile()) {
 					return true;
 				}
@@ -2325,7 +2328,7 @@ export class Field extends Component {
 		destroyDelay: number,
 	) {
 		if (tile !== null && tile !== undefined) {
-			let tileComponent = tile.getComponent('TileBase');
+			let tileComponent = tile.getComponent(TileBase);
 			if (tileComponent.isEmptyTile()) {
 				return;
 			}
@@ -2348,7 +2351,7 @@ export class Field extends Component {
                 const col = tileComponent.getCol();
 
                 const statusNode = this.statusArray[row]?.[col];
-                const statusComp = statusNode?.getComponent('StatusBase');
+                const statusComp = statusNode?.getComponent(StatusBase);
 
                 if(statusComp?.getStatusType() === 'bubble' && !statusComp.isReadyToDestroy()) {
                     statusComp.getDamage();
@@ -2389,7 +2392,7 @@ export class Field extends Component {
 			return true;
 		}
 
-		const statusComponent = status.getComponent('StatusBase');
+		const statusComponent = status.getComponent(StatusBase);
 
 		return !statusComponent.isBlockingDestroyTile();
 	}
@@ -2399,7 +2402,7 @@ export class Field extends Component {
 			return;
 		}
 
-		const statusComp = this.statusArray[row][col].getComponent('StatusBase');
+		const statusComp = this.statusArray[row][col].getComponent(StatusBase);
 
 		let isBlockInteraction = statusComp.isBlockingInteraction();
 
@@ -2436,7 +2439,7 @@ export class Field extends Component {
 			for (let row = this.numRows - 1; row >= 0; row--) {
 				const tile = this.tileArray[row][col];
 				if (tile !== null) {
-					const tileComponent = tile.getComponent('TileBase');
+					const tileComponent = tile.getComponent(TileBase);
 
 					if (tileComponent.getTileType() === '') {
 						this.spawnCommonTile(row, col, 'random');
@@ -2472,7 +2475,7 @@ export class Field extends Component {
 					const tile = this.tileArray[row][col];
 					if (tile !== null) {
 						try {
-							const tileComponent = tile.getComponent('TileBase');
+							const tileComponent = tile.getComponent(TileBase);
 
 							if (tileComponent.getTileType() === '') {
 								this.spawnCommonTile(row, col, 'random');
@@ -2636,7 +2639,7 @@ export class Field extends Component {
 				if (tile === null) {
 					emptySpaces++;
 				} else {
-					let tileComponent = tile.getComponent('TileBase');
+					let tileComponent = tile.getComponent(TileBase);
 
 					if (
 						!tileComponent.isTileShifts() ||
@@ -2717,7 +2720,7 @@ export class Field extends Component {
 			return true;
 		}
 
-		const statusComponent = status.getComponent('StatusBase');
+		const statusComponent = status.getComponent(StatusBase);
 
 		return !statusComponent.isBlockingMovement();
 	}
@@ -2730,7 +2733,7 @@ export class Field extends Component {
 				if (tile !== null) {
 					let tileComponent = null;
 					try {
-						tileComponent = tile.getComponent('TileBase');
+						tileComponent = tile.getComponent(TileBase);
 					} catch (error) {
 						this.tileArray[i][j] = null;
 						continue;
@@ -2817,7 +2820,7 @@ export class Field extends Component {
 			for (let j = 0; j < this.numCols; j++) {
 				let status = this.statusArray[i][j];
 				if (status !== null) {
-					let statusComponent = status.getComponent('StatusBase');
+					let statusComponent = status.getComponent(StatusBase);
 					if (statusComponent.isReadyToDestroy()) {
 						this.statusArray[i][j] = null;
 						statusComponent.destroyStatus();
@@ -2835,14 +2838,14 @@ export class Field extends Component {
 
 				let isStatusBlock = false;
 				if (status !== null) {
-					let statusComp = status.getComponent('StatusBase');
+					let statusComp = status.getComponent(StatusBase);
 					isStatusBlock = statusComp.isBlockingDestroyTile();
 				}
 
 				if (tile !== null) {
 					let tileComponent = null;
 					try {
-						tileComponent = tile.getComponent('TileBase');
+						tileComponent = tile.getComponent(TileBase);
 					} catch (error) {
 						this.tileArray[i][j] = null;
 						continue;
@@ -2867,7 +2870,7 @@ export class Field extends Component {
 				if (tile !== null) {
 					let tileComponent = null;
 					try {
-						tileComponent = tile.getComponent('TileBase');
+						tileComponent = tile.getComponent(TileBase);
 					} catch (error) {
 						this.tileArray[i][j] = null;
 						continue;
@@ -2888,7 +2891,7 @@ export class Field extends Component {
 				if (tile !== null) {
 					let tileComponent = null;
 					try {
-						tileComponent = tile.getComponent('TileBase');
+						tileComponent = tile.getComponent(TileBase);
 					} catch (error) {
 						continue;
 					}
@@ -3021,7 +3024,7 @@ export class Field extends Component {
 
 			for (let j = 0; j < this.numCols; j++) {
 				if (this.tileArray[row][j] !== null) {
-					let tileComp = this.tileArray[row][j].getComponent('TileBase');
+					let tileComp = this.tileArray[row][j].getComponent(TileBase);
 					if (tileComp.isSpecialTile()) {
 						isVerticalPatternFound = true;
 					}
@@ -3030,7 +3033,7 @@ export class Field extends Component {
 
 			for (let j = 0; j < this.numRows; j++) {
 				if (this.tileArray[j][col] !== null) {
-					let tileComp = this.tileArray[j][col].getComponent('TileBase');
+					let tileComp = this.tileArray[j][col].getComponent(TileBase);
 					if (tileComp.isSpecialTile()) {
 						isHorizontalPatternFound = true;
 					}
@@ -3067,7 +3070,7 @@ export class Field extends Component {
 					}
 
 					if (this.tileArray[i][j] !== null) {
-						let tileComp = this.tileArray[i][j].getComponent('TileBase');
+						let tileComp = this.tileArray[i][j].getComponent(TileBase);
 						if (tileComp.isSpecialTile()) {
 							isBombPatternFound = true;
 						}
@@ -3096,7 +3099,7 @@ export class Field extends Component {
 			return;
 		}
 
-		const tileComponent = tile.getComponent('TileBase');
+		const tileComponent = tile.getComponent(TileBase);
 
 		for (let i = 0; i < this.boosters.length; i++) {
 			if (this.boosters[i].isBoosterActive()) {
@@ -3118,7 +3121,7 @@ export class Field extends Component {
             const col = tileComponent.getCol();
 
             const statusNode = this.statusArray[row]?.[col];
-            const statusComp = statusNode?.getComponent('StatusBase');
+            const statusComp = statusNode?.getComponent(StatusBase);
 
             if(statusComp?.getStatusType() === 'bubble') {
                 statusNode.emit('bubble_touch');
@@ -3156,10 +3159,14 @@ export class Field extends Component {
             const col = tileComponent.getCol();
 
             const statusNode = this.statusArray[row]?.[col];
-            const statusComp = statusNode?.getComponent('StatusBase');
+            const statusComp = statusNode?.getComponent(StatusBase);
 
             if(statusComp?.getStatusType() === 'bubble') {
                 statusNode.emit('bubble_touch');
+            }
+
+            if (tileComponent.isCommonTile() && tile.isValid) {
+                tile.emit('touch_feedback');
             }
 
             this.node.emit('game_state', this.tileArray, this.statusArray);
@@ -3172,7 +3179,7 @@ export class Field extends Component {
 			return true;
 		}
 
-		const statusComponent = status.getComponent('StatusBase');
+		const statusComponent = status.getComponent(StatusBase);
 
 		return !statusComponent.isBlockingInteraction();
 	}
@@ -3192,12 +3199,12 @@ export class Field extends Component {
 				let status = this.statusArray[i][j];
 
 				if (!checkedTiles.includes(tile) && tile !== null) {
-					const tileComponent = tile.getComponent('TileBase');
+					const tileComponent = tile.getComponent(TileBase);
 					let matches = [];
 
 					let isStatusBlock = false;
 					if (status !== null) {
-						let statusComp = status.getComponent('StatusBase');
+						let statusComp = status.getComponent(StatusBase);
 						isStatusBlock = statusComp.isBlockingDestroyTile();
 					}
 
@@ -3292,7 +3299,7 @@ export class Field extends Component {
 
 	setPotentialBonus(tiles: Node[], bonus: string) {
 		tiles.forEach((matchedTile) => {
-			let tileComponent = matchedTile.getComponent('TileBase');
+			let tileComponent = matchedTile.getComponent(TileBase);
 			tileComponent.setPotentialBonus(bonus);
 		});
 	}
@@ -3302,7 +3309,7 @@ export class Field extends Component {
 			for (let j = 0; j < this.numCols; j++) {
 				let tile = this.tileArray[i][j];
 				if (tile !== null) {
-					let tileComponent = tile.getComponent('TileBase');
+					let tileComponent = tile.getComponent(TileBase);
 					tileComponent.clear();
 				}
 			}
@@ -3315,7 +3322,7 @@ export class Field extends Component {
 				let tile = this.tileArray[i][j];
 				if (tile !== null) {
 					try {
-						let tileComponent = tile.getComponent('TileBase');
+						let tileComponent = tile.getComponent(TileBase);
 						tileComponent.clearExtra();
 					} catch (error) {
 						console.log('Clear extra catch: ' + error);
@@ -3332,7 +3339,7 @@ export class Field extends Component {
 				if (tile !== null) {
 					let tileComponent = null;
 					try {
-						tileComponent = tile.getComponent('TileBase');
+						tileComponent = tile.getComponent(TileBase);
 					} catch (error) {
 						this.tileArray[i][j] = null;
 						continue;
@@ -3397,7 +3404,7 @@ export class Field extends Component {
 		if (tile2 === null || tile2 === undefined) {
 			return;
 		}
-		let tileComp2 = tile2.getComponent('TileBase');
+		let tileComp2 = tile2.getComponent(TileBase);
 
 		this.tileArray[pos_1.x][pos_1.y] = tile2;
 		this.tileArray[pos_2.x][pos_2.y] = tile1;
@@ -3609,7 +3616,7 @@ export class Field extends Component {
 			for (let col = 0; col < this.numCols; col++) {
 				let tile = this.tileArray[row][col];
 				if (tile !== null && tile !== undefined) {
-					const tileComp = tile.getComponent('TileBase');
+					const tileComp = tile.getComponent(TileBase);
 					if (tileComp.isBonusTile()) {
 						const tileType = tileComp.getTileType();
 						if (
@@ -3708,7 +3715,7 @@ export class Field extends Component {
 				for (let j = 0; j < this.numCols; j++) {
 					const tile = this.tileArray[i][j];
 					if (tile !== null) {
-						const tileComp = tile.getComponent('TileBase');
+						const tileComp = tile.getComponent(TileBase);
 						if (tileComp.getTileType() === typesToSearch[k]) {
 							count++;
 						}
@@ -3742,12 +3749,12 @@ export class Field extends Component {
 					const status = this.statusArray[i][j];
 
 					if (status) {
-						const statusComp = status.getComponent('StatusBase');
+						const statusComp = status.getComponent(StatusBase);
 						if (statusComp.isBlockingInteraction()) continue;
 					}
 
 					if (tile) {
-						const tileComp = tile.getComponent('TileBase');
+						const tileComp = tile.getComponent(TileBase);
 						if (tileComp.getTileType() === color) count++;
 					}
 				}
@@ -3769,7 +3776,7 @@ export class Field extends Component {
 			for (let j = 0; j < this.numCols; j++) {
 				const tile = this.tileArray[i][j];
 				if (tile !== null && tile !== undefined) {
-					const tileComp = tile.getComponent('TileBase');
+					const tileComp = tile.getComponent(TileBase);
 					if (
 						tileComp.getTileType() === 'multi' ||
 						tileComp.getTileType() === 'super'
@@ -3834,7 +3841,7 @@ export class Field extends Component {
 			for (let j = 0; j < this.numCols; j++) {
 				const tile = this.tileArray[i][j];
 				if (tile !== null) {
-					const tileComp = tile.getComponent('TileBase');
+					const tileComp = tile.getComponent(TileBase);
 					if (tileComp.isSpecialTile()) {
 						let tileType = tileComp.getTileType();
 						if (t === tileType) {
@@ -3864,7 +3871,7 @@ export class Field extends Component {
                     continue;
                 }
 
-                const tileComp = tile.getComponent('TileBase');
+                const tileComp = tile.getComponent(TileBase);
 
                 if(!tileComp || !tileComp.isCommonTile()) {
                     continue;

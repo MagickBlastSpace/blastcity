@@ -1,6 +1,8 @@
-import { _decorator, Component, Node, Sprite, SpriteFrame, Vec2, Vec3, UITransform } from 'cc';
-import { TileBase } from './TileBase';
+import { _decorator, Node, sp, Sprite, SpriteFrame } from 'cc';
 import { ArtPreviewAssetLoader } from '../preview/ArtPreviewAssetLoader';
+import { TileBase } from './TileBase';
+import { SpecTileBase } from './spec_tiles/SpecTileBase';
+import { StatusBase } from './statuses/StatusBase';
 const { ccclass, property } = _decorator;
 
 
@@ -34,10 +36,15 @@ export class Tile extends TileBase {
     @property([SpriteTileData])
     discoballIcons: SpriteTileData[] = [];
 
+    @property(sp.Skeleton)
+    touchSpine: sp.Skeleton = null;
+
+    private isTouchAnimating: boolean = false;
+
     private potentialBonus: string = "";
     private artRequestId: number = 0;
 
-   private applyCommonIcon() {
+    private applyCommonIcon() {
         const fallback =
             this.commonIcons.find(
                 i =>
@@ -118,13 +125,14 @@ export class Tile extends TileBase {
 
     onLoad() {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.on('touch_feedback', this.playTouchFeedback, this);
     }
 
     onDestroy() {
         this.node.off(Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.off('touch_feedback', this.playTouchFeedback, this);
     }
-    
-    
+
     init(row: number, col: number, tileType: string) {
         this.row = row;
         this.col = col;
@@ -136,6 +144,12 @@ export class Tile extends TileBase {
         this.isSpecial = false;
 
         this.applyCommonIcon();
+
+        this.isTouchAnimating = false;
+
+        if (this.touchSpine?.node?.isValid) {
+            this.touchSpine.node.active = false;
+        }
     }
 
 
@@ -188,7 +202,7 @@ export class Tile extends TileBase {
             currentCol >= 0 && currentCol < numCols) {
             const currentTile = field[currentRow][currentCol];
             if(currentTile !== null) {
-                const currentTileComponent = currentTile.getComponent("TileBase");
+                const currentTileComponent = currentTile.getComponent(TileBase);
                 const isBonus = currentTileComponent.isBonusTile();
                 const isStatusBlock = this.checkStatusBlock(statuses[currentRow][currentCol]);
 
@@ -213,7 +227,7 @@ export class Tile extends TileBase {
             return false;
         }
 
-        const statusComp = statusNode.getComponent("StatusBase");
+        const statusComp = statusNode.getComponent(StatusBase);
         return statusComp.isBlockingDestroyTile();
     }
 
@@ -309,9 +323,9 @@ export class Tile extends TileBase {
 
         for(let i = 0; i < adjTiles.length; i++) {
             let isDamageAvailable = true;
-                
+
             if(adjStatuses[i] !== null) {
-                const statusComponent = adjStatuses[i].getComponent("StatusBase");
+                const statusComponent = adjStatuses[i].getComponent(StatusBase);
                 if(statusComponent.isMatchHitResponsive()) {
                     statusComponent.getDamage();
                 }
@@ -319,13 +333,13 @@ export class Tile extends TileBase {
             }
 
             if(adjTiles[i] !== null && isDamageAvailable) {
-                const tileComponent = adjTiles[i].getComponent("TileBase");
+                const tileComponent = adjTiles[i].getComponent(TileBase);
                 if(tileComponent.isSpecialTile()) {
                     tileComponent.getDamage(this.tileType);
                     if(tileComponent.isGroupedTile()) {
                         let groupedTiles = tileComponent.getGroupedTiles(field);
                         for(let i = 0; i < groupedTiles.length; i++) {
-                            let groupedTile = groupedTiles[i].getComponent("SpecTileBase");
+                            let groupedTile = groupedTiles[i].getComponent(SpecTileBase);
                             groupedTile.setAsDamaged();
                         }
                     }
@@ -334,7 +348,7 @@ export class Tile extends TileBase {
         }
 
         if(statuses[this.row][this.col] !== null) {
-            const status = statuses[this.row][this.col].getComponent("StatusBase");
+            const status = statuses[this.row][this.col].getComponent(StatusBase);
             if(!status.isBlockingInteraction()) {
                 status.getDamage();
             }
@@ -344,8 +358,84 @@ export class Tile extends TileBase {
 
     destroyTile(delay: number) {
         super.destroyTile(delay);
-        
+
         this.node.emit("goal", this.tileType);
+    }
+
+
+    private playTouchFeedback(): void {
+        if (this.isTouchAnimating || !this.node.isValid) return;
+
+        const spine = this.touchSpine;
+
+        if (!spine?.skeletonData || !spine.node.isValid || !this.icon?.isValid) {
+            return;
+        }
+
+        const tileType = this.getTileType();
+        const color = tileType === 'purple' ? 'violet' : tileType;
+
+        if (!['blue', 'green', 'red', 'violet', 'yellow'].includes(color)) {
+            return;
+        }
+
+        spine.node.active = true;
+        spine.enabled = true;
+        spine.timeScale = 1;
+
+        if (!spine.findAnimation('touch')) {
+            console.warn('[TILE TOUCH] touch not available after activation', {
+                type: tileType,
+                active: spine.node.activeInHierarchy,
+                skeleton: spine.skeletonData.name
+            });
+
+            spine.node.active = false;
+            return;
+        }
+
+        let finished = false;
+
+        const restore = (): void => {
+            if (finished) return;
+            finished = true;
+
+            this.isTouchAnimating = false;
+
+            if (this.icon?.isValid) {
+                this.icon.enabled = true;
+            }
+
+            if (spine.node.isValid) {
+                spine.node.active = false;
+            }
+        };
+
+        try {
+            this.isTouchAnimating = true;
+
+            spine.clearTracks();
+            spine.setSkin(color);
+            spine.setToSetupPose();
+            spine.setAttachment('tile', 'tile_1');
+
+            const track = spine.setAnimation(0, 'touch', false);
+
+            if (!track) {
+                restore();
+                return;
+            }
+
+            this.icon.enabled = false;
+
+            spine.setTrackCompleteListener(track, restore);
+            spine.setTrackInterruptListener(track, restore);
+            spine.setTrackEndListener(track, restore);
+
+        } catch (error) {
+            console.error('[TILE TOUCH ERROR]', error);
+            restore();
+        }
     }
 }
 
