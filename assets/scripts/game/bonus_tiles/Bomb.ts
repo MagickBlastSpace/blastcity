@@ -1,4 +1,5 @@
 import { _decorator, Node, sp, Sprite, tween, Vec2, Vec3 } from 'cc';
+import { UITile } from '../../ui/UITile';
 import { TileBase } from '../TileBase';
 import { BonusTileBase } from './BonusTileBase';
 import { Discoball } from './Discoball';
@@ -21,12 +22,19 @@ export class Bomb extends BonusTileBase {
     private bombCombo_Delay: number = 0.3;
     private rocketCombo_Delay: number = 0.3;
 
+    private spawnVisualInOverlay: Node | null = null;
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
-        if(this.icon) {
-            this.icon.enabled = false;
+        const uiTile = this.node.getComponent(UITile);
+
+        if (uiTile && this.bombSpine && uiTile.spine === this.bombSpine) {
+            uiTile.keepSpineVisible = true;
+        }
+
+        if (this.icon) {
+            this.icon.enabled = !this.bombSpine?.skeletonData;
         }
 
         if(this.bombSpine) {
@@ -182,18 +190,42 @@ export class Bomb extends BonusTileBase {
         this.playAnimation("rocket_bomb", false, 1);
         this.playComboSound();
         this.playHideAnimation(this.icon.node);
+
         this.hideCombinationNode(field);
 
+        const comboPartner = this.comboPosition
+            ? field[this.comboPosition.x]?.[this.comboPosition.y]
+            : null;
+
         this.scheduleOnce(() => {
-            /*this.rowExtraHit(field, this.row, this.col);
-            this.rowExtraHit(field, this.row + 1, this.col);
-            this.rowExtraHit(field, this.row - 1, this.col);
-
-            this.colExtraHit(field, this.row, this.col);
-            this.colExtraHit(field, this.row, this.col + 1);
-            this.colExtraHit(field, this.row, this.col - 1);*/
-
             this.crossExtraHit(field, this.row, this.col);
+
+            if (comboPartner?.isValid) {
+                const partnerComp = comboPartner.getComponent(TileBase);
+
+                if (partnerComp?.isValid) {
+                    const partnerRow = partnerComp.getRow();
+                    const partnerCol = partnerComp.getCol();
+
+                    if (field[partnerRow]?.[partnerCol] === comboPartner) {
+                        console.log('[COMBO PARTNER CONSUME]', {
+                            sourceUuid: this.node.uuid,
+                            targetUuid: comboPartner.uuid,
+                            row: partnerRow,
+                            col: partnerCol,
+                            type: partnerComp.getTileType()
+                        });
+
+                        this.node.emit(
+                            'extra_hit',
+                            partnerRow,
+                            partnerCol,
+                            false,
+                            0
+                        );
+                    }
+                }
+            }
 
             this.setRespawnEvent(this.respawnDelay);
         }, this.rocketCombo_Delay);
@@ -225,7 +257,7 @@ export class Bomb extends BonusTileBase {
                         isBonusChain = false;
                     }
                     else if(i > this.row - 2 && i < this.row + 2 && j > this.col - 2 && j < this.col + 2) {
-                        if(i > 0 && i < numRows && j > 0 && j < numCols) {
+                        if(i >= 0 && i < numRows && j >= 0 && j < numCols) {
                             let tile = field[i][j];
                             if(tile !== null && tile !== undefined) {
                                 const tileComp = tile.getComponent(TileBase);
@@ -328,10 +360,38 @@ export class Bomb extends BonusTileBase {
         }, 0.2);
     }
 
+    hideCombinationNode(field: Node[][]): void {
+        if (!this.comboPosition) return;
 
-    hideCombinationNode(field: Node[][]) {
-        let tile = field[this.comboPosition.x][this.comboPosition.y];
-        this.playHideAnimation(tile);
+        const row = this.comboPosition.x;
+        const col = this.comboPosition.y;
+
+        const targetNode = field[row]?.[col];
+
+        if (!targetNode?.isValid) {
+            console.warn('[COMBO HIDE] Target missing', {
+                source: this.tileType,
+                row,
+                col
+            });
+            return;
+        }
+
+        const target = targetNode.getComponent(TileBase);
+        const bonus = targetNode.getComponent('BonusTileBase') as any;
+
+        console.warn('[COMBO HIDE ROOT]', {
+            sourceType: this.tileType,
+            sourceUuid: this.node.uuid,
+            targetType: target?.getTileType(),
+            targetUuid: targetNode.uuid,
+            row,
+            col,
+            activated: bonus?.isTileActivated?.() ?? 'unknown',
+            scaleBefore: targetNode.scale.toString()
+        });
+
+        this.playHideAnimation(targetNode);
     }
 
     playHideAnimation(nodeToHide: Node) {
@@ -349,69 +409,165 @@ export class Bomb extends BonusTileBase {
         this.bombSpine.node.active = false;
     }
 
-    public playSpawnAnimation(overlayLayer?: Node) {
-        if(!this.bombSpine) {
+
+    public playSpawnAnimation(overlayLayer?: Node): void {
+        const spine = this.bombSpine;
+
+        const showFallbackIcon = (): void => {
+            if (!this.node.isValid || this.isActivated) return;
+
+            if (this.icon?.node?.isValid) {
+                this.icon.node.active = true;
+                this.icon.enabled = true;
+            }
+        };
+
+        if (!spine?.node?.isValid || !spine.skeletonData) {
+            console.warn('[BOMB SPAWN] Spine unavailable');
+            showFallbackIcon();
             return;
         }
 
-        const visualNode = this.bombSpine.node;
-
+        const visualNode = spine.node;
         const originalParent = visualNode.parent;
-        const originalSiblingIndex = visualNode.getSiblingIndex();
 
+        if (!originalParent?.isValid) {
+            console.warn('[BOMB SPAWN] Original parent missing');
+            showFallbackIcon();
+            return;
+        }
+
+        const originalSiblingIndex = visualNode.getSiblingIndex();
         const originalPosition = visualNode.position.clone();
         const originalRotation = visualNode.rotation.clone();
         const originalScale = visualNode.scale.clone();
 
-        if(overlayLayer && originalParent) {
-            visualNode.setParent(overlayLayer, true);
-            visualNode.setSiblingIndex(overlayLayer.children.length - 1);
-        }
+        let finished = false;
 
-        this.bombSpine.node.active = true;
-        this.bombSpine.clearTracks();
-        this.bombSpine.setToSetupPose();
+        const finish = (reason: string): void => {
+            if (finished) return;
+            finished = true;
 
-        const spawnTrack = this.bombSpine.setAnimation(
-            0,
-            'spawn',
-            false
-        );
+            this.spawnVisualInOverlay = null;
 
-        if(spawnTrack) {
-            this.bombSpine.setTrackCompleteListener(
-                spawnTrack,
-                () => {
-                    if(
-                        !visualNode.isValid ||
-                        !originalParent ||
-                        !originalParent.isValid
-                    ) {
-                        return;
-                    }
+            if (!visualNode.isValid) {
+                showFallbackIcon();
+                return;
+            }
 
+            if (!this.node.isValid || !originalParent.isValid) {
+                visualNode.destroy();
+                return;
+            }
+
+            try {
+                if (visualNode.parent !== originalParent) {
                     visualNode.setParent(originalParent);
+                }
 
-                    visualNode.setPosition(originalPosition);
-                    visualNode.setRotation(originalRotation);
-                    visualNode.setScale(originalScale);
+                visualNode.setPosition(originalPosition);
+                visualNode.setRotation(originalRotation);
+                visualNode.setScale(originalScale);
 
-                    visualNode.setSiblingIndex(
-                        Math.min(
-                            originalSiblingIndex,
-                            originalParent.children.length - 1
-                        )
+                visualNode.setSiblingIndex(
+                    Math.min(
+                        originalSiblingIndex,
+                        originalParent.children.length - 1
+                    )
+                );
+
+                if (!this.isActivated) {
+                    visualNode.active = true;
+                    spine.enabled = true;
+
+                    if (reason !== 'complete') {
+                        spine.clearTracks();
+                        spine.setToSetupPose();
+
+                        if (spine.findAnimation('idle')) {
+                            spine.setAnimation(0, 'idle', true);
+                        } else {
+                            visualNode.active = false;
+                            showFallbackIcon();
+                        }
+                    }
+                }
+
+                if (reason !== 'complete') {
+                    console.warn(
+                        '[BOMB SPAWN RECOVERED]',
+                        this.node.uuid,
+                        reason
                     );
                 }
+
+            } catch (error) {
+                console.error('[BOMB SPAWN RESTORE ERROR]', error);
+                showFallbackIcon();
+            }
+        };
+
+        try {
+            if (overlayLayer?.isValid) {
+                visualNode.setParent(overlayLayer, true);
+                visualNode.setSiblingIndex(
+                    overlayLayer.children.length - 1
+                );
+
+                this.spawnVisualInOverlay = visualNode;
+            }
+
+            visualNode.active = true;
+            spine.enabled = true;
+
+            spine.clearTracks();
+            spine.setToSetupPose();
+
+            const track = spine.setAnimation(0, 'spawn', false);
+
+            if (!track) {
+                finish('missing-track');
+                return;
+            }
+
+            spine.setTrackCompleteListener(
+                track,
+                () => finish('complete')
             );
+
+            spine.setTrackInterruptListener(
+                track,
+                () => finish('interrupt')
+            );
+
+            spine.setTrackEndListener(
+                track,
+                () => finish('end')
+            );
+
+            spine.addAnimation(0, 'idle', true, 0);
+
+            this.scheduleOnce(() => {
+                finish('timeout');
+            }, 5);
+
+        } catch (error) {
+            console.error('[BOMB SPAWN ERROR]', error);
+            finish('exception');
+        }
+    }
+
+    public onDestroy(): void {
+        if (
+            this.spawnVisualInOverlay &&
+            this.spawnVisualInOverlay.isValid
+        ) {
+            this.spawnVisualInOverlay.destroy();
         }
 
-        this.bombSpine.addAnimation(
-            0,
-            'idle',
-            true,
-            0
-        );
+        this.spawnVisualInOverlay = null;
+
+        super.onDestroy();
     }
 }
 

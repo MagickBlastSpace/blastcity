@@ -98,11 +98,40 @@ export class Rocket extends BonusTileBase {
                 this.icon.enabled = false;
             }
 
-            skeleton.setTrackCompleteListener(track, () => {
-                if(visualNode.isValid) {
+            let visualRemoved = false;
+
+            const cleanupExplosionVisual = (): void => {
+                if (visualRemoved) {
+                    return;
+                }
+
+                visualRemoved = true;
+
+                if (visualNode.isValid) {
                     visualNode.destroy();
                 }
-            });
+            };
+
+            skeleton.setTrackCompleteListener(
+                track,
+                cleanupExplosionVisual
+            );
+
+            skeleton.setTrackInterruptListener(
+                track,
+                cleanupExplosionVisual
+            );
+
+            skeleton.setTrackEndListener(
+                track,
+                cleanupExplosionVisual
+            );
+
+            tween(visualNode)
+                .delay(5)
+                .call(cleanupExplosionVisual)
+                .start();
+
 
             console.log('[ROCKET EXPLOSION OVERLAY]', {
                 type: this.tileType,
@@ -226,26 +255,59 @@ export class Rocket extends BonusTileBase {
     }
 
 
-    getBombComboMatches(field: Node[][], statuses: Node[][]): Node[] {
-        let matches = [];
+    getBombComboMatches(
+        field: Node[][],
+        statuses: Node[][]
+    ): Node[] {
+        const matches: Node[] = [];
+
+        const comboPartner = this.comboPosition
+            ? field[this.comboPosition.x]?.[this.comboPosition.y] ?? null
+            : null;
 
         this.playAnimation("rocket_bomb", false, 1);
         this.playComboSound();
-        this.playHideAnimation(this.icon.node);
+
+        if (this.icon?.node?.isValid) {
+            this.playHideAnimation(this.icon.node);
+        }
+
         this.hideCombinationNode(field);
 
         this.scheduleOnce(() => {
-            /*this.rowExtraHit(field, this.row, this.col);
-            this.rowExtraHit(field, this.row + 1, this.col);
-            this.rowExtraHit(field, this.row - 1, this.col);
-
-            this.colExtraHit(field, this.row, this.col);
-            this.colExtraHit(field, this.row, this.col + 1);
-            this.colExtraHit(field, this.row, this.col - 1);*/
-
             this.crossExtraHit(field, this.row, this.col);
 
+            if (comboPartner?.isValid) {
+                const partnerComp = comboPartner.getComponent(TileBase);
+
+                if (partnerComp?.isValid) {
+                    const partnerRow = partnerComp.getRow();
+                    const partnerCol = partnerComp.getCol();
+
+                    if (
+                        field[partnerRow]?.[partnerCol] === comboPartner
+                    ) {
+                        console.log('[COMBO PARTNER CONSUME]', {
+                            sourceUuid: this.node.uuid,
+                            targetUuid: comboPartner.uuid,
+                            row: partnerRow,
+                            col: partnerCol,
+                            type: partnerComp.getTileType()
+                        });
+
+                        this.node.emit(
+                            'extra_hit',
+                            partnerRow,
+                            partnerCol,
+                            false,
+                            0
+                        );
+                    }
+                }
+            }
+
             this.setRespawnEvent(this.respawnDelay);
+
         }, this.bombCombo_Delay);
 
         return matches;
@@ -332,10 +394,38 @@ export class Rocket extends BonusTileBase {
         }
     }
 
+    hideCombinationNode(field: Node[][]): void {
+        if (!this.comboPosition) return;
 
-    hideCombinationNode(field: Node[][]) {
-        let tile = field[this.comboPosition.x][this.comboPosition.y];
-        this.playHideAnimation(tile);
+        const row = this.comboPosition.x;
+        const col = this.comboPosition.y;
+
+        const targetNode = field[row]?.[col];
+
+        if (!targetNode?.isValid) {
+            console.warn('[COMBO HIDE] Target missing', {
+                source: this.tileType,
+                row,
+                col
+            });
+            return;
+        }
+
+        const target = targetNode.getComponent(TileBase);
+        const bonus = targetNode.getComponent('BonusTileBase') as any;
+
+        console.warn('[COMBO HIDE ROOT]', {
+            sourceType: this.tileType,
+            sourceUuid: this.node.uuid,
+            targetType: target?.getTileType(),
+            targetUuid: targetNode.uuid,
+            row,
+            col,
+            activated: bonus?.isTileActivated?.() ?? 'unknown',
+            scaleBefore: targetNode.scale.toString()
+        });
+
+        this.playHideAnimation(targetNode);
     }
 
     playHideAnimation(nodeToHide: Node) {
@@ -344,17 +434,32 @@ export class Rocket extends BonusTileBase {
             .start();
     }
 
-    public playSpawnAnimation(overlayLayer?: Node) {
-        if(!this.spawnSpine) {
+    private restoreRocketIcon(): void {
+        if (!this.node.isValid || this.isActivated) {
             return;
         }
 
-        console.log('[ROCKET SPINE START POSITION]', this.node.uuid, this.spawnSpine.node.worldPosition.toString());
+        if (this.icon?.node?.isValid) {
+            this.icon.enabled = true;
+            this.icon.node.active = true;
+        }
+    }
 
-        const visualNode = this.spawnSpine.node;
+    public playSpawnAnimation(overlayLayer?: Node): void {
+        const spine = this.spawnSpine;
+
+        if (!spine?.node?.isValid || !spine.skeletonData) {
+            console.warn('[ROCKET SPAWN] Spine missing', this.node.uuid);
+            this.restoreRocketIcon();
+            return;
+        }
+
+        const visualNode = spine.node;
         const originalParent = visualNode.parent;
 
-        if(!originalParent) {
+        if (!originalParent?.isValid) {
+            console.warn('[ROCKET SPAWN] Original parent missing');
+            this.restoreRocketIcon();
             return;
         }
 
@@ -362,102 +467,89 @@ export class Rocket extends BonusTileBase {
         const originalRotation = visualNode.rotation.clone();
         const originalScale = visualNode.scale.clone();
 
-        console.log( '[ROCKET SPAWN START]', this.node.uuid, this.tileType, this.node.isValid);
-        if(this.icon) {
-            this.icon.node.active = false;
-        }
+        let finished = false;
 
-        if(overlayLayer) {
-            visualNode.setParent(overlayLayer, true);
-            console.log('[ROCKET SPINE AFTER REPARENT]', this.node.uuid, visualNode.worldPosition.toString());
-            visualNode.setSiblingIndex(
-                overlayLayer.children.length - 1
-            );
+        const finish = (reason: string): void => {
+            if (finished) {
+                return;
+            }
 
-            this.spawnVisualInOverlay = visualNode;
-        }
-
-        visualNode.active = true;
-
-        visualNode.setRotationFromEuler(
-            0,
-            0,
-            this.tileType === 'rocket_vertical'
-                ? 90
-                : 0
-        );
-
-        this.spawnSpine.clearTracks();
-        this.spawnSpine.setToSetupPose();
-
-        const spawnTrack = this.spawnSpine.setAnimation(
-            0,
-            'spawn',
-            false
-        );
-        console.log('[ROCKET SPINE TRACK]', this.node.uuid, 'track:', spawnTrack?.animation?.name, 'duration:', spawnTrack?.animation?.duration);
-
-        if(!spawnTrack) {
+            finished = true;
             this.spawnVisualInOverlay = null;
 
-            if(originalParent.isValid && visualNode.isValid) {
-                visualNode.setParent(originalParent);
+            if (visualNode.isValid) {
+                if (this.node.isValid && originalParent.isValid) {
+                    if (visualNode.parent !== originalParent) {
+                        visualNode.setParent(originalParent);
+                    }
 
-                visualNode.setPosition(originalPosition);
-                visualNode.setRotation(originalRotation);
-                visualNode.setScale(originalScale);
-
-                visualNode.active = false;
-            }
-
-            console.warn('[ROCKET SPAWN FAILED]', this.node.uuid, this.tileType);
-
-            if(this.icon && this.icon.node.isValid) {
-                this.icon.node.active = true;
-            }
-
-            return;
-        }
-
-        this.spawnSpine.setTrackCompleteListener(
-            spawnTrack,
-            () => {
-                if(!visualNode.isValid) {
-                    this.spawnVisualInOverlay = null;
-                    return;
-                }
-
-                if(!originalParent || !originalParent.isValid) {
-                    this.spawnVisualInOverlay = null;
+                    visualNode.setPosition(originalPosition);
+                    visualNode.setRotation(originalRotation);
+                    visualNode.setScale(originalScale);
+                    visualNode.active = false;
+                } else {
                     visualNode.destroy();
-                    return;
                 }
-
-                visualNode.setParent(originalParent);
-
-                visualNode.setPosition(originalPosition);
-                visualNode.setRotation(originalRotation);
-                visualNode.setScale(originalScale);
-
-                visualNode.active = false;
-
-                this.spawnVisualInOverlay = null;
-
-                console.log('[ROCKET SPAWN COMPLETE]', this.node.uuid, this.tileType );
-
-                if(this.icon && this.icon.node.isValid) {
-                    this.icon.node.active = true;
-                    console.log('[ROCKET ICON]', this.node.uuid, 'active:', this.icon.node.active, 'inHierarchy:',
-                        this.icon.node.activeInHierarchy, 'parent:', this.icon.node.parent?.name,
-                        'scale:', this.icon.node.scale.toString()
-                    );
-                }
-
-                console.log('[ROCKET LAYER]', this.node.uuid, 'parent:', this.node.parent?.name, 'sibling:', this.node.getSiblingIndex());
-                console.log('[ROCKET POSITION]', this.node.uuid, 'position:', this.node.position.toString(), 'iconWorld:', this.icon?.node.worldPosition.toString());
-                console.log('[ROCKET SPRITE]', this.node.uuid, 'enabled:', this.icon?.enabled, 'frame:', this.icon?.spriteFrame?.name);
             }
-        );
+
+            this.restoreRocketIcon();
+
+            if (reason === 'complete') {
+                console.log( '[ROCKET SPAWN COMPLETE]', this.node.uuid, this.tileType );
+            } else {
+                console.warn( '[ROCKET SPAWN RECOVERED]', this.node.uuid, this.tileType, reason );
+            }
+        };
+
+        try {
+            if (this.icon?.node?.isValid) {
+                this.icon.node.active = false;
+            }
+
+            if (overlayLayer?.isValid) {
+                visualNode.setParent(overlayLayer, true);
+                visualNode.setSiblingIndex(overlayLayer.children.length - 1);
+
+                this.spawnVisualInOverlay = visualNode;
+            }
+
+            visualNode.active = true;
+
+            visualNode.setRotationFromEuler( 0, 0, this.tileType === 'rocket_vertical' ? 90 : 0 );
+
+            spine.clearTracks();
+            spine.setToSetupPose();
+
+            const track = spine.setAnimation(0, 'spawn', false);
+
+            if (!track) {
+                finish('missing-track');
+                return;
+            }
+
+            spine.setTrackCompleteListener(
+                track,
+                () => finish('complete')
+            );
+
+            spine.setTrackInterruptListener(
+                track,
+                () => finish('interrupt')
+            );
+
+            spine.setTrackEndListener(
+                track,
+                () => finish('end')
+            );
+
+            this.scheduleOnce(() => {
+                finish('timeout');
+            }, 5);
+
+        } catch (error) {
+            console.error('[ROCKET SPAWN ERROR]', error);
+            finish('exception');
+        }
     }
 }
 

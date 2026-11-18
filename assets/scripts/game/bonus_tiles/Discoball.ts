@@ -48,6 +48,16 @@ export class Discoball extends BonusTileBase {
     init(row: number, col: number, tileType: string): void {
         super.init(row, col, tileType);
 
+        const uiTile = this.node.getComponent(UITile);
+
+        if (
+            uiTile &&
+            this.discoballSpine &&
+            uiTile.spine === this.discoballSpine
+        ) {
+            uiTile.keepSpineVisible = true;
+        }
+
         if(this.icon) {
             this.icon.spriteFrame = (this.tileType === 'multi' ? this.multi : this.super) ?? this.icon.spriteFrame;
             this.icon.enabled = true;
@@ -369,22 +379,37 @@ export class Discoball extends BonusTileBase {
         const activeNode = this.activeFxNode;
         const holdNode = this.activeHoldNode;
 
-        this.activeFxNode = null;
-        this.activeHoldNode = null;
+        let finished = false;
+
+        const finish = (): void => {
+            if (finished) return;
+            finished = true;
+
+            if (activeNode?.isValid) {
+                activeNode.destroy();
+            }
+
+            if (holdNode?.isValid) {
+                holdNode.destroy();
+            }
+
+            if (this.activeFxNode === activeNode) {
+                this.activeFxNode = null;
+            }
+
+            if (this.activeHoldNode === holdNode) {
+                this.activeHoldNode = null;
+            }
+
+            onFinished();
+        };
 
         const visibleNode =
             holdNode?.isValid && holdNode.activeInHierarchy
                 ? holdNode
                 : activeNode;
 
-        const finish = () => {
-            if(activeNode?.isValid) activeNode.destroy();
-            if(holdNode?.isValid) holdNode.destroy();
-
-            onFinished();
-        };
-
-        if(!visibleNode?.isValid) {
+        if (!visibleNode?.isValid) {
             finish();
             return;
         }
@@ -850,5 +875,21 @@ export class Discoball extends BonusTileBase {
 
             return false;
         }
+    }
+
+    public onDestroy(): void {
+        if (this.activeFxNode?.isValid) {
+            this.activeFxNode.destroy();
+        }
+
+        if (this.activeHoldNode?.isValid) {
+            this.activeHoldNode.destroy();
+        }
+
+        this.activeFxNode = null;
+        this.activeHoldNode = null;
+        this.activeReadyCallbacks.length = 0;
+
+        super.onDestroy();
     }
 }

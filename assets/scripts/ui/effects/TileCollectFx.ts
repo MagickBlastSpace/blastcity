@@ -112,22 +112,22 @@ export class TileCollectFx extends Component {
     }
 
     public playCollapse(
-        onComplete?: () => void
-    ) {
-
-        this.playOnce(
-            this.collapseAnimation,
-            onComplete
-        );
+        onComplete?: (completed: boolean) => void
+    ): void {
+        this.playOnce(this.collapseAnimation, onComplete);
     }
 
-    public playTravel() {
+    public playAbsorb(
+        onComplete?: (completed: boolean) => void
+    ): void {
+        this.playOnce(this.absorbAnimation, onComplete);
+    }
 
-        if(!this.skeleton) {
+
+    public playTravel(): void {
+        if (!this.skeleton || !this.node.isValid) {
             return;
         }
-
-        this.skeleton.setCompleteListener(null);
 
         this.skeleton.setAnimation(
             0,
@@ -139,9 +139,10 @@ export class TileCollectFx extends Component {
     public travelTo(
         targetPosition: Vec3,
         duration: number = 0.25,
-        onComplete?: () => void
+        onComplete?: (completed: boolean) => void
     ) {
-        if(!this.skeleton) {
+        if (!this.skeleton || !this.node.isValid) {
+            onComplete?.(false);
             return;
         }
 
@@ -193,103 +194,108 @@ export class TileCollectFx extends Component {
                 }
             )
             .call(() => {
+                if (!this.node.isValid) {
+                    onComplete?.(false);
+                    return;
+                }
 
-                this.node.setScale(
-                    new Vec3(1, 1, 1)
-                );
-
-                onComplete?.();
+                this.node.setScale(new Vec3(1, 1, 1));
+                onComplete?.(true);
             })
             .start();
-    }
-
-    public playAbsorb(
-        onComplete?: () => void
-    ) {
-
-        this.playOnce(
-            this.absorbAnimation,
-            onComplete
-        );
     }
 
     public playFullSequence(
         targetPosition: Vec3,
         travelDuration: number = 0.25,
-        onComplete?: () => void
-    ) {
-
-        this.playCollapse(() => {
+        onComplete?: (completed: boolean) => void
+    ): void {
+        this.playCollapse((collapseCompleted) => {
+            if (!collapseCompleted) {
+                onComplete?.(false);
+                return;
+            }
 
             this.travelTo(
                 targetPosition,
                 travelDuration,
-                () => {
+                (travelCompleted) => {
+                    if (!travelCompleted) {
+                        onComplete?.(false);
+                        return;
+                    }
 
-                    this.playAbsorb(() => {
-
-                        onComplete?.();
-
+                    this.playAbsorb((absorbCompleted) => {
+                        onComplete?.(absorbCompleted);
                     });
-
                 }
             );
-
         });
     }
 
     private playOnce(
         animationName: string,
-        onComplete?: () => void
-    ) {
-
-        if(!this.skeleton) {
+        onComplete?: (completed: boolean) => void
+    ): void {
+        if (!this.skeleton || !this.node.isValid) {
+            console.warn(`[TileCollectFx] Skeleton unavailable: ${animationName}`);
+            onComplete?.(false);
             return;
         }
 
+        let entry: sp.spine.TrackEntry;
 
-        this.skeleton.setCompleteListener(null);
-
-
-        const entry =
-            this.skeleton.setAnimation(
+        try {
+            entry = this.skeleton.setAnimation(
                 0,
                 animationName,
                 false
             );
-
-
-        if(!entry) {
-
-            console.error(
-                `[TileCollectFx] Animation "${animationName}" not found`
-            );
-
-            onComplete?.();
-
+        } catch (error) {
+            console.error(`[TileCollectFx] Failed to start: ${animationName}`, error);
+            onComplete?.(false);
             return;
         }
 
+        if (!entry) {
+            console.error(`[TileCollectFx] Animation not found: ${animationName}`);
+            onComplete?.(false);
+            return;
+        }
 
-        this.skeleton.setCompleteListener(
-            (completedEntry) => {
+        let finished = false;
 
-                const completedAnimation =
-                    completedEntry.animation?.name;
+        const finish = (
+            completed: boolean,
+            reason: string
+        ): void => {
+            if (finished) return;
 
+            finished = true;
 
-                if(
-                    completedAnimation !==
-                    animationName
-                ) {
-                    return;
-                }
-
-
-                this.skeleton.setCompleteListener(null);
-
-                onComplete?.();
+            if (!completed) {
+                console.warn(
+                    `[TileCollectFx] ${reason}: ${animationName}, ` +
+                    `node=${this.node.name}`
+                );
             }
+
+            onComplete?.(completed);
+        };
+
+        this.skeleton.setTrackCompleteListener(
+            entry,
+            () => finish(true, 'complete')
+        );
+
+        this.skeleton.setTrackInterruptListener(
+            entry,
+            () => finish(false, 'interrupt')
+        );
+
+        this.skeleton.setTrackEndListener(
+            entry,
+            () => finish(false, 'end')
         );
     }
 

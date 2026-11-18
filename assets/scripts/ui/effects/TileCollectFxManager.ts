@@ -183,105 +183,153 @@ export class TileCollectFxManager extends Component {
 
         let arrivedCount = 0;
         let targetReady = false;
+        let targetAborted = false;
         let absorbInProgress = false;
         let pendingAbsorbs = 0;
         let isFinished = false;
 
-        const finishCollection = () => {
-            if(isFinished) {
-                return;
-            }
+        const finishCollection = (): void => {
+            if (isFinished) return;
 
             isFinished = true;
+            absorbInProgress = false;
             pendingAbsorbs = 0;
 
             const targetNode = targetFx.node;
 
-            if(targetNode && isValid(targetNode, true)) {
+            if (targetNode && isValid(targetNode, true)) {
                 Tween.stopAllByTarget(targetNode);
-
-                targetNode.setScale(0, 0, 0);
                 targetNode.active = false;
                 targetNode.destroy();
             }
 
             onAllArrived?.();
             onFinalAbsorbComplete?.();
-
             onVisualComplete?.();
 
             console.log('[BONUS COLLECT COMPLETE]', {
                 arrived: arrivedCount,
                 total: sourcePositions.length,
+                targetAborted,
                 bonusFxType,
                 useBombFx
             });
         };
 
-        const playNextAbsorb = () => {
-            if(
-                isFinished ||
-                !targetReady ||
-                absorbInProgress ||
-                pendingAbsorbs <= 0
+        const tryFinishCollection = (): void => {
+            if (isFinished) return;
+
+            if (!targetReady && !targetAborted) return;
+
+            if (arrivedCount < sourcePositions.length) return;
+
+            if (
+                !targetAborted &&
+                (pendingAbsorbs > 0 || absorbInProgress)
             ) {
                 return;
             }
 
-            if(!targetFx.node?.isValid) {
+            finishCollection();
+        };
+
+        const abortTargetVisual = (reason: string): void => {
+            if (isFinished || targetAborted) return;
+
+            targetAborted = true;
+            absorbInProgress = false;
+            pendingAbsorbs = 0;
+
+            console.warn(
+                `[BONUS COLLECT] Target visual aborted: ${reason}`
+            );
+
+            const targetNode = targetFx.node;
+
+            if (targetNode && isValid(targetNode, true)) {
+                Tween.stopAllByTarget(targetNode);
+                targetNode.active = false;
+                targetNode.destroy();
+            }
+
+            tryFinishCollection();
+        };
+
+        const playNextAbsorb = (): void => {
+            if (
+                isFinished ||
+                targetAborted ||
+                !targetReady ||
+                absorbInProgress
+            ) {
+                return;
+            }
+
+            if (pendingAbsorbs <= 0) {
+                tryFinishCollection();
+                return;
+            }
+
+            if (!targetFx.node || !isValid(targetFx.node, true)) {
+                abortTargetVisual('target node unavailable');
                 return;
             }
 
             pendingAbsorbs--;
             absorbInProgress = true;
 
-            targetFx.playAbsorb(() => {
+            targetFx.playAbsorb((completed) => {
+                if (isFinished || targetAborted) return;
+
                 absorbInProgress = false;
 
-                if(isFinished || !targetFx.node?.isValid) {
+                if (!completed) {
+                    abortTargetVisual('absorb interrupted');
+                    return;
+                }
+
+                if (!targetFx.node || !isValid(targetFx.node, true)) {
+                    abortTargetVisual('target destroyed after absorb');
                     return;
                 }
 
                 targetFx.playTravel();
 
-                if(pendingAbsorbs > 0) {
-                    playNextAbsorb();
-                }
+                playNextAbsorb();
+                tryFinishCollection();
             });
         };
 
-        const registerArrival = () => {
-            if(isFinished) {
-                return;
-            }
+        const registerArrival = (): void => {
+            if (isFinished) return;
 
             arrivedCount++;
 
-            const isLastArrival =
-                arrivedCount >= sourcePositions.length;
-
-            if(isLastArrival) {
-                finishCollection();
-                return;
+            if (!targetAborted) {
+                pendingAbsorbs++;
             }
 
-            pendingAbsorbs++;
             playNextAbsorb();
+            tryFinishCollection();
         };
 
-        targetFx.playCollapse(() => {
-            if(isFinished || !targetFx.node?.isValid) {
+        targetFx.playCollapse((completed) => {
+            if (isFinished || targetAborted) return;
+
+            if (
+                !completed ||
+                !targetFx.node ||
+                !isValid(targetFx.node, true)
+            ) {
+                abortTargetVisual('initial collapse interrupted');
                 return;
             }
 
             targetReady = true;
-
             targetFx.playTravel();
-            playNextAbsorb();
 
-            if(sourcePositions.length === 0) {
-                finishCollection();
-            }
+            playNextAbsorb();
+            tryFinishCollection();
         });
 
         for(const sourceWorldPosition of sourcePositions) {
@@ -308,8 +356,12 @@ export class TileCollectFxManager extends Component {
                     targetLocalPosition
                 );
 
-                sourceFx.playCollapse(() => {
-                    if(sourceFx.node?.isValid) {
+                sourceFx.playCollapse((completed) => {
+                    if (!completed) {
+                        console.warn('[BONUS COLLECT] Source collapse interrupted');
+                    }
+
+                    if (sourceFx.node?.isValid) {
                         sourceFx.node.destroy();
                     }
 
@@ -319,10 +371,18 @@ export class TileCollectFxManager extends Component {
                 continue;
             }
 
-            sourceFx.playCollapse(() => {
-                if(isFinished) {
-                    if(sourceFx.node?.isValid) {
+            sourceFx.playCollapse((completed) => {
+                if (isFinished || !completed) {
+                    if (!completed) {
+                        console.warn('[BONUS COLLECT] Source collapse interrupted');
+                    }
+
+                    if (sourceFx.node?.isValid) {
                         sourceFx.node.destroy();
+                    }
+
+                    if (!isFinished) {
+                        registerArrival();
                     }
 
                     return;
@@ -331,8 +391,12 @@ export class TileCollectFxManager extends Component {
                 sourceFx.travelTo(
                     targetLocalPosition,
                     this.travelDuration,
-                    () => {
-                        if(sourceFx.node?.isValid) {
+                    (travelCompleted) => {
+                        if (!travelCompleted) {
+                            console.warn('[BONUS COLLECT] Source travel interrupted');
+                        }
+
+                        if (sourceFx.node?.isValid) {
                             sourceFx.node.destroy();
                         }
 
@@ -421,9 +485,8 @@ export class TileCollectFxManager extends Component {
             return null;
         }
 
-        fx.setSkin(
-            skin
-        );
+        fx.testOnStart = false;
+        fx.setSkin(skin);
 
         return fx;
     }

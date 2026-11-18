@@ -7,6 +7,8 @@ import {
     Prefab,
     Quat,
     sp,
+    UIOpacity,
+    UITransform,
     Vec2,
     Vec3
 } from 'cc';
@@ -961,7 +963,14 @@ export class Field extends Component {
             if (bomb?.bombSpine) {
                 const bombUi = spawnedTile.getComponent(UITile);
 
-                bombUi?.prepareInstantBonusSpawn();
+                if (bombUi) {
+                    if (bombUi.spine === bomb.bombSpine) {
+                        bombUi.keepSpineVisible = true;
+                    }
+
+                    bombUi.prepareInstantBonusSpawn();
+                }
+
                 spawnedTile.setScale(1, 1, 1);
 
                 console.log('[BOMB SPAWN FIX]', {
@@ -985,7 +994,11 @@ export class Field extends Component {
                 console.log('[ROCKET BEFORE SPAWN]', 'parent:', spawnedTile.parent?.name, 'position:', spawnedTile.position.toString());
                 const rocketUi = spawnedTile.getComponent(UITile);
 
-                rocketUi?.prepareInstantBonusSpawn()
+                if (rocketUi) {
+                    rocketUi.keepSpineVisible = true;
+                    rocketUi.prepareInstantBonusSpawn();
+                }
+
                 spawnedTile.setScale(1, 1, 1);
 
                 rocket.playSpawnAnimation(this.bonusSpawnOverlay);
@@ -1024,9 +1037,24 @@ export class Field extends Component {
 
 		const tileNode = tileComponent.node;
 
-		tileNode.on('click', (tile) => {
-			this.onTileClick(tile);
-		});
+        tileNode.on('click', (tile: Node) => {
+            const comp = tile?.getComponent('TileBase') as any;
+
+            console.log('[FIELD TILE CLICK]', {
+                type: comp?.getTileType(),
+                row: comp?.getRow(),
+                col: comp?.getCol(),
+                activated: typeof comp?.isTileActivated === 'function'
+                    ? comp.isTileActivated()
+                    : false,
+                isClickAvailable: this.isClickAvailable,
+                nodeActive: tile?.activeInHierarchy,
+                scale: tile?.scale.toString()
+            });
+
+            this.onTileClick(tile);
+        });
+
 		tileNode.on('get_matches', (tile) => {
 			this.findAndDestroyMatches(tile, true);
 		});
@@ -1181,8 +1209,72 @@ export class Field extends Component {
 		let isStatusNode = this.statusArray[row][col] !== null;
 		this.node.emit('init_tile', tileNode, isStatusNode, tileType);
 
+        (globalThis as any).__debugRockets = () => {
+            this.debugRocketsOnBoard();
+        };
+
 		return tileNode;
 	}
+
+
+    private debugRocketsOnBoard(): void {
+        const rows: Record<string, any>[] = [];
+
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
+                const node = this.tileArray[row]?.[col];
+
+                if (!node?.isValid) continue;
+
+                const tile = node.getComponent(TileBase);
+                const type = tile?.getTileType();
+
+                if (
+                    type !== 'rocket_vertical' &&
+                    type !== 'rocket_horizontal'
+                ) {
+                    continue;
+                }
+
+                const rocket = node.getComponent(Rocket);
+                const ui = node.getComponent(UITile);
+                const icon = rocket?.icon;
+                const spine = rocket?.spawnSpine;
+
+                const opacity = node.getComponent(UIOpacity) as any;
+                const transform = node.getComponent(UITransform) as any;
+
+                rows.push({
+                    cell: `${row},${col}`,
+                    type,
+                    uuid: node.uuid,
+                    activated: tile?.isTileActivated(),
+                    inBonusPool: this.bonusPool.includes(node),
+                    clickAvailable: this.isClickAvailable,
+
+                    rootActive: node.activeInHierarchy,
+                    rootScale: node.scale.toString(),
+                    rootPosition: node.position.toString(),
+                    worldPosition: node.worldPosition.toString(),
+                    parent: node.parent?.name,
+                    opacity: opacity?.opacity ?? 'none',
+                    hitbox: transform?.contentSize?.toString() ?? 'none',
+
+                    iconActive: icon?.node?.activeInHierarchy,
+                    iconEnabled: icon?.enabled,
+                    iconScale: icon?.node?.scale.toString(),
+                    iconFrame: icon?.spriteFrame?.name,
+
+                    spineActive: spine?.node?.activeInHierarchy,
+                    spineParent: spine?.node?.parent?.name,
+                    keepSpineVisible: ui?.keepSpineVisible
+                });
+            }
+        }
+
+        console.log('[ROCKET BOARD SNAPSHOT]');
+        console.table(rows);
+    }
 
 	initStatus(
 		statusComponent: any,
@@ -1611,6 +1703,24 @@ export class Field extends Component {
         }
 
         const tile = this.tileArray[row][col];
+
+        if (tile?.isValid) {
+            const rocket = tile.getComponent(Rocket);
+
+            if (rocket) {
+                console.warn('[EXTRA HIT ROCKET]', {
+                    row,
+                    col,
+                    uuid: tile.uuid,
+                    type: rocket.getTileType(),
+                    isBonusChain,
+                    scale: tile.scale.toString(),
+                    inBonusPool: this.bonusPool.includes(tile),
+                    poolActivated: this.isBonusPoolActivated,
+                    poolSize: this.bonusPool.length
+                });
+            }
+        }
 
         if(!tile || !tile.isValid) {
             this.giveStatusDamage(row, col);
@@ -3924,29 +4034,32 @@ export class Field extends Component {
                 parentScale.z * originalScale.z
             );
 
-            if(restoreAfterAppear) {
+            if (restoreAfterAppear) {
                 const skeleton = visualNode.getComponent(sp.Skeleton);
                 const currentAnimation =
-                    skeleton?.getCurrent(0)?.animation?.name;
+                    skeleton?.getCurrent(0)?.animation?.name ?? '';
 
-                if(currentAnimation === 'appiert') {
+                if (currentAnimation === 'appiert') {
                     hasSeenAppear = true;
                 }
 
-                if(hasSeenAppear && currentAnimation === 'idle') {
+                if (hasSeenAppear && currentAnimation === 'idle') {
                     restore();
                     return;
                 }
 
                 elapsed += dt;
 
-                if(!hasSeenAppear && elapsed > 2) {
-                    console.warn(
-                        '[BONUS SPAWN] Appear was not started',
-                        bonusNode.name
-                    );
+                if (elapsed >= 3) {
+                    console.warn('[BONUS SPAWN] Overlay restore fallback', {
+                        bonus: bonusNode.name,
+                        animation: currentAnimation,
+                        hasSeenAppear,
+                        elapsed
+                    });
 
                     restore();
+                    return;
                 }
             }
         };
