@@ -1,4 +1,4 @@
-import { _decorator, Node, sp, Sprite, SpriteFrame } from 'cc';
+import { _decorator, EventTouch, Node, sp, Sprite, SpriteFrame, Vec2 } from 'cc';
 import { GoalData } from '../../../data/GameData';
 import { UITile } from '../../../ui/UITile';
 import { SpecTileBase } from '../SpecTileBase';
@@ -72,6 +72,66 @@ export class Otter extends SpecTileBase {
         }
     }
 
+
+    private onOtterTouched(event: EventTouch): void {
+        if(Vec2.distance(event.getUIStartLocation(), event.getUILocation()) > 12) return;
+
+        this.playOtterTouch();
+    }
+
+
+    private playOtterTouch(): void {
+        if(!this.node.isValid || !this.isOtter()) return;
+
+        const skeleton = this.node.getComponent(UITile)?.spine;
+
+        if(!skeleton?.skeletonData || !skeleton.node.activeInHierarchy) return;
+
+        const idleAnimation = this.isInactive ? 'idle_inactive' : 'idle_active';
+        const touchAnimation = this.isInactive ? 'touch_inactive' : 'touch_active';
+
+        if(!skeleton.findAnimation(touchAnimation)) {
+            console.warn('[OTTER TOUCH] Animation missing:', touchAnimation);
+            return;
+        }
+
+        const currentAnimation = skeleton.getCurrent(0)?.animation?.name;
+
+        if(currentAnimation && currentAnimation !== idleAnimation) return;
+
+        skeleton.enabled = true;
+        skeleton.timeScale = 1;
+
+        skeleton.setAnimation(0, touchAnimation, false);
+        skeleton.addAnimation(0, idleAnimation, true, 0);
+
+        console.log('[OTTER TOUCH]', {
+            row: this.row,
+            col: this.col,
+            inactive: this.isInactive,
+            animation: touchAnimation
+        });
+    }
+
+
+    private startOtterZzz(): void {
+        if(!this.node.isValid || !this.isInactive) return;
+
+        const skeleton = this.node.getComponent(UITile)?.spine;
+
+        if(!skeleton?.skeletonData || !skeleton.findAnimation('zzz')) return;
+
+        if(skeleton.getCurrent(1)?.animation?.name === 'zzz') return;
+
+        skeleton.setAnimation(1, 'zzz', true);
+
+        console.log('[OTTER ZZZ START]', {
+            row: this.row,
+            col: this.col
+        });
+    }
+
+
     isGroupedTile(): boolean {
         return true;
     }
@@ -105,6 +165,9 @@ export class Otter extends SpecTileBase {
             this.fieldNode.off("spawn", this.destroyTileCallback);
         }
 
+        this.node.off(Node.EventType.TOUCH_END, this.onOtterTouched, this);
+        this.node.off('touch_feedback', this.playOtterTouch, this);
+
         super.destroyTile(delay);
     }
 
@@ -112,6 +175,10 @@ export class Otter extends SpecTileBase {
         if (this.fieldNode && this.destroyTileCallback) {
             this.fieldNode.off("spawn", this.destroyTileCallback);
         }
+
+        this.node.off(Node.EventType.TOUCH_END, this.onOtterTouched, this);
+        this.node.off('touch_feedback', this.playOtterTouch, this);
+
 
         super.destroyClear();
     }
@@ -126,17 +193,34 @@ export class Otter extends SpecTileBase {
         this.isGenerate = false;
         this.goalCount = 0;
 
-        if (this.isOtter()) {
+        this.node.off(Node.EventType.TOUCH_END, this.onOtterTouched, this);
+        this.node.off('touch_feedback', this.playOtterTouch, this);
+
+        if(this.isOtter()) {
             this.icon.enabled = false;
 
             const uiTile = this.node.getComponent(UITile);
+            const skeleton = this.getOtterSpine();
 
-            if (uiTile) {
+            if(uiTile) {
                 uiTile.keepSpineVisible = true;
             }
 
+            if(skeleton?.skeletonData) {
+                skeleton.node.active = true;
+                skeleton.enabled = true;
+                skeleton.timeScale = 1;
+
+                skeleton.clearTracks();
+                skeleton.setToSetupPose();
+            }
+
             this.playOtterAnimation('idle_active', true);
-        } else {
+
+            this.node.on(Node.EventType.TOUCH_END, this.onOtterTouched, this);
+            this.node.on('touch_feedback', this.playOtterTouch, this);
+        }
+        else {
             this.icon.enabled = true;
             this.icon.spriteFrame = this.active;
         }
@@ -202,10 +286,17 @@ export class Otter extends SpecTileBase {
             if (skeleton && skeleton.skeletonData) {
                 skeleton.node.active = true;
 
-                skeleton.setAnimation(0, 'collaps', false);
+                const collapsTrack = skeleton.setAnimation(0, 'collaps', false);
+
                 skeleton.addAnimation(0, 'idle_inactive', true, 0);
 
-                console.log('[OTTER] Sleep sequence started: collaps -> idle_inactive');
+                if(collapsTrack) {
+                    skeleton.setTrackCompleteListener(collapsTrack, () => {
+                        if(!this.node.isValid || !skeleton.isValid || !this.isInactive) return;
+
+                        this.startOtterZzz();
+                    });
+                }
             } else {
                 console.warn('[OTTER] Cannot play sleep sequence: Spine is missing');
             }
@@ -232,22 +323,35 @@ export class Otter extends SpecTileBase {
         return this.goalCount;
     }
 
+
     setCustomParameter(index: number) {
         const wasInactive = this.isInactive;
 
         this.goalCount = index;
 
-        if (this.goalCount <= 0) {
+        if(this.goalCount <= 0) {
             this.setInactiveState();
             return;
         }
 
         this.isInactive = false;
 
-        if (wasInactive) {
-            if (this.isOtter()) {
-                this.playOtterAnimation('idle_active', true);
-            } else {
+        if(wasInactive) {
+            if(this.isOtter()) {
+                const skeleton = this.getOtterSpine();
+
+                if(skeleton?.skeletonData) {
+                    skeleton.node.active = true;
+                    skeleton.enabled = true;
+                    skeleton.timeScale = 1;
+
+                    skeleton.clearTracks();
+                    skeleton.setToSetupPose();
+
+                    this.playOtterAnimation('idle_active', true);
+                }
+            }
+            else {
                 this.icon.spriteFrame = this.active;
             }
         }
