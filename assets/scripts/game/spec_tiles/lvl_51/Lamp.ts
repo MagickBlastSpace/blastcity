@@ -67,7 +67,7 @@ export class Lamp extends SpecTileBase {
     }
 
 
-    private playLampTouch(): void {
+    protected playLampTouch(): void {
         const spine = this.flashlightSpine;
 
         if (
