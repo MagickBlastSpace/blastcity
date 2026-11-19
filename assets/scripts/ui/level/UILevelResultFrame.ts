@@ -118,6 +118,21 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 	private goldEarned: number = 0;
     private isFailTransitionLocked: boolean = false;
 
+    private isFailCounted: boolean = false;
+
+    private registerFailOnce(): void {
+        if (this.isFailCounted) {
+            return;
+        }
+
+        this.isFailCounted = true;
+        UserData.instance.addLevelFail();
+
+        console.log('[LEVEL FAIL REGISTERED]', {
+            failsCount: UserData.instance.getLevelFails()
+        });
+    }
+
 	start() {
 		this.playBtn.node.on(Button.EventType.CLICK, this.onPlayBtnClick, this);
 		this.showAdBtn.node.on(Button.EventType.CLICK, this.onShowAdBtnClick, this);
@@ -134,6 +149,7 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
 	refresh(isSuccess: boolean, goldEarned: number) {
         this.isFailTransitionLocked = false;
+        this.isFailCounted = false;
 
 		this.isSuccess = isSuccess;
 
@@ -269,8 +285,8 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 		}
 	}
 
-	onPlayBtnClick() {
-		SaveData.instance.clearLevelProgress();
+    onPlayBtnClick() {
+        SaveData.instance.clearLevelProgress();
 
         if (!this.isSuccess) {
             this.butlersGift.clearStreak();
@@ -278,39 +294,14 @@ export class UILevelResultFrame extends UIPopupFrameBase {
             this.briefing.show();
             this.briefing.init_Fail(this.level.getGoals());
 
+            this.registerFailOnce();
+
             this.level.fail();
 
             this.hide();
 
             return;
         }
-
-		this.mainFrame.show();
-
-		this.hide();
-
-		this.node.emit('level_close');
-
-		this.field.unloadAssets();
-
-		UserData.instance.resetLevelFails();
-	}
-
-	fail() {
-        console.log('[FAIL UI] fail() called', {
-            transitionLocked: this.isFailTransitionLocked
-        });
-
-        if(this.isFailTransitionLocked) {
-            return;
-        }
-
-        this.isFailTransitionLocked = true;
-
-        SaveData.instance.clearLevelProgress();
-
-        this.butlersGift.clearStreak();
-        this.level.fail();
 
         this.mainFrame.show();
 
@@ -320,7 +311,35 @@ export class UILevelResultFrame extends UIPopupFrameBase {
 
         this.field.unloadAssets();
 
-        UserData.instance.addLevelFail();
+        UserData.instance.resetLevelFails();
+    }
+
+    fail() {
+        console.log('[FAIL UI] fail() called', {
+            transitionLocked: this.isFailTransitionLocked
+        });
+
+        if (this.isFailTransitionLocked) {
+            return;
+        }
+
+        this.isFailTransitionLocked = true;
+
+        SaveData.instance.clearLevelProgress();
+
+        this.butlersGift.clearStreak();
+
+        this.registerFailOnce();
+
+        this.level.fail();
+
+        this.mainFrame.show();
+
+        this.hide();
+
+        this.node.emit('level_close');
+
+        this.field.unloadAssets();
     }
 
 	async onShowAdBtnClick() {
