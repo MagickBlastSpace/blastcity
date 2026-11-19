@@ -44,6 +44,9 @@ export class HoneyJar extends SpecTileBase {
 
         this.node.off(Node.EventType.TOUCH_END, this.onHoneyJarTouched, this);
         this.node.on(Node.EventType.TOUCH_END, this.onHoneyJarTouched, this);
+
+        this.node.off('touch_feedback', this.playHoneyJarTouch, this);
+        this.node.on('touch_feedback', this.playHoneyJarTouch, this);
     }
 
 
@@ -152,23 +155,21 @@ export class HoneyJar extends SpecTileBase {
         if(!isBreakStarted && transitionId !== null) {
             Honey.finishJarTransition(row, col, transitionId);
         }
-
-        console.log('[HONEY JAR BREAK]', {
-            row,
-            col,
-            animation: isBreakStarted ? 'hit_1' : 'fallback'
-        });
     }
 
 
     destroyTile(delay: number) {
         this.node.off(Node.EventType.TOUCH_END, this.onHoneyJarTouched, this);
+        this.node.off('touch_feedback', this.playHoneyJarTouch, this);
+
         super.destroyTile(delay);
     }
 
 
     destroyClear() {
         this.node.off(Node.EventType.TOUCH_END, this.onHoneyJarTouched, this);
+        this.node.off('touch_feedback', this.playHoneyJarTouch, this);
+
         super.destroyClear();
     }
 }

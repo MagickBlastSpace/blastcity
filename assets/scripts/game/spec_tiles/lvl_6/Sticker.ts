@@ -40,13 +40,6 @@ export class Sticker extends SpecTileBase {
         track.timeScale = 0;
 
         spine.updateAnimation(0);
-
-        console.log('[CRYSTAL BALL STATIC]', {
-            type: this.tileType,
-            node: this.node.name,
-            animation: track.animation?.name,
-            paused: track.timeScale === 0
-        });
     }
 
     init(row: number, col: number, tileType: string): void {
@@ -204,5 +197,21 @@ export class Sticker extends SpecTileBase {
         this.node.emit('goal', 'sticker');
 
         this.playAnimation('balloon0', false, 1);
+    }
+
+
+    destroyTile(delay: number): void {
+        this.node.off(Node.EventType.TOUCH_END, this.onCrystalBallTouched, this);
+        this.node.off('touch_feedback', this.onTouchFeedback, this);
+
+        super.destroyTile(delay);
+    }
+
+
+    destroyClear(): void {
+        this.node.off(Node.EventType.TOUCH_END, this.onCrystalBallTouched, this);
+        this.node.off('touch_feedback', this.onTouchFeedback, this);
+
+        super.destroyClear();
     }
 }

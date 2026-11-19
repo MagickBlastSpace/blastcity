@@ -26,6 +26,9 @@ export class Box extends SpecTileBase {
 
         this.node.off(Node.EventType.TOUCH_END, this.onBoxTouched, this);
         this.node.on(Node.EventType.TOUCH_END, this.onBoxTouched, this);
+
+        this.node.off('touch_feedback', this.playBoxTouch, this);
+        this.node.on('touch_feedback', this.playBoxTouch, this);
     }
 
 
@@ -144,6 +147,7 @@ export class Box extends SpecTileBase {
 
     destroyTile(delay: number) {
         this.node.off(Node.EventType.TOUCH_END, this.onBoxTouched, this);
+        this.node.off('touch_feedback', this.playBoxTouch, this);
 
         super.destroyTile(delay);
     }
@@ -151,6 +155,7 @@ export class Box extends SpecTileBase {
 
     destroyClear() {
         this.node.off(Node.EventType.TOUCH_END, this.onBoxTouched, this);
+        this.node.off('touch_feedback', this.playBoxTouch, this);
 
         super.destroyClear();
     }

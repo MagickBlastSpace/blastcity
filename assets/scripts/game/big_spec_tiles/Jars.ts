@@ -293,11 +293,6 @@ export class Jars extends BigTileBase {
         this.boxSpine.clearTracks();
         this.boxSpine.setToSetupPose();
         this.boxSpine.setAnimation(0, 'box_destroy', false);
-
-        console.log('[JARS] FINAL DESTROY START', {
-            row: this.row,
-            col: this.col
-        });
     }
 
 
@@ -323,6 +318,9 @@ export class Jars extends BigTileBase {
 
             this.node.off(Node.EventType.TOUCH_END, this.onJarsTouched, this);
             this.node.on(Node.EventType.TOUCH_END, this.onJarsTouched, this);
+
+            this.node.off('touch_feedback', this.playJarsTouch, this);
+            this.node.on('touch_feedback', this.playJarsTouch, this);
         }
     }
 
@@ -388,6 +386,7 @@ export class Jars extends BigTileBase {
 
     destroyTile(delay: number) {
         this.node.off(Node.EventType.TOUCH_END, this.onJarsTouched, this);
+        this.node.off('touch_feedback', this.playJarsTouch, this);
 
         const destroyDelay = this.tileType === 'jars'
             ? Math.max(delay, this.jarDestroyDuration + 0.65)
@@ -399,6 +398,7 @@ export class Jars extends BigTileBase {
 
     destroyClear() {
         this.node.off(Node.EventType.TOUCH_END, this.onJarsTouched, this);
+        this.node.off('touch_feedback', this.playJarsTouch, this);
 
         for(const skeleton of this.hps_anim) {
             if(skeleton?.node?.isValid) Tween.stopAllByTarget(skeleton.node);

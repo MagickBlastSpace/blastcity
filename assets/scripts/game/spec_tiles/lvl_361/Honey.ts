@@ -97,6 +97,9 @@ export class Honey extends Box {
 
         this.node.off(Node.EventType.TOUCH_END, this.onHoneyTouched, this);
         this.node.on(Node.EventType.TOUCH_END, this.onHoneyTouched, this);
+
+        this.node.off('touch_feedback', this.playHoneyTouch, this);
+        this.node.on('touch_feedback', this.playHoneyTouch, this);
     }
 
 
@@ -214,12 +217,16 @@ export class Honey extends Box {
 
     destroyTile(delay: number) {
         this.node.off(Node.EventType.TOUCH_END, this.onHoneyTouched, this);
+        this.node.off('touch_feedback', this.playHoneyTouch, this);
+
         super.destroyTile(delay);
     }
 
 
     destroyClear() {
         this.node.off(Node.EventType.TOUCH_END, this.onHoneyTouched, this);
+        this.node.off('touch_feedback', this.playHoneyTouch, this);
+
         super.destroyClear();
     }
 }

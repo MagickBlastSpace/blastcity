@@ -49,6 +49,8 @@ export class MagicHat extends SpecTileBase {
         }
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
+        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
+
         super.destroyTile(delay);
     }
 
@@ -58,6 +60,8 @@ export class MagicHat extends SpecTileBase {
         }
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
+        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
+
         super.destroyClear();
     }
 
@@ -71,6 +75,9 @@ export class MagicHat extends SpecTileBase {
 
         this.node.off(Node.EventType.TOUCH_END, this.onHatTouched, this);
         this.node.on(Node.EventType.TOUCH_END, this.onHatTouched, this);
+
+        this.node.off('touch_feedback', this.playHatTouchAnimation, this);
+        this.node.on('touch_feedback', this.playHatTouchAnimation, this);
 
         if(this.hatSpine?.skeletonData) {
             this.hatSpine.node.active = true;
@@ -354,6 +361,16 @@ export class MagicHat extends SpecTileBase {
 
         if(!skeleton?.skeletonData) {
             console.warn('[MAGIC HAT TOUCH] HatSpine is missing');
+            return;
+        }
+
+        const currentAnimation = skeleton.getCurrent(0)?.animation?.name;
+
+        if (
+            currentAnimation &&
+            currentAnimation !== 'idle_active' &&
+            currentAnimation !== 'idle_inactive'
+        ) {
             return;
         }
 

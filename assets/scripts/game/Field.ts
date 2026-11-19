@@ -3086,6 +3086,36 @@ export class Field extends Component {
 		return filteredPositions;
 	}
 
+    private playVisualTouch(tile: Node): void {
+        if (!tile?.isValid) return;
+
+        const tileComponent = tile.getComponent(TileBase);
+        if (!tileComponent) return;
+
+        const row = tileComponent.getRow();
+        const col = tileComponent.getCol();
+
+        const statusNode = this.statusArray[row]?.[col];
+        const statusComp = statusNode?.getComponent(StatusBase);
+
+        const hasBubble = statusComp?.getStatusType() === 'bubble';
+
+        if (hasBubble && statusNode?.isValid) {
+            statusNode.emit('bubble_touch');
+        }
+
+        const canTouchTile =
+            hasBubble || this.isInteractionAvailable(row, col);
+
+        if (
+            canTouchTile &&
+            (tileComponent.isCommonTile() || tileComponent.isSpecialTile())
+        ) {
+            tile.emit('touch_feedback');
+        }
+    }
+
+
 	onTileClick(tile: Node) {
 		if (
 			!this.isClickAvailable ||
@@ -3116,31 +3146,30 @@ export class Field extends Component {
 			}
 		}
 
-		if(tileComponent.isSpecialTile()) {
+
+        if (tileComponent.isSpecialTile()) {
+            this.playVisualTouch(tile);
+
+            this.node.emit('game_state', this.tileArray, this.statusArray);
+            return;
+        }
+
+
+        if ( !this.isInteractionAvailable( tileComponent.getRow(), tileComponent.getCol() ) ) {
             const row = tileComponent.getRow();
             const col = tileComponent.getCol();
 
             const statusNode = this.statusArray[row]?.[col];
             const statusComp = statusNode?.getComponent(StatusBase);
 
-            if(statusComp?.getStatusType() === 'bubble') {
-                statusNode.emit('bubble_touch');
+            if (statusComp?.getStatusType() === 'bubble') {
+                this.playVisualTouch(tile);
             }
 
             this.node.emit('game_state', this.tileArray, this.statusArray);
             return;
         }
 
-		if (
-			!this.isInteractionAvailable(
-				tileComponent.getRow(),
-				tileComponent.getCol(),
-			)
-		) {
-			this.node.emit('game_state', this.tileArray, this.statusArray);
-
-			return;
-		}
 
 		let isMatchesFound = this.findAndDestroyMatches(tile, true);
 
@@ -3155,19 +3184,7 @@ export class Field extends Component {
 				this.levelCompletePoints = this.levelCompletePoints - 1;
 			}
 		} else {
-            const row = tileComponent.getRow();
-            const col = tileComponent.getCol();
-
-            const statusNode = this.statusArray[row]?.[col];
-            const statusComp = statusNode?.getComponent(StatusBase);
-
-            if(statusComp?.getStatusType() === 'bubble') {
-                statusNode.emit('bubble_touch');
-            }
-
-            if (tileComponent.isCommonTile() && tile.isValid) {
-                tile.emit('touch_feedback');
-            }
+            this.playVisualTouch(tile);
 
             this.node.emit('game_state', this.tileArray, this.statusArray);
         }

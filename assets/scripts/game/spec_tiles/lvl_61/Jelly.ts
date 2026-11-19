@@ -144,6 +144,9 @@ export class Jelly extends SpecTileBase {
         this.node.off(Node.EventType.TOUCH_END, this.onJellyTouched, this);
         this.node.on(Node.EventType.TOUCH_END, this.onJellyTouched, this);
 
+        this.node.off('touch_feedback', this.playJellyTouchAnimation, this);
+        this.node.on('touch_feedback', this.playJellyTouchAnimation, this);
+
         const cellKey = Jelly.getCellKey(row, col);
 
         const appearAnimation = Jelly.pendingAppearAnimations.get(cellKey);
@@ -165,11 +168,15 @@ export class Jelly extends SpecTileBase {
     destroyTile(delay: number) {
         this.node.off(Node.EventType.TOUCH_END, this.onJellyTouched, this);
 
+        this.node.off('touch_feedback', this.playJellyTouchAnimation, this);
+
         super.destroyTile(delay);
     }
 
     destroyClear() {
         this.node.off(Node.EventType.TOUCH_END, this.onJellyTouched, this);
+
+        this.node.off('touch_feedback', this.playJellyTouchAnimation, this);
 
         super.destroyClear();
     }

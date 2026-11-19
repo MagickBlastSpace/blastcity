@@ -32,8 +32,13 @@ export class Lamp extends SpecTileBase {
             this.flashlightSpine.node.active = true;
             this.flashlightSpine.setAnimation(0, 'idle_1', true);
         }
-    }
 
+        this.node.off('lamp_touch', this.playLampTouch, this);
+        this.node.on('lamp_touch', this.playLampTouch, this);
+
+        this.node.off('touch_feedback', this.playLampTouch, this);
+        this.node.on('touch_feedback', this.playLampTouch, this);
+    }
 
     getDamage(damageType: string) {
         if (!this.isTileDamaged()) {
@@ -62,11 +67,55 @@ export class Lamp extends SpecTileBase {
     }
 
 
+    private playLampTouch(): void {
+        const spine = this.flashlightSpine;
+
+        if (
+            !this.node.isValid ||
+            !spine?.skeletonData ||
+            !spine.node.activeInHierarchy
+        ) {
+            return;
+        }
+
+        const strength = this.getStrength();
+
+        if (strength !== 1 && strength !== 2) return;
+
+        const currentAnimation = spine.getCurrent(0)?.animation?.name ?? '';
+
+        if (
+            currentAnimation.startsWith('hit_') ||
+            currentAnimation.startsWith('touch_')
+        ) {
+            return;
+        }
+
+        const touchAnimation = strength === 2 ? 'touch_1' : 'touch_2';
+        const idleAnimation = strength === 2 ? 'idle_1' : 'idle_2';
+
+        if (
+            !spine.findAnimation(touchAnimation) ||
+            !spine.findAnimation(idleAnimation)
+        ) {
+            console.warn('[LAMP TOUCH] Animation not found:', touchAnimation);
+            return;
+        }
+
+        spine.setAnimation(0, touchAnimation, false);
+
+        spine.addAnimation(0, idleAnimation, true, 0);
+    }
+
     isReadyToDestroy(): boolean {
         return this.getStrength() <= 0;
     }
 
+
     destroyTile(delay: number) {
+        this.node.off('lamp_touch', this.playLampTouch, this);
+        this.node.off('touch_feedback', this.playLampTouch, this);
+
         const lampVFX = this.node.getComponent('LampVFX');
         const hasVFX = lampVFX !== null && lampVFX.enabled;
 
@@ -78,6 +127,13 @@ export class Lamp extends SpecTileBase {
         super.destroyTile(delay);
     }
 
+
+    destroyClear() {
+        this.node.off('lamp_touch', this.playLampTouch, this);
+        this.node.off('touch_feedback', this.playLampTouch, this);
+
+        super.destroyClear();
+    }
 
 
     refresh() {
