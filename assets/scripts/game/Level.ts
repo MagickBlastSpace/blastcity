@@ -40,6 +40,9 @@ export class Level extends Component {
     private isFailFinalized: boolean = false;
 
 
+    private isWinResultFinalized: boolean = false;
+
+
     start() {
         this.field.on("move", () => this.moveCallback());
         this.field.on("level_init", (level) => this.init(level));
@@ -139,6 +142,8 @@ export class Level extends Component {
 
         this.isFailFlowStarted = false;
         this.isFailFinalized = false;
+
+        this.isWinResultFinalized = false;
 
         this.checkLevelStatus();
     }
@@ -402,6 +407,13 @@ export class Level extends Component {
     }
 
     setLevelCompleteEvent(goldEarned: number) {
+        if(this.isWinResultFinalized) {
+            console.warn('[WIN FLOW] Duplicate completion prevented');
+            return;
+        }
+
+        this.isWinResultFinalized = true;
+
         const isDevMode = UserData.instance.isDevMode();
 
         let totalReward = this.isBonusGoldAvailable()

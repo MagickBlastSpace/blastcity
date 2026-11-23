@@ -41,6 +41,14 @@ import { SpecTileBase } from './spec_tiles/SpecTileBase';
 import { StatusBase } from './statuses/StatusBase';
 const { ccclass, property } = _decorator;
 
+export interface WinRocketLineRequest {
+    row: number;
+    col: number;
+    targetWorld: Vec3 | null;
+    handled: boolean;
+    onReach: () => void;
+}
+
 @ccclass('Field')
 export class Field extends Component {
 	@property(Node)
@@ -96,6 +104,18 @@ export class Field extends Component {
 	private spawnTilesSchedule: Function = null;
 	private isSpawnScheduled: boolean = false;
 	private isCompleteScheduled: boolean = false;
+
+    private winSkipFinalized: boolean = false;
+    private winPlanReady: boolean = false;
+
+    private winMovesConsumed: number = 0;
+    private winBonusActivationPlanned: boolean = false;
+
+    private winPlannedPositions: Vec2[] = [];
+    private winSpawnsDone: number = 0;
+    private winSkipRewardSnapshot: number = 0;
+
+    private winScheduledCallbacks: Array<() => void> = [];
 
 	private rocketPreset: string = 'random';
 	private dynamiteGoals: GoalData[] = [];
@@ -330,6 +350,8 @@ export class Field extends Component {
 			return;
 		}
 
+        this.resetWinFlow();
+
 		this.setSuperDiscoballMode(UserData.instance.getIsSuperDiscoballActive());
 
 		this.isLevelComplete = false;
@@ -553,25 +575,28 @@ export class Field extends Component {
 		this.savedLevelData = null;
 	}
 
-	restoreSpecTilesState(specs: SpecialTileStateData[]) {
-		for (let i = 0; i < specs.length; i++) {
-			let tile = this.tileArray[specs[i].row][specs[i].col];
-			if (tile) {
-				let tileComp = tile.getComponent(TileBase);
-				if (tileComp.isSpecialTile()) {
-					tileComp.setStrength(specs[i].strength);
+    restoreSpecTilesState(specs: SpecialTileStateData[]) {
+        for(let i = 0; i < specs.length; i++) {
+            const state = specs[i];
+            const tile = this.tileArray[state.row]?.[state.col];
 
-					tileComp.setStrengthRed(specs[i].strengthRed);
-					tileComp.setStrengthBlue(specs[i].strengthBlue);
-					tileComp.setStrengthGreen(specs[i].strengthGreen);
-					tileComp.setStrengthYellow(specs[i].strengthYellow);
-					tileComp.setStrengthPurple(specs[i].strengthPurple);
+            if(!tile) continue;
 
-					tileComp.setCustomParameter(specs[i].customParameter);
-				}
-			}
-		}
-	}
+            const tileComp = tile.getComponent(SpecTileBase);
+
+            if(!tileComp) continue;
+
+            tileComp.setStrength(state.strength);
+
+            tileComp.setStrengthRed(state.strengthRed);
+            tileComp.setStrengthBlue(state.strengthBlue);
+            tileComp.setStrengthGreen(state.strengthGreen);
+            tileComp.setStrengthYellow(state.strengthYellow);
+            tileComp.setStrengthPurple(state.strengthPurple);
+
+            tileComp.setCustomParameter(state.customParameter);
+        }
+    }
 
 	restoreStatusesState(statuses: SpecialTileStateData[]) {
 		for (let i = 0; i < statuses.length; i++) {
@@ -1413,7 +1438,7 @@ export class Field extends Component {
 		}
 
 		let randomIndex = Math.floor(Math.random() * tiles.length);
-		this.destroyTile(tiles[randomIndex].getRow(), tiles[randomIndex].getCol());
+		this.destroyTile(tiles[randomIndex].getRow(), tiles[randomIndex].getCol(), false);
 	}
 
 	destroyStatus(row: number, col: number, isClear: boolean) {
@@ -1571,6 +1596,8 @@ export class Field extends Component {
 	}
 
 	activateBonusPool() {
+        if(this.winSkipFinalized) return;
+
 		if (this.isBonusPoolActivated) {
 			return;
 		}
@@ -1589,6 +1616,8 @@ export class Field extends Component {
 
 
     activateBonusByIndex(index: number, byOrder: boolean): void {
+        if(this.winSkipFinalized) return;
+
         if(index >= this.bonusPool.length) {
             this.scheduleRespawn(this.fallTime, false);
             return;
@@ -1631,9 +1660,12 @@ export class Field extends Component {
         const bonusType = bonusComp.getTileType();
 
         const activate = () => {
+            if(this.winSkipFinalized) return;
+
             if(!this.node.isValid || !this.node.activeInHierarchy) {
                 return;
             }
+
 
             if(!bonusTile || !isValid(bonusTile, true)) {
                 console.warn('[BONUS POOL] Bonus destroyed while waiting', {
@@ -1696,6 +1728,8 @@ export class Field extends Component {
 
 
     extraHit(row: number, col: number, isBonusChain: boolean, delay: number) {
+        if(this.winSkipFinalized) return;
+
         if(
             row < 0 ||
             row >= this.numRows ||
@@ -1726,7 +1760,7 @@ export class Field extends Component {
         }
 
         if(!tile || !tile.isValid) {
-            this.giveStatusDamage(row, col);
+            this.giveStatusDamage(row, col, false);
             return;
         }
 
@@ -1738,6 +1772,8 @@ export class Field extends Component {
                 const isDiscoball = bonusType === 'multi' || bonusType === 'super';
 
                 const activateBonus = () => {
+                    if(this.winSkipFinalized) return;
+
                     if(
                         !this.node.isValid ||
                         !tile.isValid ||
@@ -1755,6 +1791,8 @@ export class Field extends Component {
                         });
 
                         this.waitForVisualFallEnd(() => {
+                            if(this.winSkipFinalized) return;
+
                             if(
                                 !this.node.isValid ||
                                 !tile.isValid ||
@@ -1973,6 +2011,8 @@ export class Field extends Component {
 	}
 
 	findAndDestroyMatches(tile: Node, isRespawn: boolean): boolean {
+        if(this.winSkipFinalized) return false;
+
 		if (!tile) {
 			return false;
 		}
@@ -2414,6 +2454,8 @@ export class Field extends Component {
 	}
 
 	spawnNewTiles(isRespawn: boolean, isBlockingInactionEffect: boolean) {
+        if(this.winSkipFinalized) return;
+
 		try {
 			this.checkStatusesForDestroy();
 			this.checkSpecTilesForDestroy();
@@ -2469,6 +2511,8 @@ export class Field extends Component {
 		this.tryToSpawnButlerBonuses();
 
 		this.scheduleOnce(() => {
+            if(this.winSkipFinalized) return;
+
 			//buggy
 			for (let col = 0; col < this.numCols; col++) {
 				for (let row = 0; row < this.numRows; row++) {
@@ -2595,6 +2639,8 @@ export class Field extends Component {
     }
 
 	scheduleRespawn(timeToRespawn: number, isBlockingInactionEffect: boolean) {
+        if(this.winSkipFinalized) return;
+
         if(this.activeDiscoballSequences.size > 0) {
             this.discoballPendingBlockingInaction =
                 this.discoballPendingBlockingInaction || isBlockingInactionEffect;
@@ -3243,17 +3289,9 @@ export class Field extends Component {
 							if (this.rocketPreset === 'random') {
 								let tileType = Math.floor(Math.random() * 2);
 
-								if (
-									matches.every((tile) =>
-										this.savedVerticalRockets.flat().includes(tile),
-									)
-								) {
+								if (matches.every(tile => this.savedVerticalRockets.some(row => row.includes(tile)))) {
 									tileType = 0;
-								} else if (
-									matches.every((tile) =>
-										this.savedHorizontalRockets.flat().includes(tile),
-									)
-								) {
+								} else if (matches.every(tile => this.savedHorizontalRockets.some(row => row.includes(tile)))) {
 									tileType = 1;
 								}
 
@@ -3494,7 +3532,7 @@ export class Field extends Component {
 		}
 	}
 
-	shuffleTiles(): boolean {
+	shuffleTiles(): void {
 		this.isClickAvailable = false;
 
 		let tilesPositions = this.shuffleArray(
@@ -3534,97 +3572,242 @@ export class Field extends Component {
 		this.node.emit('shuffle');
 	}
 
-	setLevelAsCompleted(moves: number) {
-		this.isLevelComplete = true;
+    private cancelWinScheduledCallbacks(): void {
+        for(const callback of this.winScheduledCallbacks) {
+            this.unschedule(callback);
+        }
 
-		this.levelCompletePoints = moves;
-	}
+        this.winScheduledCallbacks = [];
+    }
 
-	completeLevel() {
-		console.log(
-			`[AP WIN] completeLevel START` +
-			` points=${this.levelCompletePoints}`
-		);
+    private resetWinFlow(): void {
+        this.cancelWinScheduledCallbacks();
 
-		if (this.isCompleteScheduled) {
-			return;
-		}
+        this.winSkipFinalized = false;
+        this.winPlanReady = false;
 
-		this.isCompleteScheduled = true;
+        this.winPlannedPositions = [];
+        this.winSpawnsDone = 0;
+        this.winMovesConsumed = 0;
+        this.winSkipRewardSnapshot = 0;
+        this.winBonusActivationPlanned = false;
+    }
 
-		const timeBetweenTiles = 0.2;
+    private scheduleWinCallback(callback: () => void, delay: number): void {
+        const scheduledCallback = () => {
+            if(this.winSkipFinalized) return;
 
-		const availableTiles = this.shuffleArray(this.getAllCommonTilesPositions());
-		const totalSpawns =
-			availableTiles.length >= this.levelCompletePoints
-				? this.levelCompletePoints
-				: availableTiles.length;
-		const totalTime = timeBetweenTiles * totalSpawns + 0.2;
+            callback();
+        };
 
-		for (let i = 0; i < totalSpawns; i++) {
-			this.scheduleOnce(() => {
-				let isBonusPool = true;
+        this.winScheduledCallbacks.push(scheduledCallback);
+        this.scheduleOnce(scheduledCallback, delay);
+    }
 
-				const tileType = Math.floor(Math.random() * 2);
-				let bonusId = tileType === 0 ? 'rocket_vertical' : 'rocket_horizontal';
+    private prepareWinPlan(): void {
+        if(this.winPlanReady) return;
 
-				console.log(
-					`[AP WIN] replacing tile` +
-					` index=${i}` +
-					` row=${availableTiles[i].x}` +
-					` col=${availableTiles[i].y}`
-				);
+        const availableTiles = this.shuffleArray(
+            this.getAllCommonTilesPositions()
+        );
 
-				this.spawnBonusTile(
-					availableTiles[i].x,
-					availableTiles[i].y,
-					bonusId,
-					isBonusPool,
-				);
+        const totalSpawns = Math.min(
+            Math.max(0, this.levelCompletePoints),
+            availableTiles.length
+        );
 
-				this.node.emit('move');
-				this.node.emit('coin_reward', availableTiles[i].x, availableTiles[i].y);
-			}, timeBetweenTiles * i);
-		}
+        this.winPlannedPositions = availableTiles.slice(0, totalSpawns);
 
-		this.scheduleOnce(() => {
-			console.log(
-				`[AP WIN] activating bonus pool` +
-				` size=${this.bonusPool.length}`
-			);
+        let existingBonusGold = 0;
 
-			this.activateBonusPool();
-		}, totalTime);
-	}
+        for(let row = 0; row < this.numRows; row++) {
+            for(let col = 0; col < this.numCols; col++) {
+                const tile = this.tileArray[row]?.[col];
 
-	completeLevel_Skip() {
-		console.log(
-			`[AP WIN FLOW] completeLevel_Skip START` +
-			` points=${this.levelCompletePoints}`
-		);
+                if(!tile?.isValid) continue;
 
-		if (this.isCompleteScheduled) {
-			return;
-		}
+                const tileComp = tile.getComponent(TileBase);
 
-		this.isCompleteScheduled = true;
+                if(!tileComp?.isBonusTile()) continue;
 
-		const availableTiles = this.shuffleArray(this.getAllCommonTilesPositions());
-		const totalSpawns =
-			availableTiles.length >= this.levelCompletePoints
-				? this.levelCompletePoints
-				: availableTiles.length;
+                const tileType = tileComp.getTileType();
 
-		for (let i = 0; i < totalSpawns; i++) {
-			this.spawnRandomRocket(availableTiles[i].x, availableTiles[i].y);
-			this.node.emit('move');
-			this.node.emit('coin_reward', availableTiles[i].x, availableTiles[i].y);
-		}
+                if(tileType === 'rocket_horizontal' || tileType === 'rocket_vertical') {
+                    existingBonusGold += 2;
+                }
+                else if(tileType === 'bomb') {
+                    existingBonusGold += 3;
+                }
+                else if(this.availableColors.includes(tileType)) {
+                    existingBonusGold += 5;
+                }
+            }
+        }
 
-		this.scheduleOnce(() => {
-			this.node.emit('complete', this.countBonusGold());
-		}, 0.2);
-	}
+        this.winSkipRewardSnapshot =
+            existingBonusGold + this.winPlannedPositions.length * 2;
+
+        this.winPlanReady = true;
+
+        console.log('[WIN FLOW] Plan prepared', {
+            moves: this.levelCompletePoints,
+            rockets: this.winPlannedPositions.length,
+            skipGold: this.winSkipRewardSnapshot
+        });
+    }
+
+    setLevelAsCompleted(moves: number) {
+        this.resetWinFlow();
+
+        this.isLevelComplete = true;
+        this.levelCompletePoints = moves;
+    }
+
+
+    completeLevel() {
+        if(this.isCompleteScheduled || this.winSkipFinalized) return;
+
+        this.prepareWinPlan();
+
+        this.isCompleteScheduled = true;
+
+        const timeBetweenLines = 0.2;
+        const totalSpawns = this.winPlannedPositions.length;
+
+        console.log('[WIN FLOW] Conversion started', {
+            moves: this.levelCompletePoints,
+            rockets: totalSpawns
+        });
+
+        const activatePoolWhenReady = (): void => {
+            if(this.winSkipFinalized || this.winBonusActivationPlanned) return;
+            if(this.winSpawnsDone !== totalSpawns) return;
+
+            this.winBonusActivationPlanned = true;
+
+            this.node.emit('win_conversion_finished');
+
+            this.scheduleWinCallback(() => {
+                console.log('[WIN FLOW] Activating bonus pool', {
+                    rockets: this.winSpawnsDone,
+                    poolSize: this.bonusPool.length
+                });
+
+                this.activateBonusPool();
+            }, 0.35);
+        };
+
+        if(totalSpawns === 0) {
+            this.node.emit('win_conversion_finished');
+
+            this.scheduleWinCallback(() => {
+                this.activateBonusPool();
+            }, 0.2);
+
+            return;
+        }
+
+        for(let i = 0; i < totalSpawns; i++) {
+            this.scheduleWinCallback(() => {
+                if(this.winSkipFinalized) return;
+
+                const position = this.winPlannedPositions[i];
+                if(!position) return;
+
+                const row = position.x;
+                const col = position.y;
+
+                this.winMovesConsumed++;
+                this.node.emit('move');
+
+                const targetTile = this.tileArray[row]?.[col];
+
+                const targetWorld = targetTile?.isValid
+                    ? targetTile.worldPosition.clone()
+                    : null;
+
+                let rocketCreated = false;
+
+                const spawnRocketOnReach = (): void => {
+                    if(this.winSkipFinalized || rocketCreated) return;
+
+                    rocketCreated = true;
+
+                    const bonusId = Math.random() < 0.5
+                        ? 'rocket_vertical'
+                        : 'rocket_horizontal';
+
+                    this.spawnBonusTile(row, col, bonusId, true);
+
+                    this.winSpawnsDone++;
+
+                    this.node.emit('coin_reward', row, col);
+
+                    console.log('[WIN FLOW] Line reached target', {
+                        row,
+                        col,
+                        spawned: this.winSpawnsDone,
+                        total: totalSpawns
+                    });
+
+                    activatePoolWhenReady();
+                };
+
+                const request: WinRocketLineRequest = {
+                    row,
+                    col,
+                    targetWorld,
+                    handled: false,
+                    onReach: spawnRocketOnReach
+                };
+
+                this.node.emit('win_rocket_line', request);
+
+                if(!request.handled) {
+                    spawnRocketOnReach();
+                }
+
+            }, timeBetweenLines * i);
+        }
+    }
+
+    completeLevel_Skip() {
+        if(this.winSkipFinalized || !this.isLevelComplete) return;
+
+        this.prepareWinPlan();
+
+        this.winSkipFinalized = true;
+
+        this.cancelWinScheduledCallbacks();
+
+        if(this.spawnTilesSchedule) {
+            this.unschedule(this.spawnTilesSchedule);
+            this.spawnTilesSchedule = null;
+        }
+
+        this.isSpawnScheduled = false;
+        this.isCompleteScheduled = false;
+        this.isClickAvailable = false;
+
+        this.isBonusPoolActivated = false;
+        this.bonusPool = [];
+        this.bonusIndex = 0;
+
+        this.activeDiscoballSequences.clear();
+        this.shouldActivateBonusPoolAfterDiscoball = false;
+        this.discoballPendingBlockingInaction = false;
+
+        const remainingSpawns = Math.max(
+            0,
+            this.winPlannedPositions.length - this.winMovesConsumed
+        );
+
+        for(let i = 0; i < remainingSpawns; i++) {
+            this.node.emit('move');
+        }
+
+        this.node.emit('complete', this.winSkipRewardSnapshot);
+    }
 
 	countBonusGold(): number {
 		let bonusGold = 0;
@@ -3656,22 +3839,23 @@ export class Field extends Component {
 		return bonusGold;
 	}
 
-	shuffleArray(array: Node[]): Node[] {
-		let currentIndex = array.length;
-		let randomIndex;
 
-		while (currentIndex !== 0) {
-			randomIndex = Math.floor(Math.random() * currentIndex);
-			currentIndex--;
+    shuffleArray<T>(array: T[]): T[] {
+        let currentIndex = array.length;
+        let randomIndex: number;
 
-			[array[currentIndex], array[randomIndex]] = [
-				array[randomIndex],
-				array[currentIndex],
-			];
-		}
+        while(currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
 
-		return array;
-	}
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex],
+                array[currentIndex]
+            ];
+        }
+
+        return array;
+    }
 
 	getDynamiteGoals(): GoalData[] {
 		return this.dynamiteGoals;
@@ -3693,7 +3877,7 @@ export class Field extends Component {
 		return this.rocketPreset;
 	}
 
-	moveNodeToIndex(node: cc.Node, newIndex: number): void {
+	moveNodeToIndex(node: Node, newIndex: number): void {
 		const currentIndex: number = this.bonusPool.indexOf(node);
 
 		if (currentIndex !== -1) {

@@ -15,10 +15,11 @@ export class LocalizedLabel extends Component {
 	get _key() {
 		return this.key;
 	}
-	set _key(str: string) {
-		this.updateLabel();
-		this.key = str;
-	}
+
+    set _key(str: string) {
+        this.key = str;
+        this.updateLabel();
+    }
 
 	onLoad() {
 		if (!i18n.ready) {

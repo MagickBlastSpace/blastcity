@@ -1,8 +1,9 @@
-import { _decorator, Component, Node, Button, sp } from 'cc';
-import { UIPopupFrameBase } from '../UIPopupFrameBase';
+import { _decorator, Button, sp, Sprite } from 'cc';
 import { Field } from '../../game/Field';
-import { TestBot } from '../../utils/TestBot';
 import { ResolutionManager } from '../../utils/ResolutionManager';
+import { TestBot } from '../../utils/TestBot';
+import { UIPopupFrameBase } from '../UIPopupFrameBase';
+
 const { ccclass, property } = _decorator;
 
 @ccclass('UILevelCompletePopup')
@@ -21,59 +22,102 @@ export class UILevelCompletePopup extends UIPopupFrameBase {
     animationFireworks: sp.Skeleton = null;
 
     private isSkipped: boolean = false;
+    private isConversionStarted: boolean = false;
 
+    private blockClickSprite: Sprite | null = null;
+    private blockClickSpriteWasEnabled: boolean = false;
 
     start() {
-        this.skipBtn.node.on(Button.EventType.CLICK, this.onSkipBtnClick, this);
+        this.skipBtn.node.on(
+            Button.EventType.CLICK,
+            this.onSkipBtnClick,
+            this
+        );
     }
 
     show() {
+        const frame = this.node.getChildByName('Frame');
+
+        if(frame?.isValid) {
+            frame.active = true;
+        }
+
         super.show();
 
+        this.blockClickSprite = this.skipBtn.node.getComponent(Sprite);
+        this.blockClickSpriteWasEnabled = this.blockClickSprite?.enabled ?? false;
+
         this.isSkipped = false;
+        this.isConversionStarted = false;
 
-        console.log(
-            `[AP WIN FLOW] popup show` +
-            ` testBot=${this.testBot.isActive()}`
-        );
+        console.log('[WIN FLOW] Popup shown');
 
-        if(this.testBot.isActive()) {
-            this.field.completeLevel_Skip();
-
-            this.hide();
-
+        if(this.testBot?.isActive()) {
+            this.onSkipBtnClick();
             return;
         }
 
-        let isPortrait = ResolutionManager.instance.isPortraitOrientation();
-        let fireworksName = isPortrait ? "vertical" : "horizontal";
+        const isPortrait =
+            ResolutionManager.instance.isPortraitOrientation();
 
-        if(this.animationFireworks.skeletonData) {
-            this.animationFireworks.setAnimation(0, fireworksName, false);
+        const fireworksName = isPortrait
+            ? 'vertical'
+            : 'horizontal';
+
+        if(this.animationFireworks?.skeletonData) {
+            this.animationFireworks.setAnimation(
+                0,
+                fireworksName,
+                false
+            );
         }
 
         this.scheduleOnce(() => {
-            if(!this.isSkipped) {
-                this.field.completeLevel();
+            if(this.isSkipped || !this.node.isValid) return;
 
-                this.hide();
+            this.isConversionStarted = true;
+
+            if(frame?.isValid) {
+                frame.active = false;
             }
+
+            if(this.blockClickSprite?.isValid) {
+                this.blockClickSprite.enabled = false;
+            }
+
+            console.log('[WIN FLOW] Conversion started');
+
+            this.node.emit('win_conversion_started');
+
+            this.field.completeLevel();
+
         }, 1.5);
+
     }
 
     hide() {
-        super.hide();
-
         this.unscheduleAllCallbacks();
+
+        this.isConversionStarted = false;
+
+        if(this.blockClickSprite?.isValid) {
+            this.blockClickSprite.enabled = this.blockClickSpriteWasEnabled;
+        }
+
+        super.hide();
     }
 
     onSkipBtnClick() {
+        if(this.isSkipped) return;
+
         this.isSkipped = true;
 
-        this.field.completeLevel_Skip();
+        console.log('[WIN FLOW] Skip requested', {
+            conversionStarted: this.isConversionStarted
+        });
 
-        this.hide();
+        this.unscheduleAllCallbacks();
+
+        this.field.completeLevel_Skip();
     }
 }
-
-

@@ -279,7 +279,9 @@ export const languages = {
     "bomb": "Bombs",
     "dball": "Discoballs",
     "nomoves": "No moves left!",
-    "failed": "You lost"
+    "failed": "You lost",
+    "levelGoals": "Goals",
+    "levelPrize": "Prize"
   },
   "rewards": {
     "level": "Level",

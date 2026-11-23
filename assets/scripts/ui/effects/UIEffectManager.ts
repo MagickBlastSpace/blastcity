@@ -2,6 +2,8 @@ import { _decorator, Component, instantiate, Node, Prefab, UITransform, Vec2, Ve
 import { SpecialPrefabData } from '../../data/GameData';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UILevelGoal } from '../level/UILevelGoal';
+import { UIRewardEffect } from './UIRewardEffect';
+import { UISpecGoalEffect } from './UISpecGoalEffect';
 const { ccclass, property } = _decorator;
 
 @ccclass('UIEffectManager')
@@ -35,18 +37,24 @@ export class UIEffectManager extends Component {
     @property([SpecialPrefabData])
     specialPrefabs: SpecialPrefabData[] = [];
 
+    start(): void {
+        this.field.on('coin_reward', this.createEffectCoinReward, this);
+        this.field.on('goal_effect', this.createSpecGoalEffect, this);
+        this.field.on('goal_effect_positioned', this.createSpecGoalEffectPositioned, this);
+    }
 
-    start() {
-        this.field.on("coin_reward", (row, col) => this.createEffectCoinReward(row, col));
+    protected onDestroy(): void {
+        if(!this.field?.isValid) return;
 
-        this.field.on("goal_effect", (spec, row, col) => this.createSpecGoalEffect(spec, row, col));
-        this.field.on("goal_effect_positioned", (spec, x, y) => this.createSpecGoalEffectPositioned(spec, x, y));
+        this.field.off('coin_reward', this.createEffectCoinReward, this);
+        this.field.off('goal_effect', this.createSpecGoalEffect, this);
+        this.field.off('goal_effect_positioned', this.createSpecGoalEffectPositioned, this);
     }
 
     createEffectCoinReward(row: number, col: number) {
         const coin = instantiate(this.coinReward);
         this.effectsLayer.addChild(coin);
-        const coinComp = coin.getComponent("UIRewardEffect");
+        const coinComp = coin.getComponent(UIRewardEffect);
 
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
@@ -56,7 +64,15 @@ export class UIEffectManager extends Component {
 
         let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? portraitGoalPosition : landscapeGoalPosition;
 
-        coinComp.init(new Vec2(posX, posY), targetPosition);
+        coinComp.init(
+            new Vec2(posX, posY),
+            targetPosition,
+            () => {
+                if(this.field?.isValid) {
+                    this.field.emit('win_coin_arrived');
+                }
+            }
+        );
     }
 
     createSpecGoalEffect(spec: string, row: number, col: number) {
@@ -69,7 +85,7 @@ export class UIEffectManager extends Component {
 
         const specNode = instantiate(prefab);
         this.effectsLayer.addChild(specNode);
-        const specComp = specNode.getComponent("UISpecGoalEffect");
+        const specComp = specNode.getComponent(UISpecGoalEffect);
 
         let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
         let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
@@ -94,7 +110,7 @@ export class UIEffectManager extends Component {
 
         const specNode = instantiate(prefab);
         this.effectsLayer.addChild(specNode);
-        const specComp = specNode.getComponent("UISpecGoalEffect");
+        const specComp = specNode.getComponent(UISpecGoalEffect);
 
         let posX = x;
         let posY = y;

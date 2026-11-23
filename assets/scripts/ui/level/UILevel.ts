@@ -1,18 +1,24 @@
 import {
     _decorator,
     Button,
+    instantiate,
     Label,
     Node,
     Sprite,
     SpriteFrame,
+    Widget,
 } from 'cc';
-import { GoalData } from '../../data/GameData';
+import { GameData, GoalData } from '../../data/GameData';
 import { SaveData } from '../../data/SaveData';
+import { UserData } from '../../data/UserData';
+import { WinRocketLineRequest } from '../../game/Field';
 import { Level } from '../../game/Level';
 import { AudioController } from '../../utils/AudioController';
+import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UIFrameBase } from '../UIFrameBase';
 import { UILevelGoal } from './UILevelGoal';
 import { UILevelResultFrame } from './UILevelResultFrame';
+import { UIWinStarsLine } from './UIWinStarsLine';
 
 const { ccclass, property } = _decorator;
 
@@ -96,39 +102,81 @@ export class UILevel extends UIFrameBase {
     @property(UIFrameBase)
     settings_Landscape: UIFrameBase = null;
 
+    @property(UIWinStarsLine)
+    winStarsLine: UIWinStarsLine = null;
+
+    @property(Node)
+    winMovesCounterForeground: Node = null;
+
+    @property(Node)
+    winSkipTutorial: Node = null;
+
+    @property(Node)
+    goalsCaptionLandscape: Node = null;
+
+    @property(Node)
+    prizeCaptionLandscape: Node = null;
+
+    @property(Node)
+    goalsCaptionPortrait: Node = null;
+
+    @property(Node)
+    prizeCaptionPortrait: Node = null;
+
+    private isFirstLevelAtStart: boolean = false;
+
+
+    private winCounterSource: Node | null = null;
+    private winCounterClone: Node | null = null;
+
     private isRewarding: boolean = false;
     private rewardGoal: GoalData = null;
 
-    start() {
-        this.level.on('init', () => this.init());
-        this.level.on('refresh', () => this.refreshAll());
-        this.level.on('complete', (isSuccess: boolean, goldEarned: number) =>
-            this.showResult(isSuccess, goldEarned),
-        );
-        this.level.on('all_goals_complete_event', () =>
-            this.showLevelCompletePopup(),
-        );
-        this.level.on('reward_move', () => this.addReward());
-        this.level.on('no_moves', () => this.showNoMovesPopup());
+    private isWinRewardActive: boolean = false;
 
-        SaveData.instance.node.on('level_progress_loaded', () => this.refreshAll());
+    start(): void {
+        this.level.on('init', this.init, this);
+        this.level.on('refresh', this.refreshAll, this);
+        this.level.on('complete', this.showResult, this);
+        this.level.on('all_goals_complete_event', this.showLevelCompletePopup, this);
+        this.level.on('reward_move', this.addReward, this);
+        this.level.on('no_moves', this.showNoMovesPopup, this);
 
-        this.settingsBtn_Portrait.node.on(
-            Button.EventType.CLICK,
-            this.onSettingsPortraitClick,
-            this,
-        );
+        this.levelComp.field.on('win_rocket_line', this.onWinRocketLine, this);
+        this.levelComp.field.on('win_conversion_finished', this.hideWinSkipTutorial, this);
+        this.levelComp.field.on('win_coin_arrived', this.onWinCoinArrived, this);
 
-        this.settingsBtn_Landscape.node.on(
-            Button.EventType.CLICK,
-            this.onSettingsLandscapeClick,
-            this,
-        );
+        this.levelCompletePopup.node.on('win_conversion_started', this.onWinConversionStarted, this);
+
+        SaveData.instance.node.on('level_progress_loaded', this.refreshAll, this);
+
+        this.settingsBtn_Portrait.node.on(Button.EventType.CLICK, this.onSettingsPortraitClick, this);
+        this.settingsBtn_Landscape.node.on(Button.EventType.CLICK, this.onSettingsLandscapeClick, this);
     }
 
     init() {
         this.isRewarding = false;
-    }
+        this.isWinRewardActive = false;
+        this.rewardGoal = null;
+
+        this.setPrizeCaptionVisible(false)
+
+        const devSelectedLevel = GameData.instance.getDevSelectedLevelNumber();
+        const currentProgress = UserData.instance.getProgress();
+
+        this.isFirstLevelAtStart = devSelectedLevel !== null
+            ? devSelectedLevel === 1
+            : currentProgress === 0;
+
+        this.hideWinSkipTutorial();
+
+        console.log('[WIN TUTORIAL INIT]', {
+            devMode: UserData.instance.isDevMode(),
+            devSelectedLevel,
+            currentProgress,
+            firstLevel: this.isFirstLevelAtStart
+        });
+}
 
     refresh(movesCount: number) {
         this.movesCount.string = String(movesCount);
@@ -191,17 +239,197 @@ export class UILevel extends UIFrameBase {
         }
     }
 
+    private setPrizeCaptionVisible(visible: boolean): void {
+        if(this.goalsCaptionLandscape?.isValid) {
+            this.goalsCaptionLandscape.active = !visible;
+        }
+
+        if(this.prizeCaptionLandscape?.isValid) {
+            this.prizeCaptionLandscape.active = visible;
+        }
+
+        if(this.goalsCaptionPortrait?.isValid) {
+            this.goalsCaptionPortrait.active = !visible;
+        }
+
+        if(this.prizeCaptionPortrait?.isValid) {
+            this.prizeCaptionPortrait.active = visible;
+        }
+    }
+
+    private showWinCounterForeground(sourceNode: Node): void {
+        if(!this.winMovesCounterForeground?.isValid || !sourceNode?.isValid) return;
+
+        if(this.winCounterSource !== sourceNode || !this.winCounterClone?.isValid) {
+            if(this.winCounterClone?.isValid) {
+                this.winCounterClone.destroy();
+            }
+
+            this.winCounterSource = sourceNode;
+            this.winCounterClone = instantiate(sourceNode);
+            this.winCounterClone.name = 'WinCounterFront';
+
+            this.winMovesCounterForeground.addChild(this.winCounterClone);
+        }
+
+        this.winMovesCounterForeground.active = true;
+        this.syncWinCounterForeground();
+    }
+
+    private syncWinCounterForeground(): void {
+        if(!this.winMovesCounterForeground?.activeInHierarchy) return;
+        if(!this.winCounterSource?.isValid || !this.winCounterClone?.isValid) return;
+
+        const source = this.winCounterSource;
+        const clone = this.winCounterClone;
+
+        clone.active = source.activeInHierarchy;
+
+        if(!clone.active) return;
+
+        const sourceLabel = source.getComponent(Label);
+        const cloneLabel = clone.getComponent(Label);
+
+        if(sourceLabel && cloneLabel) {
+            cloneLabel.string = sourceLabel.string;
+        }
+
+        clone.setWorldPosition(source.worldPosition);
+        clone.setWorldRotation(source.getWorldRotation());
+        clone.setWorldScale(source.getWorldScale());
+    }
+
+    lateUpdate(): void {
+        this.syncWinCounterForeground();
+    }
+
+    private hideWinCounterForeground(): void {
+        if(this.winMovesCounterForeground?.isValid) {
+            this.winMovesCounterForeground.active = false;
+        }
+    }
+
+    private onWinRocketLine(request: WinRocketLineRequest): void {
+        if(!request || request.handled) return;
+        if(!request.targetWorld) return;
+
+        if(!this.winStarsLine?.node.activeInHierarchy) {
+            console.warn('[WIN LINE] Effects layer unavailable');
+            return;
+        }
+
+        const landscape = this.movesCount?.node;
+        const portrait = this.movesCount_Duplicate?.node;
+
+        const startNode = landscape?.activeInHierarchy
+            ? landscape
+            : portrait?.activeInHierarchy
+                ? portrait
+                : null;
+
+        if(!startNode) {
+            console.warn('[WIN LINE] Active moves counter missing');
+            return;
+        }
+
+        this.showWinCounterForeground(startNode);
+
+        request.handled = true;
+
+        this.winStarsLine.playLine(
+            startNode.worldPosition.clone(),
+            request.targetWorld,
+            request.onReach
+        );
+    }
+
+    private updateWinSkipTutorialLayout(): void {
+        if(!this.winSkipTutorial?.isValid) return;
+
+        const isPortrait = ResolutionManager.instance.isPortraitOrientation();
+
+        const scale = isPortrait ? 4 : 2;
+
+        this.winSkipTutorial.setScale(scale, scale, 1);
+
+        const widget = this.winSkipTutorial.getComponent(Widget);
+        if(!widget) return;
+
+        widget.isAlignHorizontalCenter = true;
+        widget.horizontalCenter = 0;
+
+        widget.isAlignBottom = true;
+        widget.bottom = 30;
+
+        widget.updateAlignment();
+    }
+
+    private onWinConversionStarted(): void {
+        this.setRewardingMode();
+        this.isWinRewardActive = true;
+        this.setPrizeCaptionVisible(true)
+
+        const moves = this.levelComp.getMoves();
+
+        const shouldShow =
+            this.isFirstLevelAtStart &&
+            moves > 0;
+
+        if(!this.winSkipTutorial?.isValid) return;
+
+        this.winSkipTutorial.active = shouldShow;
+
+        if(shouldShow) {
+            this.updateWinSkipTutorialLayout();
+        }
+    }
+
+    private onWinCoinArrived(): void {
+        if(!this.isWinRewardActive || !this.rewardGoal) return;
+
+        const goldPerRocket = this.levelComp.isBonusGoldAvailable()
+            ? 2 * this.levelComp.getDifficultyMultiplier()
+            : 0;
+
+        if(goldPerRocket <= 0) return;
+
+        this.rewardGoal.count += goldPerRocket;
+
+        this.refreshGoals([this.rewardGoal]);
+
+        console.log('[WIN REWARD] Coin arrived', {
+            added: goldPerRocket,
+            displayedReward: this.rewardGoal.count
+        });
+    }
+
+    private hideWinSkipTutorial(): void {
+        if(this.winSkipTutorial?.isValid) {
+            this.winSkipTutorial.active = false;
+        }
+    }
+
     showResult(isSuccess: boolean, goldEarned: number) {
+        this.isWinRewardActive = false;
+        this.hideWinSkipTutorial();
+        this.hideWinCounterForeground();
+
+        if(isSuccess) {
+            this.winStarsLine?.clearLines();
+            this.levelCompletePopup.hide();
+        }
+
         this.levelResult.show();
         this.levelResult.refresh(isSuccess, goldEarned);
 
-        if (!isSuccess) {
+        if(!isSuccess) {
             AudioController.instance.playLose();
         }
     }
 
     showLevelCompletePopup() {
-        this.setRewardingMode();
+        this.hideWinSkipTutorial();
+        this.hideWinCounterForeground();
 
         this.levelCompletePopup.show();
 
@@ -219,8 +447,20 @@ export class UILevel extends UIFrameBase {
         this.isRewarding = true;
     }
 
-    setRewardingMode() {
+    setRewardingMode(): void {
+        if(this.isRewarding) return;
+
         this.isRewarding = true;
+
+        this.rewardGoal = new GoalData();
+        this.rewardGoal.id = 'coin';
+        this.rewardGoal.count = this.levelComp.getCompletionReward();
+
+        this.refreshGoals([this.rewardGoal]);
+
+        console.log('[WIN REWARD] Reward panel initialized', {
+            baseReward: this.rewardGoal.count
+        });
     }
 
     onSettingsPortraitClick() {
@@ -229,5 +469,38 @@ export class UILevel extends UIFrameBase {
 
     onSettingsLandscapeClick() {
         this.settings_Landscape.show();
+    }
+
+    protected onDestroy(): void {
+        if(this.level?.isValid) {
+            this.level.off('init', this.init, this);
+            this.level.off('refresh', this.refreshAll, this);
+            this.level.off('complete', this.showResult, this);
+            this.level.off('all_goals_complete_event', this.showLevelCompletePopup, this);
+            this.level.off('reward_move', this.addReward, this);
+            this.level.off('no_moves', this.showNoMovesPopup, this);
+        }
+
+        if(this.levelComp?.field?.isValid) {
+            this.levelComp.field.off('win_rocket_line', this.onWinRocketLine, this);
+            this.levelComp.field.off('win_conversion_finished', this.hideWinSkipTutorial, this);
+            this.levelComp.field.off('win_coin_arrived', this.onWinCoinArrived, this);
+        }
+
+        if(this.levelCompletePopup?.node?.isValid) {
+            this.levelCompletePopup.node.off('win_conversion_started', this.onWinConversionStarted, this);
+        }
+
+        if(SaveData.instance?.node?.isValid) {
+            SaveData.instance.node.off('level_progress_loaded', this.refreshAll, this);
+        }
+
+        if(this.settingsBtn_Portrait?.node?.isValid) {
+            this.settingsBtn_Portrait.node.off(Button.EventType.CLICK, this.onSettingsPortraitClick, this);
+        }
+
+        if(this.settingsBtn_Landscape?.node?.isValid) {
+            this.settingsBtn_Landscape.node.off(Button.EventType.CLICK, this.onSettingsLandscapeClick, this);
+        }
     }
 }
