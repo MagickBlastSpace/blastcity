@@ -1,7 +1,6 @@
 declare const gamepush: any;
 
 import { _decorator, Component, Node } from 'cc';
-import { UserData } from '../data/UserData';
 const { ccclass, property } = _decorator;
 
 
@@ -55,7 +54,7 @@ export class Net extends Component {
         this.isPublishing = true;
 
         let leaderboardTag = "SCORE";
-        
+
         if(eventId !== "") {
             leaderboardTag += "_" + eventId.toUpperCase();
         }
@@ -86,26 +85,44 @@ export class Net extends Component {
         this.publishScore(eventId, variantId, 0);
     }
 
-
-    async publishGamepushLevelRecord(levelId: string, movesCount: number, scoreCount: number) {
-        console.log("Net module publishig record");
-
-        gamepush.leaderboard.publishRecord({
-            id: 11354,
-            tag: 'LEVELS',
-            variant: levelId,
-            override: true,
-            record: {
-                moves: movesCount,
-                score: scoreCount,
-            },
+    async publishGamepushLevelRecord(
+        levelId: string,
+        movesCount: number,
+        scoreCount: number
+    ): Promise<void> {
+        console.log('[NET] Publishing level record', {
+            levelId,
+            movesCount,
+            scoreCount
         });
-    }
 
+        try {
+            const result = await gamepush.leaderboard.publishRecord({
+                id: 11354,
+                tag: 'LEVELS',
+                variant: levelId,
+                override: true,
+                record: {
+                    moves: movesCount,
+                    score: scoreCount
+                }
+            });
+
+            console.log('[NET] Level record published successfully', result);
+
+        } catch(error) {
+            console.warn('[NET] Level record publication failed', {
+                levelId,
+                movesCount,
+                scoreCount,
+                error
+            });
+        }
+    }
 
     async fetchScoreLeaderboardData(eventId: string, variantId: string) {
         let leaderboardTag = "SCORE";
-        
+
         if(eventId !== "") {
             leaderboardTag += "_" + eventId.toUpperCase();
         }
@@ -139,7 +156,7 @@ export class Net extends Component {
         const result = await gamepush.players.fetch({
             ids: playerIds,
         });
-            
+
         return result;
     }
 
@@ -259,7 +276,7 @@ export class Net extends Component {
 
     async createClanChannel(data: string, isPrivate: boolean) {
         try {
-            const response = await gamepush.channels.createChannel({ 
+            const response = await gamepush.channels.createChannel({
                 template: "clan",
                 name: data,
                 private: isPrivate,
