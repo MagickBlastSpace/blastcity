@@ -281,7 +281,8 @@ export const languages = {
     "nomoves": "No moves left!",
     "failed": "You lost",
     "levelGoals": "Goals",
-    "levelPrize": "Prize"
+    "levelPrize": "Prize",
+    "moves": "Moves",
   },
   "rewards": {
     "level": "Level",

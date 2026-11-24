@@ -3,9 +3,11 @@ import {
     Button,
     instantiate,
     Label,
+    Layout,
     Node,
     Sprite,
     SpriteFrame,
+    UITransform,
     Widget,
 } from 'cc';
 import { GameData, GoalData } from '../../data/GameData';
@@ -195,6 +197,11 @@ export class UILevel extends UIFrameBase {
                 this.goalItems_Duplicate[i].refresh(goalData);
             }
         }
+
+        this.updateLandscapeGoalsLayout();
+
+        const portraitLayout = this.goalItems_Duplicate[0]?.node.parent?.getComponent(Layout);
+        portraitLayout?.updateLayout();
     }
 
     refreshAll() {
@@ -238,6 +245,116 @@ export class UILevel extends UIFrameBase {
             }
         }
     }
+
+    public updateLandscapeGoalsLayout(): void {
+        this.updateGoalsGrid(this.goalItems);
+        this.updateGoalsGrid(this.goalItems_Duplicate);
+    }
+
+    private updateGoalsGrid(items: UILevelGoal[]): void {
+        const container = items[0]?.node.parent;
+        const transform = container?.getComponent(UITransform);
+
+        if(!container || !transform) return;
+
+        const layout = container.getComponent(Layout);
+        if(layout?.enabled) layout.enabled = false;
+
+        const activeGoals = items
+            .filter(goal => goal?.node?.active)
+            .map(goal => goal.node);
+
+        const count = activeGoals.length;
+        if(count === 0) return;
+
+        const cellSize = 110;
+        const spacing = 20;
+
+        const columns = Math.min(2, count);
+        const rows = Math.ceil(count / 2);
+
+        const totalWidth = columns * cellSize + (columns - 1) * spacing;
+        const totalHeight = rows * cellSize + (rows - 1) * spacing;
+
+        const layoutScale = Math.min(
+            1,
+            transform.width / totalWidth,
+            transform.height / totalHeight
+        );
+
+        if(layoutScale <= 0) return;
+
+        const isPortrait = ResolutionManager.instance.isPortraitOrientation();
+
+        const visualScale = isPortrait ? layoutScale * 0.32 : layoutScale;
+        const step = (cellSize + spacing) * layoutScale;
+
+        for(let i = 0; i < count; i++) {
+            const row = Math.floor(i / 2);
+            const col = i % 2;
+            const itemsInRow = Math.min(2, count - row * 2);
+
+            const x = (col - (itemsInRow - 1) / 2) * step;
+            const y = ((rows - 1) / 2 - row) * step;
+
+            const node = activeGoals[i];
+
+            node.setScale(visualScale, visualScale, 1);
+            node.setPosition(x, y, node.position.z);
+        }
+    }
+
+    // private updateLandscapeGoalsLayout(): void {
+    //     const container = this.goalItems[0]?.node.parent;
+    //     const transform = container?.getComponent(UITransform);
+
+    //     if(!container || !transform) return;
+
+    //     const layout = container.getComponent(Layout);
+
+    //     if(layout?.enabled) {
+    //         layout.enabled = false;
+    //     }
+
+    //     const activeGoals = this.goalItems
+    //         .filter(goal => goal?.node?.active)
+    //         .map(goal => goal.node);
+
+    //     const count = activeGoals.length;
+    //     if(count === 0) return;
+
+    //     const cellSize = 110;
+    //     const spacing = 26;
+
+    //     const columns = Math.min(2, count);
+    //     const rows = Math.ceil(count / 2);
+
+    //     const totalWidth = columns * cellSize + (columns - 1) * spacing;
+    //     const totalHeight = rows * cellSize + (rows - 1) * spacing;
+
+    //     const scale = Math.min(
+    //         1,
+    //         transform.width / totalWidth,
+    //         transform.height / totalHeight
+    //     );
+
+    //     const step = (cellSize + spacing) * scale;
+
+    //     for(let i = 0; i < count; i++) {
+    //         const row = Math.floor(i / 2);
+    //         const col = i % 2;
+
+    //         const itemsInRow = Math.min(2, count - row * 2);
+
+    //         const x = (col - (itemsInRow - 1) / 2) * step;
+    //         const y = ((rows - 1) / 2 - row) * step;
+
+    //         const node = activeGoals[i];
+
+    //         node.setScale(scale, scale, 1);
+    //         node.setPosition(x, y, node.position.z);
+    //     }
+    // }
 
     private setPrizeCaptionVisible(visible: boolean): void {
         if(this.goalsCaptionLandscape?.isValid) {
