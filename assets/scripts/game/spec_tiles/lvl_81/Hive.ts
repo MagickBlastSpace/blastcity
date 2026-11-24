@@ -11,12 +11,39 @@ export class Hive extends SpecTileBase {
         return this.node.getComponent(UITile)?.spine ?? null;
     }
 
+    private playHiveTouch(): void {
+        if(this.strength <= 0) return;
+
+        const skeleton = this.getHiveSpine();
+        if(!skeleton?.skeletonData || !skeleton.node.activeInHierarchy) return;
+
+        const currentAnimation = skeleton.getCurrent(0)?.animation?.name;
+        if(currentAnimation !== 'idle') return;
+
+        const touchAnimation = 'touch2';
+
+        if(!skeleton.findAnimation(touchAnimation)) {
+            console.warn('[HIVE] Touch animation not found:', touchAnimation);
+            return;
+        }
+
+        if(!touchAnimation) {
+            console.warn('[HIVE] Touch animation not found');
+            return;
+        }
+
+        skeleton.setAnimation(0, touchAnimation, false);
+        skeleton.addAnimation(0, 'idle', true, 0);
+    }
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
 
         this.isShifts = true;
         this.strength = 1;
+
+        this.node.off('touch_feedback', this.playHiveTouch, this);
+        this.node.on('touch_feedback', this.playHiveTouch, this);
 
         const uiTile = this.node.getComponent(UITile);
 
@@ -32,7 +59,6 @@ export class Hive extends SpecTileBase {
         }
     }
 
-
     start() {
         const skeleton = this.getHiveSpine();
 
@@ -44,18 +70,12 @@ export class Hive extends SpecTileBase {
         skeleton.setAnimation(0, 'idle', true);
     }
 
-
     getDamage(damageType: string) {
         if (damageType !== 'bonus' || this.strength <= 0) {
             return;
         }
 
         this.strength--;
-
-        console.log('[HIVE] DAMAGE', {
-            strength: this.strength,
-            damageType
-        });
 
         const skeleton = this.getHiveSpine();
 
@@ -68,17 +88,17 @@ export class Hive extends SpecTileBase {
         skeleton.clearTracks();
 
         skeleton.setAnimation(0, 'destroy', false);
-
-        console.log('[HIVE] DESTROY START');
     }
-
 
     isReadyToDestroy(): boolean {
         return this.strength <= 0;
     }
 
-
     startDestroyConsequences() {
         this.node.emit('goal', 'hive');
+    }
+
+    protected onDestroyHive(): void {
+        this.node.off('touch_feedback', this.playHiveTouch, this);
     }
 }

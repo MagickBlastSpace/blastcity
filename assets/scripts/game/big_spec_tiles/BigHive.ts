@@ -24,6 +24,28 @@ export class BigHive extends BigTileBase {
         return this.node.getComponent(UITile)?.spine ?? null;
     }
 
+    private playHiveTouch(): void {
+        if(this.strength <= 0 || this.isDamaged) return;
+
+        const skeleton = this.getHiveSpine();
+        if(!skeleton?.skeletonData || !skeleton.node.activeInHierarchy) return;
+
+        const currentAnimation = skeleton.getCurrent(0)?.animation?.name;
+        if(currentAnimation !== 'idle') return;
+
+        const skinIndex = 4 - this.strength;
+        const candidates = [`touch_${skinIndex}`, 'touch'];
+
+        const touchAnimation = candidates.find(name => skeleton.findAnimation(name));
+
+        if(!touchAnimation) {
+            console.warn('[BIG HIVE] Touch animation not found:', candidates);
+            return;
+        }
+
+        skeleton.setAnimation(0, touchAnimation, false);
+        skeleton.addAnimation(0, 'idle', true, 0);
+    }
 
     private getSkinByStrength(strength: number): string {
         switch (strength) {
@@ -34,7 +56,6 @@ export class BigHive extends BigTileBase {
         }
     }
 
-
     private setHiveSkin(strength: number): void {
         const skeleton = this.getHiveSpine();
 
@@ -43,7 +64,6 @@ export class BigHive extends BigTileBase {
         skeleton.setSkin(this.getSkinByStrength(strength));
         skeleton.setSlotsToSetupPose();
     }
-
 
     private playHiveIdle(): void {
         const skeleton = this.getHiveSpine();
@@ -57,7 +77,6 @@ export class BigHive extends BigTileBase {
 
         skeleton.setAnimation(0, 'idle', true);
     }
-
 
     private playHiveHit(): void {
         const skeleton = this.getHiveSpine();
@@ -85,12 +104,7 @@ export class BigHive extends BigTileBase {
                 skin: this.getSkinByStrength(this.strength)
             });
         });
-
-        console.log('[BIG HIVE] HIT START', {
-            strength: targetStrength
-        });
     }
-
 
     private playHiveDestroy(): void {
         const skeleton = this.getHiveSpine();
@@ -101,10 +115,7 @@ export class BigHive extends BigTileBase {
         skeleton.clearTracks();
 
         skeleton.setAnimation(0, 'destroy', false);
-
-        console.log('[BIG HIVE] DESTROY START');
     }
-
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -115,6 +126,9 @@ export class BigHive extends BigTileBase {
 
         this.strength = 3;
         this.refresh();
+
+        this.node.off('touch_feedback', this.playHiveTouch, this);
+        this.node.on('touch_feedback', this.playHiveTouch, this);
 
         const uiTile = this.node.getComponent(UITile);
 
@@ -135,11 +149,9 @@ export class BigHive extends BigTileBase {
         }
     }
 
-
     start() {
         this.playHiveIdle();
     }
-
 
     getDamage(damageType: string) {
         if (damageType !== 'bonus' || this.isDamaged || this.strength <= 0) {
@@ -148,11 +160,6 @@ export class BigHive extends BigTileBase {
 
         this.strength--;
         this.setAsDamaged();
-
-        console.log('[BIG HIVE] DAMAGE', {
-            strength: this.strength,
-            damageType
-        });
 
         if (this.strength > 0) {
             this.playHiveHit();
@@ -169,11 +176,9 @@ export class BigHive extends BigTileBase {
         this.refresh();
     }
 
-
     isReadyToDestroy(): boolean {
         return this.strength <= 0;
     }
-
 
     refresh() {
         if (this.picture) {
@@ -181,23 +186,23 @@ export class BigHive extends BigTileBase {
         }
     }
 
-
     startDestroyConsequences() {
         this.node.emit('goal', 'big_hive');
     }
-
 
     clearExtra() {
         this.isDamaged = false;
     }
 
-
     playDamageSound() {
         this.playSound(0);
     }
 
-
     playDamageSound_2() {
         this.playSound(1);
+    }
+
+    protected onDestroyBigHive(): void {
+        this.node.off('touch_feedback', this.playHiveTouch, this);
     }
 }
