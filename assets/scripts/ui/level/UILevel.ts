@@ -8,6 +8,7 @@ import {
     Sprite,
     SpriteFrame,
     UITransform,
+    view,
     Widget,
 } from 'cc';
 import { GameData, GoalData } from '../../data/GameData';
@@ -435,17 +436,18 @@ export class UILevel extends UIFrameBase {
             return;
         }
 
-        const landscape = this.movesCount?.node;
-        const portrait = this.movesCount_Duplicate?.node;
+        const visibleSize = view.getVisibleSize();
+        const isPortrait = visibleSize.height >= visibleSize.width;
 
-        const startNode = landscape?.activeInHierarchy
-            ? landscape
-            : portrait?.activeInHierarchy
-                ? portrait
-                : null;
+        const startNode = isPortrait
+            ? this.movesCount_Duplicate?.node
+            : this.movesCount?.node;
 
-        if(!startNode) {
-            console.warn('[WIN LINE] Active moves counter missing');
+        if(!startNode?.isValid || !startNode.activeInHierarchy) {
+            console.warn('[WIN LINE] Moves counter unavailable', {
+                isPortrait,
+                startNode: startNode?.name
+            });
             return;
         }
 

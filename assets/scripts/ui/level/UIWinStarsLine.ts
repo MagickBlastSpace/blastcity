@@ -10,7 +10,8 @@ import {
     Tween,
     tween,
     UITransform,
-    Vec3
+    Vec3,
+    view
 } from 'cc';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 
@@ -33,6 +34,9 @@ export class UIWinStarsLine extends Component {
 
     @property
     portraitClipAboveCounter: number = 25;
+
+    @property
+    landscapeClipBehindCounter: number = 15;
 
     @property
     angleOffset: number = 0;
@@ -135,6 +139,7 @@ export class UIWinStarsLine extends Component {
         }
 
         this.updatePortraitClip(fromWorld);
+        this.updateLandscapeClip(fromWorld);
 
         const transform = this.node.getComponent(UITransform);
 
@@ -328,6 +333,31 @@ export class UIWinStarsLine extends Component {
 
         mask.type = Mask.Type.GRAPHICS_RECT;
         mask.inverted = false;
+        mask.enabled = true;
+    }
+
+    private updateLandscapeClip(fromWorld: Vec3): void {
+        const size = view.getVisibleSize();
+        if(size.height >= size.width) return;
+
+        const transform = this.node.getComponent(UITransform);
+        if(!transform) return;
+
+        let mask = this.node.getComponent(Mask);
+
+        if(!mask) {
+            mask = this.node.addComponent(Mask);
+        }
+
+        const fromLocal = transform.convertToNodeSpaceAR(fromWorld);
+        const clipSize = 12000;
+
+        const clipLeft = fromLocal.x - this.landscapeClipBehindCounter;
+
+        transform.setContentSize(clipSize, clipSize);
+        transform.setAnchorPoint(-clipLeft / clipSize, 0.5);
+
+        mask.type = Mask.Type.GRAPHICS_RECT;
         mask.enabled = true;
     }
 
