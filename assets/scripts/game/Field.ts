@@ -1094,6 +1094,9 @@ export class Field extends Component {
 				this.spawnBonusTile(row, col, bonusId, isBonusPool);
 			}
 		});
+        tileNode.on('finish_discoball_bonus_combo', (discoballRow: number, discoballCol: number, partnerRow: number, partnerCol: number, bonusType: string) => {
+            this.finishDiscoballBonusCombo(tileNode, discoballRow, discoballCol, partnerRow, partnerCol, bonusType);
+        });
 		tileNode.on('activate_bonus_pool', () => {
             const isDiscoball = tileType === 'multi' || tileType === 'super';
 
@@ -1972,9 +1975,11 @@ export class Field extends Component {
 						tileComp.getTileType() !== except &&
 						tileComp.getTileType() !== except2
 					) {
-						if (!tileComp.isTileDamaged()) {
-							specTiles.push(tile);
-						}
+						const specComp = tile.getComponent(SpecTileBase);
+
+                        if(specComp && !specComp.isTileDamaged()) {
+                            specTiles.push(tile);
+                        }
 					}
 				}
 			}
@@ -2012,6 +2017,71 @@ export class Field extends Component {
 
 		return false;
 	}
+
+    private finishDiscoballBonusCombo(
+        discoballNode: Node,
+        discoballRow: number,
+        discoballCol: number,
+        partnerRow: number,
+        partnerCol: number,
+        bonusType: string
+    ): void {
+        if(!this.activeDiscoballSequences.has(discoballNode)) {
+            console.warn('[DISCO COMBO] No active discoball sequence');
+            return;
+        }
+
+        const validBonusType =
+            bonusType === 'bomb' ||
+            bonusType === 'rocket_vertical' ||
+            bonusType === 'rocket_horizontal';
+
+        if(!validBonusType) {
+            console.error('[DISCO COMBO] Invalid bonus type:', bonusType);
+            this.completeDiscoballSequence(discoballNode, true);
+            return;
+        }
+
+        const partnerNode = this.tileArray[partnerRow]?.[partnerCol];
+
+        if(partnerNode?.isValid && partnerNode !== discoballNode) {
+            const partnerComp = partnerNode.getComponent(TileBase);
+
+            if(
+                partnerComp?.isBonusTile() &&
+                !partnerComp.isTileActivated() &&
+                partnerComp.getTileType() === bonusType &&
+                !this.bonusPool.includes(partnerNode)
+            ) {
+                this.bonusPool.push(partnerNode);
+
+                console.log('[DISCO COMBO] Original bonus preserved', {
+                    row: partnerRow,
+                    col: partnerCol,
+                    type: bonusType
+                });
+            }
+        }
+
+        if(this.tileArray[discoballRow]?.[discoballCol] === discoballNode) {
+            this.spawnBonusTile(
+                discoballRow,
+                discoballCol,
+                bonusType,
+                true
+            );
+
+            console.log('[DISCO COMBO] Discoball converted', {
+                row: discoballRow,
+                col: discoballCol,
+                type: bonusType
+            });
+        } else {
+            console.warn('[DISCO COMBO] Discoball cell changed before conversion');
+        }
+
+        this.completeDiscoballSequence(discoballNode, true);
+    }
 
 	checkPositionForBonus(row: number, col: number): boolean {
 		if (row < this.numRows && row >= 0 && col < this.numCols && col >= 0) {

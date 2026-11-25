@@ -157,13 +157,34 @@ export class Discoball extends BonusTileBase {
                 this.node.emit('change_bonus', target.row, target.col, bonusType, true);
             }, () => {
                 this.node.emit('clear_lines');
+
                 this.finishActiveFx(() => {
                     if(!this.node.isValid) return;
-                    this.node.emit('extra_hit', this.row, this.col, false, 0);
-                    if(this.comboPosition) {
-                        this.node.emit('extra_hit', this.comboPosition.x, this.comboPosition.y, false, 0);
+
+                    if(!this.comboPosition) {
+                        console.error('[DISCO COMBO] Partner position missing');
+                        this.setRespawnEvent(0);
+                        return;
                     }
-                    this.node.emit('activate_bonus_pool');
+
+                    const originalBonusType = bonus === 'bomb'
+                        ? 'bomb'
+                        : this.combo;
+
+                    console.log('[DISCO COMBO] Preserve original bonuses', {
+                        discoball: [this.row, this.col],
+                        partner: [this.comboPosition.x, this.comboPosition.y],
+                        bonusType: originalBonusType
+                    });
+
+                    this.node.emit(
+                        'finish_discoball_bonus_combo',
+                        this.row,
+                        this.col,
+                        this.comboPosition.x,
+                        this.comboPosition.y,
+                        originalBonusType
+                    );
                 });
             });
         });
