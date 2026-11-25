@@ -1775,6 +1775,24 @@ export class Field extends Component {
         }
 
         if(isBonusChain) {
+            const discoball = tile.getComponent(Discoball);
+
+            if(discoball) {
+                if(discoball.isTileActivated()) return;
+
+                this.setPrimaryColors();
+
+                discoball.getMatches(
+                    this.tileArray,
+                    this.statusArray,
+                    true
+                );
+
+                return;
+            }
+        }
+
+        if(isBonusChain) {
             const tileComp = tile.getComponent(TileBase);
 
             if(tileComp && tileComp.isBonusTile()) {
@@ -2465,6 +2483,15 @@ export class Field extends Component {
 
 	spawnNewTiles(isRespawn: boolean, isBlockingInactionEffect: boolean) {
         if(this.winSkipFinalized) return;
+
+        if(this.activeDiscoballSequences.size > 0) {
+            this.discoballPendingBlockingInaction =
+                this.discoballPendingBlockingInaction || isBlockingInactionEffect;
+
+            this.isClickAvailable = false;
+
+            return;
+        }
 
 		try {
 			this.checkStatusesForDestroy();
