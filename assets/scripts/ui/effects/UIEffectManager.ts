@@ -42,11 +42,13 @@ export class UIEffectManager extends Component {
         this.field.on('goal_effect', this.createSpecGoalEffect, this);
         this.field.on('goal_effect_positioned', this.createSpecGoalEffectPositioned, this);
         this.field.on('shell_pearl_fly', this.createShellPearlEffect, this);
+        this.field.on('magic_hat_carrot_fly', this.createMagicHatCarrotEffect, this);
     }
 
     protected onDestroy(): void {
         if(this.field?.isValid) {
             this.field.off('shell_pearl_fly', this.createShellPearlEffect, this);
+            this.field.off('magic_hat_carrot_fly', this.createMagicHatCarrotEffect, this);
             return
         }
 
@@ -282,6 +284,129 @@ export class UIEffectManager extends Component {
         } else {
             console.error("UITransform component missing on this node");
             return new Vec2();
+        }
+    }
+
+    private createMagicHatCarrotEffect(sourceNode: Node): void {
+        let carrotNode: Node | null = null;
+        let completed = false;
+
+        const finish = (): void => {
+            if(completed) return;
+            completed = true;
+
+            if(carrotNode?.isValid) carrotNode.destroy();
+
+            if(this.field?.isValid) {
+                this.field.emit('magic_hat_carrot_arrived');
+            }
+        };
+
+        if(!sourceNode?.isValid || !this.effectsLayer?.isValid) {
+            console.warn('[MAGIC HAT FLY] Source or effects layer missing');
+            finish();
+            return;
+        }
+
+        const goals = ResolutionManager.instance.isPortraitOrientation()
+            ? this.goalsPositions_Portrait
+            : this.goalsPositions;
+
+        const targetGoal = goals.find(goal =>
+            goal?.node?.isValid && goal.getGoalId() === 'magic_hat'
+        );
+
+        const layerTransform = this.effectsLayer.getComponent(UITransform);
+
+        if(!targetGoal || !layerTransform) {
+            console.warn('[MAGIC HAT FLY] Goal position unavailable');
+            finish();
+            return;
+        }
+
+        const startWorld = sourceNode.worldPosition.clone();
+        const startScale = sourceNode.worldScale.clone();
+        const goalWorld = targetGoal.getPosition();
+
+        const targetLocal = layerTransform.convertToNodeSpaceAR(
+            new Vec3(goalWorld.x, goalWorld.y, 0)
+        );
+
+        try {
+            carrotNode = instantiate(sourceNode);
+            carrotNode.name = 'MagicHatFlyingCarrot';
+
+            this.effectsLayer.addChild(carrotNode);
+            carrotNode.active = true;
+            carrotNode.setWorldPosition(startWorld);
+            carrotNode.setWorldScale(startScale);
+            carrotNode.setWorldRotation(sourceNode.worldRotation);
+
+            const skeleton = carrotNode.getComponent(sp.Skeleton);
+
+            if(!skeleton?.skeletonData || !skeleton.findAnimation('carrot')) {
+                console.warn('[MAGIC HAT FLY] Carrot Spine unavailable');
+                finish();
+                return;
+            }
+
+            skeleton.enabled = true;
+            skeleton.timeScale = 1;
+            skeleton.clearTracks();
+            skeleton.setToSetupPose();
+
+            skeleton.setAnimation(0, 'carrot', false);
+
+            const startPosition = carrotNode.position.clone();
+            const originalScale = carrotNode.scale.clone();
+
+            const arcHeight = 100;
+            const flight = { progress: 0 };
+
+            tween(flight)
+                .delay(0.08)
+                .to(0.65, { progress: 1 }, {
+                    easing: 'quadInOut',
+                    onUpdate: (state) => {
+                        if(!carrotNode?.isValid) return;
+
+                        const t = (state as { progress: number }).progress;
+
+                        const x = startPosition.x +
+                            (targetLocal.x - startPosition.x) * t;
+
+                        const y = startPosition.y +
+                            (targetLocal.y - startPosition.y) * t +
+                            Math.sin(Math.PI * t) * arcHeight;
+
+                        carrotNode.setPosition(x, y, startPosition.z);
+                    }
+                })
+                .call(() => {
+                    if(!carrotNode?.isValid) {
+                        finish();
+                        return;
+                    }
+
+                    tween(carrotNode)
+                        .to(0.14, {
+                            scale: new Vec3(
+                                originalScale.x * 0.01,
+                                originalScale.y * 0.01,
+                                originalScale.z
+                            )
+                        }, { easing: 'quadIn' })
+                        .call(() => {
+                            console.log('[MAGIC HAT FLY] Carrot arrived');
+                            finish();
+                        })
+                        .start();
+                })
+                .start();
+
+        } catch(error) {
+            console.error('[MAGIC HAT FLY] Error:', error);
+            finish();
         }
     }
 }

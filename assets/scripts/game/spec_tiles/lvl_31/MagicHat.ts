@@ -130,19 +130,28 @@ export class MagicHat extends SpecTileBase {
             if(completed) return;
             completed = true;
 
-            if(displayFx?.isValid) displayFx.destroy();
-            if(carrotFx?.isValid) carrotFx.destroy();
+            this.isCarrotAnimating = false;
 
             if(sourceNode?.isValid) {
                 sourceNode.active = sourceWasActive;
             }
 
-            this.isCarrotAnimating = false;
+            if(this.node.isValid) {
+                const flightSource = carrotFx?.isValid
+                    ? carrotFx
+                    : sourceSpine?.node;
 
-            if(!this.node.isValid) return;
+                if(flightSource?.isValid) {
+                    this.node.emit('magic_hat_carrot_fly', flightSource);
+                } else {
+                    console.warn('[MAGIC HAT] Carrot flight source missing');
+                }
 
-            this.node.emit('goal', 'magic_hat');
-            this.node.emit('goal_effect', 'magic_hat', this.row, this.col);
+                this.node.emit('goal', 'magic_hat');
+            }
+
+            if(displayFx?.isValid) displayFx.destroy();
+            if(carrotFx?.isValid) carrotFx.destroy();
         };
 
         if(!sourceSpine?.skeletonData || !sourceSpine.node.isValid) {

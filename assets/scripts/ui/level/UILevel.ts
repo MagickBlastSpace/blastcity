@@ -128,6 +128,8 @@ export class UILevel extends UIFrameBase {
 
     private isFirstLevelAtStart: boolean = false;
 
+    private magicHatCarrotsFlying: number = 0;
+    private magicHatVisibleCount: number | null = null;
 
     private winCounterSource: Node | null = null;
     private winCounterClone: Node | null = null;
@@ -156,6 +158,9 @@ export class UILevel extends UIFrameBase {
         this.levelComp.field.on('shell_pearl_started', this.onShellPearlStarted, this);
         this.levelComp.field.on('shell_pearl_arrived', this.onShellPearlArrived, this);
 
+        this.levelComp.field.on('magic_hat_carrot_started', this.onMagicHatCarrotStarted, this);
+        this.levelComp.field.on('magic_hat_carrot_arrived', this.onMagicHatCarrotArrived, this);
+
         this.levelCompletePopup.node.on('win_conversion_started', this.onWinConversionStarted, this);
 
         SaveData.instance.node.on('level_progress_loaded', this.refreshAll, this);
@@ -170,6 +175,8 @@ export class UILevel extends UIFrameBase {
         this.rewardGoal = null;
         this.shellPearlsFlying = 0;
         this.shellVisibleCount = null;
+        this.magicHatCarrotsFlying = 0;
+        this.magicHatVisibleCount = null;
 
         this.setPrizeCaptionVisible(false)
 
@@ -212,6 +219,21 @@ export class UILevel extends UIFrameBase {
                         const visualGoal = new GoalData();
                         visualGoal.id = actualGoal.id;
                         visualGoal.count = this.shellVisibleCount;
+
+                        displayedGoal = visualGoal;
+                    }
+                }
+
+                if(actualGoal.id === 'magic_hat' && this.magicHatVisibleCount !== null) {
+                    if(
+                        this.magicHatCarrotsFlying === 0 &&
+                        actualGoal.count <= this.magicHatVisibleCount
+                    ) {
+                        this.magicHatVisibleCount = null;
+                    } else {
+                        const visualGoal = new GoalData();
+                        visualGoal.id = 'magic_hat';
+                        visualGoal.count = this.magicHatVisibleCount;
 
                         displayedGoal = visualGoal;
                     }
@@ -384,6 +406,32 @@ export class UILevel extends UIFrameBase {
     //         node.setPosition(x, y, node.position.z);
     //     }
     // }
+
+    private onMagicHatCarrotStarted(): void {
+        if(this.magicHatCarrotsFlying === 0) {
+            const goal = this.levelComp.getGoals()
+                .find(goal => goal.id === 'magic_hat');
+
+            this.magicHatVisibleCount = goal?.count ?? null;
+        }
+
+        this.magicHatCarrotsFlying++;
+    }
+
+    private onMagicHatCarrotArrived(): void {
+        if(this.magicHatCarrotsFlying <= 0) return;
+
+        this.magicHatCarrotsFlying--;
+
+        if(this.magicHatVisibleCount !== null) {
+            this.magicHatVisibleCount = Math.max(
+                0,
+                this.magicHatVisibleCount - 1
+            );
+        }
+
+        this.refreshGoals(this.levelComp.getGoals());
+    }
 
     private onShellPearlStarted(): void {
         if(this.shellPearlsFlying === 0) {
@@ -670,6 +718,8 @@ export class UILevel extends UIFrameBase {
             this.levelComp.field.off('win_coin_arrived', this.onWinCoinArrived, this);
             this.levelComp.field.off('shell_pearl_started', this.onShellPearlStarted, this);
             this.levelComp.field.off('shell_pearl_arrived', this.onShellPearlArrived, this);
+            this.levelComp.field.off('magic_hat_carrot_started', this.onMagicHatCarrotStarted, this);
+            this.levelComp.field.off('magic_hat_carrot_arrived', this.onMagicHatCarrotArrived, this);
         }
 
         if(this.levelCompletePopup?.node?.isValid) {

@@ -1110,6 +1110,11 @@ export class Field extends Component {
             this.node.emit('shell_pearl_fly', sourceNode);
         });
 
+        tileNode.on('magic_hat_carrot_fly', (sourceNode: Node) => {
+            this.node.emit('magic_hat_carrot_started');
+            this.node.emit('magic_hat_carrot_fly', sourceNode);
+        });
+
         tileNode.on('respawn', (timeToRespawn: number) => {
             const isDiscoball = tileType === 'multi' || tileType === 'super';
 
