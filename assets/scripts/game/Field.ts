@@ -1105,6 +1105,11 @@ export class Field extends Component {
             this.activateBonusPool();
         });
 
+        tileNode.on('shell_pearl_fly', (sourceNode: Node) => {
+            this.node.emit('shell_pearl_started');
+            this.node.emit('shell_pearl_fly', sourceNode);
+        });
+
         tileNode.on('respawn', (timeToRespawn: number) => {
             const isDiscoball = tileType === 'multi' || tileType === 'super';
 

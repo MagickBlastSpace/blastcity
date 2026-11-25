@@ -19,12 +19,10 @@ export class Shell extends SpecTileBase {
     private extraDamageAvailable: boolean = false;
     private isShellDestroying: boolean = false;
 
-
     private getShellSpine(): sp.Skeleton | null {
         const uiTile = this.node.getComponent(UITile);
         return uiTile?.spine ?? null;
     }
-
 
     private playShellAnimation(animation: string, loop: boolean = true): void {
         const skeleton = this.getShellSpine();
@@ -38,7 +36,6 @@ export class Shell extends SpecTileBase {
         skeleton.clearTracks();
         skeleton.setAnimation(0, animation, loop);
     }
-
 
     private playShellTransition(animation: string, nextIdle: string): void {
         const skeleton = this.getShellSpine();
@@ -55,28 +52,58 @@ export class Shell extends SpecTileBase {
         skeleton.addAnimation(0, nextIdle, true, 0);
     }
 
+    private playShellTouch(): void {
+        if(this.isShellDestroying || this.strength <= 0) return;
 
-    private playPearlAnimation(): void {
-        const uiTile = this.node.getComponent(UITile);
+        const skeleton = this.getShellSpine();
+        if(!skeleton?.skeletonData || !skeleton.node.activeInHierarchy) return;
 
-        if (!uiTile?.spine?.skeletonData) {
-            console.warn('[SHELL] Cannot play pearl animation');
+        const currentAnimation = skeleton.getCurrent(0)?.animation?.name;
+
+        if(currentAnimation !== 'idle_closed' && currentAnimation !== 'idle_open') return;
+
+        const touchAnimation = this.strength === 2 ? 'touch_close' : 'touch_open';
+        const nextIdle = this.strength === 2 ? 'idle_closed' : 'idle_open';
+
+        if(!skeleton.findAnimation(touchAnimation)) {
+            console.warn('[SHELL] Touch animation not found:', touchAnimation);
             return;
         }
 
-        uiTile.playAdditionalAnimation(
-            uiTile.spine,
-            'pearl',
-            null,
-            'shell'
-        );
+        skeleton.clearTracks();
+        skeleton.setSlotsToSetupPose();
 
-        console.log('[SHELL] PEARL ANIMATION START', {
+        const entry = skeleton.setAnimation(0, touchAnimation, false);
+        if(!entry) return;
+
+        skeleton.setTrackCompleteListener(entry, () => {
+            if(!this.node.isValid || !skeleton.isValid || this.isShellDestroying || this.strength <= 0) return;
+
+            const current = skeleton.getCurrent(0)?.animation?.name;
+            if(current !== touchAnimation) return;
+
+            skeleton.setSlotsToSetupPose();
+            skeleton.setAnimation(0, nextIdle, true);
+
+            console.log('[SHELL] TOUCH COMPLETE →', nextIdle);
+        });
+    }
+
+    private playPearlAnimation(): void {
+        const skeleton = this.getShellSpine();
+
+        if(!skeleton?.skeletonData || !skeleton.node.isValid) {
+            console.warn('[SHELL PEARL] Spine unavailable');
+            return;
+        }
+
+        this.node.emit('shell_pearl_fly', skeleton.node);
+
+        console.log('[SHELL PEARL] Flight requested', {
             row: this.row,
             col: this.col
         });
     }
-
 
     init(row: number, col: number, tileType: string) {
         super.init(row, col, tileType);
@@ -86,6 +113,9 @@ export class Shell extends SpecTileBase {
         this.strength = 2;
         this.extraDamageAvailable = false;
         this.isShellDestroying = false;
+
+        this.node.off('touch_feedback', this.playShellTouch, this);
+        this.node.on('touch_feedback', this.playShellTouch, this);
 
         this.refresh();
 
@@ -97,11 +127,9 @@ export class Shell extends SpecTileBase {
         }
     }
 
-
     start() {
         this.playShellAnimation('idle_closed', true);
     }
-
 
     getDamage(damageType: string) {
         if (this.isShellDestroying) return;
@@ -129,11 +157,9 @@ export class Shell extends SpecTileBase {
         this.refresh();
     }
 
-
     isReadyToDestroy(): boolean {
         return this.strength <= 0;
     }
-
 
     refresh() {
         const rootSprite = this.node.getComponent(Sprite);
@@ -145,11 +171,9 @@ export class Shell extends SpecTileBase {
         if (this.icon) this.icon.enabled = false;
     }
 
-
     startDestroyConsequences() {
         this.node.emit('goal', 'shell');
     }
-
 
     startInActionEffect(
         field?: Node[][],
@@ -165,20 +189,26 @@ export class Shell extends SpecTileBase {
             this.strength = 2;
             this.refresh();
 
-            this.playShellTransition('close', 'idle_closed');
+            if(this.getShellSpine()?.findAnimation('close')) {
+                this.playShellTransition('close', 'idle_closed');
+            } else {
+                this.playShellAnimation('idle_closed', true);
+            }
             this.playSwitchSound();
         }
 
         return false;
     }
 
-
     clearExtra() {
         this.extraDamageAvailable = true;
     }
 
-
     playSwitchSound() {
         this.playSound(0);
+    }
+
+    protected onDestroyShell(): void {
+        this.node.off('touch_feedback', this.playShellTouch, this);
     }
 }

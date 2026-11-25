@@ -137,6 +137,9 @@ export class UILevel extends UIFrameBase {
 
     private isWinRewardActive: boolean = false;
 
+    private shellPearlsFlying: number = 0;
+    private shellVisibleCount: number | null = null;
+
     start(): void {
         this.level.on('init', this.init, this);
         this.level.on('refresh', this.refreshAll, this);
@@ -145,9 +148,13 @@ export class UILevel extends UIFrameBase {
         this.level.on('reward_move', this.addReward, this);
         this.level.on('no_moves', this.showNoMovesPopup, this);
 
+
         this.levelComp.field.on('win_rocket_line', this.onWinRocketLine, this);
         this.levelComp.field.on('win_conversion_finished', this.hideWinSkipTutorial, this);
         this.levelComp.field.on('win_coin_arrived', this.onWinCoinArrived, this);
+
+        this.levelComp.field.on('shell_pearl_started', this.onShellPearlStarted, this);
+        this.levelComp.field.on('shell_pearl_arrived', this.onShellPearlArrived, this);
 
         this.levelCompletePopup.node.on('win_conversion_started', this.onWinConversionStarted, this);
 
@@ -161,6 +168,8 @@ export class UILevel extends UIFrameBase {
         this.isRewarding = false;
         this.isWinRewardActive = false;
         this.rewardGoal = null;
+        this.shellPearlsFlying = 0;
+        this.shellVisibleCount = null;
 
         this.setPrizeCaptionVisible(false)
 
@@ -188,9 +197,28 @@ export class UILevel extends UIFrameBase {
 
     refreshGoals(goals: GoalData[]) {
         for (let i = 0; i < goals.length || i < this.goalItems.length; i++) {
-            if (i < goals.length) {
-                this.goalItems[i].refresh(goals[i]);
-                this.goalItems_Duplicate[i].refresh(goals[i]);
+            if(i < goals.length) {
+                const actualGoal = goals[i];
+                let displayedGoal = actualGoal;
+
+                if(actualGoal.id === 'shell' && this.shellVisibleCount !== null) {
+
+                    if(
+                        this.shellPearlsFlying === 0 &&
+                        actualGoal.count <= this.shellVisibleCount
+                    ) {
+                        this.shellVisibleCount = null;
+                    } else {
+                        const visualGoal = new GoalData();
+                        visualGoal.id = actualGoal.id;
+                        visualGoal.count = this.shellVisibleCount;
+
+                        displayedGoal = visualGoal;
+                    }
+                }
+
+                this.goalItems[i].refresh(displayedGoal);
+                this.goalItems_Duplicate[i].refresh(displayedGoal);
             } else {
                 const goalData = new GoalData();
                 goalData.id = 'common';
@@ -356,6 +384,42 @@ export class UILevel extends UIFrameBase {
     //         node.setPosition(x, y, node.position.z);
     //     }
     // }
+
+    private onShellPearlStarted(): void {
+        if(this.shellPearlsFlying === 0) {
+            const shellGoal = this.levelComp.getGoals()
+                .find(goal => goal.id === 'shell');
+
+            this.shellVisibleCount = shellGoal?.count ?? null;
+        }
+
+        this.shellPearlsFlying++;
+
+        console.log('[SHELL GOAL] Pearl started', {
+            flying: this.shellPearlsFlying,
+            visible: this.shellVisibleCount
+        });
+    }
+
+    private onShellPearlArrived(): void {
+        if(this.shellPearlsFlying <= 0) return;
+
+        this.shellPearlsFlying--;
+
+        if(this.shellVisibleCount !== null) {
+            this.shellVisibleCount = Math.max(
+                0,
+                this.shellVisibleCount - 1
+            );
+        }
+
+        this.refreshGoals(this.levelComp.getGoals());
+
+        console.log('[SHELL GOAL] Pearl arrived', {
+            flying: this.shellPearlsFlying,
+            visible: this.shellVisibleCount
+        });
+    }
 
     private setPrizeCaptionVisible(visible: boolean): void {
         if(this.goalsCaptionLandscape?.isValid) {
@@ -604,6 +668,8 @@ export class UILevel extends UIFrameBase {
             this.levelComp.field.off('win_rocket_line', this.onWinRocketLine, this);
             this.levelComp.field.off('win_conversion_finished', this.hideWinSkipTutorial, this);
             this.levelComp.field.off('win_coin_arrived', this.onWinCoinArrived, this);
+            this.levelComp.field.off('shell_pearl_started', this.onShellPearlStarted, this);
+            this.levelComp.field.off('shell_pearl_arrived', this.onShellPearlArrived, this);
         }
 
         if(this.levelCompletePopup?.node?.isValid) {

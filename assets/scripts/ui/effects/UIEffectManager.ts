@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Node, Prefab, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, Component, instantiate, Node, Prefab, sp, tween, UITransform, Vec2, Vec3 } from 'cc';
 import { SpecialPrefabData } from '../../data/GameData';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UILevelGoal } from '../level/UILevelGoal';
@@ -41,14 +41,141 @@ export class UIEffectManager extends Component {
         this.field.on('coin_reward', this.createEffectCoinReward, this);
         this.field.on('goal_effect', this.createSpecGoalEffect, this);
         this.field.on('goal_effect_positioned', this.createSpecGoalEffectPositioned, this);
+        this.field.on('shell_pearl_fly', this.createShellPearlEffect, this);
     }
 
     protected onDestroy(): void {
-        if(!this.field?.isValid) return;
+        if(this.field?.isValid) {
+            this.field.off('shell_pearl_fly', this.createShellPearlEffect, this);
+            return
+        }
 
         this.field.off('coin_reward', this.createEffectCoinReward, this);
         this.field.off('goal_effect', this.createSpecGoalEffect, this);
         this.field.off('goal_effect_positioned', this.createSpecGoalEffectPositioned, this);
+    }
+
+    private createShellPearlEffect(sourceNode: Node): void {
+        let pearlNode: Node | null = null;
+        let completed = false;
+
+        const finish = (): void => {
+            if(completed) return;
+            completed = true;
+
+            if(pearlNode?.isValid) {
+                pearlNode.destroy();
+            }
+
+            if(this.field?.isValid) {
+                this.field.emit('shell_pearl_arrived');
+            }
+        };
+
+        if(!sourceNode?.isValid || !this.effectsLayer?.isValid) {
+            console.warn('[SHELL PEARL] Source or effects layer missing');
+            finish();
+            return;
+        }
+
+        const isPortrait = ResolutionManager.instance.isPortraitOrientation();
+
+        const goals = isPortrait
+            ? this.goalsPositions_Portrait
+            : this.goalsPositions;
+
+        const targetGoal = goals.find(goal =>
+            goal?.node?.isValid && goal.getGoalId() === 'shell'
+        );
+
+        const layerTransform = this.effectsLayer.getComponent(UITransform);
+
+        if(!targetGoal || !layerTransform) {
+            console.warn('[SHELL PEARL] Target goal or UITransform missing');
+            finish();
+            return;
+        }
+
+        const startWorld = sourceNode.worldPosition.clone();
+        const startWorldScale = sourceNode.worldScale.clone();
+
+        const goalWorld = targetGoal.getPosition();
+        const targetLocal = layerTransform.convertToNodeSpaceAR(
+            new Vec3(goalWorld.x, goalWorld.y, 0)
+        );
+
+        try {
+            pearlNode = instantiate(sourceNode);
+
+            this.effectsLayer.addChild(pearlNode);
+            pearlNode.active = true;
+
+            pearlNode.setWorldPosition(startWorld);
+            pearlNode.setWorldScale(startWorldScale);
+
+            const skeleton = pearlNode.getComponent(sp.Skeleton);
+
+            if(!skeleton?.skeletonData || !skeleton.findAnimation('pearl')) {
+                console.warn('[SHELL PEARL] Pearl animation missing');
+                finish();
+                return;
+            }
+
+            skeleton.clearTracks();
+            skeleton.setSlotsToSetupPose();
+            skeleton.setAnimation(0, 'pearl', false);
+
+            const originalScale = pearlNode.scale.clone();
+            const startPosition = pearlNode.position.clone();
+
+            const arcHeight = 100;
+            const flight = { progress: 0 };
+
+            tween(flight)
+                .delay(0.18)
+                .to(0.55, { progress: 1 }, {
+                    easing: 'quadInOut',
+                    onUpdate: (state) => {
+                        if(!pearlNode?.isValid) return;
+
+                        const t = (state as { progress: number }).progress;
+
+                        const x = startPosition.x +
+                            (targetLocal.x - startPosition.x) * t;
+
+                        const y = startPosition.y +
+                            (targetLocal.y - startPosition.y) * t +
+                            Math.sin(Math.PI * t) * arcHeight;
+
+                        pearlNode.setPosition(x, y, startPosition.z);
+                    }
+                })
+                .call(() => {
+                    if(!pearlNode?.isValid) {
+                        finish();
+                        return;
+                    }
+
+                    tween(pearlNode)
+                        .to(0.14, {
+                            scale: new Vec3(
+                                originalScale.x * 0.01,
+                                originalScale.y * 0.01,
+                                originalScale.z
+                            )
+                        }, { easing: 'quadIn' })
+                        .call(() => {
+                            console.log('[SHELL PEARL] Arrived');
+                            finish();
+                        })
+                        .start();
+                })
+                .start();
+
+        } catch(error) {
+            console.error('[SHELL PEARL] Flight error', error);
+            finish();
+        }
     }
 
     createEffectCoinReward(row: number, col: number) {
