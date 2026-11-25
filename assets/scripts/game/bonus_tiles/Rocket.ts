@@ -520,7 +520,14 @@ export class Rocket extends BonusTileBase {
             spine.clearTracks();
             spine.setToSetupPose();
 
-            const track = spine.setAnimation(0, 'spawn', false);
+
+            const hasStartFx = !!spine.findAnimation('start');
+
+            if(hasStartFx) {
+            spine.setAnimation(0, 'start', false);
+            }
+
+            const track = spine.setAnimation(hasStartFx ? 1 : 0, 'spawn', false);
 
             if (!track) {
                 finish('missing-track');

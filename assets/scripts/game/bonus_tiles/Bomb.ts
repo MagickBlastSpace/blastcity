@@ -523,7 +523,19 @@ export class Bomb extends BonusTileBase {
             spine.clearTracks();
             spine.setToSetupPose();
 
-            const track = spine.setAnimation(0, 'spawn', false);
+            const hasStarFx = !!spine.findAnimation('star_fx');
+
+            if(hasStarFx) {
+                spine.setAnimation(0, 'star_fx', false);
+            }
+
+            const spawnTrackIndex = hasStarFx ? 1 : 0;
+
+            const track = spine.setAnimation(
+                spawnTrackIndex,
+                'spawn',
+                false
+            );
 
             if (!track) {
                 finish('missing-track');
@@ -545,7 +557,7 @@ export class Bomb extends BonusTileBase {
                 () => finish('end')
             );
 
-            spine.addAnimation(0, 'idle', true, 0);
+            spine.addAnimation(spawnTrackIndex, 'idle', true, 0);
 
             this.scheduleOnce(() => {
                 finish('timeout');

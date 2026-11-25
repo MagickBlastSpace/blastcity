@@ -196,7 +196,7 @@
     "_priority": 0,
     "_fov": 42,
     "_fovAxis": 0,
-    "_orthoHeight": 1309.0360824742268,
+    "_orthoHeight": 1277.0492040520983,
     "_near": 0,
     "_far": 1000,
     "_color": {
@@ -5482,8 +5482,8 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 124.29998779296875,
-      "height": 176.4
+      "width": 128.29998779296875,
+      "height": 180.4
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -5532,7 +5532,7 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
-    "_enableOutline": false,
+    "_enableOutline": true,
     "_outlineColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -5541,7 +5541,7 @@
       "a": 255
     },
     "_outlineWidth": 2,
-    "_enableShadow": false,
+    "_enableShadow": true,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 0,
@@ -5551,10 +5551,10 @@
     },
     "_shadowOffset": {
       "__type__": "cc.Vec2",
-      "x": 2,
-      "y": 2
+      "x": 5,
+      "y": -5
     },
-    "_shadowBlur": 2,
+    "_shadowBlur": 5,
     "_id": "f5DGDjwFtLArnTRHTDxTSO"
   },
   {
@@ -127923,7 +127923,7 @@
     "profile": {
       "__id__": 4715
     },
-    "_id": "a1v+Bo7NNEC4E0N0kAAxhZ"
+    "_id": "9boNX7wuNNw7B6ixS1KG7Q"
   },
   {
     "__type__": "cc.Node",
@@ -142783,6 +142783,7 @@
     "reachDelay": 0.77,
     "portraitThickness": 2,
     "portraitClipAboveCounter": 25,
+    "landscapeClipBehindCounter": 15,
     "angleOffset": 0,
     "debugStartNode": null,
     "debugEndNode": null,
