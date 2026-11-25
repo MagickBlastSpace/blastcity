@@ -1361,6 +1361,35 @@ export class Field extends Component {
             });
         }
 
+        if(statusType.toLowerCase() === 'jail') {
+            statusNode.on('jail_click', () => {
+                if(this.statusArray[row]?.[col] !== statusNode) return;
+
+                if(
+                    !this.isClickAvailable ||
+                    this.isLevelComplete ||
+                    this.isBonusPoolActivated ||
+                    this.isTutorialActive
+                ) {
+                    return;
+                }
+
+                const tile = this.tileArray[row]?.[col];
+
+                if(tile?.isValid) {
+                    this.playVisualTouch(tile);
+                } else {
+                    statusNode.emit('jail_touch');
+                }
+
+                this.node.emit(
+                    'game_state',
+                    this.tileArray,
+                    this.statusArray
+                );
+            });
+        }
+
 		this.node.emit('init_status', statusNode, statusType);
 
 		return statusNode;
@@ -3240,34 +3269,53 @@ export class Field extends Component {
 	}
 
     private playVisualTouch(tile: Node): void {
-        if (!tile?.isValid) return;
+        if(!tile?.isValid) return;
 
         const tileComponent = tile.getComponent(TileBase);
-        if (!tileComponent) return;
+        if(!tileComponent) return;
 
         const row = tileComponent.getRow();
         const col = tileComponent.getCol();
 
         const statusNode = this.statusArray[row]?.[col];
         const statusComp = statusNode?.getComponent(StatusBase);
+        const statusType = statusComp?.getStatusType()?.toLowerCase();
 
-        const hasBubble = statusComp?.getStatusType() === 'bubble';
+        const hasBubble = statusType === 'bubble';
+        const hasJail = statusType === 'jail';
 
-        if (hasBubble && statusNode?.isValid) {
+        if(hasJail && statusNode?.isValid) {
+            statusNode.emit('jail_touch');
+
+            tileComponent.startShake();
+
+            this.scheduleOnce(() => {
+                if(tileComponent.isValid) {
+                    tileComponent.stopShake();
+                }
+            }, 0.33);
+
+            if(tileComponent.isSpecialTile()) {
+                tile.emit('touch_feedback');
+            }
+
+            return;
+        }
+
+        if(hasBubble && statusNode?.isValid) {
             statusNode.emit('bubble_touch');
         }
 
         const canTouchTile =
             hasBubble || this.isInteractionAvailable(row, col);
 
-        if (
+        if(
             canTouchTile &&
             (tileComponent.isCommonTile() || tileComponent.isSpecialTile())
         ) {
             tile.emit('touch_feedback');
         }
     }
-
 
 	onTileClick(tile: Node) {
 		if (
@@ -3315,7 +3363,9 @@ export class Field extends Component {
             const statusNode = this.statusArray[row]?.[col];
             const statusComp = statusNode?.getComponent(StatusBase);
 
-            if (statusComp?.getStatusType() === 'bubble') {
+            const statusType = statusComp?.getStatusType()?.toLowerCase();
+
+            if(statusType === 'bubble' || statusType === 'jail') {
                 this.playVisualTouch(tile);
             }
 
