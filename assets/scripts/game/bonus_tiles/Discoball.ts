@@ -1,4 +1,4 @@
-import { _decorator, instantiate, Node, sp, Sprite, SpriteFrame, tween, Vec2, Vec3 } from 'cc';
+import { _decorator, instantiate, isValid, Node, sp, Sprite, SpriteFrame, tween, Vec2, Vec3 } from 'cc';
 import { UITile } from '../../ui/UITile';
 import { SpriteTileData } from '../Tile';
 import { TileBase } from '../TileBase';
@@ -10,6 +10,7 @@ type DiscoballTarget = {
     row: number;
     col: number;
     color: string;
+    node: Node;
 };
 
 @ccclass('Discoball')
@@ -100,7 +101,7 @@ export class Discoball extends BonusTileBase {
         this.reserveRespawnForLines(targets.length);
 
         this.activateIsolatedDiscoballAnimation(1, undefined, () => {
-            this.launchTargetLines(targets, target => {
+            this.launchTargetLines(field, targets, target=> {
                 this.node.emit('extra_hit_with_damage', target.row, target.col);
             }, () => {
                 this.node.emit('clear_lines');
@@ -149,7 +150,7 @@ export class Discoball extends BonusTileBase {
         this.reserveRespawnForLines(targets.length);
 
         this.activateIsolatedDiscoballAnimation(1, undefined, () => {
-            this.launchTargetLines(targets, target => {
+            this.launchTargetLines(field, targets, target => {
                 const bonusType = bonus === 'bomb'
                     ? 'bomb'
                     : Math.random() < 0.5 ? 'rocket_vertical' : 'rocket_horizontal';
@@ -283,36 +284,83 @@ export class Discoball extends BonusTileBase {
         return tiles.map(tile => ({
             row: tile.getRow(),
             col: tile.getCol(),
-            color: tile.getTileType()
+            color: tile.getTileType(),
+            node: tile.node
         })).filter(target => target.row !== this.row || target.col !== this.col);
     }
 
+    private isTargetAvailable(field: Node[][], target: DiscoballTarget): boolean {
+        const tile = field[target.row]?.[target.col];
+
+        if(!tile || !isValid(tile, true)) return false;
+        if(tile !== target.node) return false;
+        if(!tile.activeInHierarchy) return false;
+
+        const tileComp = tile.getComponent(TileBase);
+
+        if(!tileComp || !isValid(tileComp, true)) return false;
+        if(tileComp.isEmptyTile()) return false;
+        if(tileComp.getTileType() !== target.color) return false;
+
+        return true;
+    }
+
     private launchTargetLines(
+        field: Node[][],
         targets: DiscoballTarget[],
         onHit: (target: DiscoballTarget) => void,
         onAllFinished: () => void
     ): void {
-        if(targets.length === 0) {
+        const availableTargets = targets.filter(target => this.isTargetAvailable(field, target));
+
+        console.log('[DISCO TARGETS FILTERED]', {
+            original: targets.length,
+            available: availableTargets.length,
+            skipped: targets.length - availableTargets.length
+        });
+
+        if(availableTargets.length === 0) {
             onAllFinished();
             return;
         }
 
-        let remaining = targets.length;
+        let remaining = availableTargets.length;
         const from = new Vec2(this.row, this.col);
 
-        for(let i = 0; i < targets.length; i++) {
-            const target = targets[i];
+        const finishTarget = (): void => {
+            remaining--;
+
+            if(remaining === 0) {
+                onAllFinished();
+            }
+        };
+
+        for(let i = 0; i < availableTargets.length; i++) {
+            const target = availableTargets[i];
             const to = new Vec2(target.row, target.col);
             const skin = this.getLineSkinName();
             const animation = this.getLineAnimationForTarget(target.color);
 
             this.scheduleOnce(() => {
                 if(!this.node.isValid) return;
+
+                if(!this.isTargetAvailable(field, target)) {
+                    console.log('[DISCO LINE SKIPPED]', {
+                        row: target.row,
+                        col: target.col,
+                        color: target.color
+                    });
+
+                    finishTarget();
+                    return;
+                }
+
                 let completed = false;
 
                 const complete = (reached: boolean) => {
                     if(completed) return;
                     completed = true;
+
                     if(!this.node.isValid) return;
 
                     if(!reached) {
@@ -325,9 +373,14 @@ export class Discoball extends BonusTileBase {
                         console.error('[DISCO LINE] Target action failed:', target, error);
                     }
 
-                    remaining--;
-                    console.log('[DISCO LINE ARRIVED]', { target, remaining });
-                    if(remaining === 0) onAllFinished();
+                    console.log('[DISCO LINE ARRIVED]', {
+                        row: target.row,
+                        col: target.col,
+                        color: target.color,
+                        remaining: remaining - 1
+                    });
+
+                    finishTarget();
                 };
 
                 try {
