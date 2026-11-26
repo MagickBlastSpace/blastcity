@@ -3963,6 +3963,7 @@ export class Field extends Component {
             this.node.emit('move');
         }
 
+        this.node.emit('win_conversion_skipped');
         this.node.emit('complete', this.winSkipRewardSnapshot);
     }
 

@@ -180,7 +180,7 @@ export class UIEffectManager extends Component {
         }
     }
 
-    createEffectCoinReward(row: number, col: number) {
+        createEffectCoinReward(row: number, col: number) {
         const coin = instantiate(this.coinReward);
         this.effectsLayer.addChild(coin);
         const coinComp = coin.getComponent(UIRewardEffect);
@@ -193,15 +193,35 @@ export class UIEffectManager extends Component {
 
         let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? portraitGoalPosition : landscapeGoalPosition;
 
-        coinComp.init(
-            new Vec2(posX, posY),
-            targetPosition,
-            () => {
-                if(this.field?.isValid) {
-                    this.field.emit('win_coin_arrived');
-                }
+        let isFinished = false;
+
+        const finish = (): void => {
+            if(isFinished) return;
+
+            isFinished = true;
+
+            if(this.field?.isValid) {
+                this.field.emit('win_coin_arrived', coin);
             }
-        );
+        };
+
+        this.field.emit('win_coin_started', coin);
+
+        try {
+            coinComp.init(
+                new Vec2(posX, posY),
+                targetPosition,
+                finish
+            );
+        } catch(error) {
+            console.error('[WIN REWARD] Coin flight error', error);
+
+            finish();
+
+            if(coin.isValid) {
+                coin.destroy();
+            }
+        }
     }
 
     createSpecGoalEffect(spec: string, row: number, col: number) {

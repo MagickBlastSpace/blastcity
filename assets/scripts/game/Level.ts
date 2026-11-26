@@ -449,7 +449,7 @@ export class Level extends Component {
             console.log('[DEV MODE] Permanent victory rewards and win statistics skipped');
         }
 
-        this.node.emit("complete", true, isDevMode ? 0 : totalReward);
+        this.node.emit("complete", true, isDevMode ? 0 : totalReward, totalReward);
         this.node.emit("complete_statistics", this.stats);
 
         SaveData.instance.clearLevelProgress();

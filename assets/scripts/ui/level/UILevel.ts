@@ -7,6 +7,7 @@ import {
     Node,
     Sprite,
     SpriteFrame,
+    Tween,
     UITransform,
     view,
     Widget,
@@ -142,18 +143,24 @@ export class UILevel extends UIFrameBase {
     private shellPearlsFlying: number = 0;
     private shellVisibleCount: number | null = null;
 
+    private winCoinsFlying: Set<Node> = new Set<Node>();
+    private pendingWinReward: number | null = null;
+    private pendingWinDisplayReward: number | null = null;
+    private isWinRewardSkipped: boolean = false;
+
     start(): void {
         this.level.on('init', this.init, this);
         this.level.on('refresh', this.refreshAll, this);
         this.level.on('complete', this.showResult, this);
         this.level.on('all_goals_complete_event', this.showLevelCompletePopup, this);
-        this.level.on('reward_move', this.addReward, this);
         this.level.on('no_moves', this.showNoMovesPopup, this);
 
 
         this.levelComp.field.on('win_rocket_line', this.onWinRocketLine, this);
         this.levelComp.field.on('win_conversion_finished', this.hideWinSkipTutorial, this);
+        this.levelComp.field.on('win_coin_started', this.onWinCoinStarted, this);
         this.levelComp.field.on('win_coin_arrived', this.onWinCoinArrived, this);
+        this.levelComp.field.on('win_conversion_skipped', this.onWinConversionSkipped, this);
 
         this.levelComp.field.on('shell_pearl_started', this.onShellPearlStarted, this);
         this.levelComp.field.on('shell_pearl_arrived', this.onShellPearlArrived, this);
@@ -173,6 +180,11 @@ export class UILevel extends UIFrameBase {
         this.isRewarding = false;
         this.isWinRewardActive = false;
         this.rewardGoal = null;
+
+        this.winCoinsFlying.clear();
+        this.pendingWinReward = null;
+        this.pendingWinDisplayReward = null;
+        this.isWinRewardSkipped = false;
         this.shellPearlsFlying = 0;
         this.shellVisibleCount = null;
         this.magicHatCarrotsFlying = 0;
@@ -195,7 +207,7 @@ export class UILevel extends UIFrameBase {
             currentProgress,
             firstLevel: this.isFirstLevelAtStart
         });
-}
+    }
 
     refresh(movesCount: number) {
         this.movesCount.string = String(movesCount);
@@ -295,6 +307,48 @@ export class UILevel extends UIFrameBase {
                 this.bottomPanel_Portrait.spriteFrame = portraitSprite;
             }
         }
+    }
+
+    private setFinalWinReward(totalReward: number): void {
+        this.setRewardingMode();
+
+        if(!this.rewardGoal) return;
+
+        this.rewardGoal.count = totalReward;
+
+        this.setPrizeCaptionVisible(true);
+        this.refreshGoals([this.rewardGoal]);
+
+        console.log('[WIN REWARD] Final reward displayed', {
+            totalReward
+        });
+    }
+
+    private stopWinCoinAnimations(): void {
+        const coins = Array.from(this.winCoinsFlying);
+
+        this.winCoinsFlying.clear();
+
+        const stopNodeTweens = (node: Node): void => {
+            Tween.stopAllByTarget(node);
+
+            for(const child of node.children) {
+                stopNodeTweens(child);
+            }
+        };
+
+        for(const coin of coins) {
+            if(!coin?.isValid) continue;
+
+            stopNodeTweens(coin);
+
+            coin.active = false;
+            coin.destroy();
+        }
+
+        console.log('[WIN REWARD] Coin animations stopped', {
+            stopped: coins.length
+        });
     }
 
     public updateLandscapeGoalsLayout(): void {
@@ -424,13 +478,12 @@ export class UILevel extends UIFrameBase {
         this.magicHatCarrotsFlying--;
 
         if(this.magicHatVisibleCount !== null) {
-            this.magicHatVisibleCount = Math.max(
-                0,
-                this.magicHatVisibleCount - 1
-            );
+            this.magicHatVisibleCount = Math.max(0, this.magicHatVisibleCount - 1);
         }
 
-        this.refreshGoals(this.levelComp.getGoals());
+        if(!this.isRewarding) {
+            this.refreshGoals(this.levelComp.getGoals());
+        }
     }
 
     private onShellPearlStarted(): void {
@@ -455,13 +508,12 @@ export class UILevel extends UIFrameBase {
         this.shellPearlsFlying--;
 
         if(this.shellVisibleCount !== null) {
-            this.shellVisibleCount = Math.max(
-                0,
-                this.shellVisibleCount - 1
-            );
+            this.shellVisibleCount = Math.max(0, this.shellVisibleCount - 1);
         }
 
-        this.refreshGoals(this.levelComp.getGoals());
+        if(!this.isRewarding) {
+            this.refreshGoals(this.levelComp.getGoals());
+        }
 
         console.log('[SHELL GOAL] Pearl arrived', {
             flying: this.shellPearlsFlying,
@@ -615,23 +667,57 @@ export class UILevel extends UIFrameBase {
         }
     }
 
-    private onWinCoinArrived(): void {
-        if(!this.isWinRewardActive || !this.rewardGoal) return;
+    private onWinCoinArrived(coin: Node): void {
+        if(!this.winCoinsFlying.delete(coin)) return;
 
-        const goldPerRocket = this.levelComp.isBonusGoldAvailable()
-            ? 2 * this.levelComp.getDifficultyMultiplier()
-            : 0;
+        if(this.isWinRewardActive && this.rewardGoal) {
+            const goldPerRocket = this.levelComp.isBonusGoldAvailable()
+                ? 2 * this.levelComp.getDifficultyMultiplier()
+                : 0;
 
-        if(goldPerRocket <= 0) return;
+            if(goldPerRocket > 0) {
+                this.rewardGoal.count += goldPerRocket;
 
-        this.rewardGoal.count += goldPerRocket;
+                this.refreshGoals([this.rewardGoal]);
+            }
 
-        this.refreshGoals([this.rewardGoal]);
+            console.log('[WIN REWARD] Coin arrived', {
+                added: goldPerRocket,
+                displayedReward: this.rewardGoal.count,
+                flying: this.winCoinsFlying.size
+            });
+        }
 
-        console.log('[WIN REWARD] Coin arrived', {
-            added: goldPerRocket,
-            displayedReward: this.rewardGoal.count
+        this.tryShowPendingWinResult();
+    }
+
+    private tryShowPendingWinResult(): void {
+        if(this.pendingWinReward === null) return;
+
+        if(!this.isWinRewardSkipped && this.winCoinsFlying.size > 0) return;
+
+        const goldEarned = this.pendingWinReward;
+        const displayReward = this.pendingWinDisplayReward ?? goldEarned;
+
+        this.pendingWinReward = null;
+        this.pendingWinDisplayReward = null;
+
+        console.log('[WIN REWARD] Opening pending result', {
+            goldEarned,
+            displayReward
         });
+
+        this.showResult(true, goldEarned, displayReward);
+    }
+
+    private onWinConversionSkipped(): void {
+        this.isWinRewardSkipped = true;
+
+        this.stopWinCoinAnimations();
+
+        console.log('[WIN REWARD] Coin waiting skipped');
+
+        this.tryShowPendingWinResult();
     }
 
     private hideWinSkipTutorial(): void {
@@ -640,8 +726,28 @@ export class UILevel extends UIFrameBase {
         }
     }
 
-    showResult(isSuccess: boolean, goldEarned: number) {
+    showResult(isSuccess: boolean, goldEarned: number, displayReward: number = goldEarned) {
+        if(isSuccess && !this.isWinRewardSkipped && this.winCoinsFlying.size > 0) {
+            this.pendingWinReward = goldEarned;
+            this.pendingWinDisplayReward = displayReward;
+
+            console.log('[WIN REWARD] Waiting for remaining coins', {
+                flying: this.winCoinsFlying.size,
+                goldEarned,
+                displayReward
+            });
+
+            return;
+        }
+
+        if(isSuccess && this.isWinRewardSkipped) {
+            this.setFinalWinReward(displayReward);
+        }
+
+        this.pendingWinReward = null;
+        this.pendingWinDisplayReward = null;
         this.isWinRewardActive = false;
+
         this.hideWinSkipTutorial();
         this.hideWinCounterForeground();
 
@@ -674,12 +780,8 @@ export class UILevel extends UIFrameBase {
         }
     }
 
-    addReward() {
-        this.isRewarding = true;
-    }
-
     setRewardingMode(): void {
-        if(this.isRewarding) return;
+        if(this.rewardGoal) return;
 
         this.isRewarding = true;
 
@@ -708,14 +810,15 @@ export class UILevel extends UIFrameBase {
             this.level.off('refresh', this.refreshAll, this);
             this.level.off('complete', this.showResult, this);
             this.level.off('all_goals_complete_event', this.showLevelCompletePopup, this);
-            this.level.off('reward_move', this.addReward, this);
             this.level.off('no_moves', this.showNoMovesPopup, this);
         }
 
         if(this.levelComp?.field?.isValid) {
             this.levelComp.field.off('win_rocket_line', this.onWinRocketLine, this);
             this.levelComp.field.off('win_conversion_finished', this.hideWinSkipTutorial, this);
+            this.levelComp.field.off('win_coin_started', this.onWinCoinStarted, this);
             this.levelComp.field.off('win_coin_arrived', this.onWinCoinArrived, this);
+            this.levelComp.field.off('win_conversion_skipped', this.onWinConversionSkipped, this);
             this.levelComp.field.off('shell_pearl_started', this.onShellPearlStarted, this);
             this.levelComp.field.off('shell_pearl_arrived', this.onShellPearlArrived, this);
             this.levelComp.field.off('magic_hat_carrot_started', this.onMagicHatCarrotStarted, this);
@@ -737,5 +840,15 @@ export class UILevel extends UIFrameBase {
         if(this.settingsBtn_Landscape?.node?.isValid) {
             this.settingsBtn_Landscape.node.off(Button.EventType.CLICK, this.onSettingsLandscapeClick, this);
         }
+    }
+
+    private onWinCoinStarted(coin: Node): void {
+        if(this.isWinRewardSkipped) return;
+
+        this.winCoinsFlying.add(coin);
+
+        console.log('[WIN REWARD] Coin started', {
+            flying: this.winCoinsFlying.size
+        });
     }
 }
