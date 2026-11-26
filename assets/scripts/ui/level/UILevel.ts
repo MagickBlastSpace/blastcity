@@ -167,6 +167,7 @@ export class UILevel extends UIFrameBase {
 
         this.levelComp.field.on('magic_hat_carrot_started', this.onMagicHatCarrotStarted, this);
         this.levelComp.field.on('magic_hat_carrot_arrived', this.onMagicHatCarrotArrived, this);
+        this.levelComp.field.on('goal_icons_ready', this.onGoalIconsReady, this);
 
         this.levelCompletePopup.node.on('win_conversion_started', this.onWinConversionStarted, this);
 
@@ -262,9 +263,6 @@ export class UILevel extends UIFrameBase {
         }
 
         this.updateLandscapeGoalsLayout();
-
-        const portraitLayout = this.goalItems_Duplicate[0]?.node.parent?.getComponent(Layout);
-        portraitLayout?.updateLayout();
     }
 
     refreshAll() {
@@ -352,8 +350,25 @@ export class UILevel extends UIFrameBase {
     }
 
     public updateLandscapeGoalsLayout(): void {
+        this.applyGoalsLayout();
+
+        this.unschedule(this.applyGoalsLayout);
+        this.scheduleOnce(this.applyGoalsLayout, 0);
+    }
+
+    private applyGoalsLayout(): void {
         this.updateGoalsGrid(this.goalItems);
         this.updateGoalsGrid(this.goalItems_Duplicate);
+    }
+
+    private onGoalIconsReady(): void {
+        if(this.isRewarding) return;
+
+        const goals = this.levelComp.getGoals();
+
+        if(!goals?.length) return;
+
+        this.refreshGoals(goals);
     }
 
     private updateGoalsGrid(items: UILevelGoal[]): void {
@@ -387,7 +402,7 @@ export class UILevel extends UIFrameBase {
             transform.height / totalHeight
         );
 
-        if(layoutScale <= 0) return;
+        if(!Number.isFinite(layoutScale) || layoutScale <= 0) return;
 
         const isPortrait = ResolutionManager.instance.isPortraitOrientation();
 
@@ -823,6 +838,7 @@ export class UILevel extends UIFrameBase {
             this.levelComp.field.off('shell_pearl_arrived', this.onShellPearlArrived, this);
             this.levelComp.field.off('magic_hat_carrot_started', this.onMagicHatCarrotStarted, this);
             this.levelComp.field.off('magic_hat_carrot_arrived', this.onMagicHatCarrotArrived, this);
+            this.levelComp.field.off('goal_icons_ready', this.onGoalIconsReady, this);
         }
 
         if(this.levelCompletePopup?.node?.isValid) {

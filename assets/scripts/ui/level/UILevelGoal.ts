@@ -52,6 +52,20 @@ export class UILevelGoal extends Component {
 
         if(this.loadedIconId === iconId) return;
 
+        const cachedBundle = assetManager.getBundle('goals');
+        const assetPath = `${iconId}_goal/spriteFrame`;
+        const cachedIcon = cachedBundle?.get(assetPath, SpriteFrame);
+
+        if(cachedIcon?.isValid && this.icon?.isValid) {
+            this.iconRequestId++;
+
+            this.icon.spriteFrame = cachedIcon;
+            this.loadedIconId = iconId;
+            this.loadingIconId = '';
+
+            return;
+        }
+
         if(this.loadingIconId === iconId) return;
 
         const requestId = ++this.iconRequestId;

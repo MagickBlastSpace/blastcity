@@ -1,4 +1,4 @@
-import { _decorator, assetManager, Component, Node, Prefab } from 'cc';
+import { _decorator, assetManager, Component, Node, Prefab, SpriteFrame } from 'cc';
 import { LevelData } from '../data/GameData';
 import { Field } from '../game/Field';
 import { UIAssetsLoadingFrame } from '../ui/loading/UIAssetsLoadingFrame';
@@ -25,9 +25,11 @@ export class AssetsLoader extends Component {
 
     private currentSpecs: string[] = [];
 
+    private currentGoalIcons: string[] = [];
+    private areGoalIconsReady: boolean = false;
+
     private isLoadingStarted: boolean = false;
     private isBaseTilesLoaded: boolean = false;
-
 
     onLoad() {
         AssetsLoader.instance = this;
@@ -47,6 +49,11 @@ export class AssetsLoader extends Component {
 
     initGameplay(level: LevelData) {
         this.currentSpecs = [];
+
+        this.currentGoalIcons = Array.from(new Set([
+            ...level.goals.map(goal => goal.id.toLowerCase()),
+            'coin'
+        ])).filter(id => id !== 'common');
 
         for(let i = 0; i < level.specialTiles.length; i++) {
             let spec = level.specialTiles[i].id;
@@ -129,13 +136,15 @@ export class AssetsLoader extends Component {
 
         this.maxGamplayAssets = 0;
         this.loadedGameplayBundlesCount = 0;
+        this.areGoalIconsReady = false;
 
         this.loadBaseBundle();
         this.loadSpecBundle("spec_tiles", false);
         this.loadSpecBundle("big_spec_tiles", false);
         this.loadSpecBundle("statuses", true);
-    }
 
+        this.loadGoalIcons();
+    }
 
     startLoading() {
         this.isLoadingStarted = true;
@@ -149,19 +158,81 @@ export class AssetsLoader extends Component {
         this.loadingFrame.hide();
     }
 
-
-    private checkLoadCompletion() {
+    private checkLoadCompletion(): void {
         this.gamplayAssetsCounter++;
 
-        //console.log("Loaded " + this.gamplayAssetsCounter + " gameplay assets from " + this.maxGamplayAssets + " and " + this.loadedGameplayBundlesCount + " gameplay bundles from " + this.gameplayBundlesCount);
-
-        if(this.gamplayAssetsCounter >= this.maxGamplayAssets && this.loadedGameplayBundlesCount >= this.gameplayBundlesCount) {
-            this.fieldComp.setAssetsAsLoaded();
-
-            this.stopLoading();
-        }
+        this.tryFinishGameplayLoading();
     }
 
+    private tryFinishGameplayLoading(): void {
+        if(!this.isLoadingStarted) return;
+
+        const areGameplayAssetsReady =
+            this.gamplayAssetsCounter >= this.maxGamplayAssets &&
+            this.loadedGameplayBundlesCount >= this.gameplayBundlesCount;
+
+        if(!areGameplayAssetsReady || !this.areGoalIconsReady) return;
+
+        this.fieldComp.setAssetsAsLoaded();
+
+        this.field.emit('goal_icons_ready');
+
+        this.stopLoading();
+    }
+
+    private loadGoalIcons(): void {
+        const finish = (): void => {
+            this.areGoalIconsReady = true;
+
+            console.log('[GOAL ICONS] Loading completed');
+
+            this.tryFinishGameplayLoading();
+        };
+
+        if(this.currentGoalIcons.length === 0) {
+            finish();
+            return;
+        }
+
+        assetManager.loadBundle('goals', (bundleError, bundle) => {
+            if(bundleError || !bundle) {
+                console.error('[GOAL ICONS] Bundle loading failed:', bundleError);
+                finish();
+                return;
+            }
+
+            let remaining = this.currentGoalIcons.length;
+
+            const finishIcon = (): void => {
+                remaining--;
+
+                if(remaining === 0) {
+                    finish();
+                }
+            };
+
+            for(const iconId of this.currentGoalIcons) {
+                const assetPath = `${iconId}_goal/spriteFrame`;
+                const cachedIcon = bundle.get(assetPath, SpriteFrame);
+
+                if(cachedIcon?.isValid) {
+                    console.log('[GOAL ICONS] Cached:', iconId);
+                    finishIcon();
+                    continue;
+                }
+
+                bundle.load(assetPath, SpriteFrame, (error, spriteFrame) => {
+                    if(error || !spriteFrame) {
+                        console.error('[GOAL ICONS] Loading failed:', assetPath, error);
+                    } else {
+                        console.log('[GOAL ICONS] Loaded:', iconId);
+                    }
+
+                    finishIcon();
+                });
+            }
+        });
+    }
 
     private loadBaseBundle() {
         if(this.isBaseTilesLoaded) {
@@ -287,6 +358,8 @@ export class AssetsLoader extends Component {
                     this.checkLoadCompletion();
                 }
             });
+
+            this.tryFinishGameplayLoading();
         });
     }
 }
