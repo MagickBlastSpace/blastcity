@@ -368,31 +368,72 @@ export class UIEffectManager extends Component {
             goal?.node?.isValid && goal.getGoalId() === 'magic_hat'
         );
 
-        const layerTransform = this.effectsLayer.getComponent(UITransform);
+        const sourceParent = sourceNode.parent;
 
-        if(!targetGoal || !layerTransform) {
-            console.warn('[MAGIC HAT FLY] Goal position unavailable');
+        const flightLayer = sourceParent?.isValid && sourceParent.name === 'MagicHatCarrotLayer'
+            ? sourceParent
+            : this.effectsLayer;
+
+        if(!targetGoal || !flightLayer?.isValid) {
+            console.warn('[MAGIC HAT FLY] Goal position or flight layer unavailable');
             finish();
             return;
         }
 
         const startWorld = sourceNode.worldPosition.clone();
         const startScale = sourceNode.worldScale.clone();
+        const startRotation = sourceNode.worldRotation.clone();
+
+        const sourceSkeleton = sourceNode.getComponent(sp.Skeleton);
+        const carrotBone = sourceSkeleton?.findBone('carrot');
+
+        if(carrotBone && Number.isFinite(carrotBone.worldX) && Number.isFinite(carrotBone.worldY)) {
+            Vec3.transformMat4(
+                startWorld,
+                new Vec3(carrotBone.worldX, carrotBone.worldY, 0),
+                sourceNode.worldMatrix
+            );
+
+            console.log('[MAGIC HAT FLY] Carrot bone position', {
+                boneX: carrotBone.worldX,
+                boneY: carrotBone.worldY,
+                worldX: startWorld.x,
+                worldY: startWorld.y
+            });
+        } else {
+            console.warn('[MAGIC HAT FLY] Carrot bone unavailable, using source position');
+        }
+
         const goalWorld = targetGoal.getPosition();
 
-        const targetLocal = layerTransform.convertToNodeSpaceAR(
-            new Vec3(goalWorld.x, goalWorld.y, 0)
+        const targetLocal = Vec3.transformMat4(
+            new Vec3(),
+            new Vec3(goalWorld.x, goalWorld.y, 0),
+            Mat4.invert(new Mat4(), flightLayer.worldMatrix)
         );
 
         try {
             carrotNode = instantiate(sourceNode);
             carrotNode.name = 'MagicHatFlyingCarrot';
 
-            this.effectsLayer.addChild(carrotNode);
+            flightLayer.addChild(carrotNode);
+
+            if(flightLayer.name === 'MagicHatCarrotLayer' && flightLayer.parent?.isValid) {
+                flightLayer.setSiblingIndex(flightLayer.parent.children.length - 1);
+            }
+
+            carrotNode.setSiblingIndex(flightLayer.children.length - 1);
+
             carrotNode.active = true;
             carrotNode.setWorldPosition(startWorld);
             carrotNode.setWorldScale(startScale);
-            carrotNode.setWorldRotation(sourceNode.worldRotation);
+            carrotNode.setWorldRotation(startRotation);
+
+            console.log('[MAGIC HAT FLY] Flight layer', {
+                layer: flightLayer.name,
+                siblingIndex: flightLayer.getSiblingIndex(),
+                carrotSiblingIndex: carrotNode.getSiblingIndex()
+            });
 
             const skeleton = carrotNode.getComponent(sp.Skeleton);
 
