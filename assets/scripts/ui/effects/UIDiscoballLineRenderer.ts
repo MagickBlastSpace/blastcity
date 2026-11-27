@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Node, Prefab, Vec3 } from 'cc';
+import { _decorator, Component, instantiate, isValid, Node, Prefab, Vec3 } from 'cc';
 import { UIDiscoballLine } from './UIDiscoballLine';
 
 const { ccclass, property } = _decorator;
@@ -25,7 +25,7 @@ export class UIDiscoballLineRenderer extends Component {
         animationName: 'line_color_1' | 'line_color_2' = 'line_color_1',
         onFinished?: (reached: boolean) => void
     ): void {
-        if(!this.linePrefab || !this.node.isValid || !this.node.activeInHierarchy) {
+        if(!this.linePrefab || !isValid(this, true) || !isValid(this.node, true) || !this.node.activeInHierarchy) {
             console.warn('[DISCO LINE] Line prefab or renderer unavailable');
             onFinished?.(false);
             return;
@@ -53,7 +53,9 @@ export class UIDiscoballLineRenderer extends Component {
             }
 
             lineComponent.setLinePositions(startPos, endPos, skinName, animationName, reached => {
-                this.linesSpawned = this.linesSpawned.filter(node => node !== lineNode && node.isValid);
+                if(isValid(this, true)) {
+                    this.linesSpawned = this.linesSpawned.filter(node => node !== lineNode && isValid(node, true));
+                }
                 notify(reached);
             });
         } catch(error) {
@@ -78,6 +80,6 @@ export class UIDiscoballLineRenderer extends Component {
     }
 
     clear(): void {
-        this.linesSpawned = this.linesSpawned.filter(lineNode => lineNode.isValid);
+        this.linesSpawned = this.linesSpawned.filter(lineNode => isValid(lineNode, true));
     }
 }

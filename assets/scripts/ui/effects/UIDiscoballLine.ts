@@ -1,4 +1,4 @@
-import { _decorator, Component, sp, Vec3 } from 'cc';
+import { _decorator, Component, isValid, sp, Vec3 } from 'cc';
 
 const { ccclass, property } = _decorator;
 
@@ -93,6 +93,7 @@ export class UIDiscoballLine extends Component {
 
     private finish(reached: boolean): void {
         if(this.isFinished) return;
+
         this.isFinished = true;
 
         const callback = this.onFinished;
@@ -101,7 +102,9 @@ export class UIDiscoballLine extends Component {
         try {
             callback?.(reached);
         } finally {
-            if(this.node.isValid) this.node.destroy();
+            if(isValid(this.node, true)) {
+                this.node.destroy();
+            }
         }
     }
 

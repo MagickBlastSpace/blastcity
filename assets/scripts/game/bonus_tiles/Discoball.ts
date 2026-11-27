@@ -342,7 +342,7 @@ export class Discoball extends BonusTileBase {
             const animation = this.getLineAnimationForTarget(target.color);
 
             this.scheduleOnce(() => {
-                if(!this.node.isValid) return;
+                if(!isValid(this, true) || !isValid(this.node, true)) return;
 
                 if(!this.isTargetAvailable(field, target)) {
                     console.log('[DISCO LINE SKIPPED]', {
@@ -361,7 +361,7 @@ export class Discoball extends BonusTileBase {
                     if(completed) return;
                     completed = true;
 
-                    if(!this.node.isValid) return;
+                    if(!isValid(this, true) || !isValid(this.node, true)) return;
 
                     if(!reached) {
                         console.warn('[DISCO LINE] Visual failed, finishing gameplay target:', target);
