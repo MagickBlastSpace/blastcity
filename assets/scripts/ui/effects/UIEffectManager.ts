@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Node, Prefab, sp, tween, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, Component, instantiate, Mat4, Node, Prefab, sp, tween, UITransform, Vec2, Vec3 } from 'cc';
 import { SpecialPrefabData } from '../../data/GameData';
 import { ResolutionManager } from '../../utils/ResolutionManager';
 import { UILevelGoal } from '../level/UILevelGoal';
@@ -46,15 +46,13 @@ export class UIEffectManager extends Component {
     }
 
     protected onDestroy(): void {
-        if(this.field?.isValid) {
-            this.field.off('shell_pearl_fly', this.createShellPearlEffect, this);
-            this.field.off('magic_hat_carrot_fly', this.createMagicHatCarrotEffect, this);
-            return
-        }
+        if(!this.field?.isValid) return;
 
         this.field.off('coin_reward', this.createEffectCoinReward, this);
         this.field.off('goal_effect', this.createSpecGoalEffect, this);
         this.field.off('goal_effect_positioned', this.createSpecGoalEffectPositioned, this);
+        this.field.off('shell_pearl_fly', this.createShellPearlEffect, this);
+        this.field.off('magic_hat_carrot_fly', this.createMagicHatCarrotEffect, this);
     }
 
     private createShellPearlEffect(sourceNode: Node): void {
@@ -224,56 +222,90 @@ export class UIEffectManager extends Component {
         }
     }
 
-    createSpecGoalEffect(spec: string, row: number, col: number) {
-        const prefab = this.specialPrefabs.find(p => p.id === 'goal_fly')?.prefab;
+    createSpecGoalEffect(spec: string, row: number, col: number): void {
+        const posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
+        const posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
 
-        if(!prefab) {
-            console.warn('[GOAL EFFECT] goal_fly prefab not found');
-            return;
-        }
-
-        const specNode = instantiate(prefab);
-        this.effectsLayer.addChild(specNode);
-        const specComp = specNode.getComponent(UISpecGoalEffect);
-
-        let posX = col * (this.tileSize + this.tileSpacing) + this.xOffset;
-        let posY = row * (this.tileSize + this.tileSpacing) + this.yOffset;
-
-        posY = spec === "duck" || spec === "big_duck" ? posY - this.tileSize : posY;
-
-        let portraitGoalPosition = this.findGoalPosition(this.goalsPositions_Portrait, spec);
-        let landscapeGoalPosition = this.findGoalPosition(this.goalsPositions, spec);
-
-        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? portraitGoalPosition : landscapeGoalPosition;
-
-        specComp.init(new Vec2(posX, posY), targetPosition);
+        this.playSpecGoalFlight(spec, posX, posY);
     }
 
-    createSpecGoalEffectPositioned(spec: string, x: number, y: number) {
-        const prefab = this.specialPrefabs.find(p => p.id === 'goal_fly')?.prefab;
-
-        if(!prefab) {
-            console.warn('[GOAL EFFECT] goal_fly prefab not found');
-            return;
-        }
-
-        const specNode = instantiate(prefab);
-        this.effectsLayer.addChild(specNode);
-        const specComp = specNode.getComponent(UISpecGoalEffect);
-
-        let posX = x;
-        let posY = y;
-
-        posY = spec === "duck" || spec === "big_duck" ? posY - this.tileSize : posY;
-
-        let portraitGoalPosition = this.findGoalPosition(this.goalsPositions_Portrait, spec);
-        let landscapeGoalPosition = this.findGoalPosition(this.goalsPositions, spec);
-
-        let targetPosition = ResolutionManager.instance.isPortraitOrientation() ? portraitGoalPosition : landscapeGoalPosition;
-
-        specComp.init(new Vec2(posX, posY), targetPosition);
+    createSpecGoalEffectPositioned(
+        spec: string,
+        x: number,
+        y: number,
+        token?: object
+    ): void {
+        this.playSpecGoalFlight(spec, x, y, token);
     }
 
+    private playSpecGoalFlight(
+        spec: string,
+        x: number,
+        y: number,
+        token: object = {}
+    ): void {
+        this.field.emit('goal_flight_started', token);
+
+        let specNode: Node | null = null;
+        let completed = false;
+
+        const finish = (): void => {
+            if(completed) return;
+
+            completed = true;
+
+            if(this.field?.isValid) {
+                this.field.emit('goal_flight_finished', token);
+            }
+        };
+
+        try {
+            const prefab = this.specialPrefabs.find(p => p.id === 'goal_fly')?.prefab;
+
+            if(!prefab || !this.effectsLayer?.isValid) {
+                console.warn('[GOAL EFFECT] Prefab or effects layer missing');
+                finish();
+                return;
+            }
+
+            specNode = instantiate(prefab);
+            this.effectsLayer.addChild(specNode);
+
+            const specComp = specNode.getComponent(UISpecGoalEffect);
+
+            if(!specComp) {
+                console.warn('[GOAL EFFECT] UISpecGoalEffect missing');
+                specNode.destroy();
+                finish();
+                return;
+            }
+
+            const posY = spec === 'duck' || spec === 'big_duck'
+                ? y - this.tileSize
+                : y;
+
+            const goals = ResolutionManager.instance.isPortraitOrientation()
+                ? this.goalsPositions_Portrait
+                : this.goalsPositions;
+
+            const targetPosition = this.findGoalPosition(goals, spec);
+
+            specComp.init(
+                new Vec2(x, posY),
+                targetPosition,
+                finish
+            );
+
+        } catch(error) {
+            console.error('[GOAL EFFECT] Flight failed:', error);
+
+            if(specNode?.isValid) {
+                specNode.destroy();
+            }
+
+            finish();
+        }
+    }
 
     findGoalPosition(goals: UILevelGoal[], goalId: string): Vec2 {
         if (goals.length === 0) {
@@ -392,12 +424,9 @@ export class UIEffectManager extends Component {
 
                         const t = (state as { progress: number }).progress;
 
-                        const x = startPosition.x +
-                            (targetLocal.x - startPosition.x) * t;
+                        const x = startPosition.x + (targetLocal.x - startPosition.x) * t;
 
-                        const y = startPosition.y +
-                            (targetLocal.y - startPosition.y) * t +
-                            Math.sin(Math.PI * t) * arcHeight;
+                        const y = startPosition.y + (targetLocal.y - startPosition.y) * t + Math.sin(Math.PI * t) * arcHeight;
 
                         carrotNode.setPosition(x, y, startPosition.z);
                     }

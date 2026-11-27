@@ -53,8 +53,16 @@ export class UIField extends Component {
         this.field.on("booster", (boosterType, row, col) => this.playBoosterAnimation(boosterType, row, col));
         this.field.on("shuffle", () => this.playShuffleSound());
 
-        this.animationsLayout.on("goal_effect_positioned", (goalType, x, y) => {
-            this.node.emit("goal_effect_positioned", goalType, x, y);
+        this.animationsLayout.on('goal_effect_positioned', (goalType, x, y, token?: object) => {
+            this.node.emit('goal_effect_positioned', goalType, x, y, token);
+        });
+
+        this.animationsLayout.on('goal_flight_started', (token: object) => {
+            this.node.emit('goal_flight_started', token);
+        });
+
+        this.animationsLayout.on('goal_flight_finished', (token: object) => {
+            this.node.emit('goal_flight_finished', token);
         });
 
         if (this.boostersAnimation) {

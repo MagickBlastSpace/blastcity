@@ -376,32 +376,73 @@ export class UITile extends Component {
             : null;
     }
 
+    private trackGoalFlight(layout: Node, sourceNode: Node) {
+        const token = {};
+        let isPending = true;
+
+        const cancel = (): void => {
+            if(!isPending) return;
+
+            isPending = false;
+
+            if(isValid(sourceNode, true)) {
+                sourceNode.off(Node.EventType.NODE_DESTROYED, cancel);
+            }
+
+            if(isValid(layout, true)) {
+                layout.emit('goal_flight_finished', token);
+            }
+        };
+
+        const transfer = (goalType: string, x: number, y: number): void => {
+            if(!isPending) return;
+
+            if(!isValid(layout, true)) {
+                cancel();
+                return;
+            }
+
+            isPending = false;
+
+            if(isValid(sourceNode, true)) {
+                sourceNode.off(Node.EventType.NODE_DESTROYED, cancel);
+            }
+
+            try {
+                layout.emit('goal_effect_positioned', goalType, x, y, token);
+            } catch(error) {
+                console.error('[GOAL FLIGHT] Transfer failed:', error);
+                layout.emit('goal_flight_finished', token);
+            }
+        };
+
+        sourceNode.once(Node.EventType.NODE_DESTROYED, cancel);
+
+        layout.emit('goal_flight_started', token);
+
+        return { cancel, transfer };
+    }
+
     playAnimation(
         animation: string,
         isLooped: boolean,
         timeScale: number
     ): void {
+        let cancelGoalFlight: (() => void) | null = null;
+
         try {
-            if (!this.spine || !this.spine.node.isValid) {
-                return;
-            }
+            if(!this.spine || !this.spine.node.isValid) return;
 
             const layout = this.getAnimationsLayout();
 
-            if (!layout) {
-                console.warn(
-                    `[UITile] Animations layout missing: ${animation}`
-                );
+            if(!layout) {
+                console.warn(`[UITile] Animations layout missing: ${animation}`);
                 return;
             }
 
             const currentEntry = this.spine.getCurrent(0);
 
-            if (
-                currentEntry &&
-                !currentEntry.isComplete() &&
-                !currentEntry.loop
-            ) {
+            if(currentEntry && !currentEntry.isComplete() && !currentEntry.loop) {
                 return;
             }
 
@@ -415,24 +456,26 @@ export class UITile extends Component {
             layout.addChild(spineNode);
             spineNode.setPosition(posX, posY);
 
-            if (isLooped && spineNode !== this.node) {
+            if(isLooped && spineNode !== this.node) {
                 this.detachedLoopingSpine = spineNode;
-            } else if (this.detachedLoopingSpine === spineNode) {
+            } else if(this.detachedLoopingSpine === spineNode) {
                 this.detachedLoopingSpine = null;
             }
 
-            const entry = this.spine.setAnimation(
-                0,
-                animation,
-                isLooped
-            );
+            const goalFlight = !isLooped && animation === 'goal'
+                ? this.trackGoalFlight(layout, spineNode)
+                : null;
 
-            if (!entry) {
-                console.error(
-                    `[UITile] Spine animation missing: ${animation}`
-                );
+            cancelGoalFlight = goalFlight?.cancel ?? null;
 
-                if (!isLooped && isValid(spineNode, true)) {
+            const entry = this.spine.setAnimation(0, animation, isLooped);
+
+            if(!entry) {
+                console.error(`[UITile] Spine animation missing: ${animation}`);
+
+                cancelGoalFlight?.();
+
+                if(!isLooped && isValid(spineNode, true)) {
                     spineNode.destroy();
                 }
 
@@ -441,57 +484,38 @@ export class UITile extends Component {
 
             entry.timeScale = timeScale;
 
-            if (isLooped) {
-                return;
-            }
+            if(isLooped) return;
 
             let cleaned = false;
 
             const cleanup = (completed: boolean): void => {
-                if (cleaned) {
-                    return;
-                }
+                if(cleaned) return;
 
                 cleaned = true;
 
-                if (
-                    completed &&
-                    animation === 'goal' &&
-                    isValid(layout, true)
-                ) {
-                    layout.emit(
-                        'goal_effect_positioned',
-                        'goal_fly',
-                        posX,
-                        posY
-                    );
+                if(goalFlight) {
+                    if(completed && isValid(layout, true)) {
+                        goalFlight.transfer('goal_fly', posX, posY);
+                    } else {
+                        goalFlight.cancel();
+                    }
                 }
 
-                if (isValid(spineNode, true)) {
+                if(isValid(spineNode, true)) {
                     spineNode.destroy();
                 }
             };
 
-            this.spine.setTrackCompleteListener(
-                entry,
-                () => cleanup(true)
-            );
+            this.spine.setTrackCompleteListener(entry, () => cleanup(true));
 
-            this.spine.setTrackInterruptListener(
-                entry,
-                () => cleanup(false)
-            );
+            this.spine.setTrackInterruptListener(entry, () => cleanup(false));
 
-            this.spine.setTrackEndListener(
-                entry,
-                () => cleanup(false)
-            );
+            this.spine.setTrackEndListener(entry, () => cleanup(false));
 
-        } catch (error) {
-            console.error(
-                `[UITile] Spine animation error: ${animation}`,
-                error
-            );
+        } catch(error) {
+            cancelGoalFlight?.();
+
+            console.error(`[UITile] Spine animation error: ${animation}`, error);
         }
     }
 
@@ -541,19 +565,20 @@ export class UITile extends Component {
         const originalSpine = skeleton || this.spine;
         const layout = this.getAnimationsLayout();
 
-        if (!originalSpine?.skeletonData || !layout) {
+        if(!originalSpine?.skeletonData || !layout) {
             console.warn(`[UITile] Cannot play additional animation: ${animation}`);
             return;
         }
 
         let clonedNode: Node | null = null;
+        let cancelGoalFlight: (() => void) | null = null;
 
         try {
             clonedNode = instantiate(originalSpine.node);
 
             const clonedSkeleton = clonedNode.getComponent(sp.Skeleton);
 
-            if (!clonedSkeleton) {
+            if(!clonedSkeleton) {
                 console.error('[UITile] Cloned skeleton missing sp.Skeleton');
                 clonedNode.destroy();
                 return;
@@ -566,69 +591,64 @@ export class UITile extends Component {
             clonedNode.setPosition(posX, posY);
             clonedNode.active = true;
 
-            if (disableNode && isValid(disableNode, true)) {
+            if(disableNode && isValid(disableNode, true)) {
                 disableNode.active = false;
             }
+
+            const goalFlight = goalType
+                ? this.trackGoalFlight(layout, clonedNode)
+                : null;
+
+            cancelGoalFlight = goalFlight?.cancel ?? null;
 
             let cleaned = false;
 
             const cleanup = (completed: boolean): void => {
-                if (cleaned) return;
+                if(cleaned) return;
+
                 cleaned = true;
 
-                if (completed && goalType && isValid(layout, true)) {
-                    layout.emit(
-                        'goal_effect_positioned',
-                        goalType,
-                        posX,
-                        posY
-                    );
+                if(goalFlight) {
+                    if(completed && goalType && isValid(layout, true)) {
+                        goalFlight.transfer(goalType, posX, posY);
+                    } else {
+                        goalFlight.cancel();
+                    }
                 }
 
-                if (clonedNode && isValid(clonedNode, true)) {
+                if(clonedNode && isValid(clonedNode, true)) {
                     clonedNode.destroy();
                 }
 
-                if (disableNode && isValid(disableNode, true)) {
+                if(disableNode && isValid(disableNode, true)) {
                     disableNode.active = true;
                 }
             };
 
-            const entry = clonedSkeleton.setAnimation(
-                0,
-                animation,
-                false
-            );
+            const entry = clonedSkeleton.setAnimation(0, animation, false);
 
-            if (!entry) {
+            if(!entry) {
                 console.error(`[UITile] Animation not found: ${animation}`);
                 cleanup(false);
                 return;
             }
 
-            clonedSkeleton.setTrackCompleteListener(
-                entry,
-                () => cleanup(true)
-            );
+            clonedSkeleton.setTrackCompleteListener(entry, () => cleanup(true));
 
-            clonedSkeleton.setTrackInterruptListener(
-                entry,
-                () => cleanup(false)
-            );
+            clonedSkeleton.setTrackInterruptListener(entry, () => cleanup(false));
 
-            clonedSkeleton.setTrackEndListener(
-                entry,
-                () => cleanup(false)
-            );
+            clonedSkeleton.setTrackEndListener(entry, () => cleanup(false));
 
-        } catch (error) {
+        } catch(error) {
+            cancelGoalFlight?.();
+
             console.error('[UITile] Additional animation error:', error);
 
-            if (clonedNode && isValid(clonedNode, true)) {
+            if(clonedNode && isValid(clonedNode, true)) {
                 clonedNode.destroy();
             }
 
-            if (disableNode && isValid(disableNode, true)) {
+            if(disableNode && isValid(disableNode, true)) {
                 disableNode.active = true;
             }
         }

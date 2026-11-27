@@ -148,6 +148,10 @@ export class UILevel extends UIFrameBase {
     private pendingWinDisplayReward: number | null = null;
     private isWinRewardSkipped: boolean = false;
 
+    private isWinPopupPending: boolean = false;
+    private isWinPopupShown: boolean = false;
+    private pendingGoalFlights: Set<object> = new Set<object>();
+
     start(): void {
         this.level.on('init', this.init, this);
         this.level.on('refresh', this.refreshAll, this);
@@ -168,6 +172,9 @@ export class UILevel extends UIFrameBase {
         this.levelComp.field.on('magic_hat_carrot_started', this.onMagicHatCarrotStarted, this);
         this.levelComp.field.on('magic_hat_carrot_arrived', this.onMagicHatCarrotArrived, this);
         this.levelComp.field.on('goal_icons_ready', this.onGoalIconsReady, this);
+
+        this.levelComp.field.on('goal_flight_started', this.onGoalFlightStarted, this);
+        this.levelComp.field.on('goal_flight_finished', this.onGoalFlightFinished, this);
 
         this.levelCompletePopup.node.on('win_conversion_started', this.onWinConversionStarted, this);
 
@@ -190,6 +197,11 @@ export class UILevel extends UIFrameBase {
         this.shellVisibleCount = null;
         this.magicHatCarrotsFlying = 0;
         this.magicHatVisibleCount = null;
+        this.isWinPopupPending = false;
+        this.isWinPopupShown = false;
+        this.pendingGoalFlights.clear();
+
+        this.unschedule(this.tryShowLevelCompletePopup);
 
         this.setPrizeCaptionVisible(false)
 
@@ -499,6 +511,8 @@ export class UILevel extends UIFrameBase {
         if(!this.isRewarding) {
             this.refreshGoals(this.levelComp.getGoals());
         }
+
+        this.scheduleWinPopupCheck();
     }
 
     private onShellPearlStarted(): void {
@@ -510,11 +524,6 @@ export class UILevel extends UIFrameBase {
         }
 
         this.shellPearlsFlying++;
-
-        console.log('[SHELL GOAL] Pearl started', {
-            flying: this.shellPearlsFlying,
-            visible: this.shellVisibleCount
-        });
     }
 
     private onShellPearlArrived(): void {
@@ -530,10 +539,7 @@ export class UILevel extends UIFrameBase {
             this.refreshGoals(this.levelComp.getGoals());
         }
 
-        console.log('[SHELL GOAL] Pearl arrived', {
-            flying: this.shellPearlsFlying,
-            visible: this.shellVisibleCount
-        });
+        this.scheduleWinPopupCheck();
     }
 
     private setPrizeCaptionVisible(visible: boolean): void {
@@ -779,7 +785,35 @@ export class UILevel extends UIFrameBase {
         }
     }
 
-    showLevelCompletePopup() {
+    showLevelCompletePopup(): void {
+        if(this.isWinPopupShown) return;
+
+        this.isWinPopupPending = true;
+
+        this.scheduleWinPopupCheck();
+    }
+
+    private scheduleWinPopupCheck(): void {
+        if(!this.isWinPopupPending || this.isWinPopupShown) return;
+
+        this.unschedule(this.tryShowLevelCompletePopup);
+        this.scheduleOnce(this.tryShowLevelCompletePopup, 0);
+    }
+
+    private tryShowLevelCompletePopup(): void {
+        if(!this.isWinPopupPending || this.isWinPopupShown) return;
+
+        if(
+            this.magicHatCarrotsFlying > 0 ||
+            this.shellPearlsFlying > 0 ||
+            this.pendingGoalFlights.size > 0
+        ) {
+            return;
+        }
+
+        this.isWinPopupPending = false;
+        this.isWinPopupShown = true;
+
         this.hideWinSkipTutorial();
         this.hideWinCounterForeground();
 
@@ -787,6 +821,16 @@ export class UILevel extends UIFrameBase {
 
         AudioController.instance.playLevelComplete();
         AudioController.instance.playWin();
+    }
+
+    private onGoalFlightStarted(token: object): void {
+        this.pendingGoalFlights.add(token);
+    }
+
+    private onGoalFlightFinished(token: object): void {
+        if(!this.pendingGoalFlights.delete(token)) return;
+
+        this.scheduleWinPopupCheck();
     }
 
     showNoMovesPopup() {
@@ -839,6 +883,8 @@ export class UILevel extends UIFrameBase {
             this.levelComp.field.off('magic_hat_carrot_started', this.onMagicHatCarrotStarted, this);
             this.levelComp.field.off('magic_hat_carrot_arrived', this.onMagicHatCarrotArrived, this);
             this.levelComp.field.off('goal_icons_ready', this.onGoalIconsReady, this);
+            this.levelComp.field.off('goal_flight_started', this.onGoalFlightStarted, this);
+            this.levelComp.field.off('goal_flight_finished', this.onGoalFlightFinished, this);
         }
 
         if(this.levelCompletePopup?.node?.isValid) {

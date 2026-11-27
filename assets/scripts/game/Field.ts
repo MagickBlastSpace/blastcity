@@ -1209,9 +1209,9 @@ export class Field extends Component {
 		tileNode.on('goal_effect', (goalType, row, col) => {
 			this.node.emit('goal_effect', goalType, row, col);
 		});
-		tileNode.on('goal_effect_positioned', (goalType, x, y) => {
-			this.node.emit('goal_effect_positioned', goalType, x, y);
-		});
+		tileNode.on('goal_effect_positioned', (goalType, x, y, token?: object) => {
+            this.node.emit('goal_effect_positioned', goalType, x, y, token);
+        });
 
 		this.tileArray[row][col] = tileNode;
 		if (isDoubleWidth || isTripleWidth) {
